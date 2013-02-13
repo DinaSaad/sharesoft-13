@@ -11,3 +11,9 @@ Interests: Piano & Reading
 ------------------------------------------------
 >>>>>>>>Write your own profile likewise<<<<<<<<<
 ------------------------------------------------
+
+Name: Beshoy Atef
+Role: Developer
+Major: bi
+ID: 22-4787
+Interests: Innovation
