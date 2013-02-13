@@ -1,0 +1,25 @@
+
+ShareSoft-13 Employees Info:
+============================
+
+Name: Dina Saad
+Role: Scrum Master
+Major: CS
+ID: 16-648
+Interests: Piano & Reading
+
+------------------------------------------------
+>>>>>>>>Write your own profile likewise<<<<<<<<<
+------------------------------------------------
+
+Name: Beshoy Atef
+Role: Developer
+Major: bi
+ID: 22-4787
+Interests: Innovation
+
+name: mahmoud ahmed
+role: manager
+Major: BI
+ID : 22-3655
+Interests: music
