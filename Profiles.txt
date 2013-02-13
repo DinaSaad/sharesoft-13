@@ -8,9 +8,9 @@ Major: CS
 ID: 16-648
 Interests: Piano & Reading
 
-------------------------------------------------
+
 >>>>>>>>Write your own profile likewise<<<<<<<<<
-------------------------------------------------
+
 
 Name: Beshoy Atef
 Role: Developer
@@ -23,3 +23,16 @@ role: manager
 Major: BI
 ID : 22-3655
 Interests: music
+
+Major: BI
+Interests: Innovation
+
+Name:mai zaied 
+Role : developer 
+Major : BI
+ID :22-3612
+Interests : ART 
+
+Interests: Innovation and Technology
+Interests: Innovation and Technology
+
