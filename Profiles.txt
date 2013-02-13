@@ -14,8 +14,9 @@ Interests: Piano & Reading
 
 Name: Beshoy Atef
 Role: Developer
-Major: bi
+Major: BI
 ID: 22-4787
+<<<<<<< HEAD
 Interests: Innovation
 
 Name:mai zaied 
@@ -23,3 +24,6 @@ Role : developer
 Major : BI
 ID :22-3612
 Interests : ART 
+
+Interests: Innovation and Technology
+>>>>>>> 60e2c6713ffeb48f830ef6401fad9c8d7ea835a5
