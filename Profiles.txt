@@ -14,6 +14,16 @@ Interests: Piano & Reading
 
 Name: Beshoy Atef
 Role: Developer
+Major: bi
+ID: 22-4787
+Interests: Innovation
+
+name: mahmoud ahmed
+role: manager
+Major: BI
+ID : 22-3655
+Interests: music
+
 Major: BI
 Interests: Innovation
 
