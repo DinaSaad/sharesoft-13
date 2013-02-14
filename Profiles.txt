@@ -11,12 +11,18 @@ Interests: Piano & Reading
 
 >>>>>>>>Write your own profile likewise<<<<<<<<<
 
+
 Name: Amr Tharwat
 Role: Developer
 Major: BI
 ID: 19-2342
 Interests: Innovation & Technology
 
+Name: Mohamed Tarek Hammad
+Role: Developer
+Major: BI
+ID: 22-5996
+Interests: Innovation
 
 Name: Beshoy Atef
 Role: Developer
