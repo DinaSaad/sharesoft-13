@@ -11,6 +11,12 @@ Interests: Piano & Reading
 
 >>>>>>>>Write your own profile likewise<<<<<<<<<
 
+Name: Amr Tharwat
+Role: Developer
+Major: BI
+ID: 19-2342
+Interests: Innovation & Technology
+
 
 Name: Beshoy Atef
 Role: Developer
