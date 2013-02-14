@@ -59,6 +59,12 @@ Major:BI
 ID:22-4547
 Interests:Music
 
+name: sara tarek ismail
+role: developer
+major: BI
+ID: 22-3437
+Intrests: too many to mention
+
 Interests: Innovation and Technology
 Interests: Innovation and Technology
 
