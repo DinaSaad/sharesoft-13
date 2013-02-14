@@ -18,6 +18,14 @@ Major: BI
 ID: 19-2342
 Interests: Innovation & Technology
 
+
+Name: Mohamed Ahmed Awad
+Role: Developer
+Major: BI
+ID: 22-0787
+Interests: Innovation
+
+
 Name: Mohamed Tarek Hammad
 Role: Developer
 Major: BI
