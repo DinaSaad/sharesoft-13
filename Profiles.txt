@@ -68,3 +68,8 @@ Intrests: too many to mention
 Interests: Innovation and Technology
 Interests: Innovation and Technology
 
+Name: Heba Ahmed El Sobky
+Role: Developer/Reviewer
+Major: BI
+ID: 22-2379
+Interests: Knitting and playing piano
