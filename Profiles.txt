@@ -11,6 +11,11 @@ Interests: Piano & Reading
 
 >>>>>>>>Write your own profile likewise<<<<<<<<<
 
+Name: Abdelrahman Maged
+Role: Developer
+Major: BI
+ID: 22-4979
+Interests: Reading
 
 Name: Amr Tharwat
 Role: Developer
