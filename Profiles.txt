@@ -49,9 +49,6 @@ Major: BI
 ID : 22-3655
 Interests: music
 
-Major: BI
-Interests: Innovation
-
 Name:mai zaied 
 Role : developer 
 Major : BI
@@ -69,9 +66,6 @@ role: developer
 major: BI
 ID: 22-3437
 Intrests: too many to mention
-
-Interests: Innovation and Technology
-Interests: Innovation and Technology
 
 Name: Heba Ahmed El Sobky
 Role: Developer/Reviewer
