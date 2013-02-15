@@ -11,6 +11,12 @@ Interests: Piano & Reading
 
 >>>>>>>>Write your own profile likewise<<<<<<<<<
 
+Name: Reem Mahmoud El Sharkawy
+Role: Leader
+Major: BI
+ID: 22-5578
+Interests: Piano and horse back riding
+
 Name: Abdelrahman Maged
 Role: Developer
 Major: BI
