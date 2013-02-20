@@ -1,0 +1,15 @@
+body {
+  font-family: Helvetica;
+  background-image:url(back.png);background-repeat: no-repeat;background-position: right;
+}
+
+	
+.inst { 
+	float: left; padding: 10px; }
+
+h1{
+	color:#FF0066;
+}
+h2{
+	font:bold;font-family:Buxton Sketch;
+}
