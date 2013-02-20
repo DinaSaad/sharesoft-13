@@ -1,0 +1,43 @@
+body{
+	background-color: #0d1213;
+}
+div.panel {
+	background-color: orange;
+	border: 2px solid white;
+}
+#head {
+	float: right;
+}
+#home_Button {
+	float: right;
+	margin-right: -320px;
+	color: blue;
+	font-size: 20px;
+}
+#profile_pic {
+	border: 5px solid white;
+	float: right;
+	margin-right: 100px;
+}
+#info {
+	font-size: 25px;
+	font-family: monospace;
+	color: red;
+	list-style-type: circle;
+}
+#welcome {
+	font-size: 150px;
+	color: red;
+	text-align: center;
+}
+#guc {
+	vertical-align: middle;
+	width: 200px;
+	height: 50px;
+}
+#robusta {
+	vertical-align: middle;
+	width: 200px;
+	height: 100px;
+	outline-style: groove;
+}
