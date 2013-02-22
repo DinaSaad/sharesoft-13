@@ -1,0 +1,23 @@
+h1.tagline{
+	font-family: arial,sans-serifs;
+	color: rgb(232,232,232);
+	font-weight: 700;
+}
+
+ul.tagline{
+	font-family: arial,sans-serifs;
+	opacity: 1;
+	color: rgb(232,232,232);
+	font-size: 13.5pt;
+	text-align: justify;
+	font-weight: normal;
+}
+
+
+
+div.opacity{
+	background-color: rgba(0,0,0,0.6);
+	position: absolute;
+	float: bottom;
+	border: 0px;
+}

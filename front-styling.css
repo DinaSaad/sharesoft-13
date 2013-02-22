@@ -1,0 +1,20 @@
+h1.textmodify{
+	font-family: arial,sans-serifs;
+	font-size: 18pt;
+	text-align: center;
+	color: rgb(77,77,77);
+}
+
+h2.textmodify{
+	font-family: arial,sans-serifs;
+	font-size: 15pt;
+	text-align: center;
+	color: rgb(77,77,77);
+}
+
+h3.textmodify{
+	font-family: arial,sans-serifs;
+	font-size: 10pt;
+	text-align: center;
+	color: rgb(77,77,77);
+}
