@@ -1,0 +1,16 @@
+body {
+  font-family: Helvetica;
+}
+
+
+
+h1.title {
+  color: red;
+  text-align: center;
+}
+p.comment {   
+     color: #000000;
+}
+p.comment:hover {  
+     color: #0000ff;
+}

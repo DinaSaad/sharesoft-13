@@ -8,12 +8,81 @@ Major: CS
 ID: 16-648
 Interests: Piano & Reading
 
-------------------------------------------------
+
 >>>>>>>>Write your own profile likewise<<<<<<<<<
-------------------------------------------------
+
+Named: Ahmed M. ElShireef
+Role: Developer
+Major: BI
+ID:4-4869
+Interests: Capoeira
+
+Name: Reem Mahmoud El Sharkawy
+Role: Leader
+Major: BI
+ID: 22-5578
+Interests: Piano and horse back riding
+
+Name: Abdelrahman Maged
+Role: Developer
+Major: BI
+ID: 22-4979
+Interests: Reading
+
+Name: Amr Tharwat
+Role: Developer
+Major: BI
+ID: 19-2342
+Interests: Innovation & Technology
+
+
+Name: Mohamed Ahmed Awad
+Role: Developer
+Major: BI
+ID: 22-0787
+Interests: Innovation
+
+
+Name: Mohamed Tarek Hammad
+Role: Developer
+Major: BI
+ID: 22-5996
+Interests: Innovation
 
 Name: Beshoy Atef
 Role: Developer
-Major: BI
+Major: bi
 ID: 22-4787
-Interests: Innovation and Technology
+Interests: Innovation
+
+name: mahmoud ahmed
+role: manager
+Major: BI
+ID : 22-3655
+Interests: music
+
+
+
+Name:mai zaied 
+Role : developer 
+Major : BI
+ID :22-3612
+Interests : ART 
+
+Name: hala kamal el din
+Role:developer
+Major:BI
+ID:22-4547
+Interests:Music
+
+name: sara tarek ismail
+role: developer
+major: BI
+ID: 22-3437
+Intrests: too many to mention
+
+Name: Heba Ahmed El Sobky
+Role: Developer/Reviewer
+Major: BI
+ID: 22-2379
+Interests: Knitting and playing piano

@@ -1,0 +1,54 @@
+.link{
+colour: white;
+}
+
+
+.tagline{
+	font-size: 28px;
+	color: white;
+	font-family: Helvetica;
+    text-align: left;}
+.post {
+ width: 700px;
+  margin: auto;
+  text-align: left;
+
+}
+.shape{
+    font-family: helvetica;
+    color: red;
+    font size: 38px;
+    font-style: bold;
+    text-align: auto;
+}
+h3{
+font-size: 42px;
+    color: white;
+    font-family: Helvetica;
+font-style: bold;
+margin: auto;
+text-align: left;}
+.p{
+	font-size: 22px;
+	font-family: helvetica;
+	font-style: italic;
+    color: white;
+}
+#carousel {
+        width: 1100px;
+        overflow:hidden;
+    }
+
+    #carousel ul {
+        width: 1920px;
+        padding: 0;
+        margin: 0;
+    }
+
+    #carousel ul li {
+        width:630px;
+        text-align: center;
+        height: 241px;
+        list-style: none;
+        float:  left;
+    }
