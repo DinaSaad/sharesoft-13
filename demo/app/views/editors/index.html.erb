@@ -1,0 +1,27 @@
+<h1>Listing editors</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Password</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @editors.each do |editor| %>
+  <tr>
+    <td><%= editor.name %></td>
+    <td><%= editor.email %></td>
+    <td><%= editor.password %></td>
+    <td><%= link_to 'Show', editor %></td>
+    <td><%= link_to 'Edit', edit_editor_path(editor) %></td>
+    <td><%= link_to 'Destroy', editor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Editor', new_editor_path %>
