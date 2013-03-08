@@ -12,11 +12,15 @@ class user(models.Model):
 class Tolist (models.Model):
     user = models.ForeignKey(user, related_name ='users')
     list_name = models.CharField(max_length = 50)
-    list_text = models.CharField(max_length=200)
-    task_done = models.BooleanField(default= 'false')
+    
 
     def __unicode__(self):
         return self.list_text
+
+class Tolist_item (models.Model):
+    tolist = models.ForeignKey(Tolist)
+    list_text = models.CharField(max_length=200)
+    task_done = models.BooleanField(default= 'false')
 
 #class Registered_users (models.Model):
  #   user = models.ForeignKey(user)
