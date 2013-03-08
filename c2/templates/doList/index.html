@@ -1,0 +1,9 @@
+<h1> Your available ToDoList</h1>
+
+{% if doList_list %}
+<ul>
+	{% for d in doList_list %}
+		<li> {{d.name}} | {{d.task}} </li>
+	{% endfor %}
+</ul>
+{%endif %}
