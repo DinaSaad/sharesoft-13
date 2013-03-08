@@ -1,0 +1,16 @@
+
+<form action="/create/guestbook/" method="POST">
+    {% csrf_token %}
+    <label for="name">What is your name?</label>
+    <input type="text" name="owner_name" />
+    <input type="submit" value="create" />
+</form>
+
+<form action="/ToList/" method="post">
+{% csrf_token %}
+{% for Tolist in Tolist.Tolist_item_set.all %}
+    <input type="checkbox" value="{{ .id }}" />
+    <label for="ToList_item{{ forloop.counter }}">{{ ToList_item.list_text }}</label><br />
+{% endfor %}
+<input type="submit" value="submit change" />
+</form>

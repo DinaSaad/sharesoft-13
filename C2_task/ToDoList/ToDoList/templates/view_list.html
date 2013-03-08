@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Avaliable tasks</h1>
+{% if Tolist %}
+    <ul>
+    {% for Tolist_item in ToList_item %}
+	<li>{{ Tolist.list_text}}<li>
+     {% endfor %}
+</ul>   
+    {% else %}
+        Sorry no one has created any tasks yet 
+    {% endif %}
+</body>
+</html>
