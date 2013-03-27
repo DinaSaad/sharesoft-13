@@ -11,6 +11,7 @@ class UserProfile(models.Model):
 	#The method get the Post Object using the Post_id , then checks if the post exists , 
 	#then then check if the user exists , 
 	#then input the values in teh table [IntrestedIn] )
+
 	def Interested(self, post_id_in):
 		p=Post.objects.get(pk=post_id_in.id)
 		#User CHeck Conditions should be added
