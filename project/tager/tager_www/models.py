@@ -1,3 +1,36 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+
+class UserProfile():
+
+
+class Channel():
+
+
+class Subchannel():
+
+
+
+class Attribute():
+
+
+class Post():
+
+
+class Comments():
+
+
+
+class Subscribtion():
+
+
+
+class Notification():
+
+
+class InterestedIn():
+	
+
+
+
