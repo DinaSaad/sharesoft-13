@@ -155,3 +155,6 @@ LOGGING = {
         },
     }
 }
+AUTHENTICATION_BACKENDS = ( 
+    'facebookapp.facebook.FacebookBackend',
+)
