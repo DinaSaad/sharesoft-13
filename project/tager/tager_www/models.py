@@ -34,6 +34,8 @@ class Notification():
 class InterestedIn():
 
 
+
+
 #This table shows the attributes that describes the subchannel
 class Attributes(models.Models):
 	name = models.CharField(max_length=64)#Name of the aatribute
