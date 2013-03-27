@@ -22,33 +22,62 @@ class UserProfile(User):
     def __unicode__(self):               # returns name in string 
       return self.user_name
 
-    def getInterestedIn(self,post_id):
-        interested = Interested_In.objects.filter(user_id_seller = user_id_seller, post_id = post_id)
-        return interested
 
-    def interestedIn(self, seller, post_id):
-        interested = interested_IN(user_id_buyer = user_id_buyer, user_id_seller = seller, post_id = post)
-        interested.save()
+    def canRate(self,post_id):
+       post = Post.objects.filter(pk= post_id)
+        #user = UserProfile.objects.filter(pk= user_id)
+       if post.is_sold = true && post.buyer_id = self.id
+           return True
+        else:
+           return False
 
       
     
 
 
-class Channel():
+class Channel(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
+    def __unicode__(self):
+        return self.name
 
 
-class Subchannel():
+class SubChannel(models.Model):
+
+    name = models.CharField(max_length=64)#Holds the name of the subchannel
+    sub_channel_id = models.IntegerField(default=0)#Holds the id of the subchannel
+    channel_id = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
 
 
-class Attribute():
+
+class Attribute(models.Model):
+
+    name = models.CharField(max_length=64)#Name of the aatribute
+    attribute_id = models.IntegerField()#Holds the id of the attribute
+    sub_channel_id = models.ForeignKey(SubChannel)#Foreign key that references the id of the subchannels from the subchannels models
+    weight = models.DecimalField(max_digits=5, decimal_places=2)#A weight given to the attribute in order to help when measuring the quality index of the post
 
 
-class Post():
 
-    class Post(models.Model):
-    post_id = models.IntegerField(primary_key = True)
-    user_id = models.ForeignKey(User)
+class Post(models.Model):
+
+    state = models.CharField(max_length="200")
+    expired = models.BooleanField()
+    no_of_reports = models.IntegerField()
+    title = models.CharField(max_length="200")
+    is_hidden = models.BooleanField()
+    quality_index = models.DecimalField(max_digits=5, decimal_places=2)
+    description = models.CharField(max_length="500")
+    price = models.IntegerField()
+    edit_date = models.DateField()
+    pub_Date = models.DateField()
+    comments_count = models.IntegerField()
+    intersed_count = models.IntegerField()
+    picture = models.ImageField(upload_to='None', blank=True)
+    sub_channel_id = models.ForeignKey(SubChannel)
+    user_id = models.ForeignKey(UserProfile)
+
 
     def __unicode__(self):
         return unicode(self.post_id)
@@ -61,13 +90,13 @@ class Post():
        # else:
         #    return False
 
-    def canRate(self,user):
-        current_user = user
-        if self.is_sold = true && self.buyer_id = user.id
-            return True
-        else:
-            return False
+    
 
+class Values(models.Model):
+
+    attribute_id = models.ForeignKey(Attribute)#Foreign key that references the id of the attribute from the attributes model
+    name_of_value = models.CharField(max_length=64)#name of the different values that would be given for the attributes
+    Post_id = models.ForeignKey(Post)#Foreign key that references the id of the post from the posts model
 
 
 class Comments():
