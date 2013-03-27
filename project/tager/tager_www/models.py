@@ -32,22 +32,6 @@ class Notification():
 
 
 class InterestedIn():
-	def InterestedIn(user_id_in, post_id_in):
-		if UserProfile.userCanPost(user_id):
-			if  Post.filter(post_id=post_id_in).exists()
-				if not User.filter(user_id=user_id_in).exists()
-					p=Post.get(post_id=post_id_in)
-					user1=InterestedIn(user_id_buyer=user_id_in,user_id_seller=p.seller_id,post_id=post_id_in)
-					user1.save()
-
-		#User CHecks
-		#post checks
-		#!user_id & post not in intrested in
-
-
-
-
-
 
 
 #This table shows the attributes that describes the subchannel
