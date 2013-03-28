@@ -5,6 +5,11 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+
+    url(r'^login/$', 'tager_www.views.login'),  
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
+
+    
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
