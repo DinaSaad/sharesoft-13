@@ -25,11 +25,11 @@ def login(request):
         
        return redirect("/login/")# Return an 'invalid login' error message.
 
-#
-#
-#
-#
-#
+#this isn't all of view post but this part that i did is concerend with the apperance of the
+#the rate the seller button which would appear to the buyer of the post only so what it does is
+#it takes object user from the session and checks if this user can rate the post that is imbeded in 
+#the request and then add the results in the dictonary.Then render the post html and pass the 
+#dictionary.
 #
 def ViewPost(request):
 
