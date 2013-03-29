@@ -16,14 +16,14 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbapp/$', 'fbapp.views.index'),
+    url(r'^fbregister/$', 'fbregister.views.index'),
 )
 
-urlpatterns += patterns('fbapp.facebook',
+urlpatterns += patterns('fbregister.facebook',
 	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
 )
 
-urlpatterns += patterns('fbapp.views',
+urlpatterns += patterns('fbregister.views',
     url(r'^$', 'index', name="index"),
 )

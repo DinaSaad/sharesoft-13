@@ -125,7 +125,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'tager_www',
-    'fb_register',
+    'fbregister',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -157,5 +157,5 @@ LOGGING = {
     }
 }
 AUTHENTICATION_BACKENDS = ( 
-    'fb_register.facebook.FacebookBackend',
+    'fbregister.facebook.FacebookBackend',
 )
