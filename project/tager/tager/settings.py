@@ -125,7 +125,9 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'tager_www'
+    
 )
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
