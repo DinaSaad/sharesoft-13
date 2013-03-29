@@ -8,11 +8,10 @@ class UserProfile():
 class Channel():
 
 
-#This table shows the existing subchannels, name represents the name of the subchannel, and subchannel_id is an id that holds the id of each subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
-class SubChannels(models.Model):
+#This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
+class SubChannel(models.Model):
 	
 	name = models.CharField(max_length=64)#Holds the name of the subchannel
-	subchannel_id = models.IntegerField(default=0)#Holds the id of the subchannel
 	channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
 
@@ -36,10 +35,9 @@ class InterestedIn():
 
 
 
-#This table shows the attributes that describes the subchannel, name represents Name of the attribute, and the attribute_id holds the id of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
+#This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attributes(models.Models):
 	name = models.CharField(max_length=64)
-	attribute_id = models.IntegerField()
 	subchannel_id = models.ForeignKey(SubChannels)
 	weight = models.DecimalField()
 
