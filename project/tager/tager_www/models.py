@@ -9,7 +9,7 @@ class Channel():
 
 
 #This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
-class SubChannel(models.Model):
+class Subchannel(models.Model):
 	
 	name = models.CharField(max_length=64)#Holds the name of the subchannel
 	channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
