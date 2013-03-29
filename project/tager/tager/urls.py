@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.views import logout, login
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -6,6 +7,13 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
 
+<<<<<<< HEAD
+=======
+    url(r'^login/$', 'tager_www.views.login'),  
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
+
+    
+>>>>>>> b9adbd9590a2912b2c9044a67446e945f32c356d
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
