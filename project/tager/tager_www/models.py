@@ -96,6 +96,18 @@ class UserProfile (AbstractBaseUser):
         #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
 
+    #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
+    def getInterestedIn(self, post):       
+        print self.id
+        print post.id  
+        # p = Post.objects.get(id = post)
+        interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
+        x = []
+        for i in interested:
+            x.append(i.user_id_buyer.id)
+        return x
+
+
 
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
@@ -138,8 +150,24 @@ class Subscribtion():
 
 
 
+# this model is the result of the Many-to-Many relationship between the model Users and Post
+# this model takes in a the seller's id, buyer's id, and the post id (related to the seller)
+# the model has a primary key combination of all 3 attributes
+
+class InterestedIn(models.Model):
+    user_id_buyer = models.ForeignKey(UserProfile, related_name = 'buyer')
+    user_id_seller = models.ForeignKey(UserProfile, related_name= 'seller')
+    post = models.ForeignKey(Post)
+
+    class Meta:                    #gives the model a primary key of these attributes
+        unique_together = ("user_id_buyer", "user_id_seller", "post")     
+    
+    def __unicode__(self):         #converts the INT to Strings to be displayed
+        return unicode(self.post_id) 
+
+
 <<<<<<< HEAD
-class InterestedIn():
+
 
 #the following method takes the post as input and returns the buyer_id 
 #to be used in other methods like canRate that needs a specified buer.
