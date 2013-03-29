@@ -138,7 +138,17 @@ class Subscribtion():
 
 
 
+<<<<<<< HEAD
+class InterestedIn():
+
+#the following method takes the post as input and returns the buyer_id 
+#to be used in other methods like canRate that needs a specified buer.
+def getBuyer():
+	return self.buyer_id
+	
+=======
 #class Notification():
+>>>>>>> b9adbd9590a2912b2c9044a67446e945f32c356d
 
 
 #class InterestedIn():

@@ -43,7 +43,11 @@ def view_post(request):
 
 
 # Create your views here.
+<<<<<<< HEAD
+
+=======
 #create the user with Userprofil
 #from django.contrib.auth import get_user_model  
 
 #User = get_user_model()
+>>>>>>> b9adbd9590a2912b2c9044a67446e945f32c356d
