@@ -1,4 +1,4 @@
-import os
+
 # Django settings for tager project.
 
 DEBUG = True
