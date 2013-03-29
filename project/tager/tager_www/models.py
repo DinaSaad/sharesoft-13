@@ -90,6 +90,13 @@ class UserProfile (AbstractBaseUser):
         # Handle whether the user is a member of staff?"
         return self.is_admin
 
+    def canRate(self,post_id):
+        print post_id
+        p = Post.objects.get(id = post_id)
+        #user = UserProfile.objects.filter(pk= user_id)
+        return p.is_sold and p.buyer_id == self.id
+
+
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
 #description is the description of the channel
@@ -99,18 +106,14 @@ class Channel():
     def __unicode__(self):
         return self.name
 
-
-class Subchannel():
-
-
-
-class Attribute():
+#class Attribute():
 
 
 class Post():
+   
 
 
-class Comments():
+#class Comments():
 
 
 
@@ -134,11 +137,12 @@ class Subscribtion():
 
 
 
-class Notification():
+
+#class Notification():
 
 
-class InterestedIn():
-	
+#class InterestedIn():
+    
 
 #this class saves the data of the subscriptions that the user has done
 #user is a reference to the user
