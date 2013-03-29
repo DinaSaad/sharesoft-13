@@ -96,6 +96,32 @@ class UserProfile (AbstractBaseUser):
         #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
 
+    #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
+    def getInterestedIn(self, post):       
+        print self.id
+        print post.id  
+        # p = Post.objects.get(id = post)
+        interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
+        x = []
+        for i in interested:
+            x.append(i.user_id_buyer.id)
+        return x
+        
+    def canPost(self):
+        return self.is_verfied
+
+    #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
+    #then then check if the user is verified ,
+    #then input the values in  table [IntrestedIn] and Increment Intrested Counter
+    def Interested(self, post_in):
+        if self.canPost:
+            if  Post.objects.filter(pk=post_in.post_id).exists():
+                user1=InterestedIn(user_id_buyer_id=self.user_id,user_id_seller_id=post_in.post_id,post_id_id=post_in.post_id)
+                user1.save()
+                post_in.intersed_count=post_in.intersed_count+1
+                post_in.save()
+
+
 
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
@@ -148,6 +174,31 @@ class Subscribtion():
 
 
 
+# this model is the result of the Many-to-Many relationship between the model Users and Post
+# this model takes in a the seller's id, buyer's id, and the post id (related to the seller)
+# the model has a primary key combination of all 3 attributes
+
+class InterestedIn(models.Model):
+    user_id_buyer = models.ForeignKey(UserProfile, related_name = 'buyer')
+    user_id_seller = models.ForeignKey(UserProfile, related_name= 'seller')
+    post = models.ForeignKey(Post)
+
+    class Meta:                    #gives the model a primary key of these attributes
+        unique_together = ("user_id_buyer", "user_id_seller", "post")     
+    
+    def __unicode__(self):         #converts the INT to Strings to be displayed
+        return unicode(self.post_id) 
+
+
+
+
+
+#the following method takes the post as input and returns the buyer_id 
+#to be used in other methods like canRate that needs a specified buer.
+def getBuyer():
+	return self.buyer_id
+	
+
 #class Notification():
 
 class InterestedIn():
@@ -168,7 +219,7 @@ class Values(models.Models):
 	value = models.CharField(max_length=64)
 	Post_id = models.ForeignKey(Post)
 	
->>>>>>> 6639eea68a41f326a53a3aed90101cf9d92a1711
+
 
 
 #class InterestedIn():
