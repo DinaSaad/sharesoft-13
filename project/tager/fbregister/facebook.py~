@@ -10,8 +10,8 @@ from tager_www.models import *
 #import random
 #import string
 
-APP_ID = '461240817281750'   # facebook app's app id
-APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # facebook app's app secret
+APP_ID = '461240817281750'   # From facebook app's settings
+APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 SCOPE_SEPARATOR = ' '
@@ -50,6 +50,7 @@ class FacebookBackend: #checks the facebooks authentication and gets the acces t
 	def authenticate(self, request):
 		user = None
 		access_token = None
+		# assume logging in normal way
 		params = {}
 		params["client_id"] = APP_ID
 		params["client_secret"] = APP_SECRET
@@ -59,6 +60,7 @@ class FacebookBackend: #checks the facebooks authentication and gets the acces t
 		from cgi import parse_qs
 		userdata = urllib.urlopen(url).read()
 		res_parse_qs = parse_qs(userdata)
+		# Could be a bot query
 		if not ('access_token') in res_parse_qs:
 			return None
 		access_token = res_parse_qs['access_token'][-1]
@@ -85,7 +87,7 @@ class FacebookBackend: #checks the facebooks authentication and gets the acces t
 			userProfile.save()
 			return userProfile
 
-	def get_user(self, user_id): # returns the user
+	def get_user(self, user_id):
 		try:
 			return User.objects.get(pk=user_id)
 		except:
