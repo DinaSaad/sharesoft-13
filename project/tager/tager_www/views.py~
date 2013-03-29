@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+# Create your views here.
+
+
+=======
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
@@ -43,3 +48,4 @@ def view_post(request):
 
 
 # Create your views here.
+>>>>>>> b9adbd9590a2912b2c9044a67446e945f32c356d
