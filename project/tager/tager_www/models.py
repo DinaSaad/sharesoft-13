@@ -1,42 +1,47 @@
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 
 
-class UserProfile():
+class UserProfile(models.Model):
 
+    name = models.CharField(max_length=30)
 
-def canRate(self,post_id):
-       post = Post.objects.filter(pk= post_id)
-        #user = UserProfile.objects.filter(pk= user_id)
-       return post.is_sold && post.buyer_id == self.id
-
+    def __unicode__(self):
+        return str(self.id)
+    
+    def canRate(self,post_id):
        
-class Channel():
+        p = Post.objects.get(id = post_id)
+        #user = UserProfile.objects.filter(pk= user_id)
+        return p.is_sold and int(p.buyer_id) == self.id
 
 
-class Subchannel():
+#class Channel():
+
+
+#class Attribute():
+
+
+class Post(models.Model):
+    #seller_id = models.ForeignKey('UserProfile')
+    post_name = models.CharField(max_length=10)
+    buyer_id = models.ForeignKey('UserProfile')
+    is_sold = models.BooleanField(default= False)
+
+
+#class Comments():
 
 
 
-class Attribute():
-
-
-class Post():
-
-
-class Comments():
+#class Subscribtion():
 
 
 
-class Subscribtion():
+#class Notification():
 
 
-
-class Notification():
-
-
-class InterestedIn():
-	
+#class InterestedIn():
+    
 
 
 
