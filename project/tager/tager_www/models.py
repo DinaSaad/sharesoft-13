@@ -96,11 +96,10 @@ class UserProfile (AbstractBaseUser):
         #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
 
-        #my stuff beshoy
     def canPost(self):
         return self.is_verfied
 
-        #my stuff beshoy 
+        #beshoy 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
