@@ -90,8 +90,14 @@ class UserProfile (AbstractBaseUser):
         # Handle whether the user is a member of staff?"
         return self.is_admin
 
-
+#this is Channel class where all channel records and information are kept
+#name is the name of the channel
+#description is the description of the channel
 class Channel():
+    name = models.CharField(max_length=100, unique = True)
+    description = models.CharField(max_length=500) 
+    def __unicode__(self):
+        return self.name
 
 
 class Subchannel():
@@ -108,7 +114,23 @@ class Comments():
 
 
 
+#this is subscription class that keeps records for all possible combination of subscriptions a user can make where
+#channel references to Channel model ex.(cars channel)
+#sub_channelreference to SubChannel model ex.(sport cars)
+#parameter is predefined ex.(color)
+#choice that users can make ex.(red)
+#previous example mean that a user can subscribe to red sport cars
+#and it contains a def subscribe where a user can add subscription input to UserSubscription model
 class Subscribtion():
+    channel = models.ForeignKey(Channel, null = True) 
+    sub_channel = models.ForeignKey(SubChannel, null = True)
+    attribute = models.ForeignKey(Attribute, null = True)
+    value = models.CharField(Values, null = True)
+    def subscribe(self, user_received, channel_received, sub_channel_received):
+        user_subscription = UserSubscription(user = user_received, channel = channel_received, sub_channel = sub_channel_received, subscription = self)
+        user_subscription.save()
+    class Meta:
+        unique_together = ("channel","sub_channel","parameter","choice") #to make sure no duplicates were entered
 
 
 
@@ -118,5 +140,15 @@ class Notification():
 class InterestedIn():
 	
 
-
-
+#this class saves the data of the subscriptions that the user has done
+#user is a reference to the user
+#channel is a reference to channel the user is subscribed in
+#sub_channel is a reference to the sub channel the user is subscribed in
+#subscription is a reference to the subscription pre defined in Subscription model
+class UserSubscription(models.Model):
+    user = models.ForeignKey(User)
+    channel = models.ForeignKey(Channel,null = True)
+    sub_channel = models.ForeignKey(SubChannel,null = True) 
+    subscription = models.ForeignKey(Subscription,null = True) 
+    class Meta:
+        unique_together = ("user", "channel", "sub_channel", "subscription") #to make sure no duplicates were entered
