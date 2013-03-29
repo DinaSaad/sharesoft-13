@@ -17,7 +17,7 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 SCOPE_SEPARATOR = ' '
 
 
-def facebook_login(request):
+def facebook_login(request): # creates the connection with facebook and connects with facebook app
 	if request.REQUEST.get("device"):
 		device = request.REQUEST.get("device")
 	else:
@@ -33,7 +33,7 @@ def facebook_login(request):
 		return HttpResponseRedirect(url)
 
 
-def facebook_login_done(request):
+def facebook_login_done(request): # logs in the user returened from authenticate
 	result = authenticate(request=request)
 	if isinstance(result, UserProfile):
 		login(request, result)
@@ -45,7 +45,8 @@ def facebook_login_done(request):
 		return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
 
-class FacebookBackend:
+class FacebookBackend: #checks the facebooks authentication and gets the acces token and user information form facebook
+						#then checks if the user is already there so it redirects to facebook_login_done or if the user isn't there then it creats the user and retun it to facebook_login_done
 	def authenticate(self, request):
 		user = None
 		access_token = None
