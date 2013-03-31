@@ -156,9 +156,10 @@ class Post():
          for Values in values_list_tmp:
             if Values.name_of_value is not None:
                 attr_tmp=Attribute.objects
+                #must make a js method for the UI
 
 
-                
+
 #class Comments():
 
 
