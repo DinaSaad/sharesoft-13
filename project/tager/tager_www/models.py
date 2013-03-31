@@ -155,8 +155,9 @@ class Post():
          values_list_tmp=Values.objects.filter(Post_id=self.post_id_id)
          for Values in values_list_tmp:
             if Values.name_of_value is not None:
-                attr_tmp=Attribute.objects
-                #must make a js method for the UI
+                attr_tmp=Attribute.objects.get(Attribute_id=Values.attribute_id_id)
+                q_index=q_index+int(attr_tmp.weight)
+        self.quality_index=q_indexUI
 
 
 
