@@ -5,25 +5,26 @@ from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 #since userprofile has different than abstractbaseuser attriubtes thats why will define our own custom manager that extends BaseUserManager.
 class MyUserManager(BaseUserManager):
     # this will create user when name , email, password is entered 
-    def create_user(self, email, name, password=None):
+    def create_user(self, email, name, password=None , **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
  
-        user = self.model(
-            email=MyUserManager.normalize_email(email),
+        user = self.model(name=name , email=email, is_staff=False , is_active=True , is_superuser=False ,last_login=now , **extra_fields )
+        email=MyUserManager.normalize_email(email),
             
-        )
+        
  
         user.set_password(password)
         user.save(using=self._db)
         return user
      #this creates the admin user 
-    def create_superuser(self, email, name , password):
+    def create_superuser(self, email, name , password , **extra_fields):
         user = self.create_user(email,
-            password=password, name=name
+            password=password, name=name , **extra_fields
            
         )
         user.is_admin = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
