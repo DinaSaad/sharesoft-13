@@ -37,6 +37,7 @@ class UserProfile (AbstractBaseUser):
     facebook_uid = models.IntegerField(unique=True, null=True)
     accesstoken = models.CharField(max_length=50 , null=True , unique=True)
     date_Of_birth = models.DateField(null=True, blank=True)
+    phone_number = models.CharField(max_length=20 , null=True)
     is_admin = models.BooleanField(default=False)           
     is_verfied = models.BooleanField(default=False)
     is_premium = models.BooleanField(default=False)
@@ -67,12 +68,14 @@ class UserProfile (AbstractBaseUser):
                     'active. Unselect this instead of deleting accounts.')
 
     def get_full_name(self):
-        # return name . Could also be User.first_name User.last_name if you have these fields
-        return self.name
+        # return email . Could also be User.first_name User.last_name if you have these fields
+        # user is identifed by their email 
+        return self.email
  
     def get_short_name(self):
-        # return name. Could also be User.first_name if you have this field
-        return self.name
+         # return email . Could also be User.first_name User.last_name if you have these fields
+        # user is identifed by their email 
+        return self.email
  
     def __unicode__(self):
         return self.email
@@ -142,7 +145,7 @@ class Subchannel(models.Model):
 	name = models.CharField(max_length=64)#Holds the name of the subchannel
 	channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
- 6639eea68a41f326a53a3aed90101cf9d92a1711
+
 
 
 class Post():

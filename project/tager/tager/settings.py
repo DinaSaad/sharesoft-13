@@ -125,13 +125,12 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-<<<<<<< HEAD
+
     'tager_www',
     'fbregister',
-=======
-    'tager_www'
+
     
->>>>>>> b9adbd9590a2912b2c9044a67446e945f32c356d
+
 )
 AUTH_USER_MODEL = 'tager_www.UserProfile'
 
