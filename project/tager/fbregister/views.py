@@ -1,5 +1,5 @@
 # Create your views here.
-from fbapp.models import *
+from tager_www.models import *
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 

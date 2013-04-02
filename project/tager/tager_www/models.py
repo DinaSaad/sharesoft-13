@@ -11,7 +11,6 @@ class MyUserManager(BaseUserManager):
  
         user = self.model(
             email=MyUserManager.normalize_email(email),
-            
         )
  
         user.set_password(password)
@@ -30,7 +29,7 @@ class MyUserManager(BaseUserManager):
      #UserProfile class extends abdstractbaseuser which has core implementation of user model build in    django 
      #this class addes some fields to abstractbaseuser which is inherited 
 
-class UserProfile (AbstractBaseUser):
+class UserProfile(AbstractBaseUser):
     name = models.CharField(max_length=40)     
     email = models.EmailField(max_length=254, unique=True)
     facebook_uid = models.IntegerField(unique=True, null=True)
@@ -98,9 +97,6 @@ class UserProfile (AbstractBaseUser):
 
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def getInterestedIn(self, post):       
-        print self.id
-        print post.id  
-        # p = Post.objects.get(id = post)
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
         x = []
         for i in interested:
@@ -126,30 +122,60 @@ class UserProfile (AbstractBaseUser):
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
 #description is the description of the channel
-class Channel():
+class Channel(models.Model):
     name = models.CharField(max_length=100, unique = True)
     description = models.CharField(max_length=500) 
     def __unicode__(self):
         return self.name
 
-#class Attribute():
-
-
 #This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
 class Subchannel(models.Model):
-	
-	name = models.CharField(max_length=64)#Holds the name of the subchannel
-	channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
-
- 6639eea68a41f326a53a3aed90101cf9d92a1711
+    name = models.CharField(max_length=64)#Holds the name of the subchannel
+    channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
 
-class Post():
-   
+#Class Post documentation
+#The model Post define the table of posts in the data base. 
+#There are 17 attributes. There is a one to many relationship 
+#between the post table and the subchannel table. meaning each post belongs to one subchannel.
+#and each sub channel can have have many posts. Also there is a one to many relationship between the posts table 
+#and the userprofile table. meaning each post can have only one author ("user") and each user could have many posts.  
+#Also there is a one to many relationship between the post and the user table through the foreign key buyer_id.
+#Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
+class Post(models.Model):
+    state = models.CharField(max_length="200")
+    expired = models.BooleanField()
+    no_of_reports = models.IntegerField()
+    title = models.CharField(max_length="200")
+    is_hidden = models.BooleanField(default="False")
+    quality_index = models.DecimalField(max_digits=5, decimal_places=2)
+    description = models.CharField(max_length="500")
+    price = models.IntegerField()
+    edit_date = models.DateField()
+    pub_Date = models.DateField()
+    comments_count = models.IntegerField(default="0")
+    intersed_count = models.IntegerField(default="0")
+    picture = models.ImageField(upload_to='images/test', blank=True)
+    sub_channel_id = models.ForeignKey(Subchannel)
+    user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
+    buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
+    is_sold = models.BooleanField()#class Comments():
 
-#class Comments():
+    def getBuyer():
+        return self.buyer.id
+    
 
+#This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
+class Attribute(models.Model):
+    name = models.CharField(max_length=64)
+    subchannel_id = models.ForeignKey(Subchannel)
+    weight = models.FloatField()
+
+class Value(models.Model):
+    attribute_id = models.ForeignKey(Attribute)
+    value = models.CharField(max_length=64)
+    Post_id = models.ForeignKey(Post)
 
 
 #this is subscription class that keeps records for all possible combination of subscriptions a user can make where
@@ -159,20 +185,39 @@ class Post():
 #choice that users can make ex.(red)
 #previous example mean that a user can subscribe to red sport cars
 #and it contains a def subscribe where a user can add subscription input to UserSubscription model
-class Subscribtion():
-    channel = models.ForeignKey(Channel, null = True) 
-    sub_channel = models.ForeignKey(SubChannel, null = True)
-    attribute = models.ForeignKey(Attribute, null = True)
-    value = models.CharField(Values, null = True)
-    def subscribe(self, user_received, channel_received, sub_channel_received):
-        user_subscription = UserSubscription(user = user_received, channel = channel_received, sub_channel = sub_channel_received, subscription = self)
-        user_subscription.save()
+class Subscription(models.Model):
+    channel = models.ForeignKey(Channel, null = True)
+    sub_channel = models.ForeignKey(Subchannel, null = True)
+    parameter = models.ForeignKey(Attribute, null = True)
+    choice = models.ForeignKey(Value, null = True)
     class Meta:
-        unique_together = ("channel","sub_channel","parameter","choice") #to make sure no duplicates were entered
-
-
-
-
+        unique_together = ("channel","sub_channel","parameter","choice")
+    def subscribe_Bychannel(self, user_in):
+        UserSubchannelSubscription.objects.filter(user = user_in, parent_channel = self.channel).delete()
+        channel_to_subscribe = self.channel
+        subscription = UserChannelSubscription(user = user_in, channel = channel_to_subscribe)
+        subscription.save()
+        
+    def subscribe_Bysubchannel(self, user_in):
+        self_parent_channel = self.sub_channel.channel_id
+        UserChannelSubscription.objects.filter(user = user_in, channel = self_parent_channel).delete()
+        sub_channel_to_subscribe = self.sub_channel
+        subscription = UserSubchannelSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe)
+        subscription.save()
+        subchannels_with_same_channel = Subchannel.objects.filter(channel_id=self_parent_channel).count()
+        subchannels_subscribed_with_same_channel = UserSubchannelSubscription.objects.filter(parent_channel=self_parent_channel, user=user_in).count()
+        if subchannels_with_same_channel==subchannels_subscribed_with_same_channel:
+            UserSubchannelSubscription.filter(parent_channel=self.sub_channel.channel).delete()
+            self.subscribe_Bychannel(user_in)
+    def subscribe_Byparameter(self, user_in):
+        self_parent_channel = self.sub_channel.channel_id
+        sub_channel_to_subscribe = self.sub_channel
+        self_parent_channel = self.channel
+        subscription = UserParameterSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe, parameter = self.parameter, choice = self.choice)
+        subscription.save()
+        
+    def __unicode__(self):
+        return self.id
 
 # this model is the result of the Many-to-Many relationship between the model Users and Post
 # this model takes in a the seller's id, buyer's id, and the post id (related to the seller)
@@ -188,52 +233,38 @@ class InterestedIn(models.Model):
     
     def __unicode__(self):         #converts the INT to Strings to be displayed
         return unicode(self.post_id) 
-
-
-
-
-
-#the following method takes the post as input and returns the buyer_id 
-#to be used in other methods like canRate that needs a specified buer.
-def getBuyer():
-	return self.buyer_id
-	
+    #the following method takes the post as input and returns the buyer_id 
+    #to be used in other methods like canRate that needs a specified buer.
+    
 
 #class Notification():
 
-class InterestedIn():
-
-
-
-
-#This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
-class Attributes(models.Models):
-	name = models.CharField(max_length=64)
-	subchannel_id = models.ForeignKey(SubChannels)
-	weight = models.DecimalField()
-
-
-#This table holds different values for the attribute (i.e for each attribute there will be different values), attribute_id is a Foreignkey that references the id ofthe attribute from the attributes model,value is the name of the different values that would be given for the attributes, and Post_id is a Foreign key that references the id of the post from the posts model#
-class Values(models.Models):
-	attribute_id = models.ForeignKey(Attributes)
-	value = models.CharField(max_length=64)
-	Post_id = models.ForeignKey(Post)
-	
-
-
-
-#class InterestedIn():
-    
-
-#this class saves the data of the subscriptions that the user has done
-#user is a reference to the user
-#channel is a reference to channel the user is subscribed in
-#sub_channel is a reference to the sub channel the user is subscribed in
-#subscription is a reference to the subscription pre defined in Subscription model
-class UserSubscription(models.Model):
-    user = models.ForeignKey(User)
-    channel = models.ForeignKey(Channel,null = True)
-    sub_channel = models.ForeignKey(SubChannel,null = True) 
-    subscription = models.ForeignKey(Subscription,null = True) 
+#This table holds different values for the attribute (i.e for each attribute there will be different values), attribute_id is a Foreignkey that references the id ofthe attribute from the attributes model,value is the name of the different values that would be given for the attributes, and Post_id is a Foreign key that references the id of the post from the posts model#    
+class UserChannelSubscription(models.Model):
+    user = models.ForeignKey(UserProfile)
+    channel = models.ForeignKey(Channel)
     class Meta:
-        unique_together = ("user", "channel", "sub_channel", "subscription") #to make sure no duplicates were entered
+        unique_together = ("user", "channel")
+    def __unicode__(self):
+        return unicode(self.user)
+
+
+class UserSubchannelSubscription(models.Model):
+    user = models.ForeignKey(UserProfile)
+    parent_channel = models.ForeignKey(Channel)
+    sub_channel = models.ForeignKey(Subchannel)
+    class Meta:
+        unique_together = ("user", "parent_channel", "sub_channel")
+    def __unicode__(self):
+        return unicode(self.user)
+
+class UserParameterSubscription(models.Model):
+    user = models.ForeignKey(UserProfile)
+    parent_channel = models.ForeignKey(Channel)
+    sub_channel = models.ForeignKey(Subchannel)
+    parameter = models.ForeignKey(Attribute)
+    choice = models.ForeignKey(Value)
+    class Meta:
+        unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
+    def __unicode__(self):
+        return unicode(self.user)

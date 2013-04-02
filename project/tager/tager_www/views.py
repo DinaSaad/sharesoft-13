@@ -43,15 +43,7 @@ def view_post(request):
 
 
 # Create your views here.
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-<a href=”{% url facebook_login %}>Login using Facebook</a>
-=======
->>>>>>> 56fbc661095224fbbed9f9f146b49b7bac3ed030
-=======
 #create the user with Userprofil
 #from django.contrib.auth import get_user_model  
 
 #User = get_user_model()
->>>>>>> b9adbd9590a2912b2c9044a67446e945f32c356d
