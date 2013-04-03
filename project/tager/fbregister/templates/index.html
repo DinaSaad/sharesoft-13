@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Facebook Connect
+		</title>
+	</head>
+
+	<body>
+		{% load url from future %}
+		{% if request.user.is_authenticated %}
+			Hello {{ request.user.first_name }} {{ request.user.last_name }}, your now connected with facebook
+		{% else %}
+			<a href="{% url 'facebook_login' %}">Login using facebook</a>
+		{% endif %}
+	</body>
+</html>
