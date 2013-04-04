@@ -164,4 +164,5 @@ LOGGING = {
 }
 AUTHENTICATION_BACKENDS = ( 
     'fbregister.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend'
 )
