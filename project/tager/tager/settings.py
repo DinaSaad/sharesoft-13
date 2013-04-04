@@ -109,7 +109,7 @@ ROOT_URLCONF = 'tager.urls'
 WSGI_APPLICATION = 'tager.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    '/home/hala/Desktop/ourstuff/sharesoft-13/project/tager/tager_www'
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -124,7 +124,8 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admindocs',
+    'django.contrib.comments',
 
     'tager_www',
     'fbregister',

@@ -1,49 +1,94 @@
-from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponseRedirect, HttpResponse
-from tager_www.models import *
+#from django.http import HttpResponse
+#from django.shortcuts import render_to_response
+from tager_www.models import Post, UserProfile
+#from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+#from mysite.contact.forms import ContactForm
+#from django.contrib import auth
+
+# def login(request):
+ #   if request.method != 'POST':
+  #      raise Http404('Only POSTs are allowed')
+   # try:
+    #    m = Member.objects.get(username=request.POST['username'])
+     #   if m.password == request.POST['password']:
+      #      request.session['member_id'] = m.id
+       #     return HttpResponseRedirect('/you-are-logged-in/')
+    #except Member.DoesNotExist:
+      # return HttpResponse("Your username and password didn't match.")
+
+#def login_view(request):
+  #  username = request.POST.get('username', '')
+ #   password = request.POST.get('password', '')
+   # user = auth.authenticate(username=username, password=password)
+    #if user is not None and user.is_active:
+        # Correct password, and the user is marked "active"
+     #   auth.login(request, user)
+        # Redirect to a success page.
+      #  return HttpResponseRedirect("/account/loggedin/"), render_to_response('login.html')
+    #else:
+        # Show an error page
+     #   return HttpResponse("Your username and password didn't match."), HttpResponseRedirect("/account/invalid/")
+
+#def search_postid(request):
+ #   error = False
+  #  if 'q' in request.GET:
+   #     q = request.GET['q']
+    #    if not q
+     #       error = True
+      #  else:
+       #     posts = Post.objects.filter(id__icontains=q)
+        #return render_to_response('search_results.html',
+         #   {'posts': posts, 'query': q})
+    #return render_to_response('search_form.html',
+     #   {'error': error})
+def commenting(request):
+    user_id = request.user.id
+    user= UserProfile.objects.get(id = user_id)
+    if user.canPost:
+            if  Post.objects.filter(pk=post_in.post_id).exists():
+                post = request.POST["post_id"]
+                content = request.POST["comments"]
+                successful_Comment=Comment(user_id=self.user_id,post_id_id=post_in.post_id,content=content,date=datetime.datetime.now())
+                successful_Comment.save()
+                post_in.comments_count=post_in.comments_count+1
+                post_in.save()
+
+#def canComment(request):
+#   if request.user.is_authenticated():
+    # Do something for authenticated users.
+ #   if request.method != 'POST':
+  #      raise Http404('Only POSTs are allowed')
+
+   # if 'comment' not in request.POST:
+    #    raise Http404('Comment not submitted')
+
+    #if request.session.get('has_commented', False):
+     #   return HttpResponse("You've already commented.")
+
+    #c = comments.Comment(comment=request.POST['comment'])
+    #c.save()
+    #render_to_response('commentresult.html')
+
+    #request.session['has_commented'] = True
+    #return HttpResponse('Thanks for your comment!')     else:
+    # Do something for anonymous users.
+    #return HttpResponseRedirect("/account/invalid/")
+
+#def search_form(request):
+   # return render_to_response('search_form.html')
 
 
-#the login method is a method that allows user to log in it takes in a request
-#which is of type post and it has the email and the password attribute which are 
-#taken in as variables then they are authinticated and the authinticated user is 
-#saved into variable user then there is an condition which check that the user is 
-#actually there and if he is an active user then we log him in and render his profile page
-#in case he has a disabled account then a message would appear. and if the user doesn't exist
-#or information entered is wrong then he is redirected to the login page again.
+#def Comment(request):
+ #   if request.method == 'POST':
+  #      form = Comment(request.POST)
+   #     if form.is_valid():
+    #        cd = form.cleaned_data
+     #       send_notification(
+      #          cd['message'],
+       #     )
+        #    return HttpResponseRedirect('/Commment/thanks/')
+    #else:
+     #   form = CommentForm()
+    #return render_to_response('contact_form.html', {'form': form})
 
-def login(request):
-    email = request.POST['email']
-    password = request.POST['password']
-    user = authenticate(email=email, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            return render_to_response ('Profile.html',context_instance=RequestContext(request))# Redirect to a success page.
-        else:
-           return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
-    else:
-        
-       return redirect("/login/")# Return an 'invalid login' error message.
-
-#this isn't all of view post but this part that i did is concerend with the apperance of the
-#the rate the seller button which would appear to the buyer of the post only so what it does is
-#it takes object user from the session and checks if this user can rate the post that is imbeded in 
-#the request and then add the results in the dictonary.Then render the post html and pass the 
-#dictionary.
-#
-def view_post(request):
-
-    #post = Post.objects.get(pk= request.POST['post_id'])
-    user = request.user
-    rateSellerButtonFlag = user.canRate(request.POST['post_id']) 
-    d = {'view_rating':rateSellerButtonFlag}
-    
-    return render_to_response('Post.html', d,context_instance=RequestContext(request))
-
-
-
-# Create your views here.
-#create the user with Userprofil
-#from django.contrib.auth import get_user_model  
-
-#User = get_user_model()

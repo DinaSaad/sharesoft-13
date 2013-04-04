@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+    {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+    {% endif %}
+    <form action="" method="get">
+        <input type="text" name="q">
+        <input type="submit" value="Search">
+    
+<div class="field{% if form.message.errors %} errors{% endif %}">
+    {% if form.message.errors %}
+        <ul>
+        {% for error in form.message.errors %}
+            <li><strong>{{ error }}</strong></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <label for="id_message">Message:</label>
+    {{ form.message }}
+</div>
+    </form>
+
+</body>
+</html>

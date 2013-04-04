@@ -117,8 +117,6 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
-
-
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
 #description is the description of the channel
@@ -160,11 +158,26 @@ class Post(models.Model):
     sub_channel_id = models.ForeignKey(Subchannel)
     user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
-    is_sold = models.BooleanField()#class Comments():
+    is_sold = models.BooleanField() #class Comments():
 
     def getBuyer():
         return self.buyer.id
     
+    def commented(self, post_id, content):
+        if self.canPost:
+            if Post.objects.filter(pk=post_in.post_id).exists():
+                successful_Comment=Comment(user_id=self.user_id,post_id_id=post_in.post_id,content=content)
+                successful_Comment.save()
+                post_in.comments_count=post_in.comments_count+1
+                post_in.save()
+
+class Comment(models.Model):
+    content=models.CharField(max_length="500")
+    date=models.DateTimeField()
+    is_Hidden=models.BooleanField(default=False)
+    post_id= models.ForeignKey(Post)
+    user_id=models.ForeignKey(UserProfile)
+                
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
