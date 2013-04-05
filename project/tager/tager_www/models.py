@@ -41,6 +41,7 @@ class UserProfile(AbstractBaseUser):
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.BooleanField(default=False)
     status = models.CharField(max_length=400 , null=True) 
+    
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -95,6 +96,26 @@ class UserProfile(AbstractBaseUser):
         #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
 
+    def get_posts(self):
+        user_posts = Post.objects.filter(user_id_id = self.id)
+        return user_posts
+
+    def add_Buyer(self,post,phone_num):
+        p = post        
+        if p.user_id == self.id:
+            post_buyer = UserProfile.objects.get(phone_number = phone_num)
+            #post_buyer_id = post_buyer.id
+            p.buyer = post_buyer
+            p.is_sold = True
+            p.save()
+            return True
+        else:
+            return False
+
+    def show_add_buyer_button(self,post_id):
+        p = Post.objects.get(id = post_id)
+        return user.id == post.user_id_id
+
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def getInterestedIn(self, post):       
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
@@ -144,24 +165,6 @@ class Subchannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length="200")
-    expired = models.BooleanField()
-    no_of_reports = models.IntegerField()
-    title = models.CharField(max_length="200")
-    is_hidden = models.BooleanField(default="False")
-    quality_index = models.DecimalField(max_digits=5, decimal_places=2)
-    description = models.CharField(max_length="500")
-    price = models.IntegerField()
-    edit_date = models.DateField()
-    pub_Date = models.DateField()
-    comments_count = models.IntegerField(default="0")
-    intersed_count = models.IntegerField(default="0")
-    picture = models.ImageField(upload_to='images/test', blank=True)
-    sub_channel_id = models.ForeignKey(Subchannel)
-    user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
-    buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
-    is_sold = models.BooleanField()#class Comments():
-
     def getBuyer():
         return self.buyer.id
     
