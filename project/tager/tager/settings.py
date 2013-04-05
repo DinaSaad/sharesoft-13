@@ -176,5 +176,9 @@ LOGGING = {
 }
 AUTHENTICATION_BACKENDS = ( 
     'fbregister.facebook.FacebookBackend',
+
     'tager_www.views.CustomAuthentication',
+
+    'django.contrib.auth.backends.ModelBackend'
+
 )
