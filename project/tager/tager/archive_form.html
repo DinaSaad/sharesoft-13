@@ -1,0 +1,10 @@
+{% load comments %}
+<ul>
+	{% for post in latest %}
+		{% get_comment_count for tager_www.post post<li>
+			<h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+			<p class="details"><a href="{{ post.get_absolute_url }}">{{ comment_count }} Comments</a></p>
+		</li>.id as comment_count %}
+		
+	{% endfor %}
+</ul>

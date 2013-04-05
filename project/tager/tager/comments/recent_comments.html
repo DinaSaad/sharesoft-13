@@ -1,0 +1,39 @@
+<h1>Recent comments</h1>
+
+<p>
+	{% if has_previous %}
+		<a href="?page={{ previous }}">Previous</a> | 
+	{% endif %}
+	
+	Page {{ page }} of {{ pages }} 
+	
+	{% if has_next %}
+		| <a href="?page={{ next }}">Next</a>
+	{% endif %}
+</p>
+
+{% for comment in post_list %}
+	<div class="comment" id="c{{ comment.id }}">
+	    <h3>
+			<a href="{{ comment.get_absolute_url }}">
+				{{ comment.user_name|escape }} 
+				<span class="small quiet">
+					{{ comment.submit_date|date:"F j, Y" }} at {{ comment.submit_date|date:"P" }}
+				</span>
+			</a>
+		</h3>
+	    {{ comment.comment|escape|urlizetrunc:"40"|linebreaks }}
+	</div>
+{% endfor %}
+
+<p>
+	{% if has_previous %}
+		<a href="?page={{ previous }}">Previous</a> | 
+	{% endif %}
+	
+	Page {{ page }} of {{ pages }} 
+	
+	{% if has_next %}
+		| <a href="?page={{ next }}">Next</a>
+	{% endif %}
+</p>

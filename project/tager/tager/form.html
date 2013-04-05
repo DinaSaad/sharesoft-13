@@ -1,16 +1,10 @@
-{% render_comment_form for entry %}
-{% for field in form %}
-{% ifequal field.name "comment" %}
-  table>
-  <form action="{% comment_form_target %}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <tr>
-      <td colspan="2">
-        <input type="submit" name="submit" value="Post">
-        <input type="submit" name="preview" value="Preview">
-      </td>
-    </tr>
-  </form>
-</table>
-{% endfor %}
+{% load comments %}
+ul>
+  {% for post in post_list %}
+    {% get_comment_count for tager_www.post post.id as comment_count %}
+    <li>
+      <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+          <p class="details"><a href="{{ post.get_absolute_url }}">{{ comment_count }} Comments</a></p>
+    </li>
+  {% endfor %}
+</ul>
