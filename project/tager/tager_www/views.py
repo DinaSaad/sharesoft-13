@@ -1,6 +1,10 @@
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
+from django.contrib.auth import get_user_model  
+from django.template import RequestContext
+from tager_www.forms import RegistrationForm
+from tager_www.models import UserProfile 
 
 
 #the login method is a method that allows user to log in it takes in a request
@@ -39,6 +43,45 @@ def view_post(request):
     d = {'view_rating':rateSellerButtonFlag}
     
     return render_to_response('Post.html', d,context_instance=RequestContext(request))
+
+
+
+
+
+
+
+def  get_user(self):    
+    User = get_user_model()
+    return User
+
+
+
+def UserRegistration(request):
+     #if the user is already logged in , registered , go to profile 
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/profile/')
+     #if they r submitting the form back
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
+        if form.is_valid(): # validates all the fields on the firm,The first time you call is_valid() or access the errors attribute of a ModelForm triggers form validation as well as model validation.
+                user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
+                user.save() # this creates the user 
+                
+                return HttpResponseRedirect('/profile/')
+        else:
+                return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
+    else:
+        ''' user is not submitting the form, show them a blank registration form '''
+        form = RegistrationForm()
+        #add our registration form to context
+        context = {'form': form}
+        return render_to_response('register.html', context, context_instance=RequestContext(request))
+
+
+
+
+
+
 
 
 
