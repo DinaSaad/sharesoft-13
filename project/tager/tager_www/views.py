@@ -33,7 +33,10 @@ def login(request):
     # pk = user.username
     authenticated_user = authenticate(mail=mail, password=password)
     if authenticated_user is not None:
+        print "auth"
+        print authenticated_user.is_active
         if authenticated_user.is_active:
+            print "act"
             django_login(request, authenticated_user)
             return render_to_response ('profile.html',context_instance=RequestContext(request))# Redirect to a success page.
         else:
@@ -102,8 +105,8 @@ def  get_user(self):
 
 def UserRegistration(request):
      #if the user is already logged in , registered , go to profile 
-    if request.user.is_authenticated():
-        return HttpResponseRedirect('/profile/')
+    #if request.user.is_authenticated():
+     #   return HttpResponseRedirect('/profile/')
      #if they r submitting the form back
     if request.method == 'POST':
         form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
