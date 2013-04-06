@@ -1,6 +1,10 @@
 
-<form action="/comment/{{ post }}/" method="post" accept-charset="utf-8">
+<form action="/commentposted/{{ post }}/" method="post" accept-charset="utf-8">
     <label for="date">Date:</label><input type="text" name="date" value={{ current_date }} id="date" />
-    <label for="cost">Content:</label><input type="text" name="cost" value="0" id="content" />
+    <br>
+    <label for="content">Content:</label><input type="text" name="content" value="0" id="content" />
+    <br>
+    <label for="userid">User_id:</label><input type="text" name="userid" value="0" id="userid" />
+    <br>
     <p><input type="submit" value="Add"></p>
 </form>
