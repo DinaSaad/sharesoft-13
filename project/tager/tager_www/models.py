@@ -163,13 +163,7 @@ class Post(models.Model):
     def getBuyer():
         return self.buyer.id
     
-    def commented(self, post_id, content):
-        if self.canPost:
-            if Post.objects.filter(pk=post_in.post_id).exists():
-                successful_Comment=Comment(user_id=self.user_id,post_id_id=post_in.post_id,content=content)
-                successful_Comment.save()
-                post_in.comments_count=post_in.comments_count+1
-                post_in.save()
+
 
 class Comment(models.Model):
     content=models.CharField(max_length="500")
@@ -177,6 +171,14 @@ class Comment(models.Model):
     is_Hidden=models.BooleanField(default=False)
     post_id= models.ForeignKey(Post)
     user_id=models.ForeignKey(UserProfile)
+
+
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+fields = ['date', 'content' , 'post_id', 'user_id']
+
+ #c1_hala_comment i added a class commentform for class comment
                 
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
