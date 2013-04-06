@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<p> welcome {{ request.user.name }} to your profile  </p>
+	<button class="btn btn-large btn-primary" id="rateSeller" value="request.user.id" type="button">Rate Seller</button>
+{% endblock %}

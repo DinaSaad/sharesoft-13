@@ -67,6 +67,7 @@ class UserProfile(AbstractBaseUser):
     activation_key = models.CharField(max_length=40 , null=True)
     expiration_key_date = models.DateField(null=True, blank=True) 
     status = models.CharField(max_length=400 , null=True) 
+    
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -87,7 +88,7 @@ class UserProfile(AbstractBaseUser):
                     'site.')    
 
 
-    is_active = models.BooleanField('active', default=False,    # returns true if the user is still active 
+    is_active = models.BooleanField('active', default=True,    # returns true if the user is still active 
         help_text='Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.')
 
@@ -124,6 +125,26 @@ class UserProfile(AbstractBaseUser):
         p = Post.objects.get(id = post_id)
         #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
+
+    def get_posts(self):
+        user_posts = Post.objects.filter(user_id_id = self.id)
+        return user_posts
+
+    def add_Buyer(self,post,phone_num):
+        p = post        
+        if p.user_id == self.id:
+            post_buyer = UserProfile.objects.get(phone_number = phone_num)
+            #post_buyer_id = post_buyer.id
+            p.buyer = post_buyer
+            p.is_sold = True
+            p.save()
+            return True
+        else:
+            return False
+
+    def show_add_buyer_button(self,post_id):
+        p = Post.objects.get(id = post_id)
+        return user.id == post.user_id_id
 
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def getInterestedIn(self, post):       
@@ -188,10 +209,9 @@ class Post(models.Model):
     intersed_count = models.IntegerField(default="0")
     picture = models.ImageField(upload_to='images/test', blank=True)
     sub_channel_id = models.ForeignKey(Subchannel)
-    user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
+    user = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
     is_sold = models.BooleanField()#class Comments():
-
     def getBuyer():
         return self.buyer.id
     

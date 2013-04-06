@@ -1,6 +1,9 @@
 import os
 # Django settings for tager project.
 
+def relative_project_path(*x):
+    return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -108,13 +111,16 @@ ROOT_URLCONF = 'tager.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'tager.wsgi.application'
 
-import os 
 
 TEMPLATE_DIRS = (
-      os.path.join(os.path.dirname(__file__), 'templates')
+    # os.path.join(os.path.dirname(__file__), 'templates')
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+
+    relative_project_path('templates'),
+
+
 )
 
 INSTALLED_APPS = (
@@ -135,6 +141,11 @@ INSTALLED_APPS = (
     
 )
 AUTH_USER_MODEL = 'tager_www.UserProfile'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+"django.contrib.auth.context_processors.auth",
+"django.core.context_processors.request",
+)
 
 
 # A sample logging configuration. The only tangible logging
@@ -167,5 +178,9 @@ LOGGING = {
 }
 AUTHENTICATION_BACKENDS = ( 
     'fbregister.facebook.FacebookBackend',
+
+    'tager_www.views.CustomAuthentication',
+
     'django.contrib.auth.backends.ModelBackend'
+
 )

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="/login/" method="POST" class="form-horizontal">
+    {% csrf_token %}
+    <div class="control-group">
+        <label class="control-label" for="inputEmail">Email:</label>
+        <div class="controls">
+            <input type="email" name="email" id="inputEmail" placeholder="Email"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="inputPassword">Password:</label>
+        <div class="controls">
+            <input type="password" name="password" id="inputPassword" placeholder="Password"/>
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" value="submit" class="btn"/>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+
+
