@@ -73,7 +73,9 @@ class UserProfile(AbstractBaseUser):
      )
     gender = models.CharField(max_length=1, choices=gender_choices , null=True)
     
-    
+    friends = models.ManyToManyField("self")
+
+    # reem -c3 creat fiendNetwork table -this is a recurssive relations that maps the user and his friend
     objects = MyUserManager()  
     
     USERNAME_FIELD = 'email'   
@@ -152,16 +154,34 @@ class UserProfile(AbstractBaseUser):
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
 #description is the description of the channel
+
+
+
+
+
 class Channel(models.Model):
     name = models.CharField(max_length=100, unique = True)
     description = models.CharField(max_length=500) 
     def __unicode__(self):
         return self.name
 
+    # def get_channel_id(self):
+    #     return self.id
+
+
+
 #This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
 class Subchannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
-    channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
+    channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel modelg
+
+    # def get_subchannel_of_channel (self , Channel):
+    #     channel_id = channel.id
+    #     list_of_subchannels
+
+
+
+
 
 
 #Class Post documentation
