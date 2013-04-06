@@ -1,6 +1,6 @@
 from django import forms
 from tager_www.models import UserProfile
-
+from captcha.fields import ReCaptchaField
 
 #mai c2: as a user i should be able to register 
 # this class inheirts the built in forms.ModelForm
@@ -12,6 +12,8 @@ class RegistrationForm(forms.ModelForm):
     
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+    captcha = ReCaptchaField(attrs={'theme' : 'blackglass'})
+
 
     class Meta:
         model = UserProfile
