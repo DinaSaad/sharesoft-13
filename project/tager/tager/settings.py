@@ -86,6 +86,10 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '^m!k&z0&tn9i6&1tc6@*@h%s&5yb!1zf%ncxah56drxjf9$cc$'
 
+RECAPTCHA_PUBLIC_KEY = '6Ld8ct8SAAAAAJTUMgacSavqcnzqRVPT2M7Ht5i6'
+RECAPTCHA_PRIVATE_KEY = '6Ld8ct8SAAAAAH6kJ8dcBhqG438D9IwCcAP1whEM'
+RECAPTCHA_USE_SSL = True
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -131,6 +135,7 @@ INSTALLED_APPS = (
 
     'tager_www',
     'fbregister',
+    'captcha',
     
     
 )
