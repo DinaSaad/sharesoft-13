@@ -88,7 +88,7 @@ class UserProfile(AbstractBaseUser):
                     'site.')    
 
 
-    is_active = models.BooleanField('active', default=False,    # returns true if the user is still active 
+    is_active = models.BooleanField('active', default=True,    # returns true if the user is still active 
         help_text='Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.')
 
@@ -209,7 +209,7 @@ class Post(models.Model):
     intersed_count = models.IntegerField(default="0")
     picture = models.ImageField(upload_to='images/test', blank=True)
     sub_channel_id = models.ForeignKey(Subchannel)
-    user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
+    user = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
     is_sold = models.BooleanField()#class Comments():
     def getBuyer():
