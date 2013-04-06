@@ -4,11 +4,16 @@ from tager_www.models import *
 from django.template import RequestContext
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
+from django.contrib.auth import get_user_model  
+from django.template import RequestContext
+from tager_www.forms import RegistrationForm
+from tager_www.models import UserProfile 
+
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
-#the login method is a method that allows user to log in it takes in a request
+#C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
 #which is of type post and it has the email and the password attribute which are 
 #taken in as variables then they are authinticated and the authinticated user is 
 #saved into variable user then there is an condition which check that the user is 
@@ -37,7 +42,7 @@ def login(request):
         return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
-#this isn't all of view post but this part that i did is concerend with the apperance of the
+#C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
 #it takes object user from the session and checks if this user can rate the post that is imbeded in 
 #the request and then add the results in the dictonary.Then render the post html and pass the 
@@ -80,9 +85,49 @@ class CustomAuthentication:
             return None
 
 
-
     def get_user(self, user_id):
         try:
             return UserProfile.object.get(pk=user_id)
         except UserProfile.DoesNotExist:
             return None
+
+
+
+
+def  get_user(self):    
+    User = get_user_model()
+    return User
+
+
+
+def UserRegistration(request):
+     #if the user is already logged in , registered , go to profile 
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/profile/')
+     #if they r submitting the form back
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
+        if form.is_valid(): # validates all the fields on the firm,The first time you call is_valid() or access the errors attribute of a ModelForm triggers form validation as well as model validation.
+                user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
+                user.save() # this creates the user 
+                
+                return HttpResponseRedirect('/profile/')
+        else:
+                return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
+    else:
+        ''' user is not submitting the form, show them a blank registration form '''
+        form = RegistrationForm()
+        #add our registration form to context
+        context = {'form': form}
+        return render_to_response('register.html', context, context_instance=RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+    
