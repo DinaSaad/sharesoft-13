@@ -27,6 +27,17 @@
         <p>{{ form.password2 }}</p>
 </div>
 
+<script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6LdSucISAAAAADc_huFvVv0fCCEfcVJNvbqeY-TN">
+
+
+</script> 
+
+<div class="register_div">
+
+   {% if form.captcha.errors %}<p class="error">{{ form.captcha.errors }}</p>{% endif %}
+    <p>{{ form.captcha }}</p>
+</div>
+
 <p><input type="submit" alt="register" /></p>
 </form>
 {% endblock %}
