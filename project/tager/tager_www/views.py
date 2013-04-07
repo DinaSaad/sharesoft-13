@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
 from django.template import RequestContext
@@ -20,6 +20,16 @@ def home(request):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
+
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    s_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=s_id)
+    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 def login(request):
     #print request
