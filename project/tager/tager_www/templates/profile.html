@@ -2,5 +2,15 @@
 
 {% block content %}
 	<p> welcome {{ request.user.name }} to your profile  </p>
-	<button class="btn btn-large btn-primary" id="rateSeller" value="request.user.id" type="button">Rate Seller</button>
+	<button class="btn btn-mini btn-primary" id="rateSeller" value="request.user.id" type="button">Rate Seller</button>
+
+	{% if add_buyer_button %}
+	<button class="btn btn-mini btn-danger" id="rateSeller" value="request.user.id" type="button">Add Buyer</button>
+	{% endif %}
+
+	<p>If you click on the "Hide" button, I will disappear.</p>
+<button id="hide">Hide</button>
+<button id="show">Show</button>
+
+	
 {% endblock %}
