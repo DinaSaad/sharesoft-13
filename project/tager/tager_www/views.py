@@ -27,7 +27,7 @@ def login(request):
     #print request.method
     mail = request.POST['email']
     password = request.POST['password']
-   # print "before"
+    # print "before"
     # user = UserProfile.objects.get(email=mail)
     # print user.username
     # pk = user.username
