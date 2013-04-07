@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response, render
 #from django.contrib import auth
 from django.contrib.comments.views.comments import post_free_comment
 import sqlite3
-
+from django.utils import timezone
 
 
 # def my_post_free_comment(request):
@@ -63,30 +63,57 @@ import sqlite3
     #return render_to_response('search_form.html',
      #   {'error': error})
 
-   def comments(request, offset):
-    if request.method == 'POST':
-        post = Post.objects.get(post_id=offset)
-        date = request.POST.get('date', '')
-        content = request.POST.get('content', '')
-        # comment_obj = Comment(post_id=post_id, date=date, content=content)
-        # comment_obj.save()
-        # return HttpResponseRedirect('/posted.html')
-conn = sqlite3.connect('privy.db')
-print Comment #this returns <class 'privy.tager_www.models.Comment'>
-cur = conn.cursor()
-fields = ['post_id', 'user_id', 'date', 'content']
-row = ['1', '2', '2013-07-3', 'bfjvbfj']
-Person.objects.create(**dict(zip(fields, row)))
-try:
-    post = Person_Type.objects.get(post='1')
-except Post.DoesNotExists:
-    post_id = Post.objects.create(post_id='1')
-Comment.objects.create(date=2013-07-3,user_id=2, content='bfjvbfj', post_id=post_id)
-
 def commenting(request):
-  list_of_comment =Comment.objects.all()
-  return (render(request,'posted.html'),{'list_of_comment':list_of_comment})
-  #retreiving the comment from comment table. 
+    if user.is_active:
+        if user.is_verfied:
+            p=Comment(content=request.POST['content'], date=timezone.now(), post_id= request.post, user_id=request.user)
+            p.save()
+        else:
+           return HttpResponse ("sorry your account is not verfied") # Return a 'disabled account' error message
+    else:
+        
+      return redirect("/login/")# Return an 'invalid login' error message.
+
+def view_comments(request):
+
+    com = Comment.objects.filter(post_id=request.post_id)
+    
+    return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
+
+
+
+
+    #post = Post.objects.get(pk= request.POST['post_id'])
+    # user = request.user
+    # rateSellerButtonFlag = user.canRate(request.POST['post_id'])
+    # d = {'view_rating':rateSellerButtonFlag}
+
+
+
+#    def comments(request, offset):
+#     if request.method == 'POST':
+#         post = Post.objects.get(post_id=offset)
+#         date = request.POST.get('date', '')
+#         content = request.POST.get('content', '')
+#         # comment_obj = Comment(post_id=post_id, date=date, content=content)
+#         # comment_obj.save()
+#         # return HttpResponseRedirect('/posted.html')
+# conn = sqlite3.connect('privy.db')
+# print Comment #this returns <class 'privy.tager_www.models.Comment'>
+# cur = conn.cursor()
+# fields = ['post_id', 'user_id', 'date', 'content']
+# row = ['1', '2', '2013-07-3', 'bfjvbfj']
+# Person.objects.create(**dict(zip(fields, row)))
+# try:
+#     post = Person_Type.objects.get(post='1')
+# except Post.DoesNotExists:
+#     post_id = Post.objects.create(post_id='1')
+# Comment.objects.create(date=2013-07-3,user_id=2, content='bfjvbfj', post_id=post_id)
+
+# def commenting(request):
+#   list_of_comment =Comment.objects.all()
+#   return (render(request,'posted.html'),{'list_of_comment':list_of_comment})
+#   #retreiving the comment from comment table. 
 
 
     # user_id = request.UserProfile.id
