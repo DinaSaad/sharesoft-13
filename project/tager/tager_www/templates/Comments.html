@@ -1,0 +1,36 @@
+<html>
+<head>
+    {% load staticfiles %}
+    <title>Channel</title>
+    <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
+    <script type="text/javascript" src="{% static "js/ViewSubChannel.js" %}"></script>
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css"> -->
+</head>
+<body>
+	<form action="" method="post" accept-charset="utf-8">
+    	<label for="date">Date:</label><input type="text" name="date" value={{ current_date }} id="date" />
+    	<br>
+    	<label for="content">Content:</label><input type="text" name="content" value="0" id="content" />
+    	<br>
+    	<label for="userid">User_id:</label><input type="text" name="userid" value="0" id="userid" />
+    	<br>
+    	<p><input type="submit" value="Add"></p>
+	</form>
+
+{% if com %}
+<h3>Buyers Comments</h3>
+<table>
+    {% for c in com %}
+    <tr>
+    <td class="row1">{{c.content}}</td>
+    <td class="row1">{{c.user_id}}</td>
+    <td class="row1">{{c.date}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+</body>
