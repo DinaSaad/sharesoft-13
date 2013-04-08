@@ -172,16 +172,16 @@ class UserProfile(AbstractBaseUser):
 
     def calculate_rating(self,rate,post,buyer): #self is the post_owner
         owner_id = self.id
-        print owner_id
+        #print owner_id
         post_id = post.id
-        print owner_id
+        #print owner_id
         buyer_id = buyer.id
-        print buyer_id
+        #print buyer_id
 
         rate = Rating(post_owner_id=owner_id,buyer_id=buyer_id,post_id=post_id,rating= rate)
         rate.save()
         user_rating = Rating.objects.filter(post_owner = self).aggregate(Avg('rating')).values()[0]
-        print user_rating
+       # print user_rating
         self.rating = user_rating
         self.save() 
         return user_rating
