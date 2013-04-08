@@ -63,7 +63,19 @@
       </div>
     </div>
   
+{% block verification %}
+    {% if user.is_authenticated %}
+      {% if check_verified == False %}
 
+        <div class="alert">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Warning!</strong> please verify your email , inorder to use the site nomarly .
+        </div> 
+
+      {% endif %}
+    {% endif %}
+  {% endblock %}
+  
 <!-- Start main websiteBody Div -->
  <div class="container" style="padding-top: 60px;">
 <!-- Start TMP , Please remove me -->
