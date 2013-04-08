@@ -40,3 +40,10 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+#mai c2: registration 
+#this class inherits a built in form called forms.form
+#it has only one filed verify 
+#this is for the verication of email 
+class ConfirmationForm(forms.Form):
+    verify = forms.CharField(label='verify')
