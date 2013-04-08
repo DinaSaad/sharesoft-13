@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<title> Welcome to my test page </title>
+{% if object_list %}
+{% for post in object_list %}
+
+
+<div class="photodiv">
+<img src="{% static "img/SLS.jpg" %}" width="200" height="200" alt="Hi!" /></div>
+
+<div class="description">
+<h2>Post ID: {{post.id}} </h2>
+<h3>Posted BY: {{post.user_id}}</h3>
+<p> Posted On: {{post.pub_Date|date:"Y-m-d"}} <br>
+	Post reports: {{post.no_of_reports}} <br>
+	Post State: {{post.state}} <br>
+	
+</p>
+</div>
+<div class="buttonDiv">
+<!-- <button><a href="/tager_www/reportPage">Report</a></button> -->
+<button onClick="showReportForm();"> Report</button>
+<button type="button" class="fb"> fb </button>
+<button type="button" class="twit"> twitter </button>
+</div>
+<div>
+<textarea class= "comment"rows="1" coloumns="500"></textarea>
+<button type="button" class="commentbutton" > Comment </button>
+<br>
+<br>
+<br>
+</div>
+
+<div class = "reportDIV" style="visibility:hidden">
+<form class="reportForm" name="input" action="" method="POST">
+
+<input type="radio" name="reportType1" value="Offensive">Offensive<br>
+<input type="radio" name="reportType2" value="Harrasment">Harrasment<br>
+<input type="radio" name="reportType3" value="Copyright">Copyright<br>
+<input type="submit" value="Submit Your Report" alt="reportThePost">
+
+</form> 
+</div>
+{% endfor %}
+
+{% else %}
+<h1>No Post Avaliable</h1>
+<h2>Please try again later !! :)</h2>
+
+{% endif %}
+{% endblock %}
