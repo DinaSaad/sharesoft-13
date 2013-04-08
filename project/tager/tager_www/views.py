@@ -76,7 +76,19 @@ def view_post(request):
     #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
+
+#C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
+#as input is a request coming from the user after he presses on add the buyer button in the post page.
+#so what the method does is it checks if the request is post and is holding the filled form, if it does
+#the GetBuyerNum() method is called to get the number of the buyer and store it in a variable. then the
+#user adds the buyer through add_Buyer function whihc takes the post and the buyer phone number as inputs.
+#and then you are redirected to the same page. another scenario if the data isn't valid it send the form 
+#again through the dictonairy to be displayed again. third scenario is if there is no POST method coming
+#through the request then it makes the form and send it through a dictionairy to be viewed through the 
+#template.
+
 def Buyer_identification(request):
+    user = request.user
     if request.method == 'POST':
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
