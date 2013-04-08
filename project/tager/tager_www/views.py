@@ -61,6 +61,16 @@ def login(request):
 #the request and then add the results in the dictonary.Then render the post html and pass the 
 #dictionary.
 #
+
+
+
+def view_homepage(request):
+    user = request.user  #logged in user 
+    verfied = user.is_verfied
+    d = {"check_verified" : verfied }
+    return render_to_response('homepage.html', d, context_instance=RequestContext(request))
+
+
 def view_post(request):
 
     post = Post.objects.get(pk= request.POST['post_id'])
