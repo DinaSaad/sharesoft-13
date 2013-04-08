@@ -7,7 +7,9 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
 from tager_www.forms import RegistrationForm
-from tager_www.models import UserProfile 
+from tager_www.models import UserProfile, Post, Comment 
+import sqlite3
+from django.utils import timezone
 
 
 def home(request):
@@ -133,6 +135,63 @@ def UserRegistration(request):
         #add our registration form to context
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
+#c1_hala_comment this method commenting takes self that will bring the user and the post id from it
+#then variable p will save the content of the comment , the date of the comment, the post id that it is posted 
+#to and the user who is commenting and save it in table Comment, to retreive it when needed, 
+# and after the user comments, a successful message appears for the user.
+def commenting(self):
+# if request.method == 'POST':
+# # form = RegistrationForm(request.POST)
+# # if form.is_valid():
+    user=UserProfile.objects.all()
+    post=self.post_id
+    p=Comment(content='test of comments', date=timezone.now(), post_id=post, user_id=user[0].user_id)
+    p.save()
+    html = "<html><body>successfull commenting...</body></html>"
+    return HttpResponse(html)
+# def commenting(request):
+    # # if user.is_active:
+    # #     if user.is_verfied:
+    # if request.method == 'POST':
+    #     form = RegistrationForm(request.POST)
+    #     if form.is_valid():
+    #         user=UserProfile.objects.all()
+    #         post=Post.objects.all()
+    #         p=Comment(content=request.POST['content'], date=timezone.now(), post_id=post[0], user_id=user[0].user_id)
+    #         p.save()
+    #         html = "<html><body>It is now .</body></html>" 
+    #         return HttpResponse(html)
+    #             # return HttpResponseRedirect('Comments.html')
+    #     else:
+    #             return render_to_response('Comments.html', {'form': form}, context_instance=RequestContext(request))
+    # else:
+    #     ''' user is not submitting the form, show them a blank registration form '''
+
+    #     html = "<html><body>It is now .</body></html>" 
+    #     return HttpResponse(html)
+    #     # context = {'form': form}
+    #     # return render_to_response('Comments.html', context, context_instance=RequestContext(request))
+
+    
+    # #     else:
+    # #        return HttpResponse ("sorry your account is not verfied") # Return a 'disabled account' error message
+    # # else:
+        
+    # #   return redirect("/login/")# Return an 'invalid login' error message.
+
+
+# c1_hala_comment, this method view_comments is a method that takes one parameter
+# which is the request, then useing sessions i'll search for the post id in the request
+# and brings that post belongs to the post-id, then will take also the content of the comment through the reuest
+# and right it below the post printed with its date time.
+
+def view_comments(request):
+
+    com = Comment.objects.filter(post_id=request.post_id)
+    html = "<html><body>It is now %s.</body></html>" % com[0].content
+    return HttpResponse(html)
+    # return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
+
 
 
 
