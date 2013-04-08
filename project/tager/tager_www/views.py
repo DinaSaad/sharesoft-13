@@ -61,6 +61,22 @@ def view_post(request):
     rateSellerButtonFlag = user.canRate(request.POST['post_id']) 
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator}
     
+    # if request.method == 'POST':
+    #     form = BuyerIdentificationForm( request.POST )
+    #     if form.is_valid():
+    #         new_buyer_num = form.GetBuyerNum()
+    #         buyer_added = user.add_Buyer(post, new_buyer_num)
+    #         return HttpResponseRedirect( "/" )
+    #     else :
+    #         d.update({'form':form})
+    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
+
+    # else:
+    #     form = BuyerIdentificationForm()
+    #     d.update({'form':form})
+    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
+
+def Buyer_identification(request):
     if request.method == 'POST':
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
@@ -68,14 +84,13 @@ def view_post(request):
             buyer_added = user.add_Buyer(post, new_buyer_num)
             return HttpResponseRedirect( "/" )
         else :
-            d.update({'form':form})
+            d = {'form':form}
             return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
 
     else:
         form = BuyerIdentificationForm()
-        d.update({'form':form})
+        d = {'form':form}
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
-
 
 
 class CustomAuthentication:
