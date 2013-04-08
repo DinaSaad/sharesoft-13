@@ -183,6 +183,9 @@ class Channel(models.Model):
 class Subchannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
     channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
+    def __unicode__(self):
+        return self.name
+
 
 
 #Class Post documentation
@@ -211,10 +214,21 @@ class Post(models.Model):
     sub_channel_id = models.ForeignKey(Subchannel)
     user = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
-    is_sold = models.BooleanField()#class Comments():
+    is_sold = models.BooleanField()
+    def __unicode__(self):
+        return self.state
     def getBuyer():
         return self.buyer.id
     
+class Comment(models.Model):
+    content=models.CharField(max_length="500")
+    date=models.DateTimeField()
+    is_Hidden=models.BooleanField(default=False)
+    post_id= models.ForeignKey(Post)
+    user_id=models.ForeignKey(UserProfile)
+    
+    def __unicode__(self):
+        return self.content
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
