@@ -76,7 +76,25 @@ def view_post(request):
     #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
+#C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
+#as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
+#who posted the post, the post it self and the rating. after taking in the request and storing the attributes
+#a method is then sent to calculate the rating of the post owner and this method is calculate_rating and
+#after the rating is calculated the returned average rating is passed through the dictionary along with the 
+#the post_owner object to the profile page to be used to show the rating.
+#
 
+def User_Ratings(request):
+    rater = request.user
+    post_owner = request.POST['post_owner']
+    post = request.POST['post']
+    rating = request.POST['rating']
+
+    user_rating = post_owner.calculate_rating(rating, post, rater)
+    d = {"user_rating":user_rating, 'post_owner':post_owner}
+    return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
+
+    
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
 #as input is a request coming from the user after he presses on add the buyer button in the post page.
 #so what the method does is it checks if the request is post and is holding the filled form, if it does
