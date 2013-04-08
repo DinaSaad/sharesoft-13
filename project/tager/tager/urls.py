@@ -12,6 +12,10 @@ urlpatterns = patterns('',
     url(r'^logout/$', logout, {'next_page':'/login'}),  
 
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+    url(r'^homepage/$', 'tager_www.views.get_channels'),
+    url(r'^homepage/$', 'tager_www.views.view_subchannel_posts'),
+    
+
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -23,6 +27,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
 	url(r'^tager_www/', include('tager_www.urls')),
+
 )
 
 urlpatterns += patterns('fbregister.facebook',

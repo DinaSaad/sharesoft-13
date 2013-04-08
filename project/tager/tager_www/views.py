@@ -137,7 +137,42 @@ def UserRegistration(request):
 
 
 
+def get_channels (request):
+    channels = Channel.objects.all()
+    channels_list = [] 
+    for channel in channels:
+        subchannels = Subchannel.objects.filter(channel_id_id=channel.id)
+        subchannels_list = []
+        for sc in subchannels:
+            attributes =  Attribute.objects.filter(subchannel_id_id=sc.id)
+            subchannels_list.append({'subchannel': sc, 'attributes': attributes})
 
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    print channels_list
+    
+    # subchannel_dictionary = {'subchannel' , subchannel}
+
+    return render(request, 'homepage.html', {'all_channels': channels_list} ,)
+
+
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# - this method creats variable channels , to store all channels available in the database, 
+# variable subchannels , to store all subchannels available in the database,
+#  channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
+# the method then return the channels_list only , as it holds , every attribute of subchannel
+# and every subchannel of a channel 
+
+def view_subchannel_posts(request):
+    subchannel_id = request.GET['sub_ch_id']
+    posts_of_subchannels = Posts.objects.filter(sub_channel_id_id= subchannel_id)
+    return render(request, 'homepage.html', {'posts_of_subchannels': posts_of_subchannels})
+
+ 
+# # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+    # subchannel_id is the id retrieved from the webpage 
+    # its is matched with with the subchannel id in the post model , 
+    # the method returns the dictionairy of posts related to specific subchannels.
 
 
 
