@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<title> Welcome to my test page </title>
+
+<div>
+<form class="reportForm" name="input" action="" method="get">
+
+<input type="radio" name="sex" value="Offensive">Offensive<br>
+<input type="radio" name="sex" value="Harrasment">Harrasment<br>
+<input type="radio" name="sex" value="Copyright">Copyright<br>
+
+<input type="submit" value="Submit" alt="reportThePost">
+</form> 
+</div>
+
+{%endblock%}
