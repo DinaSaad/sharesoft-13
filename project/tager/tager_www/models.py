@@ -19,8 +19,8 @@ class MyUserManager(BaseUserManager):
         user = self.model(name=name , email=email,**extra_fields )
         email=MyUserManager.normalize_email(email),
         is_staff=False 
-        is_active=False 
         is_superuser=False 
+        is_active = True
         
                 
  
@@ -65,7 +65,6 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
-    expiration_key_date = models.DateField(null=True, blank=True) 
     status = models.CharField(max_length=400 , null=True) 
     gender_choices = (
         ('M', 'Male'),
@@ -87,7 +86,7 @@ class UserProfile(AbstractBaseUser):
                     'site.')    
 
 
-    is_active = models.BooleanField('active', default=False,    # returns true if the user is still active 
+    is_active = models.BooleanField('active', default=True,    # returns true if the user is still active 
         help_text='Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.')
 
@@ -100,7 +99,7 @@ class UserProfile(AbstractBaseUser):
         return self.name
  
     def __unicode__(self):
-        return self.email
+        return self.email + str(self.is_verfied) + str(self.activation_key)
 
      # this methods taked in a permission and the objects and returns true or false regarding wherther the objec entered has permission or not (user)
     def has_perm(self, perm, obj=None):
