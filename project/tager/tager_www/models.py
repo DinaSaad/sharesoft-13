@@ -170,8 +170,18 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
-    def calculate_rating(self):
-        user_rating = Rating.objects.filter(post_owner = self).aggregate(Avg('rating'))
+    def calculate_rating(self,rate,post,buyer): #self is the post_owner
+        owner_id = self.id
+        print owner_id
+        post_id = post.id
+        print owner_id
+        buyer_id = buyer.id
+        print buyer_id
+
+        rate = Rating(post_owner_id=owner_id,buyer_id=buyer_id,post_id=post_id,rating= rate)
+        rate.save()
+        user_rating = Rating.objects.filter(post_owner = self).aggregate(Avg('rating')).values()[0]
+        print user_rating
         self.rating = user_rating
         self.save() 
         return user_rating
@@ -235,7 +245,7 @@ class Rating(models.Model):
     rating = models.FloatField()
 
     class Meta:
-        unique_together = ("post", "post_owner","buyer")
+        unique_together = ("post","buyer")
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):

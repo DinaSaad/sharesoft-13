@@ -74,7 +74,7 @@ def view_post(request):
     else:
         form = BuyerIdentificationForm()
         d.update({'form':form})
-    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
 
 
