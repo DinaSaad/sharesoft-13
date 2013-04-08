@@ -178,6 +178,8 @@ class Channel(models.Model):
     description = models.CharField(max_length=500) 
     def __unicode__(self):
         return self.name
+#c1_hala_comment i added unicode to identify this table when calling it in db to make sure
+#it is created and saved data in db
 
 #This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
 class Subchannel(models.Model):
@@ -185,6 +187,9 @@ class Subchannel(models.Model):
     channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
     def __unicode__(self):
         return self.name
+
+#c1_hala_comment i added unicode to identify this table when calling it in db to make sure
+#it is created and saved data in db
 
 
 
@@ -219,6 +224,7 @@ class Post(models.Model):
         return self.state
     def getBuyer():
         return self.buyer.id
+        #c1_hala_comment i added def unicode to return the post state to identify it while testing to make sure it is saved in db
     
 class Comment(models.Model):
     content=models.CharField(max_length="500")
@@ -226,7 +232,10 @@ class Comment(models.Model):
     is_Hidden=models.BooleanField(default=False)
     post_id= models.ForeignKey(Post)
     user_id=models.ForeignKey(UserProfile)
-    
+   #c1_hala_comment i added def unicode to return the post state 
+   #to identify it while testing to make sure it is saved in d 
+    #i added comment tabel to save data taken from user to save in db 
+    #to easily retreive it from when needed in the post when comment is posted
     def __unicode__(self):
         return self.content
 
