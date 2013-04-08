@@ -1,0 +1,6 @@
+#choosing #label{
+	display: inline;
+}
+#choosing select{
+	float: left;
+}

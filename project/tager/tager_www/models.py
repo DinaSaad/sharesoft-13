@@ -190,7 +190,16 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
+    def interested_Notification(self, post_in):
+        user_in = self
+        post_owner = post_in.user_id
+        not_content = unicode(user_in.name) + "is interested in your post"
+        not1 = Notification(user = post_in.user_id, content = not_content)
+        not1.save()
 
+class Notification(models.Model):
+    user = models.ForeignKey(UserProfile)
+    content = models.CharField(max_length=100)
 
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
@@ -297,12 +306,73 @@ class Post(models.Model):
                 p.state = 'Archived'
                 p.save()
 
+    def post_Notification(self):
+        all_values_array=[]
+        values_array=[]
+        all_values = Value.objects.filter(Post_id = self)
+        for value in all_values:
+            all_values_array.append(value)
+            values_array.append(value.value)
+        attributes_array = []
+        for value in all_values_array:
+            attribute  = value.attribute_id
+            attributes_array.append(attribute.name)
+        subchannel_of_post = self.sub_channel_id
+        channel_of_post = subchannel_of_post.channel_id
+        users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
+        users_subscribed_to_channel_array = []
+        for i in users_subscribed_to_channel:
+            users_subscribed_to_channel_array.append(i.user)
+        users_subscribed_to_subchannel = UserSubchannelSubscription.objects.filter(sub_channel=subchannel_of_post)
+        users_subscribed_to_subchannel_array = []
+        for x in users_subscribed_to_subchannel:
+            users_subscribed_to_subchannel_array.append(x.user)
+        all_users_subscribed_to_attributes = []
+        i = 0
+        r = 0
+        for z in attributes_array:
+            value_in_array = values_array[i]
+            attribute = Attribute.objects.get(name = attributes_array[r], subchannel_id = subchannel_of_post)
+            print "finished attribute-->" + unicode(attributes_array[r])
+            r = r + 1
+            try:
+                value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
+            except:
+                pass
+            print "finished value-->" + unicode(value_in_array)
+            users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
+            i = i + 1
+            print "finished i OOOOOOOOOOOOOOOOOOOOOOO + "
+            for h in users_subscribed_to_attribute:
+                all_users_subscribed_to_attributes.append(h.user)
+                print "in users_subscribed_to_attributes.append(h.user)"
+                # break
+        for q in users_subscribed_to_channel_array:
+            not_content = "You have new posts to see in " + unicode(channel_of_post.name)
+            not1 = Notification(user = q, content = not_content)
+            not1.save()
+        for a in users_subscribed_to_subchannel_array:
+            not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
+            not1 = Notification(user = a, content = not_content)
+            not1.save()
+        for b in all_users_subscribed_to_attributes:
+            if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
+                if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
+                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
+                    not1 = Notification(user = b, content = not_content)
+                    not1.save()
+                    print "In last for loop"
+
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
     name = models.CharField(max_length=64)
     subchannel_id = models.ForeignKey(Subchannel)
     weight = models.FloatField()
+
+class AttributeChoice(models.Model):
+    attribute_id = models.ForeignKey(Attribute)
+    value = models.CharField(max_length=64)
 
 class Value(models.Model):
     attribute_id = models.ForeignKey(Attribute)
@@ -321,7 +391,7 @@ class Subscription(models.Model):
     channel = models.ForeignKey(Channel, null = True)
     sub_channel = models.ForeignKey(Subchannel, null = True)
     parameter = models.ForeignKey(Attribute, null = True)
-    choice = models.ForeignKey(Value, null = True)
+    choice = models.ForeignKey(AttributeChoice, null = True)
     class Meta:
         unique_together = ("channel","sub_channel","parameter","choice")
     def subscribe_Bychannel(self, user_in):
@@ -347,7 +417,6 @@ class Subscription(models.Model):
         self_parent_channel = self.channel
         subscription = UserParameterSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe, parameter = self.parameter, choice = self.choice)
         subscription.save()
-        
     def __unicode__(self):
         return self.id
 
@@ -390,7 +459,7 @@ class UserParameterSubscription(models.Model):
     parent_channel = models.ForeignKey(Channel)
     sub_channel = models.ForeignKey(Subchannel)
     parameter = models.ForeignKey(Attribute)
-    choice = models.ForeignKey(Value)
+    choice = models.ForeignKey(AttributeChoice)
     class Meta:
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):

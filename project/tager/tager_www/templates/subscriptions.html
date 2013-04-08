@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+	{% block content %}
+		<div id="choosing" style>
+			<div id="label"><h2>Choose your subscription type:</h2></div>
+			<select id="choose">
+				<option value="Channel subscription">Channel</option>
+				<option value="Subchannel subscription">Subchannel</option>
+				<option value="Attribute subscription">Attribute</option>
+			</select> <input type="button" value="choose" onClick="showAlert();">
+		</div><br></br>
+		<div id="Attribute" style="visibility:hidden">
+			<div id="channel">
+				<label allign="left">select your channel: </label>
+				<select>
+  					{% if channels %}
+						{% for channel in channels %}
+							<option value={{channel.id}}>{{channel.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
+			<div id="subchannel">
+				<label>select your subchannel: </label>
+				<select>
+  					{% if subchannels %}
+						{% for subchannel in subchannels %}
+							<option value={{subchannel.name}}>{{subchannel.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
+			<div id="parameter">
+				<label>select your parameter: </label>
+				<select>
+  					<option value="volvo">Volvo</option>
+  					<option value="saab">Saab</option>
+  					<option value="mercedes">Mercedes</option>
+  					<option value="audi">Audi</option>
+				</select>
+			</div><br></br>
+			<div id="choice">
+				<label>select your choice: </label>
+				<select>
+  					<option value="volvo">Volvo</option>
+  					<option value="saab">Saab</option>
+  					<option value="mercedes">Mercedes</option>
+  					<option value="audi">Audi</option>
+				</select>
+			</div><br></br>
+		</div>
+		<button type="button" style="visibility:hidden">Submit</button>
+	{% endblock %}
