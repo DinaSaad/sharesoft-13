@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm
+from tager_www.forms import RegistrationForm, BuyerIdentificationForm
 from tager_www.models import UserProfile 
 
 
@@ -53,13 +53,15 @@ def login(request):
 #
 def view_post(request):
 
-    post = Post.objects.get(pk= request.POST['post_id'])
+    post = Post.objects.get(pk= request.GET['post_id'])
     user = request.user
+    print user.id
     creator = False
-    if post.user_id == user:
+    if post.user == user:
          creator = True
-    rateSellerButtonFlag = user.canRate(request.POST['post_id']) 
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator}
+    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
+    print rateSellerButtonFlag
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post}
     
     # if request.method == 'POST':
     #     form = BuyerIdentificationForm( request.POST )
@@ -89,7 +91,6 @@ def User_Ratings(request):
     post_owner = request.POST['post_owner']
     post = request.POST['post']
     rating = request.POST['rating']
-
     user_rating = post_owner.calculate_rating(rating, post, rater)
     d = {"user_rating":user_rating, 'post_owner':post_owner}
     return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
@@ -105,6 +106,7 @@ def User_Ratings(request):
 #through the request then it makes the form and send it through a dictionairy to be viewed through the 
 #template.
 
+
 def Buyer_identification(request):
     user = request.user
     if request.method == 'POST':
@@ -112,7 +114,9 @@ def Buyer_identification(request):
         if form.is_valid():
             new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_Buyer(post, new_buyer_num)
-            return HttpResponseRedirect( "/" )
+            d = {'form':form}
+            return render_to_response( "post.html", d, context_instance = RequestContext( request ))
+            # return HttpResponseRedirect( "/" )
         else :
             d = {'form':form}
             return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
@@ -120,7 +124,7 @@ def Buyer_identification(request):
     else:
         form = BuyerIdentificationForm()
         d = {'form':form}
-    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
+    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
 
 class CustomAuthentication:
@@ -135,8 +139,8 @@ class CustomAuthentication:
 
     def get_user(self, user_id):
         try:
-            return UserProfile.object.get(pk=user_id)
-        except UserProfile.DoesNotExist:
+            return UserProfile.objects.get(pk=user_id)
+        except User.DoesNotExist:
             return None
 
 
