@@ -139,16 +139,17 @@ def UserRegistration(request):
 #then variable p will save the content of the comment , the date of the comment, the post id that it is posted 
 #to and the user who is commenting and save it in table Comment, to retreive it when needed, 
 # and after the user comments, a successful message appears for the user.
-def commenting(self):
-# if request.method == 'POST':
-# # form = RegistrationForm(request.POST)
-# # if form.is_valid():
-    user=UserProfile.objects.all()
-    post=self.post_id
-    p=Comment(content='test of comments', date=timezone.now(), post_id=post, user_id=user[0].user_id)
-    p.save()
-    html = "<html><body>successfull commenting...</body></html>"
-    return HttpResponse(html)
+def commenting(request, pk):
+#"""Add a new comment."""
+    p = request.POST
+
+    if p.has_key("content"):
+
+        comment = comment(post=Post.objects.get(pk=pk))
+        cf = CommentForm(p, instance=comment)
+        comment = cf.save(commit=False)
+        comment.save()
+        return HttpResponseRedirect(reverse("dbe.tager_www.views.post", args=[pk]))
 # def commenting(request):
     # # if user.is_active:
     # #     if user.is_verfied:
@@ -185,11 +186,13 @@ def commenting(self):
 # and brings that post belongs to the post-id, then will take also the content of the comment through the reuest
 # and right it below the post printed with its date time.
 
-def view_comments(request):
-
-    com = Comment.objects.filter(post_id=request.post_id)
-    html = "<html><body>It is now %s.</body></html>" % com[0].content
-    return HttpResponse(html)
+def view_comments(request, pk):
+#"""Single post with comments and a comment form."""
+    post = Post.objects.get(pk=int(pk))
+    comments = Comment.objects.filter(post=post)
+    d = dict(post=post, comments=comments, form=CommentForm(), user=request.user)
+    d.update(csrf(request))
+    return render_to_response("post.html", d)
     # return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
 
 
