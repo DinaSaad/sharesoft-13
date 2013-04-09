@@ -1,19 +1,10 @@
 
-$(document).ready(function(){
-  $("#hide").click(function(){
-    $("p").hide();
-  });
-  $("#show").click(function(){
-    $("p").show();
-  });
-});
+// $(document).ready(function(){
 
-$(document).ready(function(){
-
-	$("#addBuyer").click(function(){
-		window.location.replace("post/addBuyer");
-	})
-})
+// 	$("#addBuyer").click(function(){
+// 		window.location.replace("post/addBuyer");
+// 	})
+// })
 // $(document).ready(function(){
 
 // 	$("#rateSeller").click(function(){
@@ -24,14 +15,14 @@ $(document).ready(function(){
 $(document).ready(function(){
 
 	$("#post").click(function(){
-		window.location.replace("post?post_id="+$(this).val());
+		window.location.replace("/post?post_id="+$(this).val());
 	})
 })
 
 $(document).ready(function(){
 
 	$("#addBuyer").click(function(){
-		window.location.replace("post/addBuyer");
+		window.location.replace("/addBuyer?post_id="+$(this).val());
 	})
 })
 "hello?ch_id="+$(this).val()
