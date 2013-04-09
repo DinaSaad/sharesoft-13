@@ -6,8 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm
-from tager_www.models import UserProfile 
+from tager_www.forms import *
 
 
 def home(request):
@@ -135,6 +134,75 @@ def UserRegistration(request):
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
 
+# @login_required
+def editing_info(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditingUserProfileForm(request.POST)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            # user_id = request.UserProfile.id
+            tmp_user = UserProfile.objects.get(pk=1)
+            name          = editing_form.cleaned_data['name']
+            date_Of_birth = editing_form.cleaned_data['date_Of_birth']
+            phone_number  = editing_form.cleaned_data['phone_number']
+            gender        = editing_form.cleaned_data['gender']
+            if name != "":
+                tmp_user.name = name
+                tmp_user.save()
+            if date_Of_birth != "":
+                tmp_user.date_Of_birth = date_Of_birth
+                tmp_user.save()
+            if phone_number != "":
+                tmp_user.phone_number = phone_number
+                tmp_user.save()
+            if gender != "":
+                tmp_user.gender = gender
+                tmp_user.save()
+
+
+
+            # is_premium = editing_form.cleaned_data['is_premium']
+            # return HttpResponseRedirect('/Thank/') #redirect after POST
+    else:
+        editing_form =EditingUserProfileForm()#an unbound form
+
+        
+    ctx = {'editing_form': editing_form}
+    return render_to_response('editing.html', ctx, context_instance=RequestContext(request))
+
+def update_status(request):
+    if request.method == 'POST':
+        updating_form = UpdateStatusForm(request.POST)
+        if updating_form.is_valid():
+            tmmp_user = UserProfile.objects.get(pk=1)
+            status = updating_form.cleaned_data['status']
+            if status != "":
+                tmmp_user.status = status
+                tmmp_user.save()
+
+
+
+    else:
+        updating_form = UpdateStatusForm()
+
+    ctx = {'updating_form': updating_form}
+    return render_to_response('updating.html', ctx, context_instance=RequestContext(request))
+
+
+# def user_profile(name):
+#     user = UserProfile.query.filter_by(name = name).first()
+#     if user == None:
+#         flash('User ' + name + ' not found.')
+#         return redirect(url_for('index'))
+#     posts = [
+#         { 'author': user, 'body': 'Test post #1' },
+#         { 'author': user, 'body': 'Test post #2' }
+#     ]
+#     return render_template('user.html',
+#         user = user,
+#         posts = posts)
+
+
+    
 
 
 

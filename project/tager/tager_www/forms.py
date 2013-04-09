@@ -51,3 +51,25 @@ class RegistrationForm(forms.ModelForm):
             user.save()
         return user
 
+class EditingUserProfileForm(forms.Form):
+    name          = forms.CharField()
+    date_Of_birth = forms.DateField()
+    phone_number  = forms.CharField()
+    gender_choices = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+     )
+    gender        = forms.ChoiceField(choices=gender_choices)
+
+
+    # is_premium    = forms.BooleanField()
+    # def save(self):
+    #     user.name          = self.cleaned_data["name"]
+    #     user.date_Of_birth = self.cleaned_data["date_Of_birth"]
+    #     user.phone_number  = self.cleaned_data["phone_number"]
+    #     user.gender        = self.cleaned_data["gender"]
+    #     user.is_premium = self.cleaned_data["is_premium"]
+
+
+class UpdateStatusForm(forms.Form):
+    status = forms.CharField()

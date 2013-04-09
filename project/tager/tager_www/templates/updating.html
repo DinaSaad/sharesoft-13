@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action = "." method = "POST"> 
+<p>
+{{ updating_form.as_table}}
+</p>
+<input type	= "submit"  class="btn btn-success btn-large" value = "Update"  />
+</form>
+{%	endblock %}
+
+
