@@ -42,7 +42,7 @@ def login(request):
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
+        return render_to_response ('register.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
@@ -112,9 +112,9 @@ def User_Ratings(request):
 
 def Buyer_identification(request):
     user = request.user
-    print request.POST
+    # print request.POST
     if request.method == 'POST':
-        print request.POST
+        # print request.POST
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
             new_buyer_num = request.POST['buyer_phone_num']
