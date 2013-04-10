@@ -38,6 +38,7 @@ def login(request):
         if authenticated_user.is_active:
             print "act"
             django_login(request, authenticated_user)
+            print "user logged in"
             return render_to_response ('profile.html',context_instance=RequestContext(request))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
@@ -61,7 +62,7 @@ def view_post(request):
          creator = True
     rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
     print rateSellerButtonFlag
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post}
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
     # if request.method == 'POST':
     #     form = BuyerIdentificationForm( request.POST )
@@ -157,7 +158,9 @@ def UserRegistration(request):
     #if request.user.is_authenticated():
      #   return HttpResponseRedirect('/profile/')
      #if they r submitting the form back
+    print request.POST
     if request.method == 'POST':
+        print request.POST
         form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
         if form.is_valid(): # validates all the fields on the firm,The first time you call is_valid() or access the errors attribute of a ModelForm triggers form validation as well as model validation.
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -173,6 +176,18 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+
+def view_profile(request):
+    try: 
+        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+        d = {'user':user_profile}
+    except: 
+        err_msg = 'This user doesn\'t exist'
+        return HttpResponse(err_msg) 
+    else:
+        return render_to_response ('profile.html', d ,context_instance=RequestContext(request))
+
+        # GO TO USER PROFILE
 
 
 
