@@ -2,6 +2,19 @@ from django import forms
 
 from tager_www.models import *
 
+#c1_abdelrahman a form to add the basic attributes of the post
+class PostForm(forms.Form):
+    title = forms.CharField(max_length="30")
+    description = forms.CharField(max_length="30")
+    price = forms.IntegerField()
+    picture = forms.ImageField()
+    picture1 = forms.ImageField()
+    picture2 = forms.ImageField()
+    picture3 = forms.ImageField()
+    picture4 = forms.ImageField()
+    picture5 = forms.ImageField()
+
+
 #mahmoud ahmed-C2 user can identify the buyer of his post- the BuyerIdentificationForm what it does is 
 #it takes the phone number of the buyer of the post which is provided and submitted buy the issuer of the post.
 
