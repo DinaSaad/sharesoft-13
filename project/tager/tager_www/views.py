@@ -135,21 +135,34 @@ def UserRegistration(request):
         #add our registration form to context
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
-#c1_hala_comment this method commenting takes self that will bring the user and the post id from it
-#then variable p will save the content of the comment , the date of the comment, the post id that it is posted 
-#to and the user who is commenting and save it in table Comment, to retreive it when needed, 
-# and after the user comments, a successful message appears for the user.
+
 def commenting(request, pk):
 #"""Add a new comment."""
     p = request.POST
 
     if p.has_key("content"):
 
-        comment = comment(post=Post.objects.get(pk=pk))
+        comment = Comment(post=Post.objects.get(pk=pk))
         cf = CommentForm(p, instance=comment)
         comment = cf.save(commit=False)
         comment.save()
-        return HttpResponseRedirect(reverse("dbe.tager_www.views.post", args=[pk]))
+        return HttpResponseRedirect(reverse("db.tager_www.views.post", args=[pk]))
+# c1_hala this method purpose is to add a new comment, the method takes two parameters the request itself and the primary key
+#variable p takes the request then checks if the request
+#contains content ,then will make new variable called comment that will bring the comment table part that
+# relates to post with pk = pk that taken as a parameter in the method, and saves in it the comment then the method
+#redirects the user to page of the post.
+
+
+# def view_posts_comments(request):
+#     post_id = request.GET['post_id']
+#     comments_of_posts = Comment.objects.filter(post_id_id= post_id)
+#     return render(request, 'homepage.html', {'comments_of_posts': comments_of_posts})
+
+ 
+
+
+
 # def commenting(request):
     # # if user.is_active:
     # #     if user.is_verfied:
@@ -181,10 +194,6 @@ def commenting(request, pk):
     # #   return redirect("/login/")# Return an 'invalid login' error message.
 
 
-# c1_hala_comment, this method view_comments is a method that takes one parameter
-# which is the request, then useing sessions i'll search for the post id in the request
-# and brings that post belongs to the post-id, then will take also the content of the comment through the reuest
-# and right it below the post printed with its date time.
 
 def view_comments(request, pk):
 #"""Single post with comments and a comment form."""
@@ -194,6 +203,14 @@ def view_comments(request, pk):
     d.update(csrf(request))
     return render_to_response("post.html", d)
     # return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
+
+#c1_hala this method purpose is to view the comments, 
+#so the method takes 2 parameters one the request it self and one the primary key
+#post variable takes the result of search in Post table for the post with primary key = the primary key the user wants
+#then variable d goes to dictionary and brings from it the post information saved about it that i brought in variable post 
+#and brings from it the old comments saved in that particular post and the user who commented 
+#then variable d is updated with the info from the dictionary, and the method response with post.html that has the post 
+# and the commented needed that was posted before.
 
 
 
