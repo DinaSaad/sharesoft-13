@@ -136,17 +136,71 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
-def commenting(request, pk):
-#"""Add a new comment."""
-    p = request.POST
+def viewPost(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    return render_to_response('post.html', {'post':post, 'comments':Comment.objects.filter(post_id=post)}, context_instance=RequestContext(request))
+# c1_hala viewPost method is a method that takes two parameters request and post_id, 
+#post variable is a variable that gets the Post from Post table with id that is matched with the id of post that entered 
+#as a parameter, and returns rendor-to-response that returns a post.html that contains the post itself that enters the methos
+#as a parameter , that the user wants , and under that post there is a comment textarea and button called add that adds the
+#comment the user wants to add under the post.
+#and returns the variable post that returns the post the user comments on, and returns all the comments that related to
+#this postt that were posted before.
 
-    if p.has_key("content"):
 
-        comment = Comment(post=Post.objects.get(pk=pk))
-        cf = CommentForm(p, instance=comment)
-        comment = cf.save(commit=False)
-        comment.save()
-        return HttpResponseRedirect(reverse("db.tager_www.views.post", args=[pk]))
+import datetime
+def SavingComment(request, post_id):
+    content = request.POST['content']
+    userobject= UserProfile.objects.get(id=Comment.user_id)
+    post = Post.objects.get(pk=post_id)
+    comment = Comment(content=content, date=datetime.datetime.now(), user_id=userobject, post_id=post)
+    comment.save()
+    return viewPost(request, post_id)
+#c1_hala this method called savingComment that takes two parameters request and post_id, the 
+#content variable takes from the request the content that the user types in, and userobject variable is a 
+#variable that the user as an object which rather than taking the user_id no takes the user as an object
+#and saves it in the Comment table as an object, and post variable brings the post from post table with id 
+#that matches the post_id that taken as a paramter, and comment variable saves in the comment table 
+#the content taken and the date that was retreived at that time using datetime.now()
+#and takes the user as an object, and takes the post id and saves it in the comment table.
+#comment table by that saves each post with its comment content, date of the comment, and saves 
+#the users owner of the comment next to tthe comment. and at last the method returns the method viewPost
+#which has the post and its past comments saved on it
+
+
+
+
+# def createData(request):
+#     UserProfile(email='hala@gmail.com', password='pass', name='ji', facebook_uid=1,accesstoken="gh",
+#      date_Of_birth="2013-04-3", phone_number='01065257152', is_admin="False", is_verfied="")
+#     is_premium = "False", photo = "",activation_key ="ko",expiration_key_date = "2013-04-9",
+#     status = "fgg",gender ="F")
+#     Channel(name = "cars", description = "bmw")
+#     Subchannel(name = "dogs",channel_id = request.channel)
+#     Post(state = "sdf", expired = "False",no_of_reports = 3,title = "df",is_hidden = "False",quality_index = 0.3,
+#     description = "gh",price = 2,edit_date = "2013-04-9",pub_Date = "2013-04-9",comments_count = 0,
+#     intersed_count = 3,picture = "",sub_channel_id = request.subchannel,user = request.user, buyer = request.user,is_sold = "False")
+# class Comment(models.Model):
+#     content="kolololo"
+#     date=
+#     is_Hidden=models.BooleanField(default=False)
+#     post_id= models.ForeignKey(Post)
+#     # change the name to user because it the actual object not the id
+#     user_id=m
+
+# def commenting(request):
+# #"""Add a new comment."""
+#     p = request.POST['comment_id']
+
+#     # if p.has_key("content"):
+
+#     comment = Comment.objects.filter(post_id=p.post_id_id)
+#     c=comment.objects.create(content= comment.content , date=comment.date,  post_id=comment.id)
+#     c.save()
+#     # cf = CommentForm(p, instance=comment)
+#     # comment = cf.save(commit=False)
+#     # comment.save()
+#     return HttpResponseRedirect(reverse("db.tager_www.views.post",)
 # c1_hala this method purpose is to add a new comment, the method takes two parameters the request itself and the primary key
 #variable p takes the request then checks if the request
 #contains content ,then will make new variable called comment that will bring the comment table part that
@@ -157,10 +211,61 @@ def commenting(request, pk):
 # def view_posts_comments(request):
 #     post_id = request.GET['post_id']
 #     comments_of_posts = Comment.objects.filter(post_id_id= post_id)
-#     return render(request, 'homepage.html', {'comments_of_posts': comments_of_posts})
+#     return render(request, 'post.html', {'comments_of_posts': comments_of_posts})
 
  
 
+
+# def get_channels (request):
+#     channels = Channel.objects.all()
+#     channels_list = []
+#     for channel in channels:
+#         subchannels = Subchannel.objects.filter(channel_id_id=channel.id)
+#         subchannels_list = []
+#         for sc in subchannels:
+#             attributes = Attribute.objects.filter(subchannel_id_id=sc.id)
+#             subchannels_list.append({'subchannel': sc, 'attributes': attributes})
+
+#         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+#     print channels_list
+    
+#     # subchannel_dictionary = {'subchannel' , subchannel}
+
+#     return render(request, 'homepage.html', {'all_channels': channels_list} ,)
+# def get_posts (request):
+#     posts = Post.objects.all()
+#     posts_list = []
+#     for post in posts:
+#         comments = Comment.objects.filter(post_id_id=post.id)
+#         comments_list = []
+#         for ps in comments:
+#             attributes = Attribute.objects.filter(comment_id_id=ps.id)
+#             comments_list.append({'comment': ps, 'attributes': attributes})
+
+#         comments_list.append({'post': post, 'comments_list': comments_list})
+#     print posts_list
+    
+#     # subchannel_dictionary = {'subchannel' , subchannel}
+
+#     return render(request, 'post.html', {'all_posts': posts_list} ,)
+
+# Reem- As c3 , (a system) I should be able to provide a refinement bar along while previwing the posts
+# - this method creats variable channels , to store all channels available in the database,
+# variable subchannels , to store all subchannels available in the database,
+# channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes,
+# the method then return the channels_list only , as it holds , every attribute of subchannel
+# and every subchannel of a channel
+
+# def view_subchannel_posts(request):
+#     subchannel_id = request.GET['sub_ch_id']
+#     posts_of_subchannels = Posts.objects.filter(sub_channel_id_id= subchannel_id)
+#     return render(request, 'homepage.html', {'posts_of_subchannels': posts_of_subchannels})
+
+# def view_posts_comment(request):
+#     comment_id = request.GET['comment_id']
+#     comments_of_posts = Comment.objects.filter(comment_id_id= comment_id)
+#     return render(request, 'post.html', {'comments_of_posts': comments_of_posts})
 
 
 # def commenting(request):
@@ -171,8 +276,8 @@ def commenting(request, pk):
     #     if form.is_valid():
     #         user=UserProfile.objects.all()
     #         post=Post.objects.all()
-    #         p=Comment(content=request.POST['content'], date=timezone.now(), post_id=post[0], user_id=user[0].user_id)
-    #         p.save()
+            # p=Comment(content=request.POST['content'], date=timezone.now(), post_id=post[0], user_id=user[0].user_id)
+            # p.save()
     #         html = "<html><body>It is now .</body></html>" 
     #         return HttpResponse(html)
     #             # return HttpResponseRedirect('Comments.html')
@@ -195,14 +300,14 @@ def commenting(request, pk):
 
 
 
-def view_comments(request, pk):
-#"""Single post with comments and a comment form."""
-    post = Post.objects.get(pk=int(pk))
-    comments = Comment.objects.filter(post=post)
-    d = dict(post=post, comments=comments, form=CommentForm(), user=request.user)
-    d.update(csrf(request))
-    return render_to_response("post.html", d)
-    # return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
+# def view_comments(request, pk):
+# #"""Single post with comments and a comment form."""
+#     post = Post.objects.get(pk=int(pk))
+#     comments = Comment.objects.filter(post=post)
+#     d = dict(post=post, comments=comments, form=CommentForm(), user=request.user)
+#     d.update(csrf(request))
+#     return render_to_response("post.html", d)
+#     # return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
 
 #c1_hala this method purpose is to view the comments, 
 #so the method takes 2 parameters one the request it self and one the primary key
