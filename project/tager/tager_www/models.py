@@ -297,6 +297,7 @@ class Post(models.Model):
                 p.state = 'Archived'
                 p.save()
 
+
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
 # as the user reports a post after choosing a reason pre-defined in the system, a record is inserted in the table
