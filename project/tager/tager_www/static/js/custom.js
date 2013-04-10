@@ -1,25 +1,25 @@
 
-$(document).ready(function(){
-  $("#hide").click(function(){
-    $("p").hide();
-  });
-  $("#show").click(function(){
-    $("p").show();
-  });
-});
+// $(document).ready(function(){
+//   $("#hide").click(function(){
+//     $("p").hide();
+//   });
+//   $("#show").click(function(){
+//     $("p").show();
+//   });
+// });
 
 $(document).ready(function(){
 
 	$("#addBuyer").click(function(){
-		window.location.replace("post/addBuyer");
+		window.location.replace("addBuyer");
 	})
 })
-// $(document).ready(function(){
+$(document).ready(function(){
 
-// 	$("#rateSeller").click(function(){
-// 		window.location.replace("post/addBuyer");
-// 	})
-// })
+	$("#rateSeller").click(function(){
+		window.location.replace("profile?user_id="+$(this).val());
+	})
+})
 
 $(document).ready(function(){
 
@@ -27,11 +27,22 @@ $(document).ready(function(){
 		window.location.replace("post?post_id="+$(this).val());
 	})
 })
-
 $(document).ready(function(){
 
-	$("#addBuyer").click(function(){
-		window.location.replace("post/addBuyer");
-	})
+
+	$('#star').raty({ score: $('#rating').val()});
+
+	// $('#star').raty()
+
 })
-"hello?ch_id="+$(this).val()
+
+
+
+
+// $(document).ready(function(){
+
+// 	$("#addBuyer").click(function(){
+// 		window.location.replace("addBuyer");
+// 	})
+// })
+// "hello?ch_id="+$(this).val()
