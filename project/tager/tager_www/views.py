@@ -6,8 +6,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm
+from tager_www.forms import RegistrationForm , PostForm
 from tager_www.models import UserProfile 
+
+
 
 
 def home(request):
@@ -29,7 +31,39 @@ def view_subchannels(request):
     s_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+    return render_to_response('index.html', {'list_of_subchannels': list_of_subchannels})
+
+def add_post(request):
+    sub_channel_id = request.GET['sub_ch_id']
+    current_sub_channel = Subchannel.objects.get(id = sub_channel_id)
+    list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
+    form = PostForm(request.POST,request.FILES)
+    if form.is_valid():
+        author = request.user
+        subchannel  = Subchannel.objects.get(pk=sub_channel_id)
+        p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
+            ,description = form.cleaned_data['description'] 
+            ,price = form.cleaned_data['price']
+            ,user = author
+            ,sub_channel_id = subchannel
+            ,profile_picture = form.cleaned_data['picture']
+            ,picture1 = form.cleaned_data['picture1']
+            ,picture2 = form.cleaned_data['picture2']
+            ,picture3 = form.cleaned_data['picture3']
+            ,picture4 = form.cleaned_data['picture4']
+            ,picture5 = form.cleaned_data['picture5'])
+
+        
+        for k in request.POST:
+            if k.startswith('option_'):
+                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+        return HttpResponse("Thank you for adding your post")
+    else:
+        form = PostForm()
+        initial={'subject': 'I love your site!'}
+    
+
+    return render_to_response('index.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
 
 def login(request):
     #print request
@@ -60,31 +94,39 @@ def login(request):
 #it takes object user from the session and checks if this user can rate the post that is imbeded in 
 #the request and then add the results in the dictonary.Then render the post html and pass the 
 #dictionary.
-#
+
 def view_post(request):
+    post_id = Post.objects.get(id=6)
+    subchannel1 = post_id.sub_channel_id
+    list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
+    list_of_att_values = Value.objects.filter(Post_id = post_id)
+    post = post_id
+    return render(request, 'ViewPost.html', {'post': post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values})
 
-    post = Post.objects.get(pk= request.POST['post_id'])
-    user = request.user
-    creator = False
-    if post.user_id == user:
-         creator = True
-    rateSellerButtonFlag = user.canRate(request.POST['post_id']) 
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator}
+# def view_post(request):
+
+#     post = Post.objects.get(pk= request.POST['post_id'])
+#     user = request.user
+#     creator = False
+#     if post.user_id == user:
+#          creator = True
+#     rateSellerButtonFlag = user.canRate(request.POST['post_id']) 
+#     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator}
     
-    if request.method == 'POST':
-        form = BuyerIdentificationForm( request.POST )
-        if form.is_valid():
-            new_buyer_num = form.GetBuyerNum()
-            buyer_added = user.add_Buyer(post, new_buyer_num)
-            return HttpResponseRedirect( "/" )
-        else :
-            d.update({'form':form})
-            return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
+#     if request.method == 'POST':
+#         form = BuyerIdentificationForm( request.POST )
+#         if form.is_valid():
+#             new_buyer_num = form.GetBuyerNum()
+#             buyer_added = user.add_Buyer(post, new_buyer_num)
+#             return HttpResponseRedirect( "/" )
+#         else :
+#             d.update({'form':form})
+#             return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
 
-    else:
-        form = BuyerIdentificationForm()
-        d.update({'form':form})
-    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+#     else:
+#         form = BuyerIdentificationForm()
+#         d.update({'form':form})
+#     return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
 
 
 
