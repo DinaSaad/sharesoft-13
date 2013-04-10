@@ -141,6 +141,18 @@ def goToTheReportPage(request):
 #C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
 #reportPost in models.py then takes action to finish the reporting proccess
 def reportThePost(request):
+    print 'lllll'
+    post_id = request.POST['post_id']
+    p1 = Post.objects.get(id = post_id)
+    report_reason = request.POST['report_reason']
+    print post_id
+    print report_reason
+    User1= UserProfile.objects.create(email = 'aaalabwa@hotm', name= 'awad')
+    User1.save()
+    print User1.id
+    Report.objects.create(reported_post = p1, report_type = report_reason, reporting_user = User1)
+    # Report = Report.objects(reported_post = post_id, report_type = report_reason, report_user = User1)
+    # Report.save()
     return HttpResponse("hello")
 
 
