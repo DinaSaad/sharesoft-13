@@ -9,9 +9,11 @@ urlpatterns = patterns('',
 
     url(r'^$', 'tager_www.views.home'),
     url(r'^login/$', 'tager_www.views.login'),  
-    url(r'^logout/$', logout, {'next_page':'/login'}),  
-
+    url(r'^logout/$', logout, {'next_page':'/'}),  
+    # url(r'^profile/(?P<user_id>\d+)/$', 'tager_www.views.view_profile'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+    url(r'^post/$', 'tager_www.views.view_post'),
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
