@@ -217,23 +217,23 @@ class Subchannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length="200")
-    expired = models.BooleanField()
+    state = models.CharField(max_length="200", default = "New")
+    # expired = models.BooleanField()
     no_of_reports = models.IntegerField()
-    title = models.CharField(max_length="200")
+    # title = models.CharField(max_length="200")
     is_hidden = models.BooleanField(default="False")
-    quality_index = models.DecimalField(max_digits=5, decimal_places=2)
-    description = models.CharField(max_length="500")
-    price = models.IntegerField()
-    edit_date = models.DateField()
+    # quality_index = models.DecimalField(max_digits=5, decimal_places=2)
+    # description = models.CharField(max_length="500")
+    # price = models.IntegerField()
+    # edit_date = models.DateField()
     pub_Date = models.DateField()
-    comments_count = models.IntegerField(default="0")
-    intersed_count = models.IntegerField(default="0")
-    picture = models.ImageField(upload_to='images/test', blank=True)
-    sub_channel_id = models.ForeignKey(Subchannel)
+    # comments_count = models.IntegerField(default="0")
+    # intersed_count = models.IntegerField(default="0")
+    # picture = models.ImageField(upload_to='images/test', blank=True)
+    # sub_channel_id = models.ForeignKey(Subchannel)
     user = models.ForeignKey(UserProfile, related_name = 'seller_post')
-    buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
-    is_sold = models.BooleanField()#class Comments():
+    buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', null = True)
+    # is_sold = models.BooleanField()#class Comments():
     
     #Prints out the id in integer 
     def __unicode__(self):
@@ -260,6 +260,7 @@ class Post(models.Model):
     def postState(self):
         current_time = datetime.datetime.now()
         p = Post.objects.get(id = self.id)
+
         #used if the current year is greater than the year of the published post
         if current_time.year > self.pub_Date.year:
             #this is in case for exmaple the published month of the post is December and the current month is January
@@ -283,13 +284,12 @@ class Post(models.Model):
             day_diff_diff_month = current_time.day + (31 - self.pub_Date.day)
             day_diff_same_month = current_time.day - self.pub_Date.day
             month_diff = current_time.month - self.pub_Date.month
-            
             if month_diff >= 1:
                 month_diff = month_diff - 1
                 total_diff = (month_diff*31) + day_diff_diff_month
             else:
                 total_diff = day_diff_same_month
-              
+                          
             if total_diff > 30 and total_diff < 60:
                 p.state = 'Old'
                 p.save()
