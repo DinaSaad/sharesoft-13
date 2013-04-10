@@ -8,6 +8,9 @@
     <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+    {% block headers %}
+
+    {% endblock %}
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -53,10 +56,10 @@
                   <li><a href="#">One more separated link</a></li>
                 </ul>
               </li>
-            </ul>
-            {% block login %}
-
+            {% block log %}
+              <li><a href="/logout/" style=" float:right ">Logout</a></li>
             {% endblock %}
+            </ul>
             
           </div><!--/.nav-collapse -->
         </div>
