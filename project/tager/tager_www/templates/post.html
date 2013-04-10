@@ -4,12 +4,14 @@
 	<p> welcome {{ user.name }} to your post {{post.id}} </p>
 	
 	{% if view_rating %}
-	<button class="btn btn-mini btn-primary" id="rateSeller" value="request.user.id" type="button">Rate Seller</button>
+	<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.user.id}}" type="button">Rate Seller</button>
 	{% endif %}
+	<input type="hidden" name="post_id" id= "post_id" value="{{post.id}}">
 
 	{% if add_buyer_button %}
 	<button class="btn btn-mini btn-danger" id="addBuyer" value="" type="button">Add Buyer</button>
 	{% endif %}
 
+<!-- hidden field -->
 	
 {% endblock %}
