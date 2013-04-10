@@ -297,6 +297,18 @@ class Post(models.Model):
                 p.state = 'Archived'
                 p.save()
 
+# This model defines the table of reports
+# this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
+# as the user reports a post after choosing a reason pre-defined in the system, a record is inserted in the table
+# this table is used to retrieve the reports related to a certain post
+class Report(models.Model):
+    reported_post = models.ForeignKey(Post, related_name = 'reported_Post')
+    report_type = models.CharField(max_length = '100')
+    reporting_user = models.ForeignKey(UserProfile, related_name = 'reporting_user_id')
+        
+    def __unicode__(self):
+        return (self.report_type)
+
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
