@@ -8,7 +8,7 @@ from tager_www.models import UserProfile
 from django import forms 
 import random 
 import string
-
+from datetime import datetime, timedelta
 from django.core.mail import send_mail 
 
 
@@ -55,21 +55,19 @@ def view_post(request):
 
 
 
-def  get_user(self):    
-    User = get_user_model()
-    return User
+
 
 
 #mai c2: registration
-#this method taked in a request 
-#it checks if the request is equal to post which submits the data of the form to be proccsed 
-#then it takes form made (registrationform) and fills it with the data entered (post)
-#it then validates the form with is_valid() method to run validation and return a boolean designating whether the data was valid, it validates all the fields on the form
+#this method takes in a post request  
+#fills in the form (RegistrationForm) with the post data 
+#it then validates the form with is_valid() method to run validation and return a boolean  whether the data was valid, it validates all the fields on the form
 #then a user is made with the attibutes of the form (cleaned data) and user is saved 
 # a random number is then made and sent to the user 
+#sets the varaible creadted with the date of when the key is created 
 # then it redirects him to profile page 
-#or if there is errors it renders the same page again with the form and the request
-#if the user submits the form empty , the method will render the form again to the user 
+#or if there is errors it renders the same page again with the form and the request and a msg that says "please correct the following fields"
+#if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
 def UserRegistration(request):
     
     if request.method == 'POST':
@@ -78,6 +76,7 @@ def UserRegistration(request):
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
                  # this creates the user 
                 user.activation_key = ''.join(random.choice(string.ascii_uppercase + string.digits+ user.email) for x in range(20))
+                created = datetime.now()
                 user.save()
                 title = "email verfication"
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
@@ -99,13 +98,17 @@ def UserRegistration(request):
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
-# it saves the form field verfiy in a form 
-#then it gets the user with the actviatiokey = to the form (varible that has the verifcationcode)
-#it changes the attributes is_verifed to true 
-#then it saves the user 
-#else it saves the code from GET and puts it in a dictionarry 
-#this dictionary is rendered to the confirm_email page 
-#checking process happens again
+# at the beging the post is still empty so it goes in the else part 
+#it saves the GEt request in a variable called v_code
+#puts it in the form made (confirmationForm)
+#pass this form in a dictionary 
+#then renders the html with the form
+#goes into the method checks if the post request has the code and saves it in a varable form
+#then gets the user with this activitioncode 
+#checks if the activeationkey is not emty and not expired 
+#sets varable is_verfied = true
+#rsaves the user
+#if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
 def confirm_email(request):
      
     print "Start Confirm"
@@ -118,13 +121,17 @@ def confirm_email(request):
             print "The form is valid" 
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
-                print "activation key is exists" 
-                user.is_verfied=True
-                print user.is_verfied 
-                user.save()
+                if not user.is_expired():
+                    print "activation key is exists" 
+                    user.is_verfied=True
+                    print user.is_verfied 
+                    user.save()
                 
-                
-                return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
+                else :  
+                    print "key expired"
+                    return HttpResponse ("sorry your account is disabled because the activation key has expired")
+
+            return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
     else : 
         #add our registration form to context
@@ -133,14 +140,6 @@ def confirm_email(request):
         context = {'form': form}
         return render_to_response('confirm_email.html', context, context_instance=RequestContext(request))
         
-
-
-
-
-
-
-
-
 
 
 
