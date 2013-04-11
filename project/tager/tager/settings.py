@@ -1,6 +1,7 @@
 import os
 # Django settings for tager project.
-
+def relative_project_path(*x):
+    return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -53,7 +54,7 @@ USE_I18N = True
 USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
+USE_TZ = False
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -121,7 +122,9 @@ WSGI_APPLICATION = 'tager.wsgi.application'
 import os 
 
 TEMPLATE_DIRS = (
-      os.path.join(os.path.dirname(__file__), 'templates')
+    
+       relative_project_path('templates'),
+
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
