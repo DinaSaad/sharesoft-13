@@ -71,9 +71,27 @@
  <div class="container" style="padding-top: 60px;">
 <!-- Start TMP , Please remove me -->
 
+
+</script>
+
 {% block content %}
+
+{% block script %}
+{% endblock %}
 <!-- USe this to add your stuff   -->
 {% endblock %}
+
+<script type="text/javascript">
+    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    if(!options.crossDomain) {
+      if(options.data) {
+        options.data += "&";
+      } else {
+        options.data = "";
+      }
+      options.data += "csrfmiddlewaretoken={{csrf_token}}";
+    }
+    });
 <!-- End TMP , Please remove me -->
       <hr>
 
