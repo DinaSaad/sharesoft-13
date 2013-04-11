@@ -207,7 +207,7 @@ class Post(models.Model):
     expired = models.BooleanField()
     no_of_reports = models.IntegerField()
     title = models.CharField(max_length="200")
-    is_hidden = models.BooleanField(default="False")
+    is_hidden = models.BooleanField(default=False)
     quality_index = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.CharField(max_length="500")
     price = models.IntegerField()
@@ -225,12 +225,13 @@ class Post(models.Model):
     def getBuyer():
         return self.buyer.id
         #c1_hala_comment i added def unicode to return the post state to identify it while testing to make sure it is saved in db
-    
+
 class Comment(models.Model):
     content=models.CharField(max_length="500")
     date=models.DateTimeField()
     is_Hidden=models.BooleanField(default=False)
     post_id= models.ForeignKey(Post)
+    # change the name to user because it the actual object not the id
     user_id=models.ForeignKey(UserProfile)
    #c1_hala_comment i added def unicode to return the post state 
    #to identify it while testing to make sure it is saved in d 
@@ -238,6 +239,12 @@ class Comment(models.Model):
     #to easily retreive it from when needed in the post when comment is posted
     def __unicode__(self):
         return self.content
+    def adminmanagesposts(request, post_id):
+        addmin=request.user
+        if addmin.is_admin():
+            hidepost = Post.objects.get(pk = post_id)
+            hidepost.is_hidden = True
+            hidepost.save()
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
