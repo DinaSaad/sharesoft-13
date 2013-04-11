@@ -179,7 +179,7 @@ def get_attributes_id_of_subchannel(attribute_list , request):
     for j in attributes:
         attributes_search_list.append(i.attribute_id)
     return attributes_search_list
-def advanced_search(request):
+def advanced_search(request):#advanced search takes as input subchannel id and values the searches multiple values so it can return the posts that have the requested values
     sub_id = request.GET['sub_ch_id']
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     values =[]
@@ -272,12 +272,12 @@ def advanced_search(request):
 
 
                 
-def view_subchannels(request):
+def view_subchannels(request): #takes as input channel id and returns a dictionary of subchannels
     s_id = request.GET['ch_id']
     #current_channel = Channel.objects.filter(channel_id = s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = s_id)
     return render(request, 'advanced_search.html', {'list_of_subchannels': list_of_subchannels})
-def view_channels(request):
+def view_channels(request):#gets all the channels and passes them to templates in the form of a dictionary
     list_of_channels = Channel.objects.all() 
     print list_of_channels   
     return render(request, 'advanced_search.html', {'list_of_channels': list_of_channels})
