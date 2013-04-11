@@ -10,6 +10,79 @@ from tager_www.forms import RegistrationForm
 from tager_www.models import UserProfile 
 
 
+def return_channels(request):
+    channels = Channel.objects.all()
+    return render_to_response ('subscriptions.html', {'channels': channels})
+
+def return_subchannels(request):
+    s_id = request.GET['ch_id']
+    print s_id
+    channels = Channel.objects.all()
+    current_channel = Channel.objects.get(id=s_id)
+    subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels})
+
+def return_parameters(request):
+    sc_id = request.GET['sch_id']
+    channels = Channel.objects.all()
+    s_id = Subchannel.objects.get(id = sc_id).channel_id
+    subchannels = Subchannel.objects.filter(channel_id = s_id)
+    parameters = Attribute.objects.filter(subchannel_id = sc_id)
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
+
+def return_choices(request):
+    p_id = request.GET['p_id']
+    subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
+    parameters = Attribute.objects.filter(subchannel_id = subchannel_of_parameter)
+    channels = Channel.objects.all()
+    subchannels = Subchannel.objects.all()
+    choices = AttributeChoice.objects.filter(attribute_id = p_id)
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
+
+def subscription_by_chann(request):
+    ch_id = request.GET['ch_id']
+    channel=Channel.objects.get(id=ch_id)
+    user_id = request.user
+    user = UserProfile.objects.get(id = user_id)
+    subscription = Subscription.objects.get(channel=channel,sub_channel=None,parameter=None,choice=None)
+    subscription.subscribe_Bychannel(user)
+    return HttpResponseRedirect("subscriptions.html")
+
+def subscription_by_subchann(request):
+    ch_id = request.GET['ch_id']
+    channel=Channel.objects.get(id=ch_id)
+    sch_id = request.GET['sch_id']
+    subchannel=Subchannel.objects.get(id=sch_id)
+    user_id = request.user
+    user = UserProfile.objects.get(id = user_id)
+    subscription = Subscription.objects.get(channel=channel,sub_channel=subchannel,parameter=None,choice=None)
+    subscription.subscribe_Bychannel(user)
+    return HttpResponseRedirect("subscriptions.html")
+
+def subscribe_by_parameters(request):
+    ch_id = request.GET['ch_id']
+    channel=Channel.objects.get(id=ch_id)
+    sch_id = request.GET['sch_id']
+    subchannel=Subchannel.objects.get(id=sch_id)
+    p_id = request.GET['p_id']
+    parameter=Attribute.objects.get(id=p_id)
+    cho_id = request.GET['cho_id']
+    choice=AttributeChoice.objects.get(id=p_id)
+    user = UserProfile.objects.get(id = user_id)
+    subscription = Subscription.objects.get(channel=channel,sub_channel=subchannel,parameter=parameter,choice=choice)
+    subscription.subscribe_Bychannel(user)
+    return HttpResponseRedirect("subscriptions.html")
+
+def return_notification(request):
+    # user_in_email = request.POST['email']
+    user_in = UserProfile.objects.get(email = '1@3.com')
+    all_notifications = Notification.objects.filter(user = user_in)
+    if all_notifications is not None:
+        return render_to_response ('notifications.html', {'all_notifications': all_notifications})
+    else:
+        pass
+
+
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
