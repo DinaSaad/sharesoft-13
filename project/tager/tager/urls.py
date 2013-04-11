@@ -7,7 +7,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-
+    url(r'^register$', 'tager_www.views.home'),
+    
+    url(r'^$', 'tager_www.views.home'),
     url(r'^login/$', 'tager_www.views.login'),  
     url(r'^logout/$', logout, {'next_page':'/login'}),  
 
