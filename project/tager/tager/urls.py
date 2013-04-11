@@ -22,6 +22,14 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
+    url(r'^subscribe/$', 'tager_www.views.return_channels'),
+    url(r'^notifications/$', 'tager_www.views.return_notification'),
+    url(r'^subscribe/subchannels_sub/$', 'tager_www.views.return_subchannels'),
+    url(r'^subscribe/subchannels_sub/parameters_sub/$', 'tager_www.views.return_parameters'),
+    url(r'^subscribe/subchannels_sub/parameters_sub/choices_sub/$', 'tager_www.views.return_choices'),
+    url(r'^subscribe/subchannels_sub/parameters_sub/choices_sub/subscription_by_param', 'tager_www.views.subscribe_by_parameters'),
+    url(r'^subscribe/subchannel_sub/subscription_by_subchann/$', 'tager_www.views.subscription_by_subchann'),
+    url(r'^subscribe/subscription_by_chann/$', 'tager_www.views.subscription_by_chann'),
 )
 
 urlpatterns += patterns('fbregister.facebook',
