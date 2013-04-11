@@ -1,6 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
+from django.utils.timezone import utc
+from datetime import datetime, timedelta
+
+EXPIRATION_DAYS = 10
 
 
 #mai 
@@ -11,6 +15,9 @@ class MyUserManager(BaseUserManager):
     # this method takes email , name , password and extra fields (which can be any fileds in the USerPRofile model) as paramters
     #it checks if the user provided the email or not 
     #than it returns the saved user with the paramters entered 
+    #sets is_staff /is_superuser to false cuz hes not a super user
+    #and is_active is set to true which means this user has an account
+
     def create_user(self, email, name, password=None , **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
@@ -31,6 +38,8 @@ class MyUserManager(BaseUserManager):
 
      #this method also takes email name password and extra fields ) to create superusers which are the admins 
      #returns the saved user with the attributes entered 
+     #sets is_admin/is_staff to true cuz they r admin
+
       
     def create_superuser(self, email, name , password , **extra_fields):
         user = self.create_user(email,
@@ -65,6 +74,7 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
+    created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
     gender_choices = (
         ('M', 'Male'),
@@ -117,6 +127,16 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
+
+    #mai :registertaion
+    #this method takes self and just checks if the todays date from the time of the creation of the user is greater then
+    #the expired date set then the key is expired so it retunrs true 
+    #else returns false 
+
+    def is_expired(self):
+        if (datetime.now() - self.created).days >= EXPIRATION_DAYS:
+            return True
+        return False
 
     def canRate(self,post_id):
         print post_id
