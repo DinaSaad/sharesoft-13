@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+	{% block content %}
+		<div id="choosing" style>
+			<div id="label"><h2>Choose your subscription type:</h2></div>
+			<select id="choose" method="GET">
+				<option>-------</option>
+				<option value="Channel subscription">Channel</option>
+				<option value="Subchannel subscription">Subchannel</option>
+				<option value="Attribute subscription">Attribute</option>
+			</select>
+		</div><br></br>
+		<form >
+			<div id="channel" style="visibility:hidden">
+				<label>select your channel: </label>
+				<select id="channel_id">
+					<option>--------</option>
+  					{% if channels %}
+						{% for channel in channels %}
+							<option value="{{channel.id}}">{{channel.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
+			<div id="subchannel" style="visibility:hidden">
+				<label>select your subchannel: </label>
+				<select id="subchannel_id">
+					<option>--------</option>
+  					{% if subchannels %}
+						{% for subchannel in subchannels %}
+							<option value="{{subchannel.id}}">{{subchannel.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
+			<div id="parameter" style="visibility:hidden">
+				<label>select your parameter: </label>
+				<select id="parameter_id">
+					<option>--------</option>
+  					{% if parameters %}
+						{% for parameter in parameters %}
+							<option value="{{parameter.id}}">{{parameter.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
+			<div id="choice" style="visibility:hidden">
+				<label>select your choice: </label>
+				<select id="choice_id">
+					<option>--------</option>
+  					{% if choices %}
+						{% for choice in choices %}
+							<option value={{choice.value}}>{{choice.value}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
+		</form>	
+		<button type="button" onClick="subscribe()">Subscribe</button>
+	{% endblock %}
