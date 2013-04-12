@@ -148,10 +148,10 @@ class UserProfile(AbstractBaseUser):
         p = Post.objects.get(id = post_id)
         return user.id == post.user_id_id
 
-    #C1-Tharwat) This method takes in 2 parameters, the user id and the post.
+   #C1-Tharwat) This method takes in 2 parameters, the user id and the post.
     #It creates a list in which it filters through the posts table based on the user and post id.
     #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
-    def getInterestedIn(self, post):       
+    def get_interested_in(self, post):       
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
         x = []
         for i in interested:
@@ -161,7 +161,7 @@ class UserProfile(AbstractBaseUser):
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
     #It takes 2 parameters, the post being reported and the reason of report
     #It then inserts the record into the Report table
-    def reportPost(self, post, report_reason):
+    def report_the_post(self, post, report_reason):
         p = Post.objects.get(id = post.id)
         if post.user_id.id == self.id:
             print 'Cant report urself'
@@ -175,7 +175,7 @@ class UserProfile(AbstractBaseUser):
             report.save()
             p.no_of_reports = p.no_of_reports + 1
             p.save()      
-        
+         
     def canPost(self):
         return self.is_verfied
 
@@ -239,15 +239,15 @@ class Post(models.Model):
     def __unicode__(self):
         return self.id
 
-    def getBuyer():
+    def get_buyer():
         return self.buyer.id
     
     #C1-Tharwat) returns to total number of reports on the current post
-    def reportCount(self):
+    def report_count(self):
         return self.no_of_reports
 
     #C1-Tharwat) this method allows the admin to manually delete (Hide) a post
-    def adminDeleteReportedPost(post):
+    def admin_delete_reported_post(post):
         p = Post.objects.get(pk = post.id)
         p.is_hidden = True
         p.save()
@@ -257,7 +257,7 @@ class Post(models.Model):
     #the method compares the date of which the post was published in and the current date
     #It then uses an algorithim to determine the difference in number of days between the current date and the published date
     #Based on the amount returned, if the amount is less than 30 days, the state = "NEW", if between 30 and 60, the state = "OLD", if greater than 60, the state = "ARCHIVED"
-    def postState(self):
+    def post_state(self):
         current_time = datetime.datetime.now()
         p = Post.objects.get(id = self.id)
 
