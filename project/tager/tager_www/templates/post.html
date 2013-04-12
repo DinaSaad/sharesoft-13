@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content%} 
+<div class="container" style="padding-top: 60px;">
+<!-- Start TMP , Please remove me -->
+
+Title: {{ post.title }}<br/>
+Description: {{ post.description }}<br/><br/>
+Current Comments:<br/><br/>
+{% for comment in comments %}
+  {{ comment.user_id.name }}:
+  {{ comment.content}} <br/>
+  <small>{{ comment.date }}</small>
+{% empty %}
+  There are currently no comments on this post
+{% endfor %}
+<!-- USe this to add your stuff   -->
+<br/>
+<br/>
+<br/>
+<form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
+      <textarea placeholder='Add your comment' name='content'></textarea>
+      <br/>
+      <input type="submit" value="Add" class='btn'>
+  </form>
+<form action="/hide/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
+      <br/>
+      <input type="submit" value="hide" class='btn'>
+  </form>
+
+{% endblock %}
+<!-- End TMP , Please remove me -->
+      <hr>
+
+      <footer>
+        <p>&copy; sharesoft 2013</p>
+      </footer>
+</div>
+<!-- end main websiteBody Div -->
+
+
+
+</body>
+</html>
