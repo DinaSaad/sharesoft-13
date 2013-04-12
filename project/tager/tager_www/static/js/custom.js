@@ -37,10 +37,5 @@ $('#subChannel_dropdown').change(function(){
 });
 });
 
-$(document).ready(function(){
-$('#attribute_dropdown').change(function(){
-  window.location.replace("../adv_search?sub_ch_id="+$(this).val())
-});
-});
 
 
