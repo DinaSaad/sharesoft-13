@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'tager_www.views.login'),  
     url(r'^logout/$', logout, {'next_page':'/login'}),  
 
+
     url(r'^editing/$', 'tager_www.views.editing_info'),
     url(r'^updating/$', 'tager_www.views.update_status'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
@@ -21,6 +22,15 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
+
+    
+    # url(r'^resetpassword/$', 'tager_www.views.password_reset')
+    # url(r'^resetpassword/passwordsent/$', 'tager_www.views.password_reset_done')
+    # url(r'^resetpassword/done/$', 'tager_www.views.password_reset_complete')
+    # url(r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'tager_www.views.password_reset_confirm')
+
+
+    
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
