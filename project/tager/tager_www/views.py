@@ -163,11 +163,14 @@ def reportThePost(request):
 #     for i in subchannel:
 #         subchannel_list.append(i.id)
 
-def get_attributes_of_subchannel(request):
+def get_attributes_of_subchannel(request):#mohamed tarek c3 takes as input the subchannel id sellected then return all attributes of it 
     sub_id = request.GET['sub_ch_id']
     list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
     return render(request, 'advanced_search.html', {'list_of_attributes' : list_of_attributes, 'sub_id' : sub_id})
-def advanced_search(request):#advanced search takes as input subchannel id and values the searches multiple values so it can return the posts that have the requested values
+def advanced_search(request):#mohamed tarek c3 
+                             #this method takes attributes as input and takes values from the user them compares them  
+                             #to values to get the value obects containig the attribute ids and value iputed and them 
+                             #searches for all the post ids that have all the searched criteria present the returns a list of post ids
 
     sub_id = request.GET['sub_ch_id']
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
@@ -223,11 +226,11 @@ def advanced_search(request):#advanced search takes as input subchannel id and v
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
             return render('filter_post_channel.html', {'posts' : post})
-def view_subchannels(request):
+def view_subchannels(request):#mohamed tarek c3 this method takes a channel id from the user the returns all the subchannels in it 
     s_id = request.GET['ch_id']
     list_of_subchannels = Subchannel.objects.filter(channel_id = s_id)
     return render(request, 'advanced_search.html', {'list_of_subchannels': list_of_subchannels})
-def view_channels(request):
+def view_channels(request):#mohamed tarek c3 this method returs all the channels in the database
     list_of_channels = Channel.objects.all() 
     print list_of_channels   
     return render(request, 'advanced_search.html', {'list_of_channels': list_of_channels})
