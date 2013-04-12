@@ -1,16 +1,13 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
+from django.test.TestCase import TestCase
+from models import *
 
-Replace this with more appropriate tests for your application.
-"""
+class viewingPostsRelatedToSubchannel(TestCase):
+	def setUp(self):
+        self.channel = channel.objects.create(name="cars", description="greate deals in cars")
+        self.subchannel = subchannel(name="4x4", channel_id= channel)
 
-from django.test import TestCase
+	def test_models(self):
+        self.assertEqual(self.channel.name, "cars")
+        self.assertEqual(self.subchannel.channel_id_id, 1)
 
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+	
