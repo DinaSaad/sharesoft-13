@@ -2,10 +2,25 @@
     width: 220px;
     margin: 10px;
     float: left;
+    -webkit-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    -ms-border-radius: 3px 3px 0 0;
+    -o-border-radius: 3px 3px 0 0;
+    cursor: -webkit-zoom-in;
+    cursor: -moz-zoom-in;
+    cursor: zoom-in;
+    overflow: hidden;
+    background: #eee;
+    display: block;
+    position: relative;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33);
+    -moz-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33);
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33);
 }
 
 
-.mainBody {
+body {
 margin: 0 auto;
 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
@@ -17,3 +32,97 @@ background: #e3e3e3 url(../img/bg1.png) repeat;
 .btn img {
     float: left;
 }
+
+.item .priceValue {
+-webkit-font-smoothing: antialiased;
+-webkit-border-radius: 20px;
+-moz-border-radius: 20px;
+-ms-border-radius: 20px;
+-o-border-radius: 20px;
+border-radius: 20px;
+font-family: 'Helvetica', sans-serif;
+background: #333;
+background: rgba(0,0,0,0.6);
+border: 2px solid #fff;
+border-color: rgba(255,255,255,0.9);
+color: #fff;
+font-weight: bold;
+font-size: 11px;
+padding: 4px 8px 3px;
+position: absolute;
+right: 8px;
+top: 8px;
+z-index: 10;
+}
+
+.item .IntrestedCount {
+font-family: 'Helvetica', sans-serif;
+font-weight: bold;
+line-height: 11px;
+padding: 0;
+-webkit-font-smoothing: antialiased;
+display: -moz-inline-stack;
+display: inline-block;
+vertical-align: middle;
+zoom: 1;
+color: #a7a7a7;
+padding-right: 7px;
+
+}
+
+p.stats {
+padding-top: 7px !important;
+}
+.colorless, .colorless a {
+color: #8c7e7e;
+}
+p {
+margin: 0 0 .8em;
+line-height: 1.35em;
+}
+p {
+display: block;
+-webkit-margin-before: 1em;
+-webkit-margin-after: 1em;
+-webkit-margin-start: 0px;
+-webkit-margin-end: 0px;
+}
+.LikesCount em {
+position: relative;
+top: 1px;
+left: -2px;
+display: inline-block;
+width: 10px;
+height: 10px;
+}
+.item .StateLabel {
+/*-webkit-font-smoothing: antialiased;
+-webkit-border-radius: 20px;
+-moz-border-radius: 20px;
+-ms-border-radius: 20px;
+-o-border-radius: 20px;
+border-radius: 20px;*/
+font-family: 'Helvetica', sans-serif;
+/*background: #333;
+background: rgba(0,0,0,0.6);
+border: 2px solid #fff;
+border-color: rgba(255,255,255,0.9);
+color: #fff;*/
+font-weight: bold;
+font-size: 12px;
+padding: 4px 8px 3px;
+position: absolute;
+left: 8px;
+top: 8px;
+z-index: 10;
+}
+
+.item .repinLikeWrapper {
+visibility: hidden;
+}
+
+.item:hover .repinLikeWrapper {
+visibility: visible;
+}
+
+
