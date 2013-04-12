@@ -121,11 +121,20 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
-
+#C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
+#is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
+#object and insert it in a variable p, then takes the post object and the buyer and checks if he has rated 
+#this post before.. if he did then it would return false as he can't rate again if not. then it checks if the
+#product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
+#rateSeller button appears if he isn't then the button won't appear.
     def canRate(self,post_id):
         print post_id
         p = Post.objects.get(id = post_id)
-        #user = UserProfile.objects.filter(pk= user_id)
+        r = Rating.objects.filter(post= p ,buyer = self).count() 
+        print r
+        if r == 1:
+            return False
+        # #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
 
     def get_posts(self):
