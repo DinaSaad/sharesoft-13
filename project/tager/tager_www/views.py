@@ -180,8 +180,13 @@ def UserRegistration(request):
 
 def view_profile(request):
     try: 
+        user = request.user
+        # print user
+        verfied = user.is_verfied
+        link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+        print "v"
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile}
+        d = {'user':user_profile, "check_verified" : verfied , "link" : link}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
