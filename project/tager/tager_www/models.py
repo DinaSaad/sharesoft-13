@@ -141,11 +141,14 @@ class Subchannel(models.Model):
 	name = models.CharField(max_length=64)#Holds the name of the subchannel
 	channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
- 6639eea68a41f326a53a3aed90101cf9d92a1711
+
 
 
 class Post():
+	
 
+''' C1_beshoy Cal Quality index this method takes a post and then calculate its quality 
+index based on the filled attributes and thier wight'''
     def cal_quality_index(self):
         q_index=0
         if self.title is not None && self.description is not None
