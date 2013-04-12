@@ -1,16 +1,29 @@
 {% extends "base.html" %}
 
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+
 {% block content %}
-	<p> welcome {{ request.user.name }} to your profile  </p>
-	<button class="btn btn-mini btn-primary" id="rateSeller" value="request.user.id" type="button">Rate Seller</button>
+	<p> welcome {{ user.name }} to your profile  </p>
+	<button class="btn btn-mini btn-primary" id="post" value="1" type="button">post</button>
+    <div id="star"></div>
+    <input type="hidden" name="rating" id= "rating" value="{{user.rating}}">
+    
+    {% block script %}
+    <script type="text/javascript">
 
-	{% if add_buyer_button %}
-	<button class="btn btn-mini btn-danger" id="rateSeller" value="request.user.id" type="button">Add Buyer</button>
-	{% endif %}
+		$(document).ready(function(){
+			$('#star').raty({ 
+			score: $('#rating').val(),
+			readOnly : true,
+		});
 
-	<p>If you click on the "Hide" button, I will disappear.</p>
-<button id="hide">Hide</button>
-<button id="show">Show</button>
-
+	})
+	</script>
+	{% endblock%}
 	
 {% endblock %}
