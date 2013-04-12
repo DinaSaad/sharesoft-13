@@ -1,7 +1,14 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
+
+from django.utils.timezone import utc
+from datetime import datetime, timedelta
+
+EXPIRATION_DAYS = 10
+
 from django.db.models import Sum , Avg 
+
 
 
 
@@ -13,6 +20,9 @@ class MyUserManager(BaseUserManager):
     # this method takes email , name , password and extra fields (which can be any fileds in the USerPRofile model) as paramters
     #it checks if the user provided the email or not 
     #than it returns the saved user with the paramters entered 
+    #sets is_staff /is_superuser to false cuz hes not a super user
+    #and is_active is set to true which means this user has an account
+
     def create_user(self, email, name, password=None , **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
@@ -21,8 +31,8 @@ class MyUserManager(BaseUserManager):
         user = self.model(name=name , email=email,**extra_fields )
         email=MyUserManager.normalize_email(email),
         is_staff=False 
-        is_active=False 
         is_superuser=False 
+        is_active = True
         
                 
  
@@ -33,6 +43,8 @@ class MyUserManager(BaseUserManager):
 
      #this method also takes email name password and extra fields ) to create superusers which are the admins 
      #returns the saved user with the attributes entered 
+     #sets is_admin/is_staff to true cuz they r admin
+
       
     def create_superuser(self, email, name , password , **extra_fields):
         user = self.create_user(email,
@@ -40,7 +52,6 @@ class MyUserManager(BaseUserManager):
            
         )
         user.is_admin = True
-        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -67,7 +78,7 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
-    expiration_key_date = models.DateField(null=True, blank=True) 
+    created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
     rating = models.FloatField(default=0.0)
     gender_choices = (
@@ -103,7 +114,7 @@ class UserProfile(AbstractBaseUser):
         return self.name
  
     def __unicode__(self):
-        return self.email
+        return self.email + str(self.is_verfied) + str(self.activation_key)
 
      # this methods taked in a permission and the objects and returns true or false regarding wherther the objec entered has permission or not (user)
     def has_perm(self, perm, obj=None):
@@ -121,12 +132,25 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
+
+
+    #mai :registertaion
+    #this method takes self and just checks if the todays date from the time of the creation of the user is greater then
+    #the expired date set then the key is expired so it retunrs true 
+    #else returns false 
+
+    def is_expired(self):
+        if (datetime.now() - self.created).days >= EXPIRATION_DAYS:
+            return True
+        return False
+
 #C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
 #is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
 #object and insert it in a variable p, then takes the post object and the buyer and checks if he has rated 
 #this post before.. if he did then it would return false as he can't rate again if not. then it checks if the
 #product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
 #rateSeller button appears if he isn't then the button won't appear.
+
     def canRate(self,post_id):
         print post_id
         p = Post.objects.get(id = post_id)
