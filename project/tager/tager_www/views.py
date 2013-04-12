@@ -8,6 +8,10 @@ from django.contrib.auth import get_user_model
 from django.template import RequestContext
 from tager_www.forms import RegistrationForm
 from tager_www.models import UserProfile 
+import datetime
+from django.utils import timezone
+from tager_www.models import UserProfile, Post, Comment 
+import sqlite3
 
 
 def home(request):
@@ -133,6 +137,54 @@ def UserRegistration(request):
         #add our registration form to context
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
+
+# c1_hala viewPost method is a method that takes two parameters request and post_id, 
+#post variable is a variable that gets the Post from Post table with id that is matched with the id of post that entered 
+#as a parameter, and returns rendor-to-response that returns a post.html that contains the post itself that enters the methos
+#as a parameter , that the user wants , and under that post there is a comment textarea and button called add that adds the
+#comment the user wants to add under the post.
+#and returns the variable post that returns the post the user comments on, and returns all the comments that related to
+#this postt that were posted before.
+
+def viewPost(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    return render_to_response('post.html', {'post':post, 'comments':Comment.objects.filter(post_id=post)}, context_instance=RequestContext(request))
+
+#c1_hala this method called savingComment that takes two parameters request and post_id, the 
+#content variable takes from the request the content that the user types in, and userobject variable is a 
+#variable that the user as an object which rather than taking the user_id no takes the user as an object
+#and saves it in the Comment table as an object, and post variable brings the post from post table with id 
+#that matches the post_id that taken as a paramter, and comment variable saves in the comment table 
+#the content taken and the date that was retreived at that time using datetime.now()
+#and takes the user as an object, and takes the post id and saves it in the comment table.
+#comment table by that saves each post with its comment content, date of the comment, and saves 
+#the users owner of the comment next to tthe comment. and at last the method returns the method viewPost
+#which has the post and its past comments saved on it
+
+def SavingComment(request, post_id):
+    content = request.POST['content']
+    userobject= UserProfile.objects.get(id=Comment.user_id)
+    post = Post.objects.get(pk=post_id)
+    comment = Comment(content=content, date=datetime.datetime.now(), user_id=userobject, post_id=post)
+    comment.save()
+    return viewPost(request, post_id)
+#c1_hala
+# this method called removePost is a method that takes two parameters request and post_id, request to bring from it the 
+# user who is logged to check if he is an admin or not , then post_id to bring this post from Post object
+#then the method checks first if he is an admin or not , then brings the post the user wants if the user is an admin 
+# will change the is_hidden to true to be hidden , then will return to viewPost to make sure that the post is hidden
+#if the user is not an admin he will be rendered to http response he is not an admin to make post hidden 
+def removePost(request, post_id):
+    admin= request.user 
+    hidepost=Post.objects.get(pk=post_id)
+    if admin.is_admin:
+        hidepost.is_hidden = True
+        hidepost.save()
+        return viewPost(request, post_id)
+    else:
+        return HttpResponse("you aren't an admin to be able to delete post")
+
+
 
 
 
