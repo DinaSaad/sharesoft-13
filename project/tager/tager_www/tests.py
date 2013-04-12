@@ -5,6 +5,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
+
 from datetime import datetime
 from django.test import Client
 from django.test import TestCase
