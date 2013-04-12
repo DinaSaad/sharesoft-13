@@ -134,26 +134,33 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
-#C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
-def goToTheReportPage(request):
-    return render_to_response('report.html')
-
 #C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
 #reportPost in models.py then takes action to finish the reporting proccess
-def reportThePost(request):
-    print 'lllll'
+def report_the_post(request):
     post_id = request.POST['post_id']
-    p1 = Post.objects.get(id = post_id)
+    user = request.user
     report_reason = request.POST['report_reason']
-    print post_id
-    print report_reason
-    User1= UserProfile.objects.create(email = 'aaalabwa@hotm', name= 'awad')
-    User1.save()
-    print User1.id
-    Report.objects.create(reported_post = p1, report_type = report_reason, reporting_user = User1)
+    post = Post.objects.get(id = post_id)
+    user.reportPost(post, report_user)    
+
+    # Report.objects.create(reported_post = p1, report_type = report_reason, reporting_user = User1)
     # Report = Report.objects(reported_post = post_id, report_type = report_reason, report_user = User1)
     # Report.save()
-    return HttpResponse("hello")
+    # return HttpResponse("hello")
+
+# C1-Tharwat this method takes in the post object as a parameter. it then calls the get_interested_in method in models.py 
+# to return the list of interested in buyers to the html page
+def get_interested_in(request):
+    post_id = request.POST['post_id']
+    user = request.user
+    post = Post.objects.get(id = post_id)
+    list_of_interested_buyers = user.getInterestedIn(post)
+    return render(request, 'post.html', {'list_of_interested_buyers': list_of_interested_buyers})
+
+
+
+
+    
 
 
 
