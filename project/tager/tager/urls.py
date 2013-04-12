@@ -1,9 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout, login
-
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-admin.autodiscover()
+from tager_www import views
+# admin.autodiscover()
 
 urlpatterns = patterns('',
 
@@ -23,6 +22,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
 	url(r'^tager_www/', include('tager_www.urls')),
+    url(r'^post/(?P<post_id>\d+)/$', 'tager_www.views.viewPost'),
+    url(r'^addComment/(?P<post_id>\d+)/$', 'tager_www.views.SavingComment', name="adingcomment"),
+    url(r'^hideComment/(?P<post_id>\d+)/$', 'tager_www.views.removePost'),
 )
 
 urlpatterns += patterns('fbregister.facebook',
