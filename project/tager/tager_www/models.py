@@ -168,8 +168,6 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
-
-
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
 #description is the description of the channel
@@ -226,25 +224,24 @@ class Post(models.Model):
         return self.buyer.id
         #c1_hala_comment i added def unicode to return the post state to identify it while testing to make sure it is saved in db
 
+#c1_comment i added a comment class that has attributes
+#content that takes from the user content in the interface textarea
+#date that takes the date of the comment made on the post
+# is_Hidden is a boolean that says the post is visible or not if true its hidden if false its visible
+#post_id is an attribute that brings the post_id from the post class that the comment will be added to the post the user 
+#standing on, 
+# user_id is an attribute that brings the user from the userprofile class to write the username who wrote the comment next 
+#to the comment , finally the comment table saves all things that related to a comment
 class Comment(models.Model):
     content=models.CharField(max_length="500")
     date=models.DateTimeField()
     is_Hidden=models.BooleanField(default=False)
     post_id= models.ForeignKey(Post)
-    # change the name to user because it the actual object not the id
     user_id=models.ForeignKey(UserProfile)
-   #c1_hala_comment i added def unicode to return the post state 
-   #to identify it while testing to make sure it is saved in d 
-    #i added comment tabel to save data taken from user to save in db 
-    #to easily retreive it from when needed in the post when comment is posted
+
+  #c1_hala i added a new def unicode that returns the comment state.
     def __unicode__(self):
         return self.content
-    def adminmanagesposts(request, post_id):
-        addmin=request.user
-        if addmin.is_admin():
-            hidepost = Post.objects.get(pk = post_id)
-            hidepost.is_hidden = True
-            hidepost.save()
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
