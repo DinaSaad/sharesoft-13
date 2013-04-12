@@ -5,8 +5,11 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from django.test import TestCase
 
+from django.utils import unittest
+from django.test import TestCase
+from django.test import Client
+from tager_www.models import *
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
@@ -15,7 +18,8 @@ class SimpleTest(TestCase):
         """
         self.assertEqual(1 + 1, 2)
 
-        
+
+
 class UserActionsTest(unittest.TestCase):
     def setUp(self):
         self.user1 = UserProfile(name="mahmoud", email="mahmoud@me.com",password="me",phone_number="9876543210")
