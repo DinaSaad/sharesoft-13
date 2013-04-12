@@ -134,14 +134,6 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
-#C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
-def goToTheReportPage(request):
-    return render_to_response('report.html')
-
-#C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
-#reportPost in models.py then takes action to finish the reporting proccess
-def reportThePost(request):
-    return HttpResponse("hello")
 
 
 
