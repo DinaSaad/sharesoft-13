@@ -28,7 +28,11 @@ DATABASES = {
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
-
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = 'mai.zaied17@gmail.com'
+EMAIL_HOST_PASSWORD = 'whereru.123.17'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -50,7 +54,7 @@ USE_I18N = True
 USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
+USE_TZ = False
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -88,6 +92,9 @@ STATICFILES_FINDERS = (
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '^m!k&z0&tn9i6&1tc6@*@h%s&5yb!1zf%ncxah56drxjf9$cc$'
+RECAPTCHA_PUBLIC_KEY = '6Ld8ct8SAAAAAJTUMgacSavqcnzqRVPT2M7Ht5i6'
+RECAPTCHA_PRIVATE_KEY = '6Ld8ct8SAAAAAH6kJ8dcBhqG438D9IwCcAP1whEM'
+RECAPTCHA_USE_SSL = True
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -137,6 +144,7 @@ INSTALLED_APPS = (
 
     'tager_www',
     'fbregister',
+    'captcha'
     
     
 )
@@ -179,7 +187,7 @@ LOGGING = {
 AUTHENTICATION_BACKENDS = ( 
     'fbregister.facebook.FacebookBackend',
 
-    'tager_www.views.CustomAuthentication',
+    
 
     'django.contrib.auth.backends.ModelBackend'
 
