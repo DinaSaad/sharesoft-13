@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
 from django.template import RequestContext
@@ -10,18 +10,32 @@ from tager_www.forms import RegistrationForm
 from tager_www.models import UserProfile 
 
 
+def home(request):
+    return render_to_response ('home.html',context_instance=RequestContext(request))
+
+#c2-mohamed awad
+#this def return channels to subscriptions.html for the user to choose a channel to subscribe to
 def return_channels(request):
     channels = Channel.objects.all()
     return render_to_response ('subscriptions.html', {'channels': channels})
 
+#c2-mohamed awad
+#this def return subchannels to subscriptions.html for the user to choose a subchannel to subscribe to
+#it takes a request containing the channel id the user has choosen in subscriptions.html and returns all subchannels
+#of that channel for the user to subscribe to
 def return_subchannels(request):
     s_id = request.GET['ch_id']
     print s_id
     channels = Channel.objects.all()
     current_channel = Channel.objects.get(id=s_id)
     subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels})
+    print {'subchannels': subchannels}
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels})
 
+#c2-mohamed awad
+#this def returns parameters to subscriptions.html for the user to choose a parameter to subscribe to
+#it takes a request containing the subchannel id the user has choosen in subscriptions.html and returns all attributes
+#of that subchannel for the user to choose from
 def return_parameters(request):
     sc_id = request.GET['sch_id']
     channels = Channel.objects.all()
@@ -30,6 +44,10 @@ def return_parameters(request):
     parameters = Attribute.objects.filter(subchannel_id = sc_id)
     return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
 
+#c2-mohamed awad
+#this def return choices to subscriptions.html for the user to choose a choice to subscribe to
+#it takes a request containing the parameter id the user has choosen in subscriptions.html and returns all choices
+#of that parameter for the user to subscribe to
 def return_choices(request):
     p_id = request.GET['p_id']
     subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
@@ -39,26 +57,36 @@ def return_choices(request):
     choices = AttributeChoice.objects.filter(attribute_id = p_id)
     return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
 
+#c2-mohamed awad
+#this def allows user to subscribe by channel only
+#it takes as a request the channel id the user is subscribed to and saves a new record in UserChannelSubscription table
+#containing the user and channel as attributes
 def subscription_by_chann(request):
     ch_id = request.GET['ch_id']
     channel=Channel.objects.get(id=ch_id)
-    user_id = request.user
-    user = UserProfile.objects.get(id = user_id)
+    user = request.user
     subscription = Subscription.objects.get(channel=channel,sub_channel=None,parameter=None,choice=None)
     subscription.subscribe_Bychannel(user)
-    return HttpResponseRedirect("subscriptions.html")
+    return HttpResponseRedirect('subscriptions.html')
 
+#c2-mohamed awad
+#this def allows user to subscribe by subchannel only
+#it takes as a request the channel id  and sub channel id the user is subscribed to and saves a new record in UserSubChannelSubscription table
+#containing the user, channel, and subchannel as attributes
 def subscription_by_subchann(request):
     ch_id = request.GET['ch_id']
     channel=Channel.objects.get(id=ch_id)
     sch_id = request.GET['sch_id']
     subchannel=Subchannel.objects.get(id=sch_id)
-    user_id = request.user
-    user = UserProfile.objects.get(id = user_id)
+    user = request.user.id
     subscription = Subscription.objects.get(channel=channel,sub_channel=subchannel,parameter=None,choice=None)
     subscription.subscribe_Bychannel(user)
-    return HttpResponseRedirect("subscriptions.html")
+    return HttpResponseRedirect('subscriptions.html')
 
+#c2-mohamed awad
+#this def allows user to subscribe by parameters
+#it takes as a request the channel id, subchannel id, parameter id and choice id the user is subscribed to and saves a new record in UserParameterSubscription table
+#containing the user, channel, parameter and choice as attributes
 def subscribe_by_parameters(request):
     ch_id = request.GET['ch_id']
     channel=Channel.objects.get(id=ch_id)
@@ -68,23 +96,21 @@ def subscribe_by_parameters(request):
     parameter=Attribute.objects.get(id=p_id)
     cho_id = request.GET['cho_id']
     choice=AttributeChoice.objects.get(id=p_id)
-    user = UserProfile.objects.get(id = user_id)
+    user = request.user
     subscription = Subscription.objects.get(channel=channel,sub_channel=subchannel,parameter=parameter,choice=choice)
     subscription.subscribe_Bychannel(user)
-    return HttpResponseRedirect("subscriptions.html")
+    return HttpResponseRedirect('subscriptions.html')
 
+#c2-mohamed awad
+#this def takes a user as a request and returns all his related notifications to notifications.html
+#from Notification table
 def return_notification(request):
-    # user_in_email = request.POST['email']
-    user_in = UserProfile.objects.get(email = '1@3.com')
+    user_in = reques.user
     all_notifications = Notification.objects.filter(user = user_in)
     if all_notifications is not None:
         return render_to_response ('notifications.html', {'all_notifications': all_notifications})
     else:
         pass
-
-
-def home(request):
-    return render_to_response ('home.html',context_instance=RequestContext(request))
 
 #C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
 #which is of type post and it has the email and the password attribute which are 
@@ -93,6 +119,7 @@ def home(request):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
+
 
 def login(request):
     #print request
@@ -197,13 +224,11 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+#C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
+def goToTheReportPage(request):
+    return render_to_response('report.html')
 
-
-
-
-
-
-
-
-
-    
+#C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
+#reportPost in models.py then takes action to finish the reporting proccess
+def reportThePost(request):
+    return HttpResponse("hello")
