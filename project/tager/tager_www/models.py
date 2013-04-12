@@ -2,8 +2,9 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
-import datetime
+from datetime import datetime, timedelta
 
+EXPIRATION_DAYS = 10
 
 #mai 
 #this is the custome manager made , it inheirts the built in baseUSermanager 
@@ -13,6 +14,8 @@ class MyUserManager(BaseUserManager):
     # this method takes email , name , password and extra fields (which can be any fileds in the USerPRofile model) as paramters
     #it checks if the user provided the email or not 
     #than it returns the saved user with the paramters entered 
+    #sets is_staff /is_superuser to false cuz hes not a super user
+    #and is_active is set to true which means this user has an account
     def create_user(self, email, name, password=None , **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
@@ -21,7 +24,7 @@ class MyUserManager(BaseUserManager):
         user = self.model(name=name , email=email,**extra_fields )
         email=MyUserManager.normalize_email(email),
         is_staff=False 
-        is_active=False 
+        is_active=True
         is_superuser=False 
         
                 
@@ -30,17 +33,15 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
      #this method also takes email name password and extra fields ) to create superusers which are the admins 
      #returns the saved user with the attributes entered 
-      
+     #sets is_admin/is_staff to true cuz they r admin
     def create_superuser(self, email, name , password , **extra_fields):
         user = self.create_user(email,
             password=password, name=name , **extra_fields
            
         )
         user.is_admin = True
-        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -67,7 +68,6 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
-    expiration_key_date = models.DateField(null=True, blank=True) 
     status = models.CharField(max_length=400 , null=True) 
     
     gender_choices = (
@@ -121,6 +121,11 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
+
+    def is_expired(self):
+        if (datetime.now() - self.created).days >= EXPIRATION_DAYS:
+            return True
+        return False
 
     def canRate(self,post_id):
         print post_id
