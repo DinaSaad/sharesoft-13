@@ -8,6 +8,7 @@ from tager_www.models import UserProfile
 from django import forms 
 import random 
 import string
+from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.core.mail import send_mail 
 
@@ -20,19 +21,60 @@ from django.core.mail import send_mail
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
 
+
 def login(request):
-    email = request.POST['email']
+    print request
+    # user = is_anonymous 
+
+    #print "ldnfldnfndlfd"
+    mail = request.POST['email']
     password = request.POST['password']
-    user = authenticate(email=email, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            return render_to_response ('Profile.html',context_instance=RequestContext(request))# Redirect to a success page.
+    print "before"
+    authenticated_user = authenticate(mail=mail, password=password)
+    if authenticated_user is not None:
+        print "auth"
+        print authenticated_user.is_active
+        if authenticated_user.is_active:
+            print "act"
+            django_login(request, authenticated_user)
+            print "login"
+            user = request.user 
+            print user
+            verfied = user.is_verfied
+            link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
+            print "v"
+            d = {"check_verified" : verfied , "link" : link}
+            return render_to_response ('profile.html',d ,context_instance=RequestContext(request))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
+        return render_to_response ('home.html',context_instance=RequestContext(request))
+       #return redirect("/login/")# Return an 'invalid login' error message.
+
+class CustomAuthentication:
+    def authenticate(self, mail, password):
+        try:
+            user = UserProfile.objects.get(email=mail)
+            if user.password == password:
+                return user
+        except UserProfile.DoesNotExist:
+            return None
+
+
+
+# def login(request):
+#     email = request.POST['email']
+#     password = request.POST['password']
+#     user = authenticate(email=email, password=password)
+#     if user is not None:
+#         if user.is_active:
+#             login(request, user)
+#             return render_to_response ('Profile.html',context_instance=RequestContext(request))# Redirect to a success page.
+#         else:
+#            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+#     else:
         
-       return redirect("/login/")# Return an 'invalid login' error message.
+#        return redirect("/login/")# Return an 'invalid login' error message.
 
 #this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
