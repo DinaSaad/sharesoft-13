@@ -209,7 +209,7 @@ class Post(models.Model):
     intersed_count = models.IntegerField(default="0")
     picture = models.ImageField(upload_to='images/test', blank=True)
     sub_channel_id = models.ForeignKey(Subchannel)
-    user = models.ForeignKey(UserProfile, related_name = 'seller_post')
+    user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
     is_sold = models.BooleanField()#class Comments():
     def getBuyer():

@@ -146,7 +146,7 @@ def get_channels (request):
         for sc in subchannels:
             attributes =  Attribute.objects.filter(subchannel_id_id=sc.id)
             subchannels_list.append({'subchannel': sc, 'attributes': attributes})
-
+            
         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
     print channels_list
     
@@ -164,17 +164,22 @@ def get_channels (request):
 # and every subchannel of a channel 
 
 def view_subchannel_posts(request):
-    subchannel_id = request.GET['sub_ch_id']
-    posts_of_subchannels = Posts.objects.filter(sub_channel_id_id= subchannel_id)
-    return render(request, 'homepage.html', {'posts_of_subchannels': posts_of_subchannels})
+    sub_channel_id = request.GET["sub_ch_id"]
+    print sub_channel_id
+    current_subchannel = Subchannel.objects.get(id =sub_channel_id)
+    posts_of_subchannels = Post.objects.filter(sub_channel_id= current_subchannel)
+    print posts_of_subchannels
+    return render(request, "homepage.html", {'posts_of_subchannels': posts_of_subchannels})
 
  
-# # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-    # subchannel_id is the id retrieved from the webpage 
-    # its is matched with with the subchannel id in the post model , 
-    # the method returns the dictionairy of posts related to specific subchannels.
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# subchannel_id is the id retrieved from the webpage 
+# its is matched with with the subchannel id in the post model , 
+# the method returns the dictionairy of posts related to specific subchannels.
 
-
+# def my_ajax_view(request):
+#     # do something
+#     return HttpResponse(simplejson.dumps(some_data), mimetype='application/json')
 
 
 

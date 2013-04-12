@@ -15,37 +15,24 @@
     <div class="accordion-group">
     <div class="accordion-heading" >
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#channel{{i.channel.id}} " id=" ChannelBar" value="{{i.Channel.id}}">
-        
-      <!-- label class="checkbox"> -->
-        <input type="checkbox" > {{i.channel.name}}
-<!--       </label> -->
+            {{i.channel.name}}
       </a>
+      
     </div>
     
     <div id="channel{{i.channel.id}}" class="accordion-body collapse in">
       <div class="accordion-inner">
-          <p id="Channel_dropdown" value="{{i.channel.name}}"> 
-            {% for subchannel in i.subchannels_list %} </p>
-         <div class="accordion-group">
-           <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#subchannel{{subchannel.subchannel.id}} " id="subChannelBar" value="{{subchannel.subchannel.id}}">
         
+            {% for subchannel in i.subchannels_list %} 
           
-            <!-- label class="checkbox">
-               <input type="checkbox"> {{subchannel.subchannel.name}}
-            </label>  -->
-            <li id ="SubChannel_dropdown" value ="{{subchannel.subchannel.id}}"> {{subchannel.subchannel.name}}  </li>
-
-            <div id="subchannel{{subchannel.subchannel.id}}" class="accordion-body collapse in">
+          <div id="channel{{i.subchannel.id}}" class="accordion-body collapse in">
               <div class="accordion-inner">
-                {% for attr in subchannel.attributes %}
-                  {{attr.name}}
-                {% endfor %}
+                <p>
+                <input onClick="posts_render({{subchannel.subchannel.id}});"  type="checkbox"  id="SubChannel_dropdown{{subchannel.subchannel.id}}" value="{{subchannel.subchannel.id}}">  
 
-              </div>
-            </div>
-        
+                {{subchannel.subchannel.name}} 
 
+                </p>
       </a>
     </div>
   </div>
@@ -63,35 +50,22 @@
 
     <!-- Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
       this is a collapse method from bootstrap that helps in previing the channels and -->
-    <div class="span10">
-      <!--Body content-->
+<div  id= "mydiv"class="span10">
 
-      <!-- {% for sub_ch in posts_of_subchannels %}
+  <please select the subchannels you want to preview
 
-              <div> 
-                
-               <p>   {{sub_ch.posts_subchannels.id}} </p>
-                
-      {% endfor %}
- -->
+    {% for i in posts_of_subchannels %}
 
-    </div>
+
+    <li id ="post_id" >{{i.title}}</li>
+  <!--   <li > {{i.Post.title}} </li> -->
+
+    {% endfor%}
   </div>
 </div>
 
 <script type="text/javascript">
-$(document).ready(function(){
-$('#Channel_dropdown').click(function(){
-    window.location.replace("ref?ch_id="+$(this).val())
-});
-$('#SubChannel_dropdown').click(function(){
-    window.location.replace("ref?sub_ch_id="+$(this).val())
-});
-});
-  </script> 
 
- <!-- Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-  the j query simply takes tha channel and subchannel id from the referecnce as its clicked by the user , to pass it to def view_subchannel_posts -->
 
 
 {% endblock %}

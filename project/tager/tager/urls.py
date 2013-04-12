@@ -13,7 +13,8 @@ urlpatterns = patterns('',
 
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     url(r'^homepage/$', 'tager_www.views.get_channels'),
-    url(r'^homepage/$', 'tager_www.views.view_subchannel_posts'),
+    url(r'^viewingPosts/$', 'tager_www.views.view_subchannel_posts'),
+    
     
 
     # Examples:
