@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
 from django.template import RequestContext
@@ -21,6 +21,16 @@ def home(request):
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
 
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    s_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=s_id)
+    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+
 def login(request):
     #print request
     #print "ldnfldnfndlfd"
@@ -38,7 +48,8 @@ def login(request):
         if authenticated_user.is_active:
             print "act"
             django_login(request, authenticated_user)
-            return render_to_response ('profile.html',context_instance=RequestContext(request))# Redirect to a success page.
+            print "user logged in"
+            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
@@ -61,7 +72,7 @@ def view_post(request):
          creator = True
     rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
     print rateSellerButtonFlag
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post}
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
     # if request.method == 'POST':
     #     form = BuyerIdentificationForm( request.POST )
@@ -78,7 +89,7 @@ def view_post(request):
     #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
-    
+
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
 #who posted the post, the post it self and the rating. after taking in the request and storing the attributes
@@ -88,17 +99,16 @@ def view_post(request):
 #
 
 def User_Ratings(request):
+    # print request
     rater = request.user
-    post_owner = request.POST['post_owner']
-    post = request.POST['post']
-    rating = request.POST['rating']
-
+    post_owner = UserProfile.objects.get(id=request.GET['post_owner'])
+    post = Post.objects.get(id=request.GET['post_id'])
+    rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
-    d = {"user_rating":user_rating, 'post_owner':post_owner}
-    return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
-
-
-
+    # d = {"user_rating":user_rating, 'post_owner':post_owner}
+    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
+    return HttpResponseRedirect("/")
+    
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
 #as input is a request coming from the user after he presses on add the buyer button in the post page.
 #so what the method does is it checks if the request is post and is holding the filled form, if it does
@@ -164,7 +174,9 @@ def UserRegistration(request):
     #if request.user.is_authenticated():
      #   return HttpResponseRedirect('/profile/')
      #if they r submitting the form back
+    print request.POST
     if request.method == 'POST':
+        print request.POST
         form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
         if form.is_valid(): # validates all the fields on the firm,The first time you call is_valid() or access the errors attribute of a ModelForm triggers form validation as well as model validation.
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -180,6 +192,23 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+
+def view_profile(request):
+    try: 
+        user = request.user
+        # print user
+        verfied = user.is_verfied
+        link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+        print "v"
+        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+        d = {'user':user_profile, "check_verified" : verfied , "link" : link}
+    except: 
+        err_msg = 'This user doesn\'t exist'
+        return HttpResponse(err_msg) 
+    else:
+        return render_to_response ('profile.html', d ,context_instance=RequestContext(request))
+
+        # GO TO USER PROFILE
 
 
 

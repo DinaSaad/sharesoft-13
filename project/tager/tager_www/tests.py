@@ -1,3 +1,4 @@
+
 from django.utils import unittest
 from django.test import TestCase
 from django.test import Client
@@ -39,3 +40,7 @@ class UserActionsTest(unittest.TestCase):
         self.assertEqual(user1.add_buyers(post1,"9876543210"), False)
     
     
+    def user_canRate_without_BuyerID(self):
+        self.assertTrue(user2.canRate(self.post1),True)
+        self.assertTrue(user1.canRate(self.post1),False)
+
