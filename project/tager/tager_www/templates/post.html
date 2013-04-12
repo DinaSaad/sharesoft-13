@@ -38,17 +38,16 @@
             click: function(score, evt) {
             //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
             $.ajax({
-                method: "POST",
-                url: "/rateUser/",
-                data: {"post_id": $('#post_id').val(),
-                       "post_owner": $('#post_owner').val(),
-                       "rating": score,
-                         }
-                    })
-        },
-    });
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.user.id}}', rating: score },
+                         });
 
-})
+
+        },
+
+    });
+});
     </script>
     {% endblock %}
 
