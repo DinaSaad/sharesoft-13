@@ -8,6 +8,12 @@
     <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+
+
+    {% block headers %}
+
+    {% endblock %}
+
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -41,7 +47,11 @@
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
+
               <li class="dropdown">
+
+         
+
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="#">Action</a></li>
@@ -52,6 +62,7 @@
                   <li><a href="#">Separated link</a></li>
                   <li><a href="#">One more separated link</a></li>
                 </ul>
+
               </li>
             </ul>
             <p>
@@ -60,28 +71,25 @@
 
             </form>
 
-         <!--  
-            {% block guest %}
-
-                {% if guest == True %}
-
-                <div class="alert">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}
-                </div> 
-
-              {% endif %}
-            {% endblock %}   
+          
 
             {% block login %}
 
-            {% endblock %} -->
+            {% endblock %}
+
+              </li>
+            {% block log %}
+              <li><a href="/logout/" style="text-align: right">Logout</a></li>
+            {% endblock %}
+            </ul>
+
             
           </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
   
+
 {% block verification %}
     {% if user.is_authenticated %}
       {% if check_verified == False %}
@@ -95,13 +103,38 @@
     {% endif %}
   {% endblock %}
   
+
 <!-- Start main websiteBody Div -->
  <div class="container" style="padding-top: 60px;">
 <!-- Start TMP , Please remove me -->
 
+
 {% block content %}
 <!-- USe this to add your stuff   -->
 {% endblock %}
+
+
+</script>
+
+{% block content %}
+
+{% block script %}
+{% endblock %}
+<!-- USe this to add your stuff   -->
+{% endblock %}
+
+<script type="text/javascript">
+    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    if(!options.crossDomain) {
+      if(options.data) {
+        options.data += "&";
+      } else {
+        options.data = "";
+      }
+      options.data += "csrfmiddlewaretoken={{csrf_token}}";
+    }
+    });
+</script>
 <!-- End TMP , Please remove me -->
       <hr>
 

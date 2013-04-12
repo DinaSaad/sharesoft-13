@@ -7,14 +7,22 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
+
     # url(r'^register$', 'tager_www.views.home'),
-    
+ 
+
     url(r'^$', 'tager_www.views.home'),
     url(r'^login/$', 'tager_www.views.login'),  
-    url(r'^logout/$', logout, {'next_page':'/login'}),  
-
+    url(r'^logout/$', logout, {'next_page':'/'}),  
+    # url(r'^profile/(?P<user_id>\d+)/$', 'tager_www.views.view_profile'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+
     url(r'^confirm_email/$','tager_www.views.confirm_email'),
+
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+    url(r'^post/$', 'tager_www.views.view_post'),
+    url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
+
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -25,6 +33,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
+	url(r'^tager_www/', include('tager_www.urls')),
 )
 
 urlpatterns += patterns('fbregister.facebook',

@@ -1,7 +1,24 @@
 from django import forms
+
 from tager_www.models import UserProfile
 from captcha.fields import ReCaptchaField
 
+
+from tager_www.models import *
+
+
+#mahmoud ahmed-C2 user can identify the buyer of his post- the BuyerIdentificationForm what it does is 
+#it takes the phone number of the buyer of the post which is provided and submitted buy the issuer of the post.
+
+class BuyerIdentificationForm(forms.Form):
+    buyer_phone_num = forms.CharField(max_length=12)
+    
+    #mahmoud ahmed- C2 user can identify the buyer of his post- it returns the buyer phone number.
+    def GetBuyerNum(self):
+        
+        #buyer_number = self.cleaned_data["buyer_phone_num"]
+        return self.buyer_phone_num
+           
 #mai c2: as a user i should be able to register 
 # this class inheirts the built in forms.ModelForm
 #it has 2 field the pass1 and pass2 with their lables and the widget hides the password (***) when specificing its a password input 

@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 $(document).ready(function(){
 	$('#rateSeller').change(function(){
 	window.location.replace("hello?ch_id="+$(this).val())
@@ -22,3 +23,17 @@ $(document).ready(function(){
     $("p").show();
   });
 });
+=======
+
+$(document).ready(function(){
+
+	$("#post").click(function(){
+		window.location.replace("/post?post_id="+$(this).val());
+	})
+})
+$
+
+
+
+
+>>>>>>> master

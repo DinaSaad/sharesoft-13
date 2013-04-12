@@ -85,23 +85,14 @@ function passwordStrength(password)
 
 }
 </script>
-
-<div id = "pass" class="register_div">
-
-<script>
-  $('#pass').popover({
-    title: 'password!',
-    content: 'password must be at least 6 characters long, with at least one lower case and at least one uppercase !'
-  })
-
-</script>
  
-
+<div class="register_div">
 
         {% if form.password1.errors %}<p class="error">{{ form.password1.errors }}</p>{% endif %}
         <p><label for="password"{% if form.password1.errors %} class="error" {% endif %} >Password:</label>
          <!-- <input type="password" name="pass" id="pass" onkeyup="passwordStrength(this.value)" /></p> -->
         <p>{{ form.password1 }}</p>
+
 </div>
 <div class="register_div">
         {% if form.password2.errors %}<p class="error">{{ form.password2.errors }}</p>{% endif %}

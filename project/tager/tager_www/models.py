@@ -1,10 +1,15 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
+
 from django.utils.timezone import utc
 from datetime import datetime, timedelta
 
 EXPIRATION_DAYS = 10
+
+from django.db.models import Sum , Avg 
+
+
 
 
 #mai 
@@ -75,6 +80,7 @@ class UserProfile(AbstractBaseUser):
     activation_key = models.CharField(max_length=40 , null=True)
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
+    rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -127,6 +133,7 @@ class UserProfile(AbstractBaseUser):
         
         return self.is_admin
 
+
     #mai :registertaion
     #this method takes self and just checks if the todays date from the time of the creation of the user is greater then
     #the expired date set then the key is expired so it retunrs true 
@@ -137,11 +144,42 @@ class UserProfile(AbstractBaseUser):
             return True
         return False
 
+#C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
+#is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
+#object and insert it in a variable p, then takes the post object and the buyer and checks if he has rated 
+#this post before.. if he did then it would return false as he can't rate again if not. then it checks if the
+#product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
+#rateSeller button appears if he isn't then the button won't appear.
+
     def canRate(self,post_id):
         print post_id
         p = Post.objects.get(id = post_id)
-        #user = UserProfile.objects.filter(pk= user_id)
+        r = Rating.objects.filter(post= p ,buyer = self).count() 
+        print r
+        if r == 1:
+            return False
+        # #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
+
+    def get_posts(self):
+        user_posts = Post.objects.filter(user_id_id = self.id)
+        return user_posts
+
+    def add_Buyer(self,post,phone_num):
+        p = post        
+        if p.user_id == self.id:
+            post_buyer = UserProfile.objects.get(phone_number = phone_num)
+            #post_buyer_id = post_buyer.id
+            p.buyer = post_buyer
+            p.is_sold = True
+            p.save()
+            return True
+        else:
+            return False
+
+    def show_add_buyer_button(self,post_id):
+        p = Post.objects.get(id = post_id)
+        return user.id == post.user_id_id
 
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def getInterestedIn(self, post):       
@@ -164,6 +202,26 @@ class UserProfile(AbstractBaseUser):
                 user1.save()
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
+
+    def calculate_rating(self,rate,post,buyer): #self is the post_owner
+        owner_id = self.id
+        #print owner_id
+        post_id = post.id
+        #print owner_id
+        buyer_id = buyer.id
+        #print buyer_id
+
+        rate = Rating(post_owner_id=owner_id,buyer_id=buyer_id,post_id=post_id,rating= rate)
+        rate.save()
+        user_rating = Rating.objects.filter(post_owner = self).aggregate(Avg('rating')).values()[0]
+       # print user_rating
+        self.rating = user_rating
+        self.save() 
+        return user_rating
+
+    # def RateSeller(self,seller,post,in_rating):
+    #     seller_original_rate = seller.rating
+    #     seller_new_calculated_rating = 
 
 
 
@@ -192,27 +250,35 @@ class Subchannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length="200")
-    expired = models.BooleanField()
-    no_of_reports = models.IntegerField()
-    title = models.CharField(max_length="200")
-    is_hidden = models.BooleanField(default="False")
-    quality_index = models.DecimalField(max_digits=5, decimal_places=2)
-    description = models.CharField(max_length="500")
-    price = models.IntegerField()
-    edit_date = models.DateField()
-    pub_Date = models.DateField()
-    comments_count = models.IntegerField(default="0")
-    intersed_count = models.IntegerField(default="0")
+    state = models.CharField(max_length=200, default= "new")
+    expired = models.BooleanField(default= False)
+    no_of_reports = models.IntegerField(null=True)
+    title = models.CharField(max_length=200)
+    is_hidden = models.BooleanField(default=False)
+    quality_index = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    description = models.CharField(max_length=500, null=True)
+    price = models.IntegerField(null=True)
+    edit_date = models.DateField(null=True)
+    pub_Date = models.DateField(null=True)
+    comments_count = models.IntegerField(default=0)
+    intersed_count = models.IntegerField(default=0)
     picture = models.ImageField(upload_to='images/test', blank=True)
     sub_channel_id = models.ForeignKey(Subchannel)
-    user_id = models.ForeignKey(UserProfile, related_name = 'seller_post')
+    user = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
     is_sold = models.BooleanField()#class Comments():
-
     def getBuyer():
         return self.buyer.id
     
+
+class Rating(models.Model):
+    post_owner = models.ForeignKey('UserProfile', related_name="post_owner")
+    buyer = models.ForeignKey('UserProfile',related_name="post_buyer")
+    post = models.ForeignKey('Post')
+    rating = models.FloatField()
+
+    class Meta:
+        unique_together = ("post","buyer")
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
