@@ -7,12 +7,19 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
+
+    # url(r'^register$', 'tager_www.views.home'),
+ 
+
     url(r'^$', 'tager_www.views.home'),
     url(r'^login/$', 'tager_www.views.login'),  
     url(r'^logout/$', logout, {'next_page':'/'}),  
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+
+    url(r'^confirm_email/$','tager_www.views.confirm_email'),
+
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
