@@ -406,20 +406,23 @@ class Subscription(models.Model):
     class Meta: #to make sure a subscription doesn't exist twice
         unique_together = ("channel","sub_channel","parameter","choice")
     def subscribe_Bychannel(self, user_in): #this def subscribe users who wants to subscribe by channel
-        try:
-            UserSubchannelSubscription.objects.filter(user = user_in, parent_channel = self.channel).delete()
-        except:
-            pass
+        UserSubchannelSubscription.objects.filter(user = user_in, parent_channel = self.channel).delete()
         channel_to_subscribe = self.channel
         subscription = UserChannelSubscription(user = user_in, channel = channel_to_subscribe)
-        subscription.save()
+        try:
+            subscription.save()
+        except:
+            pass
         
     def subscribe_Bysubchannel(self, user_in): #this def subscribe users who wants to subscribe by subchannel
         self_parent_channel = self.sub_channel.channel_id
         UserChannelSubscription.objects.filter(user = user_in, channel = self_parent_channel).delete()
         sub_channel_to_subscribe = self.sub_channel
         subscription = UserSubchannelSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe)
-        subscription.save()
+        try:
+            subscription.save()
+        except:
+            pass
         subchannels_with_same_channel = Subchannel.objects.filter(channel_id=self_parent_channel).count()
         subchannels_subscribed_with_same_channel = UserSubchannelSubscription.objects.filter(parent_channel=self_parent_channel, user=user_in).count()
         if subchannels_with_same_channel==subchannels_subscribed_with_same_channel:
@@ -430,7 +433,10 @@ class Subscription(models.Model):
         sub_channel_to_subscribe = self.sub_channel
         self_parent_channel = self.channel
         subscription = UserParameterSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe, parameter = self.parameter, choice = self.choice)
-        subscription.save()
+        try:
+            subscription.save()
+        except:
+            pass
     def __unicode__(self):
         return unicode(self.id)
 
