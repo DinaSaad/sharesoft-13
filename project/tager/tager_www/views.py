@@ -10,7 +10,7 @@ from tager_www.forms import RegistrationForm
 from tager_www.models import UserProfile, Post, Comment 
 import sqlite3
 from django.utils import timezone
-
+import datetime
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
@@ -102,7 +102,7 @@ class CustomAuthentication:
 
     def get_user(self, user_id):
         try:
-            return UserProfile.object.get(pk=user_id)
+            return UserProfile.objects.get(pk=user_id)
         except UserProfile.DoesNotExist:
             return None
 
@@ -148,14 +148,18 @@ def viewPost(request, post_id):
 #this postt that were posted before.
 
 
-import datetime
+
 def SavingComment(request, post_id):
     content = request.POST['content']
-    userobject= UserProfile.objects.get(id=Comment.user_id)
+    userobject= request.user #UserProfile.objects.get(id=Comment.user_id)
+    print request.user
     post = Post.objects.get(pk=post_id)
+    # if userobject.is_active:
     comment = Comment(content=content, date=datetime.datetime.now(), user_id=userobject, post_id=post)
     comment.save()
     return viewPost(request, post_id)
+    # else
+    #     return HttpResponse("please login")
 #c1_hala this method called savingComment that takes two parameters request and post_id, the 
 #content variable takes from the request the content that the user types in, and userobject variable is a 
 #variable that the user as an object which rather than taking the user_id no takes the user as an object
@@ -169,153 +173,27 @@ def SavingComment(request, post_id):
 
 
 
+def removePost(request, post_id):
+    admin= request.user
+    hidepost=Post.objects.get(pk=post_id)
+    if admin.is_admin:
+        hidepost.is_hidden = True
+        hidepost.save()
+        return viewPost(request, post_id)
+    else:
+        hidepost.is_hidden = False
+        # return viewPost(request, post_id)
+        return HttpResponse("you aren't an admin to be able to delete post")
+# c1_hala this method called removePost that takes two parameters request and post id
+#request parameter to bring the user from the request, and check if he is an admin or not
+#and created a variable called hidepost that gets from Post object the post with id that matches
+#the post_id that entered from the user as a parameter that he wants to bring
+#and if he is an admin he will set the hidepost attribute is_hidden from false to true 
+#so the post would be hidden and unavailable, and returns the post.htmlagain without the post to make sure it is hidden 
+#while if he isnt and admin he will be redirected to HTTPResponse that says to the user you aren't an admin to be able to 
+#change state of is_hidden to true.  
 
-# def createData(request):
-#     UserProfile(email='hala@gmail.com', password='pass', name='ji', facebook_uid=1,accesstoken="gh",
-#      date_Of_birth="2013-04-3", phone_number='01065257152', is_admin="False", is_verfied="")
-#     is_premium = "False", photo = "",activation_key ="ko",expiration_key_date = "2013-04-9",
-#     status = "fgg",gender ="F")
-#     Channel(name = "cars", description = "bmw")
-#     Subchannel(name = "dogs",channel_id = request.channel)
-#     Post(state = "sdf", expired = "False",no_of_reports = 3,title = "df",is_hidden = "False",quality_index = 0.3,
-#     description = "gh",price = 2,edit_date = "2013-04-9",pub_Date = "2013-04-9",comments_count = 0,
-#     intersed_count = 3,picture = "",sub_channel_id = request.subchannel,user = request.user, buyer = request.user,is_sold = "False")
-# class Comment(models.Model):
-#     content="kolololo"
-#     date=
-#     is_Hidden=models.BooleanField(default=False)
-#     post_id= models.ForeignKey(Post)
-#     # change the name to user because it the actual object not the id
-#     user_id=m
-
-# def commenting(request):
-# #"""Add a new comment."""
-#     p = request.POST['comment_id']
-
-#     # if p.has_key("content"):
-
-#     comment = Comment.objects.filter(post_id=p.post_id_id)
-#     c=comment.objects.create(content= comment.content , date=comment.date,  post_id=comment.id)
-#     c.save()
-#     # cf = CommentForm(p, instance=comment)
-#     # comment = cf.save(commit=False)
-#     # comment.save()
-#     return HttpResponseRedirect(reverse("db.tager_www.views.post",)
-# c1_hala this method purpose is to add a new comment, the method takes two parameters the request itself and the primary key
-#variable p takes the request then checks if the request
-#contains content ,then will make new variable called comment that will bring the comment table part that
-# relates to post with pk = pk that taken as a parameter in the method, and saves in it the comment then the method
-#redirects the user to page of the post.
-
-
-# def view_posts_comments(request):
-#     post_id = request.GET['post_id']
-#     comments_of_posts = Comment.objects.filter(post_id_id= post_id)
-#     return render(request, 'post.html', {'comments_of_posts': comments_of_posts})
-
- 
-
-
-# def get_channels (request):
-#     channels = Channel.objects.all()
-#     channels_list = []
-#     for channel in channels:
-#         subchannels = Subchannel.objects.filter(channel_id_id=channel.id)
-#         subchannels_list = []
-#         for sc in subchannels:
-#             attributes = Attribute.objects.filter(subchannel_id_id=sc.id)
-#             subchannels_list.append({'subchannel': sc, 'attributes': attributes})
-
-#         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-#     print channels_list
-    
-#     # subchannel_dictionary = {'subchannel' , subchannel}
-
-#     return render(request, 'homepage.html', {'all_channels': channels_list} ,)
-# def get_posts (request):
-#     posts = Post.objects.all()
-#     posts_list = []
-#     for post in posts:
-#         comments = Comment.objects.filter(post_id_id=post.id)
-#         comments_list = []
-#         for ps in comments:
-#             attributes = Attribute.objects.filter(comment_id_id=ps.id)
-#             comments_list.append({'comment': ps, 'attributes': attributes})
-
-#         comments_list.append({'post': post, 'comments_list': comments_list})
-#     print posts_list
-    
-#     # subchannel_dictionary = {'subchannel' , subchannel}
-
-#     return render(request, 'post.html', {'all_posts': posts_list} ,)
-
-# Reem- As c3 , (a system) I should be able to provide a refinement bar along while previwing the posts
-# - this method creats variable channels , to store all channels available in the database,
-# variable subchannels , to store all subchannels available in the database,
-# channels_list is a list that holds dictionaries of channels and its subchannels.
-# subchannels_list is a list that holds dictionaries os subchannels and its attributes,
-# the method then return the channels_list only , as it holds , every attribute of subchannel
-# and every subchannel of a channel
-
-# def view_subchannel_posts(request):
-#     subchannel_id = request.GET['sub_ch_id']
-#     posts_of_subchannels = Posts.objects.filter(sub_channel_id_id= subchannel_id)
-#     return render(request, 'homepage.html', {'posts_of_subchannels': posts_of_subchannels})
-
-# def view_posts_comment(request):
-#     comment_id = request.GET['comment_id']
-#     comments_of_posts = Comment.objects.filter(comment_id_id= comment_id)
-#     return render(request, 'post.html', {'comments_of_posts': comments_of_posts})
-
-
-# def commenting(request):
-    # # if user.is_active:
-    # #     if user.is_verfied:
-    # if request.method == 'POST':
-    #     form = RegistrationForm(request.POST)
-    #     if form.is_valid():
-    #         user=UserProfile.objects.all()
-    #         post=Post.objects.all()
-            # p=Comment(content=request.POST['content'], date=timezone.now(), post_id=post[0], user_id=user[0].user_id)
-            # p.save()
-    #         html = "<html><body>It is now .</body></html>" 
-    #         return HttpResponse(html)
-    #             # return HttpResponseRedirect('Comments.html')
-    #     else:
-    #             return render_to_response('Comments.html', {'form': form}, context_instance=RequestContext(request))
-    # else:
-    #     ''' user is not submitting the form, show them a blank registration form '''
-
-    #     html = "<html><body>It is now .</body></html>" 
-    #     return HttpResponse(html)
-    #     # context = {'form': form}
-    #     # return render_to_response('Comments.html', context, context_instance=RequestContext(request))
-
-    
-    # #     else:
-    # #        return HttpResponse ("sorry your account is not verfied") # Return a 'disabled account' error message
-    # # else:
         
-    # #   return redirect("/login/")# Return an 'invalid login' error message.
-
-
-
-# def view_comments(request, pk):
-# #"""Single post with comments and a comment form."""
-#     post = Post.objects.get(pk=int(pk))
-#     comments = Comment.objects.filter(post=post)
-#     d = dict(post=post, comments=comments, form=CommentForm(), user=request.user)
-#     d.update(csrf(request))
-#     return render_to_response("post.html", d)
-#     # return render_to_response(request, 'Comments.html', {'List of comments':com},context_instance=RequestContext(request))
-
-#c1_hala this method purpose is to view the comments, 
-#so the method takes 2 parameters one the request it self and one the primary key
-#post variable takes the result of search in Post table for the post with primary key = the primary key the user wants
-#then variable d goes to dictionary and brings from it the post information saved about it that i brought in variable post 
-#and brings from it the old comments saved in that particular post and the user who commented 
-#then variable d is updated with the info from the dictionary, and the method response with post.html that has the post 
-# and the commented needed that was posted before.
 
 
 
