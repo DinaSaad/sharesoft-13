@@ -9,7 +9,7 @@
 				<option value="Attribute subscription">Attribute</option>
 			</select>
 		</div><br></br>
-		<form >
+		
 			<div id="channel" style="visibility:hidden">
 				<label>select your channel: </label>
 				<select id="channel_id">
@@ -21,17 +21,19 @@
 					{% endif %}
 				</select>
 			</div><br></br>
-			<div id="subchannel" style="visibility:hidden">
+			<form method="GET" action="/subscribe/subchannels_sub/">
+				<div id="subchannel" style="visibility:hidden">
 				<label>select your subchannel: </label>
 				<select id="subchannel_id">
 					<option>--------</option>
   					{% if subchannels %}
 						{% for subchannel in subchannels %}
-							<option value="{{subchannel.id}}">{{subchannel.name}}</option>
+							<option id="{{subchannel.id}}" value="{{subchannel.id}}">{{subchannel.name}}</option>
 						{% endfor %}
 					{% endif %}
 				</select>
-			</div><br></br>
+				</div><br></br>
+			</form>
 			<div id="parameter" style="visibility:hidden">
 				<label>select your parameter: </label>
 				<select id="parameter_id">
@@ -49,11 +51,11 @@
 					<option>--------</option>
   					{% if choices %}
 						{% for choice in choices %}
-							<option value={{choice.value}}>{{choice.value}}</option>
+							<option value={{choice.id}}>{{choice.value}}</option>
 						{% endfor %}
 					{% endif %}
 				</select>
 			</div><br></br>
-		</form>	
-		<button type="button" onClick="subscribe()">Subscribe</button>
+		
+		<button type="button" onClick="subscribe();">Subscribe</button>
 	{% endblock %}
