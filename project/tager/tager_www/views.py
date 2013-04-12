@@ -165,123 +165,72 @@ def reportThePost(request):
 
 def get_attributes_of_subchannel(request):
     sub_id = request.GET['sub_ch_id']
-
     list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
     return render(request, 'advanced_search.html', {'list_of_attributes' : list_of_attributes, 'sub_id' : sub_id})
-# def get_attributes_names_of_subchannel(attributes,request):
-#     attributes_name_list = []
-#     for i in attributes:
-#         attributes_name_list.append(i.name)
-#     return render(request, 'advanced_search.html', {'attributes_name_list' : attributes_name_list})
-def get_attributes_id_of_subchannel(attribute_list , request):
-    # attributes = Attribute.objects.filter(subchannel_id = request.subchannel_id)
-    attributes_search_list = []
-    for j in attributes:
-        attributes_search_list.append(i.attribute_id)
-    return attributes_search_list
 def advanced_search(request):#advanced search takes as input subchannel id and values the searches multiple values so it can return the posts that have the requested values
+
     sub_id = request.GET['sub_ch_id']
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     values =[]
-    print "attributes"
-    # print request
     post = []
+    value_obj =[]
     for w in attributes:
         name = w.name
-        print request.GET[name]
         values.append(request.GET[name])
-    # value_obj = []
-    # counter = 0
-    # count = 0
-    # major = 0
-    # i = 0
-
-    # for att in attributes:
-    #     values_obj[count] = Value.objects.filter(attribute_id = att.id , value = values[count] )
-    #     print "filtering done"
-    #     count+=1
-    # for a in values_obj:         
-    #     for b in values_obj:
-    #         for i in values_obj[counter]:
-    #             if values_obj.Post_id[0][major] == values_obj[counter+1][i].Post_id:
-    #                 print"in if condition"
-    #                 post.append(values_obj.Post_id[0][counter])
-    #                 print"done adding"
-    #     major =major + 1
-    #         counter = counter+1
-    #             i =i+1
-
-
-
-
-
-    i=0
-    posts=[]
-    for attribute in attributes:
-        
-        all_posts = Post.objects.all()
-        
-        for post in all_posts:
-            
-            value_obj = Value.objects.get(attribute_id=attribute.id, Post_id=post.id)
-            
-            value_name=value_obj.value
-            if values[i]==value_name:
-                # print unicode(post.id)
-                posts.append(post)
-    # print unicode(posts[0].id)
-    return HttpResponse('filter_post_channel.html', {'posts' : posts})
-   
-    
-
-
-
-    # result_search_obj = []
-    # flag = False
-    # result_search = []
-    # result = []
-    # post = []
-    # i = 0
-    # f = i+1
-    # # post_temp = ""
-
-    # asd = len(Value.objects.filter(attribute_id = attributes[j].id 
-    #         , value = valuesobj[j].value))
-    #     for q in asd:
-    #         result_search_obj.append([])
-    # for j in range(len(attributes)):
-        
-    #     result_search_obj[j].append(Value.objects.filter(attribute_id = attributes[j].id 
-    #         , value = valuesobj[j].value))    
-    # for k in result_search_obj:
-    #     for l in result_search_obj[k]:
-    #         result_search[k].append(k.post_id)
-    # for a in result-search:
-    #     result_search.sort(len(result_search[k]))
-    # for h in result_search:
-    #     post_temp = ""
-    #     for g in result_search[h]:
-    #         tmp=result_search[h]
-    #         loc = temp[g]
-    #         if loc == result_search[h+1][g]:
-    #             flag = True
-    #             post_temp = tmp[g]
-    #             break
-    #     post = post_temp
-    return post
-
-
-                
-def view_subchannels(request): #takes as input channel id and returns a dictionary of subchannels
+    result_search_obj = []
+    flag = False
+    result_search = []
+    result = []
+    post = []
+    i = 0
+    f = i+1
+    null = ""
+    for j in range(0,len(values)):
+        if values[j] == null:
+            pass
+        else:
+            result_search_obj+=[ (Value.objects.filter(attribute_id = attributes[j].id 
+            , value = values[j])) ]
+    if not result_search_obj:
+        return HttpResponse("please enter something in the search")
+    else:
+        result_search = [[] for o in result_search_obj]    
+        for k in range(0,len(result_search_obj)):
+            for l in range(0,len(result_search_obj[k])):
+                test = result_search_obj[k][l].value
+                result_search[k].append(result_search_obj[k][l].Post_id.id)
+        tmp=result_search[0]
+        if len(result_search) == 1:
+            post=result_search[0]
+        else:
+            for h in range(1,len(result_search)):
+                post_temp = ""
+                for g in range(0,len(result_search[h])):
+                    if not result_search[h]:
+                        flag = True
+                        pass
+                    else:
+                        if flag == True:
+                            h=h-1
+                        loc = tmp[g]
+                        tmep =result_search[h]
+                        loce = tmep[g]
+                        if loc == tmep[g]:
+                            flag = True
+                            post_temp = tmep[g]
+                            post.append(post_temp)
+        if not post:
+            return HttpResponse("there is no posts with these values please refine your search.")
+        else:
+            return render('filter_post_channel.html', {'posts' : post})
+def view_subchannels(request):
     s_id = request.GET['ch_id']
-    #current_channel = Channel.objects.filter(channel_id = s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = s_id)
     return render(request, 'advanced_search.html', {'list_of_subchannels': list_of_subchannels})
-def view_channels(request):#gets all the channels and passes them to templates in the form of a dictionary
+def view_channels(request):
     list_of_channels = Channel.objects.all() 
     print list_of_channels   
     return render(request, 'advanced_search.html', {'list_of_channels': list_of_channels})
-
 
 
 
