@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm
+from tager_www.forms import RegistrationForm, BuyerIdentificationForm
 from tager_www.models import UserProfile 
 
 
@@ -37,7 +37,7 @@ def login(request):
     #print request.method
     mail = request.POST['email']
     password = request.POST['password']
-   # print "before"
+    # print "before"
     # user = UserProfile.objects.get(email=mail)
     # print user.username
     # pk = user.username
@@ -48,7 +48,8 @@ def login(request):
         if authenticated_user.is_active:
             print "act"
             django_login(request, authenticated_user)
-            return render_to_response ('profile.html',context_instance=RequestContext(request))# Redirect to a success page.
+            print "user logged in"
+            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
@@ -63,29 +64,79 @@ def login(request):
 #
 def view_post(request):
 
-    post = Post.objects.get(pk= request.POST['post_id'])
+    post = Post.objects.get(pk= request.GET['post_id'])
     user = request.user
+    print user.id
     creator = False
-    if post.user_id == user:
+    if post.user == user:
          creator = True
-    rateSellerButtonFlag = user.canRate(request.POST['post_id']) 
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator}
+    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
+    print rateSellerButtonFlag
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
+    # if request.method == 'POST':
+    #     form = BuyerIdentificationForm( request.POST )
+    #     if form.is_valid():
+    #         new_buyer_num = form.GetBuyerNum()
+    #         buyer_added = user.add_Buyer(post, new_buyer_num)
+    #         return HttpResponseRedirect( "/" )
+    #     else :
+    #         d.update({'form':form})
+    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
+
+    # else:
+    #     form = BuyerIdentificationForm()
+    #     d.update({'form':form})
+    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
+
+#C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
+#as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
+#who posted the post, the post it self and the rating. after taking in the request and storing the attributes
+#a method is then sent to calculate the rating of the post owner and this method is calculate_rating and
+#after the rating is calculated the returned average rating is passed through the dictionary along with the 
+#the post_owner object to the profile page to be used to show the rating.
+#
+
+def User_Ratings(request):
+    # print request
+    rater = request.user
+    post_owner = UserProfile.objects.get(id=request.GET['post_owner'])
+    post = Post.objects.get(id=request.GET['post_id'])
+    rating = request.GET['rating']
+    user_rating = post_owner.calculate_rating(rating, post, rater)
+    # d = {"user_rating":user_rating, 'post_owner':post_owner}
+    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
+    return HttpResponseRedirect("/")
+    
+#C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
+#as input is a request coming from the user after he presses on add the buyer button in the post page.
+#so what the method does is it checks if the request is post and is holding the filled form, if it does
+#the GetBuyerNum() method is called to get the number of the buyer and store it in a variable. then the
+#user adds the buyer through add_Buyer function whihc takes the post and the buyer phone number as inputs.
+#and then you are redirected to the same page. another scenario if the data isn't valid it send the form 
+#again through the dictonairy to be displayed again. third scenario is if there is no POST method coming
+#through the request then it makes the form and send it through a dictionairy to be viewed through the 
+#template.
+
+
+def Buyer_identification(request):
+    user = request.user
     if request.method == 'POST':
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
             new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_Buyer(post, new_buyer_num)
-            return HttpResponseRedirect( "/" )
+            d = {'form':form}
+            return render_to_response( "post.html", d, context_instance = RequestContext( request ))
+            # return HttpResponseRedirect( "/" )
         else :
-            d.update({'form':form})
+            d = {'form':form}
             return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
 
     else:
         form = BuyerIdentificationForm()
-        d.update({'form':form})
-    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
-
+        d = {'form':form}
+    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
 
 class CustomAuthentication:
@@ -100,8 +151,8 @@ class CustomAuthentication:
 
     def get_user(self, user_id):
         try:
-            return UserProfile.object.get(pk=user_id)
-        except UserProfile.DoesNotExist:
+            return UserProfile.objects.get(pk=user_id)
+        except User.DoesNotExist:
             return None
 
 
@@ -118,7 +169,9 @@ def UserRegistration(request):
     #if request.user.is_authenticated():
      #   return HttpResponseRedirect('/profile/')
      #if they r submitting the form back
+    print request.POST
     if request.method == 'POST':
+        print request.POST
         form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
         if form.is_valid(): # validates all the fields on the firm,The first time you call is_valid() or access the errors attribute of a ModelForm triggers form validation as well as model validation.
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -134,6 +187,23 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+
+def view_profile(request):
+    try: 
+        user = request.user
+        # print user
+        verfied = user.is_verfied
+        link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+        print "v"
+        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+        d = {'user':user_profile, "check_verified" : verfied , "link" : link}
+    except: 
+        err_msg = 'This user doesn\'t exist'
+        return HttpResponse(err_msg) 
+    else:
+        return render_to_response ('profile.html', d ,context_instance=RequestContext(request))
+
+        # GO TO USER PROFILE
 
 
 

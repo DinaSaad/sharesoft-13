@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
+from django.db.models import Sum , Avg 
+
 
 
 #mai 
@@ -67,7 +69,7 @@ class UserProfile(AbstractBaseUser):
     activation_key = models.CharField(max_length=40 , null=True)
     expiration_key_date = models.DateField(null=True, blank=True) 
     status = models.CharField(max_length=400 , null=True) 
-    
+    rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -119,11 +121,20 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
-
+#C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
+#is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
+#object and insert it in a variable p, then takes the post object and the buyer and checks if he has rated 
+#this post before.. if he did then it would return false as he can't rate again if not. then it checks if the
+#product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
+#rateSeller button appears if he isn't then the button won't appear.
     def canRate(self,post_id):
         print post_id
         p = Post.objects.get(id = post_id)
-        #user = UserProfile.objects.filter(pk= user_id)
+        r = Rating.objects.filter(post= p ,buyer = self).count() 
+        print r
+        if r == 1:
+            return False
+        # #user = UserProfile.objects.filter(pk= user_id)
         return p.is_sold and p.buyer_id == self.id
 
     def get_posts(self):
@@ -168,6 +179,26 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
+    def calculate_rating(self,rate,post,buyer): #self is the post_owner
+        owner_id = self.id
+        #print owner_id
+        post_id = post.id
+        #print owner_id
+        buyer_id = buyer.id
+        #print buyer_id
+
+        rate = Rating(post_owner_id=owner_id,buyer_id=buyer_id,post_id=post_id,rating= rate)
+        rate.save()
+        user_rating = Rating.objects.filter(post_owner = self).aggregate(Avg('rating')).values()[0]
+       # print user_rating
+        self.rating = user_rating
+        self.save() 
+        return user_rating
+
+    # def RateSeller(self,seller,post,in_rating):
+    #     seller_original_rate = seller.rating
+    #     seller_new_calculated_rating = 
+
 
 
 #this is Channel class where all channel records and information are kept
@@ -195,18 +226,18 @@ class Subchannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length="200")
-    expired = models.BooleanField()
-    no_of_reports = models.IntegerField()
-    title = models.CharField(max_length="200")
-    is_hidden = models.BooleanField(default="False")
-    quality_index = models.DecimalField(max_digits=5, decimal_places=2)
-    description = models.CharField(max_length="500")
-    price = models.IntegerField()
-    edit_date = models.DateField()
-    pub_Date = models.DateField()
-    comments_count = models.IntegerField(default="0")
-    intersed_count = models.IntegerField(default="0")
+    state = models.CharField(max_length=200, default= "new")
+    expired = models.BooleanField(default= False)
+    no_of_reports = models.IntegerField(null=True)
+    title = models.CharField(max_length=200)
+    is_hidden = models.BooleanField(default=False)
+    quality_index = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    description = models.CharField(max_length=500, null=True)
+    price = models.IntegerField(null=True)
+    edit_date = models.DateField(null=True)
+    pub_Date = models.DateField(null=True)
+    comments_count = models.IntegerField(default=0)
+    intersed_count = models.IntegerField(default=0)
     picture = models.ImageField(upload_to='images/test', blank=True)
     sub_channel_id = models.ForeignKey(Subchannel)
     user = models.ForeignKey(UserProfile, related_name = 'seller_post')
@@ -215,6 +246,15 @@ class Post(models.Model):
     def getBuyer():
         return self.buyer.id
     
+
+class Rating(models.Model):
+    post_owner = models.ForeignKey('UserProfile', related_name="post_owner")
+    buyer = models.ForeignKey('UserProfile',related_name="post_buyer")
+    post = models.ForeignKey('Post')
+    rating = models.FloatField()
+
+    class Meta:
+        unique_together = ("post","buyer")
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
