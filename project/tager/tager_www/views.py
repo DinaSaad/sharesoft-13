@@ -88,14 +88,15 @@ def view_post(request):
 #
 
 def User_Ratings(request):
+    # print request
     rater = request.user
-    post_owner = request.POST['post_owner']
-    post = request.POST['post']
-    rating = request.POST['rating']
+    post_owner = UserProfile.objects.get(id=request.GET['post_owner'])
+    post = Post.objects.get(id=request.GET['post_id'])
+    rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
-    d = {"user_rating":user_rating, 'post_owner':post_owner}
-    return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
-
+    # d = {"user_rating":user_rating, 'post_owner':post_owner}
+    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
+    return HttpResponseRedirect("/")
     
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
 #as input is a request coming from the user after he presses on add the buyer button in the post page.
