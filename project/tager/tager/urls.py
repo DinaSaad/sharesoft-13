@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', logout, {'next_page':'/login'}),  
 
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+    url(r'^confirm_email/$','tager_www.views.confirm_email'),
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -22,7 +23,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
-	url(r'^tager_www/', include('tager_www.urls')),
+	# url(r'^tager_www/', include('tager_www.urls')),
 )
 
 urlpatterns += patterns('fbregister.facebook',
