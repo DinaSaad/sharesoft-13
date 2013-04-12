@@ -1,17 +1,18 @@
 import os
 # Django settings for tager project.
 
-def relative_project_path(*x):
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
 
 ADMINS = (
     # ('amr', 'tharwat@gmail.com'),
 )
 
+
 MANAGERS = ADMINS
+
 
 DATABASES = {
     'default': {
@@ -25,9 +26,11 @@ DATABASES = {
     }
 }
 
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -35,31 +38,39 @@ ALLOWED_HOSTS = []
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Africa/Cairo'
 
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
+
 SITE_ID = 1
+
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
 
+
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
 USE_L10N = True
 
+
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
+
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = ''
 
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = ''
+
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -67,9 +78,11 @@ MEDIA_URL = ''
 # Example: "/var/www/example.com/static/"
 STATIC_ROOT = ''
 
+
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
+
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -78,6 +91,7 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -85,6 +99,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '^m!k&z0&tn9i6&1tc6@*@h%s&5yb!1zf%ncxah56drxjf9$cc$'
@@ -96,6 +111,7 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -106,22 +122,22 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+
 ROOT_URLCONF = 'tager.urls'
+
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'tager.wsgi.application'
 
 
+import os 
+
+
 TEMPLATE_DIRS = (
-    # os.path.join(os.path.dirname(__file__), 'templates')
+      os.path.join(os.path.dirname(__file__), 'templates')
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-
-    relative_project_path('templates'),
-
-
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -135,17 +151,30 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
+
     'tager_www',
     'fbregister',
-    
+    'haystack'
     
 )
+# Nadeem :Establishing connection between haystack and solr search engine by defining the name of the engine and the directing url for it and including spelling checker 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # For Solr:
+        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+        'URL': 'http://localhost:9001/solr/example',
+        'TIMEOUT': 60 * 5,
+        'INCLUDE_SPELLING': True,
+    },
+
+    
+
+HAYSTACK_SITECONF = 'search_sites'
+
+
 AUTH_USER_MODEL = 'tager_www.UserProfile'
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-"django.contrib.auth.context_processors.auth",
-"django.core.context_processors.request",
-)
+
 
 
 # A sample logging configuration. The only tangible logging
@@ -153,6 +182,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -178,9 +209,5 @@ LOGGING = {
 }
 AUTHENTICATION_BACKENDS = ( 
     'fbregister.facebook.FacebookBackend',
-
-    'tager_www.views.CustomAuthentication',
-
     'django.contrib.auth.backends.ModelBackend'
-
 )

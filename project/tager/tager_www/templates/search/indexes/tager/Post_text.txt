@@ -1,0 +1,6 @@
+{{ object.user.get_full_name }}
+{{ object.title }}
+{{ object.description }}
+{{ object.channel_id }}
+{{ object.user_id }}
+{{ object.buyer }}
