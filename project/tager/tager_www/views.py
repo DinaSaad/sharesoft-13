@@ -39,7 +39,7 @@ def login(request):
             print "act"
             django_login(request, authenticated_user)
             print "user logged in"
-            return render_to_response ('profile.html',context_instance=RequestContext(request))# Redirect to a success page.
+            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
