@@ -214,6 +214,19 @@ class Post(models.Model):
     is_sold = models.BooleanField()#class Comments():
     def getBuyer():
         return self.buyer.id
+
+class Comment(models.Model):
+    content=models.CharField(max_length="500")
+    date=models.DateTimeField()
+    is_Hidden=models.BooleanField(default=False)
+    post_id= models.ForeignKey(Post)
+    user_id=models.ForeignKey(UserProfile)
+   #c1_hala_comment i added def unicode to return the post state 
+   #to identify it while testing to make sure it is saved in d 
+    #i added comment tabel to save data taken from user to save in db 
+    #to easily retreive it from when needed in the post when comment is posted
+    def __unicode__(self):
+        return self.content
     
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
