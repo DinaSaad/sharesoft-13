@@ -196,7 +196,7 @@ def UserRegistration(request):
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
                 send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/profile/')
+                return HttpResponseRedirect('/thankyou/')
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -224,7 +224,9 @@ def view_profile(request):
 
         # GO TO USER PROFILE
 
-
+#mai c2 L registeration thank you , it justs renders the html thank u 
+def thankyou(request):
+    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
