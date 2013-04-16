@@ -8,6 +8,9 @@
     <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+    {% block headers %}
+
+    {% endblock %}
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -41,10 +44,15 @@
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
+              <li><a href="/profile?user_id={{user.id}}">Profile</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
                 <ul class="dropdown-menu">
+<<<<<<< HEAD
                   <li><a href="/editing">Manage your profile</a></li>
+=======
+                  <li><a href="#" id="editing">Manage and edit profile</a></li>
+>>>>>>> demo
                   <li><a href="#">Another action</a></li>
                   <li><a href="#">Something else here</a></li>
                   <li class="divider"></li>
@@ -53,10 +61,10 @@
                   <li><a href="#">One more separated link</a></li>
                 </ul>
               </li>
-            </ul>
-            {% block login %}
-
+            {% block log %}
+              <li><a href="/logout/" style="text-align: right">Logout</a></li>
             {% endblock %}
+            </ul>
             
           </div><!--/.nav-collapse -->
         </div>
@@ -68,9 +76,27 @@
  <div class="container" style="padding-top: 60px;">
 <!-- Start TMP , Please remove me -->
 
+
+</script>
+
 {% block content %}
+
+{% block script %}
+{% endblock %}
 <!-- USe this to add your stuff   -->
 {% endblock %}
+
+<script type="text/javascript">
+    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    if(!options.crossDomain) {
+      if(options.data) {
+        options.data += "&";
+      } else {
+        options.data = "";
+      }
+      options.data += "csrfmiddlewaretoken={{csrf_token}}";
+    }
+    });
 <!-- End TMP , Please remove me -->
       <hr>
 

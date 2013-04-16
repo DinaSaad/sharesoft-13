@@ -9,12 +9,24 @@ urlpatterns = patterns('',
 
     url(r'^$', 'tager_www.views.home'),
     url(r'^login/$', 'tager_www.views.login'),  
-    url(r'^logout/$', logout, {'next_page':'/login'}),  
+    url(r'^logout/$', logout, {'next_page':'/'}),  
+    # url(r'^profile/(?P<user_id>\d+)/$', 'tager_www.views.view_profile'),
+
+
+     url(r'^profile/$', 'tager_www.views.update_status'),
+    url(r'^editing/$', 'tager_www.views.editing_UsersInformation'),
+    url(r'^resetpassword/$', 'tager_www.views.password_reset'),
+    url(r'^resetpassword/passwordsent/$', 'tager_www.views.password_reset_done'),
+    url(r'^reset/done/$', 'tager_www.views.password_reset_complete'),
+    url(r'^reset/confirm/$', 'tager_www.views.password_reset_confirm'),
 
 
     url(r'^editing/$', 'tager_www.views.editing_info'),
     url(r'^updating/$', 'tager_www.views.update_status'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+    # url(r'^profile/$', 'tager_www.views.view_profile'),
+    url(r'^post/$', 'tager_www.views.view_post'),
+    url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),

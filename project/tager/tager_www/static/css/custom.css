@@ -17,3 +17,12 @@ background: #e3e3e3 url(../img/bg1.png) repeat;
 .btn img {
     float: left;
 }
+.editbody{
+	margin-left: 400px
+}
+.span10{
+	width: 150px;
+	font-size: 30px;
+	margin-left: 200px;
+	padding: 10px;
+}

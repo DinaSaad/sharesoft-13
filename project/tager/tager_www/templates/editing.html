@@ -3,6 +3,7 @@
 {% block content %}
 
 
+<<<<<<< HEAD
 
 <form action = "." method = "POST"> 
 <table>
@@ -12,4 +13,27 @@
 </form>
 {%	endblock %}
 
+=======
+<div class="editbody">
+	<form action = "." method = "POST" enctype="multipart/form-data"> 
+	{% csrf_token %}
+	<table>
+	{{ editing_form.as_table}}
+	</table>
+	<input id="savebutton" type	= "submit" class="btn btn-success btn-default" value = "Save"   />
+	</form>
+</div>
+
+ <script type="text/javascript">
+$(document).ready(function(){
+$('#savebutton').click(function() {
+//     document.location.href = '/editing.html/';
+    alert("You information has been updated :)");
+//     return false;
+
+});
+});
+ </script>
+{%	endblock %}
+>>>>>>> demo
 

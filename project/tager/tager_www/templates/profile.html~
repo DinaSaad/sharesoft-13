@@ -8,21 +8,8 @@
 {% endblock %}
 
 {% block content %}
-	<h1> Welcome {{ request.user.name }} to your Profile  </h1>
-	<hr>
-
-	
-<form action="." method="POST" > 
-	
-	<div class="span6">
-	<label class="span10" for="id_status" style="width: 100px;">Status:</label><input class="txt" id="id_status" name="status" type="text" placeholder="What's on your mind?? ;)">
-	</div>
-
-	<input type="submit" class="btn btn-info btn-default" value="Update">
-</form>
-
+	<p> welcome {{ user.name }} to your profile  </p>
 	<button class="btn btn-mini btn-primary" id="post" value="1" type="button">post</button>
-	<button class="btn btn-mini btn-primary" id="post" value="2" type="button">post</button>
     <div id="star"></div>
     <input type="hidden" name="rating" id= "rating" value="{{user.rating}}">
     
