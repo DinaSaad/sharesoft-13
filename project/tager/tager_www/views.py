@@ -28,27 +28,12 @@ def home(request):
 #or information entered is wrong then he is redirected to the login page again.
 
 
-def view_channels(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
-
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 def login(request):
-    #print request
-    #print "ldnfldnfndlfd"
-    #print request.method
     mail = request.POST['email']
     password = request.POST['password']
-    # print "before"
-    # user = UserProfile.objects.get(email=mail)
-    # print user.username
-    # pk = user.username
+
     authenticated_user = authenticate(mail=mail, password=password)
     if authenticated_user is not None:
         print "auth"
@@ -328,3 +313,12 @@ def verfiy_captcha(request):
 
 
 
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    s_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=s_id)
+    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
