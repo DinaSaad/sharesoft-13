@@ -219,9 +219,6 @@ class UserProfile(AbstractBaseUser):
         self.save() 
         return user_rating
 
-    # def RateSeller(self,seller,post,in_rating):
-    #     seller_original_rate = seller.rating
-    #     seller_new_calculated_rating = 
 
 
 
@@ -269,7 +266,7 @@ class Post(models.Model):
     picture3 = models.ImageField(upload_to='media', blank=True)
     picture4 = models.ImageField(upload_to='media', blank=True)
     picture5 = models.ImageField(upload_to='media', blank=True)
-    subchannel = models.ForeignKey(Subchannel)
+    subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()#class Comments():
@@ -302,7 +299,7 @@ class Rating(models.Model):
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
     name = models.CharField(max_length=64)
-    subchannel = models.ForeignKey(Subchannel)
+    subchannel = models.ForeignKey(SubChannel)
     weight = models.FloatField()
 
 class Value(models.Model):
@@ -320,7 +317,7 @@ class Value(models.Model):
 #and it contains a def subscribe where a user can add subscription input to UserSubscription model
 class Subscription(models.Model):
     channel = models.ForeignKey(Channel, null = True)
-    sub_channel = models.ForeignKey(Subchannel, null = True)
+    sub_channel = models.ForeignKey(SubChannel, null = True)
     parameter = models.ForeignKey(Attribute, null = True)
     choice = models.ForeignKey(Value, null = True)
     
@@ -387,7 +384,7 @@ class UserChannelSubscription(models.Model):
 class UserSubchannelSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
-    sub_channel = models.ForeignKey(Subchannel)
+    sub_channel = models.ForeignKey(SubChannel)
 
     class Meta:
         unique_together = ("user", "parent_channel", "sub_channel")
@@ -397,7 +394,7 @@ class UserSubchannelSubscription(models.Model):
 class UserParameterSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
-    sub_channel = models.ForeignKey(Subchannel)
+    sub_channel = models.ForeignKey(SubChannel)
     parameter = models.ForeignKey(Attribute)
     choice = models.ForeignKey(Value)
 
