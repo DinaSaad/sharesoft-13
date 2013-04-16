@@ -4,6 +4,7 @@ import os
 def relative_project_path(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -29,6 +30,12 @@ DATABASES = {
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = 'mai.zaied17@gmail.com'
+EMAIL_HOST_PASSWORD = 'whereru.123.17'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -50,7 +57,7 @@ USE_I18N = True
 USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
+USE_TZ = False
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -89,6 +96,10 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '^m!k&z0&tn9i6&1tc6@*@h%s&5yb!1zf%ncxah56drxjf9$cc$'
 
+RECAPTCHA_PUBLIC_KEY = '6Ld8ct8SAAAAAJTUMgacSavqcnzqRVPT2M7Ht5i6'
+RECAPTCHA_PRIVATE_KEY = '6Ld8ct8SAAAAAH6kJ8dcBhqG438D9IwCcAP1whEM'
+RECAPTCHA_USE_SSL = True
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -113,7 +124,12 @@ WSGI_APPLICATION = 'tager.wsgi.application'
 
 
 TEMPLATE_DIRS = (
+
+    
+       relative_project_path('templates'),
+
     # os.path.join(os.path.dirname(__file__), 'templates')
+
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -137,6 +153,7 @@ INSTALLED_APPS = (
 
     'tager_www',
     'fbregister',
+    'captcha',
     
     
 )
@@ -180,7 +197,9 @@ AUTHENTICATION_BACKENDS = (
     'fbregister.facebook.FacebookBackend',
 
     'tager_www.views.CustomAuthentication',
-
+    
     'django.contrib.auth.backends.ModelBackend'
+
+
 
 )
