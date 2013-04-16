@@ -74,10 +74,9 @@ def login(request):
 def view_post(request):
     post_id = request.GET['post']
     post = Post.objects.get(id = post_id)
-    subchannel1 = post_id.sub_channel_id
+    subchannel1 = post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(Post_id = post_id)
-    post = post_id
     return render(request, 'ViewPost.html', {'post': post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values})
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
