@@ -65,9 +65,11 @@ def subscription_by_chann(request):
     ch_id = request.GET['ch_id']
     channel=Channel.objects.get(id=ch_id)
     user = request.user
-    subscription = Subscription.objects.get(channel=channel,sub_channel=None,parameter=None,choice=None)
-    subscription.subscribe_Bychannel(user)
-    return HttpResponseRedirect('subscriptions.html')
+    subscriptions = Subscription.objects.filter(channel=channel).exclude(sub_channel__isnull=True,parameter__isnull=True,choice__isnull=True)
+    for subscription in subscriptions:
+        subscription.subscribe_Bychannel(user)
+        break
+    return render_to_response('subscriptions.html')
 
 #c2-mohamed awad
 #this def allows user to subscribe by subchannel only
@@ -78,10 +80,12 @@ def subscription_by_subchann(request):
     channel=Channel.objects.get(id=ch_id)
     sch_id = request.GET['sch_id']
     subchannel=Subchannel.objects.get(id=sch_id)
-    user = request.user.id
-    subscription = Subscription.objects.get(channel=channel,sub_channel=subchannel,parameter=None,choice=None)
-    subscription.subscribe_Bychannel(user)
-    return HttpResponseRedirect('subscriptions.html')
+    user = request.user
+    subscriptions = Subscription.objects.filter(channel=channel,sub_channel=subchannel).exclude(parameter__isnull=True,choice__isnull=True)
+    for subscription in subscriptions:
+        subscription.subscribe_Bysubchannel(user)
+        break
+    return render_to_response('subscriptions.html')
 
 #c2-mohamed awad
 #this def allows user to subscribe by parameters
@@ -97,15 +101,18 @@ def subscribe_by_parameters(request):
     cho_id = request.GET['cho_id']
     choice=AttributeChoice.objects.get(id=p_id)
     user = request.user
-    subscription = Subscription.objects.get(channel=channel,sub_channel=subchannel,parameter=parameter,choice=choice)
-    subscription.subscribe_Bychannel(user)
-    return HttpResponseRedirect('subscriptions.html')
+    print user
+    subscriptions = Subscription.objects.filter(channel=channel,sub_channel=subchannel,parameter=parameter,choice=choice)
+    for subscription in subscriptions:
+        subscription.subscribe_Byparameter(user)
+        break
+    return render_to_response('subscriptions.html')
 
 #c2-mohamed awad
 #this def takes a user as a request and returns all his related notifications to notifications.html
 #from Notification table
 def return_notification(request):
-    user_in = reques.user
+    user_in = request.user
     all_notifications = Notification.objects.filter(user = user_in)
     if all_notifications is not None:
         return render_to_response ('notifications.html', {'all_notifications': all_notifications})
