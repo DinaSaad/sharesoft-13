@@ -7,7 +7,7 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
 from tager_www.forms import RegistrationForm
-from tager_www.models import UserProfile 
+
 
 
 def home(request):
@@ -21,15 +21,16 @@ def home(request):
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
 
-def view_channels(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+def advanced_view_channels(request):
+    list_of_channels = Channel.objects.all() 
+    # print list_of_channels
+    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
 
-def view_subchannels(request):
+def advanced_view_subchannels(request):
     s_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+    return render(request,'advancedsearch.html',{'list_of_subchannels': list_of_subchannels})
 
 def login(request):
     #print request
@@ -163,7 +164,10 @@ def reportThePost(request):
 #     for i in subchannel:
 #         subchannel_list.append(i.id)
 
-def get_attributes_of_subchannel(request):#mohamed tarek c3 takes as input the subchannel id sellected then return all attributes of it 
+#mohamed tarek 
+#c3 takes as input the subchannel id sellected then return all attributes of it 
+#para
+def get_attributes_of_subchannel(request):
     sub_id = request.GET['sub_ch_id']
     list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
     return render(request, 'advanced_search.html', {'list_of_attributes' : list_of_attributes, 'sub_id' : sub_id})
@@ -226,17 +230,18 @@ def advanced_search(request):#mohamed tarek c3
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
             return render('filter_post_channel.html', {'posts' : post})
-def view_subchannels(request):#mohamed tarek c3 this method takes a channel id from the user the returns all the subchannels in it 
-    s_id = request.GET['ch_id']
-    list_of_subchannels = Subchannel.objects.filter(channel_id = s_id)
-    return render(request, 'advanced_search.html', {'list_of_subchannels': list_of_subchannels})
-def view_channels(request):#mohamed tarek c3 this method returs all the channels in the database
-    list_of_channels = Channel.objects.all() 
-    print list_of_channels   
-    return render(request, 'advanced_search.html', {'list_of_channels': list_of_channels})
-
-
-
+# def view_subchannels(request):#mohamed tarek c3 this method takes a channel id from the user the returns all the subchannels in it 
+#     s_id = request.GET['ch_id']
+#     list_of_subchannels = Subchannel.objects.filter(channel_id = s_id)
+#     return render(request, 'advanced_search.html', {'list_of_subchannels': list_of_subchannels})
+# def view_channels(request):#mohamed tarek c3 this method returs all the channels in the database
+#     list_of_channels = Channel.objects.all() 
+#     print list_of_channels   
+#     return render(request, 'advanced_search.html', {'list_of_channels': list_of_channels})
+def search_user(request):
+    request_user = request.GET[name]
+    users  = UserProfile.objects.filter(username = request_user)
+    return render('filter_post_channel',{'users':users})
 
 
 
