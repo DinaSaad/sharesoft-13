@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm , ConfirmationForm , BuyerIdentificationForm
+from tager_www.forms import *
 from tager_www.models import UserProfile 
 from django import forms 
 import random 
@@ -14,6 +14,7 @@ import string
 from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.core.mail import send_mail 
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -30,39 +31,87 @@ def home(request):
 
 def view_channels(request):
     list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+    return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
 
 def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
+    sub_channel_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
 
+@login_required
+def add_post(request):
+    sub_channel_id = request.GET['sub_ch_id']
+    # location = request.GET['location_id']
+    current_sub_channel = Subchannel.objects.get(id = sub_channel_id)
+    list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
 
-def login(request):
-    #print request
-    #print "ldnfldnfndlfd"
-    #print request.method
-    mail = request.POST['email']
-    password = request.POST['password']
-    # print "before"
-    # user = UserProfile.objects.get(email=mail)
-    # print user.username
-    # pk = user.username
-    authenticated_user = authenticate(mail=mail, password=password)
-    if authenticated_user is not None:
-        print "auth"
-        print authenticated_user.is_active
-        if authenticated_user.is_active:
-            print "act"
-            django_login(request, authenticated_user)
-            print "user logged in"
-            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
-        else:
-           return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+    form = PostForm(request.POST,request.FILES)
+    if form.is_valid():
+        author = request.user
+        subchannel  = Subchannel.objects.get(pk=sub_channel_id)
+
+        
+        p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
+            ,description = form.cleaned_data['description'] 
+            ,price = form.cleaned_data['price']
+            ,user = author
+            ,subchannel = subchannel
+            ,profile_picture = form.cleaned_data['picture']
+            ,picture1 = form.cleaned_data['picture1']
+            ,picture2 = form.cleaned_data['picture2']
+            ,picture3 = form.cleaned_data['picture3']
+            ,picture4 = form.cleaned_data['picture4']
+            ,picture5 = form.cleaned_data['picture5']
+            ,location_id = form.cleaned_data['location']
+            
+            )
+        # p.post_Notification()
+         
+        
+        for k in request.POST:
+            if k.startswith('option_'):
+                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+        return HttpResponse('Thank you for adding the post')
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
-       #return redirect("/login/")# Return an 'invalid login' error message.
+
+        form = PostForm()
+        initial={'subject': 'I love your site!'}
+    
+
+    return render_to_response('addPost.html', {'list_of_locations': list_of_locations, 'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+
+# def view_location(request):
+    
+#     return render_to_response('addPost.html', {)
+
+
+
+
+# def login(request):
+#     #print request
+#     #print "ldnfldnfndlfd"
+#     #print request.method
+#     mail = request.POST['email']
+#     password = request.POST['password']
+#     # print "before"
+#     # user = UserProfile.objects.get(email=mail)
+#     # print user.username
+#     # pk = user.username
+#     authenticated_user = authenticate(mail=mail, password=password)
+#     if authenticated_user is not None:
+#         print "auth"
+#         print authenticated_user.is_active
+#         if authenticated_user.is_active:
+#             print "act"
+#             django_login(request, authenticated_user)
+#             print "user logged in"
+#             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+#         else:
+#            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+#     else:
+#         return render_to_response ('home.html',context_instance=RequestContext(request))
+#        #return redirect("/login/")# Return an 'invalid login' error message.
 
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
