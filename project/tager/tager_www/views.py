@@ -59,7 +59,7 @@ def view_post(request):
     user = request.user
     print user.id
     creator = False
-    if post.user == user and post.buyer is None:
+    if post.seller == user and post.buyer is None:
          creator = True
     rateSellerButtonFlag = user.can_rate(request.GET['post_id']) 
     print rateSellerButtonFlag
@@ -108,7 +108,7 @@ def Buyer_identification(request):
             new_buyer_num = request.POST['buyer_phone_num']
             post = Post.objects.get(id=request.GET['post_id'])
             # new_buyer_num = form.GetBuyerNum()
-            buyer_added = user.add_Buyer(post, new_buyer_num)
+            buyer_added = user.add_buyer(post, new_buyer_num)
             d = {'form':form}
             return render_to_response( "post.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
