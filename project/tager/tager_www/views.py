@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
+from tager_www.forms import *
 from django.template import RequestContext
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
@@ -164,9 +165,6 @@ class CustomAuthentication:
     def get_user(self, user_id):
         try:
             return UserProfile.objects.get(pk=user_id)
-
-        except UserProfile.DoesNotExist:
-
         except User.DoesNotExist:
             return None
 
@@ -267,21 +265,21 @@ def editing_UsersInformation(request):
 # page where it displays their information and status. The user can write a new status in the text field whoch will be
 # saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
 # the status and will be redirected to the login page.
-# @login_required
-# def update_status(request):
-#     if request.method == 'POST':
-#         updating_form = UpdateStatusForm(request.POST)
-#         if updating_form.is_valid():
-#             temporary_user = UserProfile.objects.get(pk=request.user.id)
-#             status = updating_form.cleaned_data['status']
-#             if status != "":
-#                 temporary_user.status = status
-#                 temporary_user.save()
-#     else:
-#         updating_form = UpdateStatusForm()
+@login_required
+def update_status(request):
+    if request.method == 'POST':
+        updating_form = UpdateStatusForm(request.POST)
+        if updating_form.is_valid():
+            temporary_user = UserProfile.objects.get(pk=request.user.id)
+            status = updating_form.cleaned_data['status']
+            if status != "":
+                temporary_user.status = status
+                temporary_user.save()
+    else:
+        updating_form = UpdateStatusForm()
 
-#     context = {'updating_form': updating_form}
-#     return render_to_response('profile.html', context, context_instance=RequestContext(request))
+    context = {'updating_form': updating_form}
+    return render_to_response('profile.html', context, context_instance=RequestContext(request))
 
 
 
@@ -461,16 +459,3 @@ def password_change_done(request,
 # it includes the user name, his date of birth, phone number, gender, account type checking if prepium or not and  
 #  The logged in users are directed to the profile page whenever he wants to view it by clicking on the profile button
 # from above. For the users who are not logged in or does not exist he will be redirected to the login page.
-@login_required
-def Profile(request, user_id):
-    if not request.user.is_authenticated():
-        HttpResponseRedirect('/login/')
-    reviewer = UserProfile.objects.get(id=request.user.id)
-    user = UserProfile.objects.get(id=user_id)
-    ctx = {'user': user}
-   
-    render_to_response('profile.html', ctx, context_instance=RequestContext(RequestContext))
-
-
-# user.photo.url="/media/images.jpg"
-#     user.save()

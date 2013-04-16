@@ -72,8 +72,8 @@ class EditingUserProfileForm(forms.Form):
 
 
 
-# class UpdateStatusForm(forms.Form):
-#     status = forms.CharField()
+class UpdateStatusForm(forms.Form):
+    status = forms.CharField()
 
 
 class PasswordResetForm(forms.Form):

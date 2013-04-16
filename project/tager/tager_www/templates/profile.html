@@ -10,6 +10,7 @@
 {% block content %}
 	<h1> Welcome {{ request.user.name }} to your Profile  </h1>
 	<hr>
+	<img src=" {{ user.photo.url }}"> </img>
 
 	
 <form action="." method="POST" > 
