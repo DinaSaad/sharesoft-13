@@ -70,33 +70,15 @@ def login(request):
 #the request and then add the results in the dictonary.Then render the post html and pass the 
 #dictionary.
 #
+
 def view_post(request):
-
-    post = Post.objects.get(pk= request.GET['post_id'])
-    user = request.user
-    print user.id
-    creator = False
-    if post.user == user:
-         creator = True
-    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
-    print rateSellerButtonFlag
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
-    
-    # if request.method == 'POST':
-    #     form = BuyerIdentificationForm( request.POST )
-    #     if form.is_valid():
-    #         new_buyer_num = form.GetBuyerNum()
-    #         buyer_added = user.add_Buyer(post, new_buyer_num)
-    #         return HttpResponseRedirect( "/" )
-    #     else :
-    #         d.update({'form':form})
-    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
-
-    # else:
-    #     form = BuyerIdentificationForm()
-    #     d.update({'form':form})
-    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
-
+    post_id = request.GET['post']
+    post = Post.objects.get(id = post_id)
+    subchannel1 = post_id.sub_channel_id
+    list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
+    list_of_att_values = Value.objects.filter(Post_id = post_id)
+    post = post_id
+    return render(request, 'ViewPost.html', {'post': post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values})
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
 #who posted the post, the post it self and the rating. after taking in the request and storing the attributes
