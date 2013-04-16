@@ -273,6 +273,7 @@ class Post(models.Model):
 
     def get_buyer():
         return self.buyer.id
+ 
         
 ''' C1_beshoy Cal Quality index this method takes a post and then calculate its quality 
 index based on the filled attributes and thier wight'''
