@@ -21,15 +21,6 @@ def home(request):
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
 
-def view_channels(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
-
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 def login(request):
     #print request
@@ -70,23 +61,10 @@ def view_post(request):
     creator = False
     if post.user == user and post.buyer is None:
          creator = True
-    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
+    rateSellerButtonFlag = user.can_rate(request.GET['post_id']) 
     print rateSellerButtonFlag
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
-    # if request.method == 'POST':
-    #     form = BuyerIdentificationForm( request.POST )
-    #     if form.is_valid():
-    #         new_buyer_num = form.GetBuyerNum()
-    #         buyer_added = user.add_Buyer(post, new_buyer_num)
-    #         return HttpResponseRedirect( "/" )
-    #     else :
-    #         d.update({'form':form})
-    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
-
-    # else:
-    #     form = BuyerIdentificationForm()
-    #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
 
@@ -211,6 +189,15 @@ def view_profile(request):
         # GO TO USER PROFILE
 
 
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    s_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=s_id)
+    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 
