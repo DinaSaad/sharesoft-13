@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
+    url(r'^confirm_email/$','tager_www.views.confirm_email'),
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
