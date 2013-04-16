@@ -143,8 +143,26 @@ def Buyer_identification(request):
 
     else:
         form = BuyerIdentificationForm()
-        d = {'form':form}
-    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
+        d.update({'form':form})
+    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+
+    
+'''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
+filtes to the posts then sort them according to quality index AND  render the list to index.html'''
+def index(request):
+    post_list = filter_home_posts()
+    return render_to_response('index.html',{'post_list': post_list},context_instance=RequestContext(request))  
+
+'''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
+ execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
+def filter_home_posts():
+    post_list = (Post.objects.exclude(is_hidden=True)
+        .exclude(expired=True)
+        .exclude(is_sold=True)
+        .exclude(quality_index__lt=50)
+        .order_by('-quality_index'))
+    return post_list
+
 
 
 class CustomAuthentication:
