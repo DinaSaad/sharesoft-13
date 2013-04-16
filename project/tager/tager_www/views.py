@@ -138,22 +138,17 @@ def UserRegistration(request):
 #C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
 #reportPost in models.py then takes action to finish the reporting proccess
 def report_the_post(request):
-    post_id = request.POST['post_id']
     user = request.user
+    post_id = request.POST['post_id']
+    reported_post = Post.objects.get(id = post_id)
     report_reason = request.POST['report_reason']
-    post = Post.objects.get(id = post_id)
-    user.reportPost(post, report_user)    
-
-    # Report.objects.create(reported_post = p1, report_type = report_reason, reporting_user = User1)
-    # Report = Report.objects(reported_post = post_id, report_type = report_reason, report_user = User1)
-    # Report.save()
-    # return HttpResponse("hello")
+    user.report_post(reported_post, report_reason)    
 
 # C1-Tharwat this method takes in the post object as a parameter. it then calls the get_interested_in method in models.py 
 # to return the list of interested in buyers to the html page
 def get_interested_in(request):
-    post_id = request.POST['post_id']
     user = request.user
+    post_id = request.POST['post_id']
     post = Post.objects.get(id = post_id)
     list_of_interested_buyers = user.getInterestedIn(post)
     return render(request, 'post.html', {'list_of_interested_buyers': list_of_interested_buyers})

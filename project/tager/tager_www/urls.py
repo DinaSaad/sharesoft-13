@@ -13,5 +13,6 @@ urlpatterns = patterns('tager_www.views',
 	url(r'^$', ListView.as_view(
     	queryset = Post.objects.all().order_by('id')[:5],
     	template_name = "post.html")),
+	
     
 )

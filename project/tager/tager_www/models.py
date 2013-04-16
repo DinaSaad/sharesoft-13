@@ -154,28 +154,28 @@ class UserProfile(AbstractBaseUser):
     #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def get_interested_in(self, post):       
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
-        x = []
+        list_of_interested_users = []
         for i in interested:
-            x.append(i.user_id_buyer.id)
-        return x
+            list_of_interested_users.append(i.user_id_buyer.id)
+        return list_of_interested_users
 
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
     #It takes 2 parameters, the post being reported and the reason of report
     #It then inserts the record into the Report table
     def report_the_post(self, post, report_reason):
-        p = Post.objects.get(id = post.id)
+        reported_post = Post.objects.get(id = post.id)
         if post.user_id.id == self.id:
             print 'Cant report urself'
         elif Report.objects.filter(reported_post = post, reporting_user = self.id).exists():
             print 'already reported'
         elif post.reportCount() >= 20:
-            p.is_hidden = True
-            p.save()
+            reported_post.is_hidden = True
+            reported_post.save()
         else:   
             report = Report(reported_post = post, report_type = report_reason, reporting_user = self)
             report.save()
-            p.no_of_reports = p.no_of_reports + 1
-            p.save()      
+            reported_post.no_of_reports = reported_post.no_of_reports + 1
+            reported_post.save()      
          
     def canPost(self):
         return self.is_verfied
@@ -247,12 +247,6 @@ class Post(models.Model):
     def report_count(self):
         return self.no_of_reports
 
-    #C1-Tharwat) this method allows the admin to manually delete (Hide) a post
-    def admin_delete_reported_post(post):
-        p = Post.objects.get(pk = post.id)
-        p.is_hidden = True
-        p.save()
-
     #(C1-Tharwat)This method automatically determines the state of the post. Whether it is (New, Old, or Archived)
     #The method takes in one parameter which is the post itself
     #the method compares the date of which the post was published in and the current date
@@ -260,7 +254,7 @@ class Post(models.Model):
     #Based on the amount returned, if the amount is less than 30 days, the state = "NEW", if between 30 and 60, the state = "OLD", if greater than 60, the state = "ARCHIVED"
     def post_state(self):
         current_time = datetime.datetime.now()
-        p = Post.objects.get(id = self.id)
+        post = Post.objects.get(id = self.id)
 
         #used if the current year is greater than the year of the published post
         if current_time.year > self.pub_Date.year:
@@ -268,17 +262,17 @@ class Post(models.Model):
             #Although the years are diff yet the diff in days may not be greater than 30
             #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
             if current_time.month == 1 and self.pub_Date.month ==12 and (current_time.day + (31 - self.pub_Date.day)) > 30:
-                p.state = 'Old'
-                p.save()
+                post.state = 'Old'
+                post.save()
             #this is in case for exmaple the published month of the post is November and the current month is January
             #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
             #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
             elif current_time.month == 1 and self.pub_Date.month ==11 and (current_time.day + (31 - self.pub_Date.day)) < 60:
-                p.state = 'Old'
-                p.save()
+                post.state = 'Old'
+                post.save()
             else:
-                p.state = 'Archived'
-                p.save()
+                post.state = 'Archived'
+                post.save()
         #Used when the current year and Published year of the post are the same
         if current_time.year == self.pub_Date.year:
 
@@ -292,11 +286,11 @@ class Post(models.Model):
                 total_diff = day_diff_same_month
                           
             if total_diff > 30 and total_diff < 60:
-                p.state = 'Old'
-                p.save()
+                post.state = 'Old'
+                post.save()
             if total_diff > 60:
-                p.state = 'Archived'
-                p.save()
+                post.state = 'Archived'
+                post.save()
 
 
 # This model defines the table of reports
@@ -305,12 +299,14 @@ class Post(models.Model):
 # this table is used to retrieve the reports related to a certain post
 class Report(models.Model):
     reported_post = models.ForeignKey(Post, related_name = 'reported_Post')
-    report_type = models.CharField(max_length = '100')
+    report_type = models.CharField(max_length = 100)
     reporting_user = models.ForeignKey(UserProfile, related_name = 'reporting_user_id')
         
     def __unicode__(self):
         return (self.report_type)
 
+class ReportReasons(models.Model):
+    reported_reason = models.CharField(max_length = 50) 
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
