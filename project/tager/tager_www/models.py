@@ -214,6 +214,9 @@ class Post(models.Model):
     is_sold = models.BooleanField()#class Comments():
     def getBuyer():
         return self.buyer.id
+
+    def __unicode__(self):
+        return 'this is a post'
     
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
