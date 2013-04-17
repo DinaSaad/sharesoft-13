@@ -44,47 +44,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Project name</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><a href="#">Home</a></li>
-              <li><a href="advanced_search/channel/">Advanced Search</a></li>
-              <li><a href="#contact">Contact</a></li>
-              <li><a href="/notifications">Notification</a></li>
-               <li><a href="/profile?user_id={{user.id}}">Profile</a></li>
+          <a class="brand" href="#">Tager.com</a>
+          {% block nav %}
 
-              <li class="dropdown">
-
-         
-
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.name}}<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="/subscribe">Subscribe</a></li>
-                  <li><a href="#" id="editing">Manage and edit profile</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li class="nav-header">Nav header</li>
-                  <li><a href="#">Separated link</a></li>
-                  <li><a href="#">One more separated link</a></li>
-                {% block log %}
-                  <li><a href="/logout/">Logout</a></li>
-                {% endblock %}
-                </ul>
-              </li>
-
-              </li>
-            </ul>
-            <p>
-            <!-- <form action="home.html"> -->
-            <!-- <button class="btn btn-inverse" type="button"><a href="home">explore</a></button> -->
-
-            <!-- </form> -->
-
-            </ul>
-
+          {% endblock %}
             
-          </div><!--/.nav-collapse -->
+          
         </div>
       </div>
     </div>
