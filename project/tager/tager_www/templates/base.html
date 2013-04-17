@@ -3,11 +3,20 @@
   <title></title>
 
 {% load staticfiles %}
+    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="{% static "js/subscriptions.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
     <script type="text/javascript" src="{% static "js/custom.js" %}"></script>
     <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static "css/subscriptions.css" %}">
+
+
+    {% block headers %}
+
+    {% endblock %}
+
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -38,25 +47,42 @@
           <a class="brand" href="#">Project name</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
+              <li><a href="#">Home</a></li>
+              <li><a href="advanced_search/channel/">Advanced Search</a></li>
               <li><a href="#contact">Contact</a></li>
+              <li><a href="/notifications">Notification</a></li>
+               <li><a href="/profile?user_id={{user.id}}">Profile</a></li>
+
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+
+         
+
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.name}}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">Action</a></li>
+                  <li><a href="/subscribe">Subscribe</a></li>
+                  <li><a href="#" id="editing">Manage and edit profile</a></li>
                   <li><a href="#">Another action</a></li>
                   <li><a href="#">Something else here</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">Nav header</li>
                   <li><a href="#">Separated link</a></li>
                   <li><a href="#">One more separated link</a></li>
+                {% block log %}
+                  <li><a href="/logout/">Logout</a></li>
+                {% endblock %}
                 </ul>
               </li>
-            </ul>
-            {% block login %}
 
-            {% endblock %}
+              </li>
+            </ul>
+            <p>
+            <!-- <form action="home.html"> -->
+            <!-- <button class="btn btn-inverse" type="button"><a href="home">explore</a></button> -->
+
+            <!-- </form> -->
+
+            </ul>
+
             
           </div><!--/.nav-collapse -->
         </div>
@@ -64,17 +90,51 @@
     </div>
   
 
+{% block verification %}
+    {% if user.is_authenticated %}
+      {% if check_verified == False %}
+
+        <div class="alert">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}
+        </div> 
+
+      {% endif %}
+    {% endif %}
+  {% endblock %}
+  
+
 <!-- Start main websiteBody Div -->
  <div class="container" style="padding-top: 60px;">
 <!-- Start TMP , Please remove me -->
 
+
+
+
+
 {% block content %}
+
+{% block script %}
+{% endblock %}
 <!-- USe this to add your stuff   -->
 {% endblock %}
+
+<script type="text/javascript">
+    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    if(!options.crossDomain) {
+      if(options.data) {
+        options.data += "&";
+      } else {
+        options.data = "";
+      }
+      options.data += "csrfmiddlewaretoken={{csrf_token}}";
+    }
+    });
+</script>
 <!-- End TMP , Please remove me -->
       <hr>
 
-      <footer>
+ <footer>
         <p>&copy; sharesoft 2013</p>
       </footer>
 </div>
