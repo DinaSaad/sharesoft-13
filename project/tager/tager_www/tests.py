@@ -39,14 +39,6 @@ class UserProfileTest(TestCase):
         UserProfile.objects.get(pk=3)
         self.assertEquals(profile3.name,"mahmoud1")
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
-
-
 
 class UserActionsTest(unittest.TestCase):
     def setUp(self):
