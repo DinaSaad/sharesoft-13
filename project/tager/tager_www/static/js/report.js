@@ -36,28 +36,27 @@ $(document).ajaxSend(function(event, xhr, settings) {
 });
 
 function reportPost(ids){
-	alert($("input[name='optionsRadios']:checked").val());
+    reason = 'optionsRadios' + ids;
+	alert($("input[name=" + reason + "]:checked").val());
 	$.ajax({
     url: "/report/",
     type: "POST",
     data: {
     	"post_id" : ids,
-    	"report_reason" : $("input[name='optionsRadios']:checked").val(),
+    	"report_reason" : $("input[name=" + reason + "]:checked").val(),
     }, 
     success: function(result) {
         alert("Report Submitted... Thank you ! :D");
     }
 });
 }
-function report() {
-	$('.reportDIV').css('display', 'block');
-	$('#report_button').css('display', 'none');
+function report(id) {
+	$('.reportDIV' + id).css('display', 'block');
+	$('#report_button' + id).css('display', 'none');
 
 }
-function cancelReport() {
-	$('.reportDIV').css('display', 'none');	
-	$('#report_button').css('display', 'block');
+function cancelReport(id) {
+	$('.reportDIV' + id).css('display', 'none');	
+	$('#report_button' + id).css('display', 'block');
 
 }
-
-
