@@ -164,11 +164,11 @@ class UserProfile(AbstractBaseUser):
     #It then inserts the record into the Report table
     def report_the_post(self, post, report_reason):
         reported_post = Post.objects.get(id = post.id)
-        if post.user_id.id == self.id:
+        if post.user.id == self.id:
             print 'Cant report urself'
         elif Report.objects.filter(reported_post = post, reporting_user = self.id).exists():
             print 'already reported'
-        elif post.reportCount() >= 20:
+        elif reported_post.report_count() >= 20:
             reported_post.is_hidden = True
             reported_post.save()
         else:   
@@ -307,6 +307,10 @@ class Report(models.Model):
 
 class ReportReasons(models.Model):
     reported_reason = models.CharField(max_length = 50) 
+
+    def __unicode__(self):
+        return (self.reported_reason)
+
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
