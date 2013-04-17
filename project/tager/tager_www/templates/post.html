@@ -5,47 +5,43 @@
 {% block content %}
 
 <title> Welcome to my test page </title>
-{% if object_list %}
-{% for post in object_list %}
-<div id="{{post.id}}">
+{% if posts %}
+{% for post in posts %}
+
+<div id="{{post.id}}" style = 'display:inline-block' >
 
 <div class="photodiv">
-<img src="{% static "img/SLS.jpg" %}" width="200" height="200" alt="Hi!" /></div>
+<img src="{% static "img/logo.png" %}" width="200" height="200" alt="Hi!" /></div>
 
 <div class="description">
 <h2 id = "postID{{post.id}}" name = {{post.id}} value = {{post.id}} >Post ID: {{post.id}} </h2>
-<h3>Posted BY: {{post.user_id}}</h3>
+<h3>Posted BY: {{post.user.name}}</h3>
 <p> Posted On: {{post.pub_Date|date:"Y-m-d"}} <br>
 	Post reports: {{post.no_of_reports}} <br>
 	Post State: {{post.state}} <br>
 	
 </p>
-<button id = "report_button" onCLick= "report();">Report</button>
+<button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
 </div>
 
 <!-- <div class = "reportDIV" style="visibility:hidden"> -->
-<div class = "reportDIV" style="display:none">
+<div class = "reportDIV{{ post.id }}" style="display:none">
 
 <form class="reportForm" name="input" action="" method="POST">
 {% csrf_token %}
 
 <div class="reportReasons">	
-	<label class="radio">
-  		<input type="radio" name="optionsRadios" id="optionsRadios1" value="offensive" checked>
-  			Offensive
+	{% for reasons in report_reasons %}
+	<label class="R{{reasons.id}}">
+  		<input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
+  			{{reasons.reported_reason}}
 	</label>
-	<label class="radio">
- 		<input type="radio" name="optionsRadios" id="optionsRadios2" value="harrasment">
-  			Harrasment
-	</label>
-	<label class="radio">
-  		<input type="radio" name="optionsRadios" id="optionsRadios1" value="copyright">
-  			Copyright
-	</label>
+	{% endfor %}
+
 </div>
 <button id = "postID" onCLick ="reportPost({{post.id}});" type="button">Submit Report</button>
 </form> 
-<button onClick = "cancelReport();">Cancel Report</button>
+<button onClick = "cancelReport({{post.id}});">Cancel Report</button>
 </div>
 </div>
 {% endfor %}
