@@ -11,6 +11,8 @@ urlpatterns = patterns('',
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^logout/$', logout, {'next_page':'/'}),  
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+    
 
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     # Examples:
