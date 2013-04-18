@@ -24,6 +24,7 @@
     
     <input type="hidden" name="post_id" id= "post_id" value="{{post.id}}">
     <input type="hidden" name="post_owner" id= "post_owner" value="{{post.seller.id}}">
+
     
     {% block script%}
 
@@ -45,8 +46,12 @@
                 type: 'GET',
                 url: '/rateUser/',
                 data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
-                         });
+                success: function(){  
+                    $('#div.success').css("visibility", "hidden");  
+                }
 
+
+                         });
 
         },
 
