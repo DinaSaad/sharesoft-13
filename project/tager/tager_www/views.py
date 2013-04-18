@@ -13,8 +13,6 @@ from tager_www.models import UserProfile
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
-#c2-mohamed awad
-#this def return channels to subscriptions.html for the user to choose a channel to subscribe to
 def return_channels(request):
     channels = Channel.objects.all()
     return render_to_response ('subscriptions.html', {'channels': channels})
@@ -28,7 +26,7 @@ def return_subchannels(request):
     print s_id
     channels = Channel.objects.all()
     current_channel = Channel.objects.get(id=s_id)
-    subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    subchannels = SubChannel.objects.filter(channel_id = current_channel)
     print {'subchannels': subchannels}
     return render_to_response ('subscriptions.html', {'subchannels': subchannels})
 
@@ -39,8 +37,8 @@ def return_subchannels(request):
 def return_parameters(request):
     sc_id = request.GET['sch_id']
     channels = Channel.objects.all()
-    s_id = Subchannel.objects.get(id = sc_id).channel_id
-    subchannels = Subchannel.objects.filter(channel_id = s_id)
+    s_id = SubChannel.objects.get(id = sc_id).channel_id
+    subchannels = SubChannel.objects.filter(channel_id = s_id)
     parameters = Attribute.objects.filter(subchannel_id = sc_id)
     return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
 
@@ -53,7 +51,7 @@ def return_choices(request):
     subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
     parameters = Attribute.objects.filter(subchannel_id = subchannel_of_parameter)
     channels = Channel.objects.all()
-    subchannels = Subchannel.objects.all()
+    subchannels = SubChannel.objects.all()
     choices = AttributeChoice.objects.filter(attribute_id = p_id)
     return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
 
