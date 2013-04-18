@@ -213,7 +213,7 @@ class Channel(models.Model):
         return self.name
 
 #This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
-class Subchannel(models.Model):
+class SubChannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
     channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
     def __unicode__(self):
@@ -243,7 +243,7 @@ class Post(models.Model):
     comments_count = models.IntegerField(default="0")
     intersed_count = models.IntegerField(default="0")
     picture = models.ImageField(upload_to='images/test', blank=True)
-    sub_channel_id = models.ForeignKey(Subchannel)
+    sub_channel_id = models.ForeignKey(SubChannel)
     user = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
     is_sold = models.BooleanField()#class Comments():
@@ -378,7 +378,7 @@ class Post(models.Model):
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
     name = models.CharField(max_length=64)
-    subchannel_id = models.ForeignKey(Subchannel)
+    subchannel_id = models.ForeignKey(SubChannel)
     weight = models.FloatField()
 #this table contains all attributes (attribute_id) refrencing class attribute with all their posiible values(value)
 class AttributeChoice(models.Model):
@@ -400,7 +400,7 @@ class Value(models.Model):
 #and it contains a def subscribe where a user can add subscription input to UserSubscription model
 class Subscription(models.Model):
     channel = models.ForeignKey(Channel, null = True)
-    sub_channel = models.ForeignKey(Subchannel, null = True)
+    sub_channel = models.ForeignKey(SubChannel, null = True)
     parameter = models.ForeignKey(Attribute, null = True)
     choice = models.ForeignKey(AttributeChoice, null = True)
     class Meta: #to make sure a subscription doesn't exist twice
@@ -426,7 +426,7 @@ class Subscription(models.Model):
             subscription.save()
         except:
             pass
-        subchannels_with_same_channel = Subchannel.objects.filter(channel_id=self_parent_channel).count()
+        subchannels_with_same_channel = SubChannel.objects.filter(channel_id=self_parent_channel).count()
         subchannels_subscribed_with_same_channel = UserSubchannelSubscription.objects.filter(parent_channel=self_parent_channel, user=user_in).count()
         if subchannels_with_same_channel==subchannels_subscribed_with_same_channel:
             UserSubchannelSubscription.objects.filter(parent_channel=self.sub_channel.channel_id, user=user_in).delete()
@@ -473,7 +473,7 @@ class UserChannelSubscription(models.Model):
 class UserSubchannelSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
-    sub_channel = models.ForeignKey(Subchannel)
+    sub_channel = models.ForeignKey(SubChannel)
     class Meta: #to make sure a user doesn't have the same subscription twice
         unique_together = ("user", "parent_channel", "sub_channel")
     def __unicode__(self):
@@ -484,7 +484,7 @@ class UserSubchannelSubscription(models.Model):
 class UserParameterSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
-    sub_channel = models.ForeignKey(Subchannel)
+    sub_channel = models.ForeignKey(SubChannel)
     parameter = models.ForeignKey(Attribute)
     choice = models.ForeignKey(AttributeChoice)
     class Meta: #to make sure aa user won't have the same subscription twice
