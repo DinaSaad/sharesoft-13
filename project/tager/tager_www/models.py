@@ -248,7 +248,7 @@ class SubChannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length=200, default= "new")
+    state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
     title = models.CharField(max_length=200)
@@ -269,22 +269,21 @@ class Post(models.Model):
     subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
-    is_sold = models.BooleanField()#class Comments():
+    is_sold = models.BooleanField()
+    
 
     def get_buyer():
         return self.buyer.id
  
         
-''' C1_beshoy Cal Quality index this method takes a post and then calculate its quality 
-index based on the filled attributes and thier wight'''
-    def cal_quality_index(self):
+# ''' C1_beshoy Cal Quality index this method takes a post and then calculate its quality 
+# index based on the filled attributes and thier wight'''
+
+    def cal_quality(self):
         q_index=0
-        if self.title is not None && self.description is not None
-         && self.priceis not None && picture is not None :
-         q_index=q_index+20
-         attr_list_tmp=Attribute.objects.filter(sub_channel_id=self.sub_channel_id_id)
-         values_list_tmp=Values.objects.filter(Post_id=self.post_id_id)
-         for Values in values_list_tmp:
+        attr_list=Attribute.objects.filter(sub_channel_id=self.sub_channel_id_id)
+        values_list_tmp=Values.objects.filter(Post_id=self.post_id_id)
+        for Values in values_list_tmp:
             if Values.name_of_value is not None:
                 attr_tmp=Attribute.objects.get(Attribute_id=Values.attribute_id_id)
                 q_index=q_index+int(attr_tmp.weight)
@@ -320,7 +319,7 @@ class Attribute(models.Model):
     weight = models.FloatField()
 
 class Value(models.Model):
-    attribute_id = models.ForeignKey(Attribute)
+    attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=64)
     post = models.ForeignKey(Post)
 

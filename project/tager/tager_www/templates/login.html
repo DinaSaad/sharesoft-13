@@ -3,12 +3,14 @@
 
 {% block content %}
     <div class="login-wrapper">
+
+
     <div class="well-white bottom20px" style="width:300px; margin:0 auto;">
         <div class="page-header">
             <h1>Log in</h1>
         </div>
         <div class="padding20px form">
-            <form form action="/loggedIn/" method="POST" id="form" class="kissmetrics-login">
+            <form form action="/logged/" method="POST" id="form" class="kissmetrics-login">
                 {% csrf_token %}
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">Email:</label>
@@ -23,15 +25,13 @@
                         <input type="password" name="password" id="inputPassword" placeholder="Password"/>
                     </div>
                 </div>
-                <!-- <label class="checkbox">
-                <input type="checkbox" name="remember" value="Y"> Remember me for 2 weeks </label> -->
                 <div class="cf">
                     <div class="left">
                         <input type="submit" class="btn btn-success btn-large" value="Login">
                     </div>
-                    <!-- <div class="right">
+                    <div class="right">
                         <a href="//app.gathercontent.com/forgotten" class="link-option">Forgot your password?</a>
-                    </div> -->
+                    <!-- </div> -->
                 </div>
             </form>
         </div>
