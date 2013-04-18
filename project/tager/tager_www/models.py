@@ -154,10 +154,22 @@ class UserProfile(AbstractBaseUser):
     #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def get_interested_in(self, post):       
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
-        list_of_interested_users = []
+        buyer_ids = []
+        buyer_names = []
         for i in interested:
-            list_of_interested_users.append(i.user_id_buyer.id)
-        return list_of_interested_users
+            buyer_ids.append(i.user_id_buyer.id)
+        for i in buyer_names:
+            user = UserProfile.objects.get(id = i)
+            buyer_names.append(user.name)
+        return buyer_names
+
+
+# interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
+#         buyer_names = []
+#         list_of_interested_users = []
+#         for i in interested:
+#             list_of_interested_users.append(i.user_id_buyer.id)
+#         return list_of_interested_users
 
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
     #It takes 2 parameters, the post being reported and the reason of report
