@@ -182,7 +182,7 @@ class CustomAuthentication:
 def UserRegistration(request):
 
     if request.method == 'POST':
-        print request.POST
+       
         form = RegistrationForm(request.POST) 
         if form.is_valid(): 
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -194,7 +194,9 @@ def UserRegistration(request):
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
                 send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/')
+
+                return HttpResponseRedirect('/thankyou/')
+
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -222,7 +224,9 @@ def view_profile(request):
 
         # GO TO USER PROFILE
 
-
+#mai c2 L registeration thank you , it justs renders the html thank u 
+def thankyou(request):
+    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
@@ -239,24 +243,25 @@ def view_profile(request):
 #if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
 def confirm_email(request):
      
-    print "Start Confirm"
+  
 
 
     if request.method == 'POST':
-        print "the request is POST"  
+        
         form = request.POST['verify'] 
         if form is not None: 
-            print "The form is valid" 
+           
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
                 if not user.is_expired():
-                    print "activation key is exists" 
+                   
                     user.is_verfied=True
-                    print user.is_verfied 
+                   
                     user.save()
+                    return HttpResponseRedirect('/main/')
                 
                 else :  
-                    print "key expired"
+                 
                     return HttpResponse ("sorry your account is disabled because the activation key has expired")
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
