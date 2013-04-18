@@ -3,8 +3,26 @@ from django import forms
 from tager_www.models import UserProfile
 from captcha.fields import ReCaptchaField
 
+# from parsley.decorators import parsleyfy
+
+
 
 from tager_www.models import *
+
+
+class PostForm(forms.Form):
+    # cities = Location.objects.filter(country_name="Egypt")
+    title = forms.CharField(max_length="30")
+    description = forms.CharField(max_length = "200")
+    price = forms.IntegerField()
+    location = forms.CharField(max_length = 25, required = False)
+    picture = forms.ImageField(required = False)
+    picture1 = forms.ImageField(required = False)
+    picture2 = forms.ImageField(required = False)
+    picture3 = forms.ImageField(required = False)
+    picture4 = forms.ImageField(required = False)
+    picture5 = forms.ImageField(required = False)
+
 
 
 #mahmoud ahmed-C2 user can identify the buyer of his post- the BuyerIdentificationForm what it does is 
