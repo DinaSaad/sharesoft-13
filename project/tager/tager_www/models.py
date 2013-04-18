@@ -121,7 +121,7 @@ class UserProfile(AbstractBaseUser):
         
         return True
  
-	# Handle whether the user has permissions to view the app `app_label`?" 
+    # Handle whether the user has permissions to view the app `app_label`?" 
     def has_module_perms(self, app_label):
         
         return True
@@ -167,7 +167,7 @@ class UserProfile(AbstractBaseUser):
 
     def add_buyer(self,post,phone_num):
         p = post        
-        if p.user_id == self.id:
+        if p.seller_id == self.id:
             post_buyer = UserProfile.objects.get(phone_number = phone_num)
             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer
@@ -248,7 +248,7 @@ class SubChannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length=200, default= "new")
+    state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
     title = models.CharField(max_length=200)
@@ -269,7 +269,7 @@ class Post(models.Model):
     subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
-    is_sold = models.BooleanField()#class Comments():
+    is_sold = models.BooleanField()
     
     def get_buyer():
         return self.buyer.id    
@@ -303,7 +303,7 @@ class Attribute(models.Model):
     weight = models.FloatField()
 
 class Value(models.Model):
-    attribute_id = models.ForeignKey(Attribute)
+    attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=64)
     post = models.ForeignKey(Post)
 

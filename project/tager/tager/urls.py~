@@ -6,28 +6,16 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    
-    url(r'^$', 'tager_www.views.home'),
-    url(r'^login/$', 'tager_www.views.view_login'),
-    url(r'^logged/$', 'tager_www.views.login'),
-    url(r'^logout/$', logout, {'next_page':'/'}),  
 
+    url(r'^$', 'tager_www.views.home'),
+    url(r'^login/$', 'tager_www.views.login'),  
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
+    url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
-    url(r'^confirm_email/$','tager_www.views.confirm_email'),
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
-<<<<<<< HEAD
-    url(r'^advanced_att/$','tager_www.views.get_attributes_of_subchannel'),
-    url(r'^advanced_subchannel/$','tager_www.views.advanced_view_subchannels'),
-    url(r'^advanced_search/channel/$','tager_www.views.advanced_view_channels'),
-    url(r'^advanced_search/$','tager_www.views.advanced_search'),
-=======
-    url(r'^thankyou/$','tager_www.views.thankyou'),
-    
-
->>>>>>> 77831be713edd93b834736213f995c7083851533
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
@@ -39,6 +27,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
+	url(r'^tager_www/', include('tager_www.urls')),
 )
 
 urlpatterns += patterns('fbregister.facebook',
