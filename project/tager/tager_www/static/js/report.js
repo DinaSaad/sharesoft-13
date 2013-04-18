@@ -50,6 +50,19 @@ function reportPost(ids){
     }
 });
 }
+function get_interested(id) {
+    alert(id);
+    $.ajax({
+    url: "/getInterestedIn/",
+    type: "POST",
+    data: {
+        "post_id" : ids,
+    }, 
+    success: function(result) {
+        $('#listOfBuyers' + id).css('display', 'block');
+    }
+});
+}
 function report(id) {
 	$('.reportDIV' + id).css('display', 'block');
 	$('#report_button' + id).css('display', 'none');
