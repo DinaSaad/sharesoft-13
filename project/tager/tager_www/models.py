@@ -179,7 +179,6 @@ class UserProfile(AbstractBaseUser):
         p = Post.objects.get(id = post_id)
         return user.id == post.user_id_id
 
-
    #C1-Tharwat) This method takes in 2 parameters, the user id and the post.
     #It creates a list in which it filters through the posts table based on the user and post id.
     #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
