@@ -7,6 +7,15 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
+
+    url(r'^$', 'tager_www.views.index'),
+    url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),
+    url(r'^showpost$', 'tager_www.views.view_post'),
+
+    # url(r'^register$', 'tager_www.views.home'),
+ 
+
+
     url(r'^$', 'tager_www.views.home'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),

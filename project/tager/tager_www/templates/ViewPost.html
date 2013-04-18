@@ -1,16 +1,56 @@
-<html>
-<head>
-	<title>Welcome to the post Page</title>
-</head>
-<body>
+{% extends 'base.html'%}
+{% load staticfiles%}
+{% block content%}
+<title> Welcome to the post page </title>
+<div class="container-fluid">
+    <div class="row-fluid">
+		    <div  class="span6">
+		    	<div id="imagediv" >		
+		    		 <img style="width: 300px;" src="static/img/post.png">
+			</div>
+			</div>
+    		<div id = "contentdiv"class="span4" position="right">
+	
+				<h3> Title: {{post.title}}</h3>
 
-<h1>{{p.title}}</h1>
+				<h3> Description: {{post.description}}</h3>
 
-<label> it was published on: {{p.pub_Date}}</label>
+				<h3> Price: {{post.price}}</h3>
 
-<label> The price is: {{p.price}}</label>
+				<h3> State: {{post.state}} </h3>
 
-<label>Description: {{p.Description}}</label>
 
-</body>
-</html>
+				{% if list_of_att_name %}
+
+					{% for Attribute in list_of_att_name %}
+
+					<h3>{{Attribute.name}}</h3>
+
+					{% endfor %}
+				{% endif %}
+
+				{% if list_of_att_values %}
+
+					{% for Value in list_of_att_values %}
+
+					<h3>{{Value.value}}</h3>
+
+					{% endfor %}
+
+				{% endif %}  
+				<button type="button" class="btn btn-info"> fb </button>
+				<button type="button" class="btn btn-danger"> Report </button>
+				<button type="button" class="btn btn-info"> Interested in </button>    
+	 		</div>
+ 	</div>
+
+</div>
+<!-- 
+<div class="buttonDiv">
+
+</div>
+<div>
+
+</div> -->
+
+{% endblock %}

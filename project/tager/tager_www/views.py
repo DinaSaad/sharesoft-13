@@ -152,8 +152,9 @@ def login(request):
 #the request and then add the results in the dictonary.Then render the post html and pass the 
 #dictionary.
 #
-def view_post(request):
 
+<<<<<<< HEAD
+=======
     post = Post.objects.get(pk= request.GET['post_id'])
     user = request.user
     print user.id
@@ -178,7 +179,15 @@ def view_post(request):
     #     form = BuyerIdentificationForm()
     #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
+>>>>>>> master
 
+def view_post(request):
+    post_id = request.GET['post']
+    post = Post.objects.get(id = post_id)
+    subchannel1 = post.subchannel_id
+    list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
+    list_of_att_values = Value.objects.filter(Post_id = post_id)
+    return render(request, 'ViewPost.html', {'post': post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values})
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
 #who posted the post, the post it self and the rating. after taking in the request and storing the attributes
