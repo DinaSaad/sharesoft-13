@@ -124,5 +124,8 @@ visibility: hidden;
 .item:hover .repinLikeWrapper {
 visibility: visible;
 }
-
+#pass
+ {
+ width: 200px;
+}
 
