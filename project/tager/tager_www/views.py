@@ -330,6 +330,96 @@ def view_channels(request):
 
 def view_subchannels(request):
     s_id = request.GET['ch_id']
+    user = request.user
     current_channel = Channel.objects.filter(pk=s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels}, {'user':user})
+
+    #mohamed hammad C3 
+    #this method takes as input channel id and then returns its subchannels
+def advanced_view_subchannels(request):
+    print request.POST
+    s_id = request.POST['ad_ch_id']
+
+    print s_id
+    #current_channel = Channel.objects.filter(channel_id = s_id)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    #mohamed hammad C3 
+    #this method returns all channels
+
+def advanced_view_channels(request):
+    list_of_channels = Channel.objects.all() 
+    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+
+#mohamed tarek 
+#c3 takes as input the subchannel id sellected then return all attributes of it 
+#para
+def get_attributes_of_subchannel(request):
+    sub_id = request.POST['ad_sub_ch_id']
+
+    list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id' : sub_id})
+def advanced_search(request):#mohamed tarek c3 
+                             #this method takes attributes as input and takes values from the user them compares them  
+                             #to values to get the value obects containig the attribute ids and value iputed and them 
+                             #searches for all the post ids that have all the searched criteria present the returns a list of post ids
+    sub_id = request.GET['sub_ch_id']
+    attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    values =[]
+    post = []
+    value_obj =[]
+    for w in attributes:
+        name = w.name
+        values.append(request.GET[name])
+    result_search_obj = []
+    flag = False
+    result_search = []
+    result = []
+    post = []
+    i = 0
+    f = i+1
+    null = ""
+    for j in range(0,len(values)):
+        if values[j] == null:
+            pass
+        else:
+            result_search_obj+=[ (Value.objects.filter(attribute_id = attributes[j].id 
+            , value = values[j])) ]
+    if not result_search_obj:
+        return HttpResponse("please enter something in the search")
+    else:
+        result_search = [[] for o in result_search_obj]    
+        for k in range(0,len(result_search_obj)):
+            for l in range(0,len(result_search_obj[k])):
+                test = result_search_obj[k][l].value
+                result_search[k].append(result_search_obj[k][l].post.id)
+        tmp=result_search[0]
+        if len(result_search) == 1:
+            post=result_search[0]
+        else:
+            for h in range(1,len(result_search)):
+                post_temp = ""
+                for g in range(0,len(result_search[h])):
+                    if not result_search[h]:
+                        flag = True
+                        pass
+                    else:
+                        if flag == True:
+                            h=h-1
+                        loc = tmp[g]
+                        tmep =result_search[h]
+                        loce = tmep[g]
+                        if loc == tmep[g]:
+                            flag = True
+                            post_temp = tmep[g]
+                            post.append(post_temp)
+        print post
+        post_obj =[]
+        for a_post in post:
+            print a_post
+            post_obj.append(Post.objects.get(id = a_post))
+        if not post:
+            return HttpResponse("there is no posts with these values please refine your search.")
+        else:
+            return render('index.html', {'posts' : post})
