@@ -121,7 +121,7 @@ class UserProfile(AbstractBaseUser):
         
         return True
  
-	# Handle whether the user has permissions to view the app `app_label`?" 
+    # Handle whether the user has permissions to view the app `app_label`?" 
     def has_module_perms(self, app_label):
         
         return True
@@ -167,7 +167,7 @@ class UserProfile(AbstractBaseUser):
 
     def add_buyer(self,post,phone_num):
         p = post        
-        if p.user_id == self.id:
+        if p.seller_id == self.id:
             post_buyer = UserProfile.objects.get(phone_number = phone_num)
             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer

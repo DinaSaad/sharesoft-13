@@ -8,19 +8,24 @@
 {% endblock %}
 
 {% block content %}
-    <p> welcome {{ user.name }} to your post {{post.id}} </p>
+
+	<p> welcome {{ user.name }} to your post {{post.id}} </p>	
+
+	{% if add_buyer_button %}
+	<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+	{% endif %}
+
+    
     
     {% if view_rating %}
-    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.user.id}}" type="button">Rate Seller</button>
+    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
     {% endif %}
     <div id="star"></div>
     
     <input type="hidden" name="post_id" id= "post_id" value="{{post.id}}">
-    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.user.id}}">
-    {% if add_buyer_button %}
-    <button class="btn btn-mini btn-danger" id="addBuyer" value="" type="button">Add Buyer</button>
-    {% endif %}
+    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.seller.id}}">
 
+    
     {% block script%}
 
     <script type="text/javascript">
@@ -40,9 +45,13 @@
             $.ajax({
                 type: 'GET',
                 url: '/rateUser/',
-                data: { post_id: '{{post.id}}', post_owner: '{{post.user.id}}', rating: score },
-                         });
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                success: function(){  
+                    $('#div.success').css("visibility", "hidden");  
+                }
 
+
+                         });
 
         },
 

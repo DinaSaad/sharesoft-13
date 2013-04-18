@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form action="/post/addBuyer/" method="POST">
+    <form action="" method="POST">
     	{% csrf_token %}
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
