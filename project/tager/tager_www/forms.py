@@ -15,7 +15,7 @@ class PostForm(forms.Form):
     title = forms.CharField(max_length="30")
     description = forms.CharField(max_length = "200")
     price = forms.IntegerField()
-    location = forms.CharField(max_length = 25)
+    location = forms.CharField(max_length = 25, required = False)
     picture = forms.ImageField(required = False)
     picture1 = forms.ImageField(required = False)
     picture2 = forms.ImageField(required = False)
