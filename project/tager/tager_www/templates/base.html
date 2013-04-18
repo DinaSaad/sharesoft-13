@@ -3,6 +3,8 @@
   <title></title>
 
 {% load staticfiles %}
+    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="{% static "js/subscriptions.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
     <script type="text/javascript" src="{% static "js/custom.js" %}"></script>
     <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
@@ -55,10 +57,19 @@
 
          
               <ul class="nav pull-right">
+              <li><a href="advanced_search/channel/">Advanced Search</a></li>
+              <li><a href="#contact">Contact</a></li>
+              <li><a href="/notifications">Notification</a></li>
+               <li><a href="/profile?user_id={{user.id}}">Profile</a></li>
+
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+
+         
+
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.name}}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">Action</a></li>
+                  <li><a href="/subscribe">Subscribe</a></li>
+                  <li><a href="#" id="editing">Manage and edit profile</a></li>
                   <li><a href="#">Another action</a></li>
                   <li><a href="#">Something else here</a></li>
                   <li class="divider"></li>
@@ -77,13 +88,7 @@
         
         {% endblock %}
             </ul>
-            
-
-          
-
-            
-            
-
+  
             
           </div><!--/.nav-collapse -->
         </div>
@@ -136,7 +141,7 @@
 <!-- End TMP , Please remove me -->
       <hr>
 
-      <footer>
+ <footer>
         <p>&copy; sharesoft 2013</p>
       </footer>
 </div>
