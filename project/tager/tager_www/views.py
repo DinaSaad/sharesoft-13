@@ -1,4 +1,3 @@
-
 from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
@@ -138,15 +137,11 @@ def UserRegistration(request):
 #C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
 #reportPost in models.py then takes action to finish the reporting proccess
 def report_the_post(request):
-    # user = request.user
+    user = request.user
     post_id = request.POST['post_id']
-    print post_id
     reported_post = Post.objects.get(id = post_id)
     report_reason = request.POST['report_reason']
-    print report_reason
-    user = UserProfile.objects.create(name = 'so3aaasd', email = 'madmaaaadscfscsaaa@mostafa.com')
     user.report_the_post(reported_post, report_reason)
-    print user.id
     return HttpResponse()
 
 # C1-Tharwat this method takes in the post object as a parameter. it then calls the get_interested_in method in models.py 
@@ -156,16 +151,7 @@ def get_interested_in(request):
     post_id = request.POST['post_id']
     post = Post.objects.get(id = post_id)
     list_of_interested_buyers = user.getInterestedIn(post)
-    return render(request, 'post.html', {'list_of_interested_buyers': list_of_interested_buyers})
-
-
-def show_posts(request):
-    posts = Post.objects.all().order_by('-pub_Date')
-    report_reasons = ReportReasons.objects.all()
-    return render(request, 'post.html', {'posts': posts, 'report_reasons' : report_reasons})
-
-    
-
+    return render_to_response('post.html', {'list_of_interested_buyers': list_of_interested_buyers})
 
 
 
