@@ -11,14 +11,28 @@ from tager_www.models import UserProfile
 from django import forms 
 import random 
 import string
-from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.core.mail import send_mail 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.core.urlresolvers import reverse
+from django.template.response import TemplateResponse
+from django.core.mail import send_mail
+from django.template import loader, Context
+from django.template.loader import get_template
+
+
 
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
+
+def view_login(request):
+    return render_to_response ('login.html',context_instance=RequestContext(request))
 
 #C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
 #which is of type post and it has the email and the password attribute which are 
@@ -27,6 +41,7 @@ def home(request):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
+
 
 
 def view_channels(request):
@@ -50,8 +65,6 @@ def add_post(request):
     if form.is_valid():
         author = request.user
         subchannel  = Subchannel.objects.get(pk=sub_channel_id)
-
-        
         p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
             ,description = form.cleaned_data['description'] 
             ,price = form.cleaned_data['price']
@@ -113,6 +126,24 @@ def add_post(request):
 #         return render_to_response ('home.html',context_instance=RequestContext(request))
 #        #return redirect("/login/")# Return an 'invalid login' error message.
 
+def login(request):
+    mail = request.POST['email']
+    password = request.POST['password']
+    authenticated_user = authenticate(mail=mail, password=password)
+    if authenticated_user is not None:
+        print "auth"
+        print authenticated_user.is_active
+        if authenticated_user.is_active:
+            print "act"
+            django_login(request, authenticated_user)
+            print "user logged in"
+            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+        else:
+           return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+    else:
+        return render_to_response ('home.html',context_instance=RequestContext(request))
+       
+
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
 #it takes object user from the session and checks if this user can rate the post that is imbeded in 
@@ -125,25 +156,12 @@ def view_post(request):
     user = request.user
     print user.id
     creator = False
-    if post.user == user:
+    if post.user == user and post.buyer is None:
          creator = True
     rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
     print rateSellerButtonFlag
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
-    # if request.method == 'POST':
-    #     form = BuyerIdentificationForm( request.POST )
-    #     if form.is_valid():
-    #         new_buyer_num = form.GetBuyerNum()
-    #         buyer_added = user.add_Buyer(post, new_buyer_num)
-    #         return HttpResponseRedirect( "/" )
-    #     else :
-    #         d.update({'form':form})
-    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
-
-    # else:
-    #     form = BuyerIdentificationForm()
-    #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
@@ -161,8 +179,6 @@ def User_Ratings(request):
     post = Post.objects.get(id=request.GET['post_id'])
     rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
-    # d = {"user_rating":user_rating, 'post_owner':post_owner}
-    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
     return HttpResponseRedirect("/")
     
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
@@ -179,9 +195,12 @@ def User_Ratings(request):
 def Buyer_identification(request):
     user = request.user
     if request.method == 'POST':
+        # print request.POST
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
-            new_buyer_num = form.GetBuyerNum()
+            new_buyer_num = request.POST['buyer_phone_num']
+            post = Post.objects.get(id=request.GET['post_id'])
+            # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_Buyer(post, new_buyer_num)
             d = {'form':form}
             return render_to_response( "post.html", d, context_instance = RequestContext( request ))
@@ -211,7 +230,6 @@ def filter_home_posts():
         .exclude(quality_index__lt=50)
         .order_by('-quality_index'))
     return post_list
-
 
 
 class CustomAuthentication:
@@ -260,7 +278,7 @@ def UserRegistration(request):
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
                 send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/profile/')
+                return HttpResponseRedirect('/')
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -324,7 +342,6 @@ def confirm_email(request):
                 else :  
                     print "key expired"
                     return HttpResponse ("sorry your account is disabled because the activation key has expired")
-
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
     else : 
@@ -336,6 +353,20 @@ def confirm_email(request):
         
 
 
+
+
+#mai: captcha -registration
+#it takes a request 
+# saves the form with the request data 
+#gets the public key from the settings and saves it in publiic_key
+#then renders the html with the form passed in a dic and the script 
+# result : captcha shown 
+def display_form(request):
+    form = RegistrationForm(request.POST)
+    # assuming your keys are in settings.py
+    public_key = settings.RECAPTCHA_PUBLIC_KEY
+    script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
 
 
 #mai: captcha -registration
@@ -369,11 +400,10 @@ def verfiy_captcha(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             # Do form processing here...
-           return HttpResponseRedirect('/profile/')
+           return HttpResponseRedirect('/login/')
     else:
         form = RegistrationForm()
         script = displayhtml(public_key=public_key)
     return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
-
 
 
