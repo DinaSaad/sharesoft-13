@@ -51,33 +51,33 @@ def view_channels(request):
 def view_subchannels(request):
     sub_channel_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=sub_channel_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
     return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
 
 @login_required
 def add_post(request):
     sub_channel_id = request.GET['sub_ch_id']
     # location = request.GET['location_id']
-    current_sub_channel = Subchannel.objects.get(id = sub_channel_id)
+    current_sub_channel = SubChannel.objects.get(id = sub_channel_id)
     list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
 
     form = PostForm(request.POST,request.FILES)
     if form.is_valid():
         author = request.user
-        subchannel  = Subchannel.objects.get(pk=sub_channel_id)
+        subchannel1  = SubChannel.objects.get(pk=sub_channel_id)
         p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
             ,description = form.cleaned_data['description'] 
             ,price = form.cleaned_data['price']
-            ,user = author
-            ,subchannel = subchannel
+            ,seller = author
+            ,subchannel = subchannel1
             ,profile_picture = form.cleaned_data['picture']
             ,picture1 = form.cleaned_data['picture1']
             ,picture2 = form.cleaned_data['picture2']
             ,picture3 = form.cleaned_data['picture3']
             ,picture4 = form.cleaned_data['picture4']
             ,picture5 = form.cleaned_data['picture5']
-            ,location_id = form.cleaned_data['location']
-            
+            ,location = form.cleaned_data['location']
+            ,
             )
         # p.post_Notification()
          
@@ -92,7 +92,7 @@ def add_post(request):
         initial={'subject': 'I love your site!'}
     
 
-    return render_to_response('addPost.html', {'list_of_locations': list_of_locations, 'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+    return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
 
 # def view_location(request):
     

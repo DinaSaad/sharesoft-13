@@ -45,7 +45,7 @@ $('#Channel_dropdown').change(function(){
 
 $(document).ready(function(){
 $('#subChannel_dropdown').change(function(){
-	window.location.replace("att?sub_ch_id="+$(this).val())
+	window.location.replace("addpost?sub_ch_id="+$(this).val())
 });
 });
 
@@ -103,6 +103,9 @@ $('#SubmitAction').attr("disabled", true);
 
 $(document).ready(function() {
 $(function(){
+  $('#titleoutput').text("Can not be blank");
+  $('#descriptionoutput').text("Can not be blank");
+  $('#priceoutput').text("Can not be blank");
   $('#id_title').keyup(function(){
     data = $(this).val();
     var x = false;    
@@ -152,23 +155,17 @@ $(function(){
             }   
 });
   });
-if($('#id_description').val().length < 25 || $('#id_title').val().length < 5){
-  $('#SubmitAction').attr("disabled", true);
+
+});
+
+$(document).ready(function() {
+if($("#id_location").val().length == 0){
+  $('#descriptionoutput').text("Can not be blank");
 }
 });
-// $(document).ready(function() {
-// $(function() {
-//   var tags = [ "c++", "java", "php", "coldfusion", "javascript", "asp", "ruby" ];
-// $( "#tags" ).autocomplete({
-//   source: function( request, response ) {
-//           var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
-//           response( $.grep( tags, function( item ){
-//               return matcher.test( item );
-//           }) );
-//       }
-// });
-//   });
-// });
+
+
+
 
  $(function() {
     var availableTags = [
@@ -193,9 +190,10 @@ $(function(){
                
                 return true;
             }
+
           else {
               $('#SubmitAction').attr("disabled", true);    
-              $('#output').text("Description can not consist of only spaces and it can not be shorter than 25 characters");  
+              $('#descriptionoutput').text("Invalid description");  
               return false;
             }   
 });
