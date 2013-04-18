@@ -1,0 +1,110 @@
+{% extends "base.html"%}
+{% load staticfiles %}
+{% block content%} 
+<div align="left">
+    {% if list_of_channels %}
+    <h3>Channel</h3>
+    <select id="Channel_dropdown">
+    <option> Select The Channel Please</option>    
+    {% for Channel in list_of_channels %}
+    
+    <option value="{{Channel.id}}">{{ Channel.name }}</option>
+    {% endfor %} 
+    </select>
+    {% endif %}
+    </div>
+
+<div align="left">
+{% if list_of_subchannels %}
+    <h3>The available sub channels are:</h3>
+    <select id="subChannel_dropdown">   
+    <option> Select The Sub channel Please</option>    
+    {% for SubChannel in list_of_subchannels %}
+    <option value="{{SubChannel.id}}">{{ SubChannel.name }}</option>
+    {% endfor %} 
+    </select>
+{% endif %}
+</div>
+
+<div class="postform">
+{% if add_post %}
+<div class="pform">
+    <h1>Add Post</h1>
+    <form enctype="multipart/form-data" action="" method="post">
+        <label style ="color:red"> * Required </label>
+        <div>
+            <label for="id_title"> Title:</label>
+            <input id="id_title" maxlength="30" name="title" type="text"> *
+            <label id = "titleoutput" style="color:red"></label>
+        </div>
+        
+        <div>
+            <label for="id_description">Description:</label>
+            <input id="id_description" maxlength="200" name="description" type="text"> *
+            <label id = "descriptionoutput" style="color:red"></label>
+        </div>
+        
+        <div>
+            <label for="id_price">Price:</label>
+            <input id="id_price" name="price" type="text"> *
+            <label id = "priceoutput" style="color:red"></label> 
+        </div>
+        
+        <label for="id_location">Location:</label>
+        <input id="id_location" name="location" type="text"> *
+        
+        </div>
+
+
+        <div>
+            <label for="id_picture">Picture:</label>
+            <input id="id_picture" name="picture" type="file">
+            <button type="button" id="add1" class="btn btn-success btn-small">+</button>
+        </div>
+        
+        <div id="picture1"> 
+            <label for="id_picture1">Picture:</label>
+            <input id="id_picture1" name="picture1" type="file"><button type="button" id="add2" class="btn btn-success btn-small">+</button>
+        </div>
+        
+        <div id="picture2">
+            <label for="id_picture2">Picture:</label>
+            <input id="id_picture2" name="picture2" type="file">
+            <button type="button" class="btn btn-success btn-small" id="add3">+</button>
+        </div>
+
+        <div id="picture3">
+            <label for="id_picture3">Picture</label>
+            <input id="id_picture3" name="picture3" type="file">
+            <button type="button" class="btn btn-success btn-small" id="add4">+</button>
+        </div>
+        
+        <div id="picture4">
+            <label for="id_picture4">Picture</label>
+            <input id="id_picture4" name="picture4" type="file"><button type="button" class="btn btn-success btn-small" id="add5">+</button>
+        </div>
+        
+        <div id="picture5"> 
+            <label for="id_picture5">Picture</label>
+            <input id="id_picture5" name="picture5" type="file"><button type="button" id="add6" class="btn btn-success btn-small">+</button>
+        </div> 
+        
+
+
+        <br>
+        {% for Attribute in list_of_attributes %}
+            <lbl>{{ Attribute.name }} : </lbl> <br>
+            <input name='option_{{Attribute.id}}' type="text">
+        {% endfor %}
+
+<!--         <option> Select </option>    
+        {% for Location in list_of_locations %}
+        <option name='l_{{Location.id}}'>{{ Location.city_name }}</option>
+        {% endfor %}  -->
+        <br>
+        <br>
+        <input type="submit" class="btn btn-success btn-medium" value="Submit" id="SubmitAction" disabled>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

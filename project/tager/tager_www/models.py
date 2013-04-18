@@ -9,9 +9,6 @@ EXPIRATION_DAYS = 10
 
 from django.db.models import Sum , Avg 
 
-
-
-
 #mai 
 #this is the custome manager made , it inheirts the built in baseUSermanager 
 #it must have 2 methods which is create user and create super users 
@@ -251,7 +248,7 @@ class Post(models.Model):
     state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     quality_index = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     description = models.CharField(max_length=500, null=True)
@@ -269,8 +266,9 @@ class Post(models.Model):
     subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
-    is_sold = models.BooleanField()
-    
+
+    is_sold = models.BooleanField()#class Comments():
+    location = models.CharField(max_length = "100")
     def get_buyer():
         return self.buyer.id    
 
@@ -402,3 +400,7 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+<<<<<<< HEAD
+
+=======
+>>>>>>> master

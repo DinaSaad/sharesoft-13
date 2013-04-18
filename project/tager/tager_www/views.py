@@ -6,9 +6,9 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
+from tager_www.forms import *
 from tager_www.models import UserProfile 
 from django import forms 
-from tager_www.forms import *
 import random 
 import string
 from django.contrib.auth import authenticate
@@ -29,7 +29,6 @@ from django.template.loader import get_template
 
 
 
-
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -43,6 +42,91 @@ def view_login(request):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
+
+
+
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    sub_channel_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=sub_channel_id)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
+    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
+
+@login_required
+def add_post(request):
+    sub_channel_id = request.GET['sub_ch_id']
+    # location = request.GET['location_id']
+    current_sub_channel = SubChannel.objects.get(id = sub_channel_id)
+    list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
+
+    form = PostForm(request.POST,request.FILES)
+    if form.is_valid():
+        author = request.user
+        subchannel1  = SubChannel.objects.get(pk=sub_channel_id)
+        p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
+            ,description = form.cleaned_data['description'] 
+            ,price = form.cleaned_data['price']
+            ,seller = author
+            ,subchannel = subchannel1
+            ,profile_picture = form.cleaned_data['picture']
+            ,picture1 = form.cleaned_data['picture1']
+            ,picture2 = form.cleaned_data['picture2']
+            ,picture3 = form.cleaned_data['picture3']
+            ,picture4 = form.cleaned_data['picture4']
+            ,picture5 = form.cleaned_data['picture5']
+            ,location = form.cleaned_data['location']
+            ,
+            )
+        # p.post_Notification()
+         
+        
+        for k in request.POST:
+            if k.startswith('option_'):
+                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+        return HttpResponse('Thank you for adding the post')
+    else:
+
+        form = PostForm()
+        initial={'subject': 'I love your site!'}
+    
+
+    return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+
+# def view_location(request):
+    
+#     return render_to_response('addPost.html', {)
+
+
+
+
+# def login(request):
+#     #print request
+#     #print "ldnfldnfndlfd"
+#     #print request.method
+#     mail = request.POST['email']
+#     password = request.POST['password']
+#     # print "before"
+#     # user = UserProfile.objects.get(email=mail)
+#     # print user.username
+#     # pk = user.username
+#     authenticated_user = authenticate(mail=mail, password=password)
+#     if authenticated_user is not None:
+#         print "auth"
+#         print authenticated_user.is_active
+#         if authenticated_user.is_active:
+#             print "act"
+#             django_login(request, authenticated_user)
+#             print "user logged in"
+#             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+#         else:
+#            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+#     else:
+#         return render_to_response ('home.html',context_instance=RequestContext(request))
+#        #return redirect("/login/")# Return an 'invalid login' error message.
+
 def login(request):
     mail = request.POST['email']
     password = request.POST['password']
@@ -346,13 +430,3 @@ def verfiy_captcha(request):
     return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
 
 
-
-def view_channels(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
-
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
