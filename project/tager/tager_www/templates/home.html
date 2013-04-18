@@ -1,68 +1,11 @@
 {% extends "base.html" %}
 
 
-
-
-{% block login %}
-
-    <!--   <li><a href="#" class="btn" data-toggle="popover" data-placement="bottom" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." title="" data-original-title="Popover on bottom">Popover on bottom</a>
-        <div class="popover fade bottom in" style="top: 69px; left: 372.5px; display: block;">
-    <div class="arrow">
-    </div>
-    <h3 class="popover-title">Popover on bottom</h3>
-    <div class="popover-content">
-        Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
-    </div>
-    </div>
-    </li> -->
-
-{% endblock %}
 {% block content %}
-    <div class="login-wrapper">
-   <!--  <div class="logo">
-        <div class="custom-logo">
-            <div>
-                <img src="//app.gathercontent.com/assets/img/gathercontent-logo-inverted.png" alt="GatherContent logo">
-            </div>
-        </div>
-    </div> -->
-    <div class="well-white bottom20px" style="width:300px; margin:0 auto;">
-        <div class="page-header">
-            <h1>Log in</h1>
-        </div>
-        <div class="padding20px form">
-            <form form action="/login/" method="POST" id="form" class="kissmetrics-login">
-                {% csrf_token %}
-                <div class="control-group">
-                    <label class="control-label" for="inputEmail">Email:</label>
-                    <div class="controls">
-                        <input type="email" name="email" id="inputEmail" placeholder="Email address" autofocus =""/>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label" for="inputPassword">Password:</label>
-                    <div class="controls">
-                        <input type="password" name="password" id="inputPassword" placeholder="Password"/>
-                    </div>
-                </div>
-                <!-- <label class="checkbox">
-                <input type="checkbox" name="remember" value="Y"> Remember me for 2 weeks </label> -->
-                <div class="cf">
-                    <div class="left">
-                        <input type="submit" class="btn btn-success btn-large" value="Login">
-                    </div>
-                    <!-- <div class="right">
-                        <a href="//app.gathercontent.com/forgotten" class="link-option">Forgot your password?</a>
-                    </div> -->
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-        </div>
-
-
+    
+      <div>
+        <p class="h4">already have an account ? <a class="brand" href="/login/">sign in</a></p>
+      </div>
 {% endblock %}
 
 
