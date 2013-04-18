@@ -16,6 +16,10 @@ urlpatterns = patterns('',
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
+    url(r'^advanced_att/$','tager_www.views.get_attributes_of_subchannel'),
+    url(r'^advanced_subchannel/$','tager_www.views.advanced_view_subchannels'),
+    url(r'^advanced_search/channel/$','tager_www.views.advanced_view_channels'),
+    url(r'^advanced_search/$','tager_www.views.advanced_search'),
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
