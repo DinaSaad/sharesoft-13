@@ -9,9 +9,6 @@ EXPIRATION_DAYS = 10
 
 from django.db.models import Sum , Avg 
 
-
-
-
 #mai 
 #this is the custome manager made , it inheirts the built in baseUSermanager 
 #it must have 2 methods which is create user and create super users 
@@ -121,7 +118,7 @@ class UserProfile(AbstractBaseUser):
         
         return True
  
-	# Handle whether the user has permissions to view the app `app_label`?" 
+    # Handle whether the user has permissions to view the app `app_label`?" 
     def has_module_perms(self, app_label):
         
         return True
@@ -151,7 +148,7 @@ class UserProfile(AbstractBaseUser):
 #product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
 #rateSeller button appears if he isn't then the button won't appear.
 
-    def canRate(self,post_id):
+    def can_rate(self,post_id):
         print post_id
         p = Post.objects.get(id = post_id)
         r = Rating.objects.filter(post= p ,buyer = self).count() 
@@ -165,9 +162,9 @@ class UserProfile(AbstractBaseUser):
         user_posts = Post.objects.filter(user_id_id = self.id)
         return user_posts
 
-    def add_Buyer(self,post,phone_num):
+    def add_buyer(self,post,phone_num):
         p = post        
-        if p.user_id == self.id:
+        if p.seller_id == self.id:
             post_buyer = UserProfile.objects.get(phone_number = phone_num)
             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer
@@ -182,20 +179,20 @@ class UserProfile(AbstractBaseUser):
         return user.id == post.user_id_id
 
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
-    def getInterestedIn(self, post):       
+    def get_interested_in(self, post):       
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
         x = []
         for i in interested:
             x.append(i.user_id_buyer.id)
         return x
         
-    def canPost(self):
+    def can_post(self):
         return self.is_verfied
 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
-    def Interested(self, post_in):
+    def interested_in(self, post_in):
         if self.canPost:
             if  Post.objects.filter(pk=post_in.post_id).exists():
                 user1=InterestedIn(user_id_buyer_id=self.user_id,user_id_seller_id=post_in.post_id,post_id_id=post_in.post_id)
@@ -219,9 +216,6 @@ class UserProfile(AbstractBaseUser):
         self.save() 
         return user_rating
 
-    # def RateSeller(self,seller,post,in_rating):
-    #     seller_original_rate = seller.rating
-    #     seller_new_calculated_rating = 
 
 
 
@@ -231,13 +225,14 @@ class UserProfile(AbstractBaseUser):
 class Channel(models.Model):
     name = models.CharField(max_length=100, unique = True)
     description = models.CharField(max_length=500) 
+    
     def __unicode__(self):
         return self.name
 
 #This table shows the existing subchannels, name represents the name of the subchannel, and the channel_id is a foreign key that references the id of each channel from the channels model
-class Subchannel(models.Model):
+class SubChannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
-    channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
+    channel = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
 
 #Class Post documentation
@@ -250,26 +245,45 @@ class Subchannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length=200, default= "new")
+    state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     quality_index = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     description = models.CharField(max_length=500, null=True)
     price = models.IntegerField(null=True)
     edit_date = models.DateField(null=True)
-    pub_Date = models.DateField(null=True)
+    pub_date = models.DateField(null=True)
     comments_count = models.IntegerField(default=0)
     intersed_count = models.IntegerField(default=0)
-    picture = models.ImageField(upload_to='images/test', blank=True)
-    sub_channel_id = models.ForeignKey(Subchannel)
-    user = models.ForeignKey(UserProfile, related_name = 'seller_post')
-    buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post')
+    profile_picture = models.ImageField(upload_to='media', blank=True)
+    picture1 = models.ImageField(upload_to='media', blank=True)
+    picture2 = models.ImageField(upload_to='media', blank=True)
+    picture3 = models.ImageField(upload_to='media', blank=True)
+    picture4 = models.ImageField(upload_to='media', blank=True)
+    picture5 = models.ImageField(upload_to='media', blank=True)
+    subchannel = models.ForeignKey(SubChannel)
+    seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
+    buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
+
     is_sold = models.BooleanField()#class Comments():
-    def getBuyer():
-        return self.buyer.id
-    
+    location = models.CharField(max_length = "100")
+    def get_buyer():
+        return self.buyer.id    
+
+# This model defines the table of reports
+# this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
+# as the user reports a post after choosing a reason pre-defined in the system, a record is inserted in the table
+# this table is used to retrieve the reports related to a certain post
+class Report(models.Model):
+    reported_post = models.ForeignKey(Post, related_name = 'reported_Post')
+    report_type = models.CharField(max_length = '100')
+    reporting_user = models.ForeignKey(UserProfile, related_name = 'reporting_user_id')
+        
+    def __unicode__(self):
+        return (self.report_type)
+
 
 class Rating(models.Model):
     post_owner = models.ForeignKey('UserProfile', related_name="post_owner")
@@ -283,13 +297,13 @@ class Rating(models.Model):
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
 class Attribute(models.Model):
     name = models.CharField(max_length=64)
-    subchannel_id = models.ForeignKey(Subchannel)
+    subchannel = models.ForeignKey(SubChannel)
     weight = models.FloatField()
 
 class Value(models.Model):
-    attribute_id = models.ForeignKey(Attribute)
+    attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=64)
-    Post_id = models.ForeignKey(Post)
+    post = models.ForeignKey(Post)
 
 
 #this is subscription class that keeps records for all possible combination of subscriptions a user can make where
@@ -301,18 +315,19 @@ class Value(models.Model):
 #and it contains a def subscribe where a user can add subscription input to UserSubscription model
 class Subscription(models.Model):
     channel = models.ForeignKey(Channel, null = True)
-    sub_channel = models.ForeignKey(Subchannel, null = True)
+    sub_channel = models.ForeignKey(SubChannel, null = True)
     parameter = models.ForeignKey(Attribute, null = True)
     choice = models.ForeignKey(Value, null = True)
+    
     class Meta:
         unique_together = ("channel","sub_channel","parameter","choice")
-    def subscribe_Bychannel(self, user_in):
+    def subscribe_by_channel(self, user_in):
         UserSubchannelSubscription.objects.filter(user = user_in, parent_channel = self.channel).delete()
         channel_to_subscribe = self.channel
         subscription = UserChannelSubscription(user = user_in, channel = channel_to_subscribe)
         subscription.save()
         
-    def subscribe_Bysubchannel(self, user_in):
+    def subscribe_by_subchannel(self, user_in):
         self_parent_channel = self.sub_channel.channel_id
         UserChannelSubscription.objects.filter(user = user_in, channel = self_parent_channel).delete()
         sub_channel_to_subscribe = self.sub_channel
@@ -323,7 +338,7 @@ class Subscription(models.Model):
         if subchannels_with_same_channel==subchannels_subscribed_with_same_channel:
             UserSubchannelSubscription.filter(parent_channel=self.sub_channel.channel).delete()
             self.subscribe_Bychannel(user_in)
-    def subscribe_Byparameter(self, user_in):
+    def subscribe_by_parameter(self, user_in):
         self_parent_channel = self.sub_channel.channel_id
         sub_channel_to_subscribe = self.sub_channel
         self_parent_channel = self.channel
@@ -357,6 +372,7 @@ class InterestedIn(models.Model):
 class UserChannelSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     channel = models.ForeignKey(Channel)
+
     class Meta:
         unique_together = ("user", "channel")
     def __unicode__(self):
@@ -366,7 +382,8 @@ class UserChannelSubscription(models.Model):
 class UserSubchannelSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
-    sub_channel = models.ForeignKey(Subchannel)
+    sub_channel = models.ForeignKey(SubChannel)
+
     class Meta:
         unique_together = ("user", "parent_channel", "sub_channel")
     def __unicode__(self):
@@ -375,10 +392,15 @@ class UserSubchannelSubscription(models.Model):
 class UserParameterSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
-    sub_channel = models.ForeignKey(Subchannel)
+    sub_channel = models.ForeignKey(SubChannel)
     parameter = models.ForeignKey(Attribute)
     choice = models.ForeignKey(Value)
+
     class Meta:
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
