@@ -143,8 +143,8 @@ def Buyer_identification(request):
 
     else:
         form = BuyerIdentificationForm()
-        d.update({'form':form})
-    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+        d = {'form':form}
+    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
