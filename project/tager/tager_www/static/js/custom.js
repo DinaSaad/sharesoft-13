@@ -1,4 +1,5 @@
 
+
 $(document).ready(function(){
 	$('#rateSeller').change(function(){
 	window.location.replace("hello?ch_id="+$(this).val())
@@ -30,6 +31,7 @@ $(document).ready(function(){
 		window.location.replace("/post?post_id="+$(this).val());
 	})
 })
+
 $(document).ready(function(){
 $('#Channel_dropdown').change(function(){
 	window.location.replace("viewsubchannels?ch_id="+$(this).val())
@@ -199,4 +201,14 @@ $(function(){
 });
   });
 });
+
+
+$(document).ready(function(){
+
+	$("#addBuyer").click(function(){
+		window.location.replace("/addBuyer?post_id="+$(this).val());
+	})
+	
+})
+
 

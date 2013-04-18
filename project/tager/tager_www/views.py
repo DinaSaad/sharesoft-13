@@ -11,6 +11,7 @@ from tager_www.models import UserProfile
 from django import forms 
 import random 
 import string
+from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.core.mail import send_mail 
 from django.contrib.auth.decorators import login_required
@@ -129,6 +130,7 @@ def add_post(request):
 def login(request):
     mail = request.POST['email']
     password = request.POST['password']
+
     authenticated_user = authenticate(mail=mail, password=password)
     if authenticated_user is not None:
         print "auth"
@@ -142,7 +144,7 @@ def login(request):
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
         return render_to_response ('home.html',context_instance=RequestContext(request))
-       
+       #return redirect("/login/")# Return an 'invalid login' error message.
 
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
@@ -156,12 +158,25 @@ def view_post(request):
     user = request.user
     print user.id
     creator = False
-    if post.user == user and post.buyer is None:
+    if post.seller == user and post.buyer is None:
          creator = True
-    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
+    rateSellerButtonFlag = user.can_rate(request.GET['post_id']) 
     print rateSellerButtonFlag
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
+    # if request.method == 'POST':
+    #     form = BuyerIdentificationForm( request.POST )
+    #     if form.is_valid():
+    #         new_buyer_num = form.GetBuyerNum()
+    #         buyer_added = user.add_Buyer(post, new_buyer_num)
+    #         return HttpResponseRedirect( "/" )
+    #     else :
+    #         d.update({'form':form})
+    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
+
+    # else:
+    #     form = BuyerIdentificationForm()
+    #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
@@ -179,6 +194,8 @@ def User_Ratings(request):
     post = Post.objects.get(id=request.GET['post_id'])
     rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
+    # d = {"user_rating":user_rating, 'post_owner':post_owner}
+    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
     return HttpResponseRedirect("/")
     
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
@@ -195,13 +212,12 @@ def User_Ratings(request):
 def Buyer_identification(request):
     user = request.user
     if request.method == 'POST':
-        # print request.POST
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
             new_buyer_num = request.POST['buyer_phone_num']
             post = Post.objects.get(id=request.GET['post_id'])
             # new_buyer_num = form.GetBuyerNum()
-            buyer_added = user.add_Buyer(post, new_buyer_num)
+            buyer_added = user.add_buyer(post, new_buyer_num)
             d = {'form':form}
             return render_to_response( "post.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
@@ -211,8 +227,8 @@ def Buyer_identification(request):
 
     else:
         form = BuyerIdentificationForm()
-        d.update({'form':form})
-    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+        d = {'form':form}
+    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
@@ -230,6 +246,7 @@ def filter_home_posts():
         .exclude(quality_index__lt=50)
         .order_by('-quality_index'))
     return post_list
+
 
 
 class CustomAuthentication:
@@ -266,7 +283,7 @@ class CustomAuthentication:
 def UserRegistration(request):
 
     if request.method == 'POST':
-        print request.POST
+       
         form = RegistrationForm(request.POST) 
         if form.is_valid(): 
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -278,7 +295,9 @@ def UserRegistration(request):
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
                 send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/')
+
+                return HttpResponseRedirect('/thankyou/')
+
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -306,7 +325,9 @@ def view_profile(request):
 
         # GO TO USER PROFILE
 
-
+#mai c2 L registeration thank you , it justs renders the html thank u 
+def thankyou(request):
+    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
@@ -323,25 +344,27 @@ def view_profile(request):
 #if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
 def confirm_email(request):
      
-    print "Start Confirm"
+  
 
 
     if request.method == 'POST':
-        print "the request is POST"  
+        
         form = request.POST['verify'] 
         if form is not None: 
-            print "The form is valid" 
+           
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
                 if not user.is_expired():
-                    print "activation key is exists" 
+                   
                     user.is_verfied=True
-                    print user.is_verfied 
+                   
                     user.save()
+                    return HttpResponseRedirect('/main/')
                 
                 else :  
-                    print "key expired"
+                 
                     return HttpResponse ("sorry your account is disabled because the activation key has expired")
+
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
     else : 
