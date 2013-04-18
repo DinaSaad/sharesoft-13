@@ -22,6 +22,12 @@
 	
 </p>
 <button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
+<button id = "get_interested_in{{post.id}}" onCLick= "get_interested({{post.id}});">Show Interested</button>
+</div>
+<div id = "listOfBuyers{{post.id}}" style="display:none">
+	{% for buyer in list_of_interested_buyers %}
+		<h3>{{ buyer }}</h3>
+	{% endfor %}
 </div>
 
 <!-- <div class = "reportDIV" style="visibility:hidden"> -->
