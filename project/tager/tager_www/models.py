@@ -251,7 +251,7 @@ class SubChannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length=200, default= "new")
+    state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
     title = models.CharField(max_length=200)
@@ -272,7 +272,7 @@ class Post(models.Model):
     subchannel = models.ForeignKey(Subchannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
-    is_sold = models.BooleanField()#class Comments():
+    is_sold = models.BooleanField()
     
     def get_buyer():
         return self.buyer.id    
@@ -306,7 +306,7 @@ class Attribute(models.Model):
     weight = models.FloatField()
 
 class Value(models.Model):
-    attribute_id = models.ForeignKey(Attribute)
+    attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=64)
     post = models.ForeignKey(Post)
 
