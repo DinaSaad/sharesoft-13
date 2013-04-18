@@ -133,9 +133,9 @@ def Buyer_identification(request):
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
-def index(request):
+def main(request):
     post_list = filter_home_posts()
-    return render_to_response('index.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
