@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
+    url(r'^thankyou/$','tager_www.views.thankyou'),
+    
 
 
     # Examples:
