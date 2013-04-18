@@ -58,4 +58,68 @@
 
 {% endif %}
 
+{% extends "base.html" %}
+
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+
+{% block content %}
+
+	<p> welcome {{ user.name }} to your post {{post.id}} </p>	
+
+	{% if add_buyer_button %}
+	<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+	{% endif %}
+
+    
+    
+    {% if view_rating %}
+    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
+    {% endif %}
+    <div id="star"></div>
+    
+    <input type="hidden" name="post_id" id= "post_id" value="{{post.id}}">
+    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.seller.id}}">
+
+    
+    {% block script%}
+
+    <script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#star").css("visibility", "hidden");
+    });
+    $("#rateSeller").click(function(){
+        // window.location.replace("profile?user_id="+$(this).val());
+        $("#star").css("visibility", "visible");
+    });
+    $(document).ready(function(){
+        $('#star').raty({ 
+            score: $('#rating').val(),
+            click: function(score, evt) {
+            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
+            $.ajax({
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                success: function(){  
+                    $('#div.success').css("visibility", "hidden");  
+                }
+
+
+                         });
+
+        },
+
+    });
+});
+    </script>
+    {% endblock %}
+
+<!-- hidden field -->
+    
 {% endblock %}

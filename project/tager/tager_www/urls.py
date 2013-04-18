@@ -2,6 +2,7 @@ from django.conf.urls import *
 
 from tager_www import views
 
+<<<<<<< HEAD
 
 from django.views.generic import ListView, DetailView
 from tager_www.models import *
@@ -15,4 +16,8 @@ urlpatterns = patterns('tager_www.views',
  #    	template_name = "post.html")),
 	url(r'^$', 'show_posts', name='posts'),
     
+=======
+urlpatterns = patterns('',	
+	
+>>>>>>> master
 )
