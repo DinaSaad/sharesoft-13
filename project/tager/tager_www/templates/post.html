@@ -18,12 +18,12 @@
     
     
     {% if view_rating %}
-    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.user.id}}" type="button">Rate Seller</button>
+    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
     {% endif %}
     <div id="star"></div>
     
     <input type="hidden" name="post_id" id= "post_id" value="{{post.id}}">
-    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.user.id}}">
+    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.seller.id}}">
     
     {% block script%}
 
@@ -44,7 +44,7 @@
             $.ajax({
                 type: 'GET',
                 url: '/rateUser/',
-                data: { post_id: '{{post.id}}', post_owner: '{{post.user.id}}', rating: score },
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
                          });
 
 
