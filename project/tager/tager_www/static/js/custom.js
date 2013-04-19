@@ -1,34 +1,8 @@
 
-
-$(document).ready(function(){
-	$('#rateSeller').change(function(){
-	window.location.replace("hello?ch_id="+$(this).val())
-	});
-});
-
-$('#rateSeller').on('click', function(){
-		// $(".todo").remove();
-		alert("Handler rateSeller called.");
-	})
-
-$("#rateSeller").click(function() {
-  alert("Handler for rateSeller called.");
-});
-
-$(document).ready(function(){
-  $("#hide").click(function(){
-    $("p").hide();
-  });
-  $("#show").click(function(){
-    $("p").show();
-  });
-});
-
-
 $(document).ready(function(){
 
 	$("#post").click(function(){
-		window.location.replace("/post?post_id="+$(this).val());
+		window.location.replace("/post?post="+$(this).val());
 	})
 })
 
@@ -160,11 +134,11 @@ $(function(){
 
 });
 
-$(document).ready(function() {
-if($("#id_location").val().length == 0){
-  $('#descriptionoutput').text("Can not be blank");
-}
-});
+// $(document).ready(function() {
+// if($("#id_location").val().length == 0){
+//   $('#descriptionoutput').text("Can not be blank");   please check correct syntax because its corrupting 
+// }                                                      the whole file.
+// });
 
 
 
@@ -212,3 +186,76 @@ $(document).ready(function(){
 })
 
 
+$(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+});
+
+function reportPost(ids){
+    reason = 'optionsRadios' + ids;
+  $.ajax({
+    url: "/report/",
+    type: "POST",
+    data: {
+      "post_id" : ids,
+      "report_reason" : $("input[name=" + reason + "]:checked").val(),
+    }, 
+    success: function(result) {
+        alert("Report Submitted... Thank you ! :D");
+    }
+});
+}
+function get_interested(id) {
+    $.ajax({
+    url: "/getInterestedIn/",
+    type: "POST",
+    data: {
+        "post_id" : ids,
+    }, 
+    success: function(result) {
+        $('#listOfBuyers' + id).css('display', 'block');
+    }
+});
+}
+function report(id) {
+  $('.reportDIV' + id).css('display', 'block');
+  $('#report_button' + id).css('display', 'none');
+
+}
+function cancelReport(id) {
+  $('.reportDIV' + id).css('display', 'none');  
+  $('#report_button' + id).css('display', 'block');
+
+}
