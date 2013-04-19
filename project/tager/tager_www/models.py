@@ -296,7 +296,7 @@ class Post(models.Model):
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()#class Comments():
-    location = models.CharField(max_length = "100")
+    location = models.CharField(max_length = "100",null = True)
     
     def get_buyer():
         return self.buyer.id    
