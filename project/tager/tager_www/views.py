@@ -7,6 +7,8 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
 from tager_www.forms import *
+from tager_www.models import UserProfile 
+from django import forms 
 import random 
 import string
 from django.contrib.auth import authenticate
@@ -33,6 +35,61 @@ def home(request):
 def view_login(request):
     return render_to_response ('login.html',context_instance=RequestContext(request))
 
+
+
+
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    sub_channel_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=sub_channel_id)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
+    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
+
+@login_required
+def add_post(request):
+    sub_channel_id = request.GET['sub_ch_id']
+    # location = request.GET['location_id']
+    current_sub_channel = SubChannel.objects.get(id = sub_channel_id)
+    list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
+
+    form = PostForm(request.POST,request.FILES)
+    if form.is_valid():
+        author = request.user
+        subchannel1  = SubChannel.objects.get(pk=sub_channel_id)
+        p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
+            ,description = form.cleaned_data['description'] 
+            ,price = form.cleaned_data['price']
+            ,seller = author
+            ,subchannel = subchannel1
+            ,profile_picture = form.cleaned_data['picture']
+            ,picture1 = form.cleaned_data['picture1']
+            ,picture2 = form.cleaned_data['picture2']
+            ,picture3 = form.cleaned_data['picture3']
+            ,picture4 = form.cleaned_data['picture4']
+            ,picture5 = form.cleaned_data['picture5']
+            ,location = form.cleaned_data['location']
+            ,
+            )
+        # p.post_Notification()
+         
+        
+        for k in request.POST:
+            if k.startswith('option_'):
+                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+        return HttpResponse('Thank you for adding the post')
+    else:
+
+        form = PostForm()
+        initial={'subject': 'I love your site!'}
+    
+
+    return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+
+
+
 #C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
 #which is of type post and it has the email and the password attribute which are 
 #taken in as variables then they are authinticated and the authinticated user is 
@@ -40,9 +97,11 @@ def view_login(request):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
+
 def login(request):
     mail = request.POST['email']
     password = request.POST['password']
+
     authenticated_user = authenticate(mail=mail, password=password)
     if authenticated_user is not None:
         print "auth"
@@ -56,7 +115,7 @@ def login(request):
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
         return render_to_response ('home.html',context_instance=RequestContext(request))
-       
+       #return redirect("/login/")# Return an 'invalid login' error message.
 
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
@@ -64,19 +123,32 @@ def login(request):
 #the request and then add the results in the dictonary.Then render the post html and pass the 
 #dictionary.
 #
-def view_post(request):
 
-    post = Post.objects.get(pk= request.GET['post_id'])
+def check_Rate_Identify_buyer(request):
+    post = Post.objects.get(pk= request.GET['post'])
     user = request.user
     print user.id
     creator = False
-    if post.user == user and post.buyer is None:
+    if post.seller == user and post.buyer is None:
          creator = True
-    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
+    rateSellerButtonFlag = user.can_rate(request.GET['post']) 
     print rateSellerButtonFlag
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
-    
-    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
+    return d
+
+def view_post(request):
+    post_id = request.GET['post']
+    test_post = Post.objects.get(id = post_id)
+    subchannel1 = test_post.subchannel_id
+    list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
+    list_of_att_values = Value.objects.filter(post = test_post)
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values}
+    d = check_Rate_Identify_buyer(request)
+    dic.update(d)   
+    return render(request, 'ViewPost.html',dic,context_instance=RequestContext(request))
+
+
+
 
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
@@ -110,17 +182,15 @@ def User_Ratings(request):
 
 def Buyer_identification(request):
     user = request.user
-    # print request.POST
     if request.method == 'POST':
-        # print request.POST
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
             new_buyer_num = request.POST['buyer_phone_num']
             post = Post.objects.get(id=request.GET['post_id'])
             # new_buyer_num = form.GetBuyerNum()
-            buyer_added = user.add_Buyer(post, new_buyer_num)
+            buyer_added = user.add_buyer(post, new_buyer_num)
             d = {'form':form}
-            return render_to_response( "post.html", d, context_instance = RequestContext( request ))
+            return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
         else :
             d = {'form':form}
@@ -130,6 +200,24 @@ def Buyer_identification(request):
         form = BuyerIdentificationForm()
         d = {'form':form}
     return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
+
+    
+'''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
+filtes to the posts then sort them according to quality index AND  render the list to index.html'''
+def index(request):
+    post_list = filter_home_posts()
+    return render_to_response('index.html',{'post_list': post_list},context_instance=RequestContext(request))  
+
+'''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
+ execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
+def filter_home_posts():
+    post_list = (Post.objects.exclude(is_hidden=True)
+        .exclude(expired=True)
+        .exclude(is_sold=True)
+        .exclude(quality_index__lt=50)
+        .order_by('-quality_index'))
+    return post_list
+
 
 
 class CustomAuthentication:
@@ -166,7 +254,7 @@ class CustomAuthentication:
 def UserRegistration(request):
 
     if request.method == 'POST':
-        print request.POST
+       
         form = RegistrationForm(request.POST) 
         if form.is_valid(): 
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -178,7 +266,9 @@ def UserRegistration(request):
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
                 send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/')
+
+                return HttpResponseRedirect('/thankyou/')
+
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -188,6 +278,24 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+#C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
+#reportPost in models.py then takes action to finish the reporting proccess
+def report_the_post(request):
+    user = request.user
+    post_id = request.POST['post_id']
+    reported_post = Post.objects.get(id = post_id)
+    report_reason = request.POST['report_reason']
+    user.report_the_post(reported_post, report_reason)
+    return HttpResponse()
+
+# C1-Tharwat this method takes in the post object as a parameter. it then calls the get_interested_in method in models.py 
+# to return the list of interested in buyers to the html page
+def get_interested_in(request):
+    user = request.user
+    post_id = request.POST['post_id']
+    post = Post.objects.get(id = post_id)
+    list_of_interested_buyers = user.getInterestedIn(post)
+    return render_to_response('post.html', {'list_of_interested_buyers': list_of_interested_buyers})
 
 def view_profile(request):
     try: 
@@ -206,7 +314,9 @@ def view_profile(request):
 
         # GO TO USER PROFILE
 
-
+#mai c2 L registeration thank you , it justs renders the html thank u 
+def thankyou(request):
+    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
@@ -223,24 +333,22 @@ def view_profile(request):
 #if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
 def confirm_email(request):
      
-    print "Start Confirm"
-
-
     if request.method == 'POST':
-        print "the request is POST"  
+        
         form = request.POST['verify'] 
         if form is not None: 
-            print "The form is valid" 
+           
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
                 if not user.is_expired():
-                    print "activation key is exists" 
+                   
                     user.is_verfied=True
-                    print user.is_verfied 
+                   
                     user.save()
+                    return HttpResponseRedirect('/main/')
                 
                 else :  
-                    print "key expired"
+                 
                     return HttpResponse ("sorry your account is disabled because the activation key has expired")
 
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
@@ -252,7 +360,6 @@ def confirm_email(request):
         context = {'form': form}
         return render_to_response('confirm_email.html', context, context_instance=RequestContext(request))
         
-
 
 
 
@@ -287,7 +394,7 @@ def verfiy_captcha(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             # Do form processing here...
-           return HttpResponseRedirect('/profile/')
+           return HttpResponseRedirect('/login/')
     else:
         form = RegistrationForm()
         script = displayhtml(public_key=public_key)

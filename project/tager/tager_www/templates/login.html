@@ -3,7 +3,8 @@
 
 {% block content %}
     <div class="login-wrapper">
-   
+
+
     <div class="well-white bottom20px" style="width:300px; margin:0 auto;">
         <div class="page-header">
             <h1>Log in</h1>
@@ -24,8 +25,6 @@
                         <input type="password" name="password" id="inputPassword" placeholder="Password"/>
                     </div>
                 </div>
-               <!--  <label class="checkbox">
-                <input type="checkbox" name="remember" value="Y"> Remember me for 2 weeks </label>  -->
                 <div class="cf">
                     <div class="left">
                         <input type="submit" class="btn btn-success btn-large" value="Login">
@@ -39,6 +38,21 @@
     </div>
 </div>
         </div>
+
+        {% block script %}
+    <script type="text/javascript">
+
+       $(document).ready(function() {
+            $('input:text, input:password').keyup(function() {
+                if ($(this).val() !== "") {
+                $('input:submit').removeAttr('disabled');
+                    } else {
+                $('input:submit').attr('disabled', 'true');
+                }
+    });
+});
+    </script>
+    {% endblock%}
 
 
 {% endblock %}

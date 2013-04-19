@@ -1,15 +1,13 @@
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
-
 from django.utils.timezone import utc
 from datetime import datetime, timedelta
 
 EXPIRATION_DAYS = 10
 
 from django.db.models import Sum , Avg 
-
-
 
 
 #mai 
@@ -167,7 +165,7 @@ class UserProfile(AbstractBaseUser):
 
     def add_buyer(self,post,phone_num):
         p = post        
-        if p.user_id == self.id:
+        if p.seller_id == self.id:
             post_buyer = UserProfile.objects.get(phone_number = phone_num)
             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer
@@ -181,13 +179,40 @@ class UserProfile(AbstractBaseUser):
         p = Post.objects.get(id = post_id)
         return user.id == post.user_id_id
 
+   #C1-Tharwat) This method takes in 2 parameters, the user id and the post.
+    #It creates a list in which it filters through the posts table based on the user and post id.
+    #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def get_interested_in(self, post):       
         interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
-        x = []
+        buyer_ids = []
+        buyer_names = []
         for i in interested:
-            x.append(i.user_id_buyer.id)
-        return x
+            buyer_ids.append(i.user_id_buyer.id)
+        for i in buyer_names:
+            user = UserProfile.objects.get(id = i)
+            buyer_names.append(user.name)
+        return buyer_names
+
+
+    #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
+    #It takes 2 parameters, the post being reported and the reason of report
+    #It then inserts the record into the Report table
+    def report_the_post(self, post, report_reason):
+        reported_post = Post.objects.get(id = post.id)
+        if post.user.id == self.id:
+            print 'Cant report urself'
+        elif Report.objects.filter(reported_post = post, reporting_user = self.id).exists():
+            print 'already reported'
+        elif reported_post.report_count() >= 20:
+            reported_post.is_hidden = True
+            reported_post.save()
+        else:   
+            report = Report(reported_post = post, report_type = report_reason, reporting_user = self)
+            report.save()
+            reported_post.no_of_reports = reported_post.no_of_reports + 1
+            reported_post.save()      
+         
         
     def can_post(self):
         return self.is_verfied
@@ -248,10 +273,10 @@ class SubChannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
-    state = models.CharField(max_length=200, default= "new")
+    state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     quality_index = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     description = models.CharField(max_length=500, null=True)
@@ -270,9 +295,59 @@ class Post(models.Model):
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()#class Comments():
+    location = models.CharField(max_length = "100",null = True)
     
     def get_buyer():
         return self.buyer.id    
+
+    #C1-Tharwat) returns to total number of reports on the current post
+    def report_count(self):
+        return self.no_of_reports
+
+    #(C1-Tharwat)This method automatically determines the state of the post. Whether it is (New, Old, or Archived)
+    #The method takes in one parameter which is the post itself
+    #the method compares the date of which the post was published in and the current date
+    #It then uses an algorithim to determine the difference in number of days between the current date and the published date
+    #Based on the amount returned, if the amount is less than 30 days, the state = "NEW", if between 30 and 60, the state = "OLD", if greater than 60, the state = "ARCHIVED"
+    def post_state(self):
+        current_time = datetime.datetime.now()
+        post = Post.objects.get(id = self.id)
+        #used if the current year is greater than the year of the published post
+        if current_time.year > self.pub_Date.year:
+            #this is in case for exmaple the published month of the post is December and the current month is January
+            #Although the years are diff yet the diff in days may not be greater than 30
+            #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
+            if current_time.month == 1 and self.pub_Date.month ==12 and (current_time.day + (31 - self.pub_Date.day)) > 30:
+                post.state = 'Old'
+                post.save()
+            #this is in case for exmaple the published month of the post is November and the current month is January
+            #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
+            #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
+            elif current_time.month == 1 and self.pub_Date.month ==11 and (current_time.day + (31 - self.pub_Date.day)) < 60:
+                post.state = 'Old'
+                post.save()
+            else:
+                post.state = 'Archived'
+                post.save()
+        #Used when the current year and Published year of the post are the same
+        if current_time.year == self.pub_Date.year:
+
+            day_diff_diff_month = current_time.day + (31 - self.pub_Date.day)
+            day_diff_same_month = current_time.day - self.pub_Date.day
+            month_diff = current_time.month - self.pub_Date.month
+            if month_diff >= 1:
+                month_diff = month_diff - 1
+                total_diff = (month_diff*31) + day_diff_diff_month
+            else:
+                total_diff = day_diff_same_month
+                          
+            if total_diff > 30 and total_diff < 60:
+                post.state = 'Old'
+                post.save()
+            if total_diff > 60:
+                post.state = 'Archived'
+                post.save()
+
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
@@ -280,12 +355,17 @@ class Post(models.Model):
 # this table is used to retrieve the reports related to a certain post
 class Report(models.Model):
     reported_post = models.ForeignKey(Post, related_name = 'reported_Post')
-    report_type = models.CharField(max_length = '100')
+    report_type = models.CharField(max_length = 100)
     reporting_user = models.ForeignKey(UserProfile, related_name = 'reporting_user_id')
         
     def __unicode__(self):
         return (self.report_type)
 
+class ReportReasons(models.Model):
+    reported_reason = models.CharField(max_length = 50) 
+
+    def __unicode__(self):
+        return (self.reported_reason)
 
 class Rating(models.Model):
     post_owner = models.ForeignKey('UserProfile', related_name="post_owner")
@@ -303,7 +383,7 @@ class Attribute(models.Model):
     weight = models.FloatField()
 
 class Value(models.Model):
-    attribute_id = models.ForeignKey(Attribute)
+    attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=64)
     post = models.ForeignKey(Post)
 

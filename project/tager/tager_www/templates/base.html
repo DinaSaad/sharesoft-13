@@ -1,13 +1,15 @@
 {% extends "base2.html" %}
 
-{% block nav %}
 
+{% block nav %}
         
           <div class="nav-collapse collapse">
             <ul class="nav">
+              <ul class="nav pull-right">
               <li><a href="#">Home</a></li>
-              <li><a href="advanced_search/channel/">Advanced Search</a></li>
               <li><a href="#contact">Contact</a></li>
+              <li><a href="/notifications">Notification</a></li>
+              <li><a href="advanced_search/channel/">Advanced Search</a></li>
               <li>
                 <div>
                   <form class="navbar-search pull-left" style="margin-top:10px">
@@ -15,8 +17,7 @@
                   </form>
                 </div>
               </li>
-              <li><a href="/notifications" style="margin-left:260px; float:right">Notification</a></li>
-              <li><a href="/profile?user_id={{user.id}}" style="float:inline">Profile</a></li>
+              <li><a href="/profile?user_id={{user.id}}" style="margin-left:260px; float:right">Profile</a></li>
 
               <li class="dropdown">
 
@@ -29,20 +30,13 @@
                   <li><a href="#">Another action</a></li>
                   <li><a href="#">Something else here</a></li>
                   <li class="divider"></li>
-                  <li class="nav-header">Nav header</li>
-                  <li><a href="#">Separated link</a></li>
-                  <li><a href="#">One more separated link</a></li>
-                {% block log %}
                   <li><a href="/logout/">Logout</a></li>
-                {% endblock %}
+                  
                 </ul>
               </li>
 
               </li>
             </ul>
           </div>
-            
-
-             
-
+        
 {% endblock %}
