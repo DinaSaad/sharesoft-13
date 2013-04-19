@@ -146,67 +146,25 @@ def login(request):
         return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
-#C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
-#the rate the seller button which would appear to the buyer of the post only so what it does is
-#it takes object user from the session and checks if this user can rate the post that is imbeded in 
-#the request and then add the results in the dictonary.Then render the post html and pass the 
-#dictionary.
-#
-
-# <<<<<<< HEAD
-# =======
-#     post = Post.objects.get(pk= request.GET['post_id'])
-#     user = request.user
-#     print user.id
-#     creator = False
-#     if post.seller == user and post.buyer is None:
-#          creator = True
-#     rateSellerButtonFlag = user.can_rate(request.GET['post_id']) 
-#     print rateSellerButtonFlag
-#     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
-    
-#     # if request.method == 'POST':
-#     #     form = BuyerIdentificationForm( request.POST )
-#     #     if form.is_valid():
-#     #         new_buyer_num = form.GetBuyerNum()
-#     #         buyer_added = user.add_Buyer(post, new_buyer_num)
-#     #         return HttpResponseRedirect( "/" )
-#     #     else :
-#     #         d.update({'form':form})
-#     #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
-
-#     # else:
-#     #     form = BuyerIdentificationForm()
-#     #     d.update({'form':form})
-#     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
-# # >>>>>>> master
-# def check_rating_adding_buyer(request):
-#     post = Post.objects.get(pk= request.GET['post'])
-#     user = request.user
-#     print user.id
-#     creator = False
-#     if post.seller == user and post.buyer is None:
-#         creator = True
-#     rateSellerButtonFlag = user.can_rate(request.GET['post']) 
-#     print rateSellerButtonFlag
-#     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
-
-#     return d
-    
-
 
 
 def view_post(request):
+    user = request.user
+    print user.id
     post_id = request.GET['post']
     test_post = Post.objects.get(id = post_id)
+    print test_post.seller.id
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post)
+
+    #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
+    list_of_interested_buyers = user.get_interested_in(post_id)
     report_reasons = ReportReasons.objects.all()
     # d = check_rating_adding_buyer(request)
     # print d
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons}
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
 
     return render(request, 'ViewPost.html', dic)
@@ -342,20 +300,13 @@ def UserRegistration(request):
 #reportPost in models.py then takes action to finish the reporting proccess
 def report_the_post(request):
     user = request.user
+    print user.id
     post_id = request.POST['post_id']
     reported_post = Post.objects.get(id = post_id)
     report_reason = request.POST['report_reason']
     user.report_the_post(reported_post, report_reason)
     return HttpResponse()
 
-# C1-Tharwat this method takes in the post object as a parameter. it then calls the get_interested_in method in models.py 
-# to return the list of interested in buyers to the html page
-def get_interested_in(request):
-    user = request.user
-    post_id = request.POST['post_id']
-    post = Post.objects.get(id = post_id)
-    list_of_interested_buyers = user.getInterestedIn(post)
-    return render_to_response('post.html', {'list_of_interested_buyers': list_of_interested_buyers})
 
 def view_profile(request):
     try: 

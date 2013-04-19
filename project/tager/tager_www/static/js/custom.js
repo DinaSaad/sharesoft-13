@@ -259,7 +259,7 @@ function reportPost(ids){
       "report_reason" : $("input[name=" + reason + "]:checked").val(),
     }, 
     success: function(result) {
-        alert("Report Submitted... Thank you ! :D");
+        alert("Report Submitted... Thank you ! :D");  
     }
 });
 }
