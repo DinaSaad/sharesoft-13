@@ -179,15 +179,37 @@ def login(request):
 #     #     form = BuyerIdentificationForm()
 #     #     d.update({'form':form})
 #     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
-# >>>>>>> master
+# # >>>>>>> master
+# def check_rating_adding_buyer(request):
+#     post = Post.objects.get(pk= request.GET['post'])
+#     user = request.user
+#     print user.id
+#     creator = False
+#     if post.seller == user and post.buyer is None:
+#         creator = True
+#     rateSellerButtonFlag = user.can_rate(request.GET['post']) 
+#     print rateSellerButtonFlag
+#     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
+
+#     return d
+    
+
+
 
 def view_post(request):
     post_id = request.GET['post']
     test_post = Post.objects.get(id = post_id)
+    test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post)
-    return render(request, 'ViewPost.html', {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values})
+    report_reasons = ReportReasons.objects.all()
+    # d = check_rating_adding_buyer(request)
+    # print d
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons}
+    # dic.update(d)
+
+    return render(request, 'ViewPost.html', dic)
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
 #who posted the post, the post it self and the rating. after taking in the request and storing the attributes
