@@ -7,11 +7,11 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
 from tager_www.forms import RegistrationForm
-from tager_www.models import UserProfile 
 import datetime
 from django.utils import timezone
-from tager_www.models import UserProfile, Post, Comment 
 import sqlite3
+from tager_www.models import UserProfile, Post, Comment
+
 
 
 def home(request):
@@ -104,7 +104,7 @@ class CustomAuthentication:
 
     def get_user(self, user_id):
         try:
-            return UserProfile.object.get(pk=user_id)
+            return UserProfile.objects.get(pk=user_id)
         except UserProfile.DoesNotExist:
             return None
 
@@ -148,6 +148,8 @@ def UserRegistration(request):
 
 def viewPost(request, post_id):
     post = Post.objects.get(pk=post_id)
+    if post.is_hidden:
+        return HttpResponse(" the post is hidden")
     return render_to_response('post.html', {'post':post, 'comments':Comment.objects.filter(post_id=post)}, context_instance=RequestContext(request))
 
 #c1_hala this method called savingComment that takes two parameters request and post_id, the 
@@ -163,7 +165,8 @@ def viewPost(request, post_id):
 
 def SavingComment(request, post_id):
     content = request.POST['content']
-    userobject= UserProfile.objects.get(id=Comment.user_id)
+    userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
+    print request.user
     post = Post.objects.get(pk=post_id)
     comment = Comment(content=content, date=datetime.datetime.now(), user_id=userobject, post_id=post)
     comment.save()
@@ -177,22 +180,8 @@ def SavingComment(request, post_id):
 def removePost(request, post_id):
     admin= request.user 
     hidepost=Post.objects.get(pk=post_id)
+    print admin, admin.is_admin
     if admin.is_admin:
         hidepost.is_hidden = True
         hidepost.save()
         return viewPost(request, post_id)
-    else:
-        return HttpResponse("you aren't an admin to be able to delete post")
-
-
-
-
-
-
-
-
-
-
-
-
-    
