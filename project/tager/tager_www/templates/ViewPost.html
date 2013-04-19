@@ -88,6 +88,34 @@
 <button onClick = "cancelReport({{post.id}});">Cancel Report</button>
 </div>
 </div>
+
+<h5>Comments:</h5>
+<div class='container-fluid'>
+{% for comment in comments %}
+{{ comment.user_id.name }}: {{ comment.content}} <br/>
+<small>{{ comment.date }}</small>
+<br/><br/>
+{% empty %}
+  There are currently no comments on this post
+{% endfor %}
+</div>
+<!-- USe this to add your stuff   -->
+<br/>
+<br/>
+<br/>
+<!-- USe this to add your stuff   -->
+<br/>
+<br/>
+<br/>
+<form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
+      <textarea placeholder='Add your comment' name='content'></textarea>
+      <br/>
+      <input type="submit" value="Add" class='btn'>
+  </form>
+<form action="/hideComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
+      <br/>
+      <input type="submit" value="hide" class='btn'>
+  </form>
 {% block script%}
 
     <script type="text/javascript">

@@ -7,7 +7,7 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
 from tager_www.forms import RegistrationForm
-import datetime
+from datetime import datetime
 from django.utils import timezone
 import sqlite3
 from tager_www.models import UserProfile, Post, Comment
@@ -314,7 +314,8 @@ def SavingComment(request, post_id):
     userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
     print request.user
     post = Post.objects.get(pk=post_id)
-    comment = Comment(content=content, date=datetime.datetime.now(), user_id=userobject, post_id=post)
+    comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
+    print "i saved"
     comment.save()
     return viewPost(request, post_id)
 #c1_hala

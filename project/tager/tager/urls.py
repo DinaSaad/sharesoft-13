@@ -1,8 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout, login
 from django.contrib import admin
-from tager_www import views
-# admin.autodiscover()
+from tager_www import *
 
 urlpatterns = patterns('',
     
@@ -26,7 +25,6 @@ urlpatterns = patterns('',
     url(r'^addpost/$', 'tager_www.views.add_post', name='post_create'),
     url(r'^showpost/$', 'tager_www.views.view_post', name='view post'),
     url(r'^thankyou/$','tager_www.views.thankyou'),
-    url(r'^tager_www/', include('tager_www.urls')),
     url(r'^post/(?P<post_id>\d+)/$', 'tager_www.views.viewPost'),
     url(r'^addComment/(?P<post_id>\d+)/$', 'tager_www.views.SavingComment', name="adingcomment"),
     url(r'^hideComment/(?P<post_id>\d+)/$', 'tager_www.views.removePost'),
