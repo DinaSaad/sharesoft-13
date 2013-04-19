@@ -1,16 +1,81 @@
-<html>
-<head>
-	<title>Welcome to the post Page</title>
-</head>
-<body>
+{% extends 'base.html'%}
+{% load staticfiles%}
+{% block content%}
+<title> Welcome to the post page </title>
+<div class="container-fluid">
+    <div class="row-fluid">
+		    <div  class="span6">
+		    	<div id="imagediv" >		
+		    		 <img style="width: 300px;" src="static/img/post.png">
+			</div>
+			</div>
+    		<div id = "contentdiv"class="span4" position="right">
+	
+				<h3> Title: {{post.title}}</h3>
 
-<h1>{{p.title}}</h1>
+				<h3> Description: {{post.description}}</h3>
 
-<label> it was published on: {{p.pub_Date}}</label>
+				<h3> Price: {{post.price}}</h3>
 
-<label> The price is: {{p.price}}</label>
+				<h3> State: {{post.state}} </h3>
 
-<label>Description: {{p.Description}}</label>
+-
+				{% if list_of_att_name %}
 
-</body>
-</html>
+					{% for Attribute in list_of_att_name %}
+
+					<h3>{{Attribute.name}}</h3>
+
+					{% endfor %}
+				{% endif %}
+
+				{% if list_of_att_values %}
+
+					{% for Value in list_of_att_values %}
+
+					<h3>{{Value.value}}</h3>
+
+					{% endfor %}
+
+				{% endif %}  
+				<button type="button" class="btn btn-info"> fb </button>
+				<button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
+				<button id = "get_interested_in{{post.id}}" onCLick= "get_interested({{post.id}});">Show Interested</button>
+				<button type="button" class="btn btn-info"> Interested in </button>
+	 		</div>
+ 	</div>
+<div id = "listOfBuyers{{post.id}}" style="display:none">
+	{% for buyer in list_of_interested_buyers %}
+		<h3>{{ buyer }}</h3>
+	{% endfor %}
+</div>
+
+<!-- <div class = "reportDIV" style="visibility:hidden"> -->
+<div class = "reportDIV{{ post.id }}" style="display:none">
+
+<form class="reportForm" name="input" action="" method="POST">
+{% csrf_token %}
+
+<div class="reportReasons">	
+	{% for reasons in report_reasons %}
+	<label class="R{{reasons.id}}">
+  		<input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
+  			{{reasons.reported_reason}}
+	</label>
+	{% endfor %}
+
+</div>
+<button id = "postID" onCLick ="reportPost({{post.id}});" type="button">Submit Report</button>
+</form> 
+<button onClick = "cancelReport({{post.id}});">Cancel Report</button>
+</div>
+</div>
+<!-- 
+<div class="buttonDiv">
+
+</div>
+<div>
+
+</div> -->
+
+{% endblock %}

@@ -1,3 +1,63 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<title> Welcome to my test page </title>
+{% if posts %}
+{% for post in posts %}
+
+<div id="{{post.id}}" style = 'display:inline-block' >
+
+<div class="photodiv">
+<img src="{% static "img/logo.png" %}" width="200" height="200" alt="Hi!" /></div>
+
+<div class="description">
+<h2 id = "postID{{post.id}}" name = {{post.id}} value = {{post.id}} >Post ID: {{post.id}} </h2>
+<h3>Posted BY: {{post.user.name}}</h3>
+<p> Posted On: {{post.pub_Date|date:"Y-m-d"}} <br>
+	Post reports: {{post.no_of_reports}} <br>
+	Post State: {{post.state}} <br>
+	
+</p>
+<button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
+<button id = "get_interested_in{{post.id}}" onCLick= "get_interested({{post.id}});">Show Interested</button>
+</div>
+<div id = "listOfBuyers{{post.id}}" style="display:none">
+	{% for buyer in list_of_interested_buyers %}
+		<h3>{{ buyer }}</h3>
+	{% endfor %}
+</div>
+
+<!-- <div class = "reportDIV" style="visibility:hidden"> -->
+<div class = "reportDIV{{ post.id }}" style="display:none">
+
+<form class="reportForm" name="input" action="" method="POST">
+{% csrf_token %}
+
+<div class="reportReasons">	
+	{% for reasons in report_reasons %}
+	<label class="R{{reasons.id}}">
+  		<input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
+  			{{reasons.reported_reason}}
+	</label>
+	{% endfor %}
+
+</div>
+<button id = "postID" onCLick ="reportPost({{post.id}});" type="button">Submit Report</button>
+</form> 
+<button onClick = "cancelReport({{post.id}});">Cancel Report</button>
+</div>
+</div>
+{% endfor %}
+
+{% else %}
+<h1>No Post Avaliable</h1>
+<h2>Please try again later !! :)</h2>
+
+{% endif %}
+
 {% extends "base.html" %}
 
 {% block headers %}
@@ -8,19 +68,24 @@
 {% endblock %}
 
 {% block content %}
-    <p> welcome {{ user.name }} to your post {{post.id}} </p>
+
+	<p> welcome {{ user.name }} to your post {{post.id}} </p>	
+
+	{% if add_buyer_button %}
+	<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+	{% endif %}
+
+    
     
     {% if view_rating %}
-    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.user.id}}" type="button">Rate Seller</button>
+    <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
     {% endif %}
     <div id="star"></div>
     
     <input type="hidden" name="post_id" id= "post_id" value="{{post.id}}">
-    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.user.id}}">
-    {% if add_buyer_button %}
-    <button class="btn btn-mini btn-danger" id="addBuyer" value="" type="button">Add Buyer</button>
-    {% endif %}
+    <input type="hidden" name="post_owner" id= "post_owner" value="{{post.seller.id}}">
 
+    
     {% block script%}
 
     <script type="text/javascript">
@@ -40,9 +105,13 @@
             $.ajax({
                 type: 'GET',
                 url: '/rateUser/',
-                data: { post_id: '{{post.id}}', post_owner: '{{post.user.id}}', rating: score },
-                         });
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                success: function(){  
+                    $('#div.success').css("visibility", "hidden");  
+                }
 
+
+                         });
 
         },
 
