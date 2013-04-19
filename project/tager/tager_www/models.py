@@ -2,13 +2,13 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
-
 from django.utils.timezone import utc
 from datetime import datetime, timedelta
 
 EXPIRATION_DAYS = 10
 
 from django.db.models import Sum , Avg 
+
 
 #mai 
 #this is the custome manager made , it inheirts the built in baseUSermanager 
@@ -215,7 +215,6 @@ class UserProfile(AbstractBaseUser):
          
         
     def can_post(self):
-
         return self.is_verfied
 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
@@ -296,7 +295,7 @@ class Post(models.Model):
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()#class Comments():
-    location = models.CharField(max_length = "100")
+    location = models.CharField(max_length = "100",null = True)
     
 
     def get_buyer():

@@ -1,5 +1,12 @@
 {% extends 'base.html'%}
-{% load staticfiles%}
+
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+
 {% block content%}
 <title> Welcome to the post page </title>
 <div class="container-fluid">
@@ -19,7 +26,7 @@
 
 				<h3> State: {{post.state}} </h3>
 
--
+
 				{% if list_of_att_name %}
 
 					{% for Attribute in list_of_att_name %}
@@ -38,6 +45,17 @@
 					{% endfor %}
 
 				{% endif %}  
+				{% if add_buyer_button %}
+					<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+				{% endif %}
+
+    
+    
+    			{% if view_rating %}
+    				<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
+    			{% endif %}
+    			<div id="star"></div>
+    
 				<button type="button" class="btn btn-info"> fb </button>
 				<button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
 				<button id = "get_interested_in{{post.id}}" onCLick= "get_interested({{post.id}});">Show Interested</button>
@@ -70,12 +88,39 @@
 <button onClick = "cancelReport({{post.id}});">Cancel Report</button>
 </div>
 </div>
-<!-- 
-<div class="buttonDiv">
+{% block script%}
 
-</div>
-<div>
+    <script type="text/javascript">
 
-</div> -->
+    $(document).ready(function(){
+        $("#star").css("visibility", "hidden");
+    });
+    $("#rateSeller").click(function(){
+        // window.location.replace("profile?user_id="+$(this).val());
+        $("#star").css("visibility", "visible");
+    });
+    $(document).ready(function(){
+        $('#star').raty({ 
+            score: $('#rating').val(),
+            click: function(score, evt) {
+            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
+            $.ajax({
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                success: function(){  
+                    $('#div.success').css("visibility", "hidden");  
+                }
+
+
+                         });
+
+        },
+
+    });
+});
+    </script>
+    {% endblock %}
+
 
 {% endblock %}

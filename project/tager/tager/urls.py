@@ -9,6 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
+
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),
@@ -23,10 +24,10 @@ urlpatterns = patterns('',
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
-    url(r'^viewsubchannels', 'tager_www.views.view_subchannels', name='index'),
-    url(r'^viewchannels$', 'tager_www.views.view_channels', name='index'),
-    url(r'^addpost$', 'tager_www.views.add_post', name='post_create'),
-    url(r'^showpost$', 'tager_www.views.view_post', name='view post'),
+    url(r'^viewsubchannels/$', 'tager_www.views.view_subchannels', name='index'),
+    url(r'^viewchannels/$', 'tager_www.views.view_channels', name='index'),
+    url(r'^addpost/$', 'tager_www.views.add_post', name='post_create'),
+    url(r'^showpost/$', 'tager_www.views.view_post', name='view post'),
     url(r'^thankyou/$','tager_www.views.thankyou'),
     
 
