@@ -1,17 +1,24 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout, login
 
+
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
     
+    
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
+
     url(r'^$', 'tager_www.views.home'),
+    url(r'^main$', 'tager_www.views.main'),
+    url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
+    url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
+    url(r'^getInterestedIn/$', 'tager_www.views.get_interested_in', name='getInterestedIn'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
-    url(r'^logout/$', logout, {'next_page':'/'}),  
-
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     url(r'^confirm_email/$','tager_www.views.confirm_email'),
@@ -26,6 +33,10 @@ urlpatterns = patterns('',
     url(r'^viewchannels$', 'tager_www.views.view_channels', name='index'),
     url(r'^addpost$', 'tager_www.views.add_post', name='post_create'),
     url(r'^showpost$', 'tager_www.views.view_post', name='view post'),
+    url(r'^viewsubchannels/$', 'tager_www.views.view_subchannels', name='index'),
+    url(r'^viewchannels/$', 'tager_www.views.view_channels', name='index'),
+    url(r'^addpost/$', 'tager_www.views.add_post', name='post_create'),
+    url(r'^showpost/$', 'tager_www.views.view_post', name='view post'),
     url(r'^thankyou/$','tager_www.views.thankyou'),
     
 
