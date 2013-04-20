@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-
+{% load staticfiles %}
 
 
 {% block content %}
@@ -17,11 +17,10 @@ style="
 
 
   <div class="item masonry-brick" ><div class="thumbnail" >
-
    {% if post.picture %} 
-      <img style="width: 300px;" src="static/img/post.png" alt="{{post.id}}" />
+      <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% else %}
-       <img style="width: 300px;" src="static/img/post.png" alt="{{post.id}}" />
+       <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% endif %}
 
       <div class="repinLikeWrapper">

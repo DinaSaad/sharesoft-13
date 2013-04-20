@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout, login
+from tager_www.views import *
 
 
 
@@ -48,6 +49,10 @@ urlpatterns = patterns('',
     url(r'^addpost/$', 'tager_www.views.add_post', name='post_create'),
     url(r'^showpost/$', 'tager_www.views.view_post', name='view post'),
     url(r'^thankyou/$','tager_www.views.thankyou'),
+    url(r'^search/$', 'tager_www.views.search', name='search'),
+    url(r'^search_results/$', 'tager_www.views.search'),
+    
+
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),

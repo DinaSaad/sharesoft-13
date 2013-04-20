@@ -25,6 +25,11 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+from django.shortcuts import render_to_response
+from django.shortcuts import RequestContext
+import re
+from tager_www.models import Post , UserProfile , Channel
+from django.db.models import Q
 
 
 
@@ -608,8 +613,63 @@ def advanced_search(request):#mohamed tarek c3
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
 
+
+
+# c3_Nadeem Barakat: this method is to split the query entered by the user  where the whole sentence is splitted by spaces into words 
+# and the method  get rid of the spaces and groups all the query together
+def normalize_query(query_string,
+                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    normspace=re.compile(r'\s{2,}').sub):
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)] 
+
+
+    #That combination aims to search keywords within a model by testing the given search fields.
+    #1st loop : loops over the search terms enetered by the user in the query one by one
+    #2nd loops is implemented to search for field name in the search fields and check whether it conatins the term (keyword) or not
+
+def get_query(query_string, search_fields):
+    query = None # Query to search for every search term        
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None # Query to search for a given term in each field
+        for field_name in search_fields: 
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
         else:
-            return render(request,'main.html', {'post_list' : post_list})
+            query = query & or_query
+    return query
+
+    # this search method gets the search word from the user and takes it to search in the database 
+    # the method filters the model by the search query and return the filtered list, this method
+    # defines 3 new variables called found posts , found users , found channels  which are a list of all 
+    #found results from the search process 
+    # this method takes the query_string which is the query entered by the user 
+    # the _query variable ( searches specific attributes in  each model  ex: post_query : 
+    #searches in title and description)
+def search(request):
+    query_string = ''
+    found_posts = None
+    found_users= None
+    found_channels = None
+
+    if ('q' in request.GET) and request.GET['q'].strip():
+        query_string = request.GET['q']
+        
+        post_query = get_query(query_string, ['title', 'description',])
+        user_query =  get_query(query_string, ['name'])
+        channel_query =get_query(query_string, ['name'])
+        found_posts = Post.objects.filter(post_query).order_by('-pub_date')
+        found_users = UserProfile.objects.filter(user_query).order_by('-name')
+        found_channels = Channel.objects.filter(channel_query)
+          
+        return render_to_response('main.html',{ 'query_string': query_string, 'post_list': found_posts, 'found_users': found_users,'found_channels' : found_channels },context_instance=RequestContext(request))
+    else:
+        return render(request,'main.html', {'post_list' : post_list, 'sorry': sorry})
 
 
 # def advanced_search_helper(basic_search_list):#mohamed tarek c3 
