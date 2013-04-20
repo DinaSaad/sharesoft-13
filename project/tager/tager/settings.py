@@ -125,9 +125,6 @@ WSGI_APPLICATION = 'tager.wsgi.application'
 
 TEMPLATE_DIRS = (
 
-    
-       relative_project_path('templates'),
-
     # os.path.join(os.path.dirname(__file__), 'templates')
 
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".

@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
+import datetime
 from datetime import datetime, timedelta
 
 EXPIRATION_DAYS = 10
@@ -76,9 +77,9 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
-    created = models.DateTimeField(auto_now_add=True)
+    # created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
-    rating = models.FloatField(default=0.0)
+    # rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -142,13 +143,12 @@ class UserProfile(AbstractBaseUser):
             return True
         return False
 
-#C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
-#is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
-#object and insert it in a variable p, then takes the post object and the buyer and checks if he has rated 
-#this post before.. if he did then it would return false as he can't rate again if not. then it checks if the
-#product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
-#rateSeller button appears if he isn't then the button won't appear.
-
+    #C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
+    #is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
+    #object and insert it in a variable p, then takes the post object and the buyer and checks if he has rated 
+    #this post before.. if he did then it would return false as he can't rate again if not. then it checks if the
+    #product is sold or not and if it is sold and the buyer set to this post is the same as the buyer in sessio
+    #rateSeller button appears if he isn't then the button won't appear.
     def can_rate(self,post_id):
         print post_id
         p = Post.objects.get(id = post_id)
@@ -184,23 +184,20 @@ class UserProfile(AbstractBaseUser):
     #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def get_interested_in(self, post):       
-        interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
-        buyer_ids = []
+        interested = InterestedIn.objects.filter(user_id_seller = self, post = post)
         buyer_names = []
         for i in interested:
-            buyer_ids.append(i.user_id_buyer.id)
-        for i in buyer_names:
-            user = UserProfile.objects.get(id = i)
-            buyer_names.append(user.name)
-        return buyer_names
+            buyer_names.append(i.user_id_buyer.name)
 
+        print buyer_names
+        return buyer_names
 
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
     #It takes 2 parameters, the post being reported and the reason of report
     #It then inserts the record into the Report table
     def report_the_post(self, post, report_reason):
         reported_post = Post.objects.get(id = post.id)
-        if post.user.id == self.id:
+        if post.seller.id == self.id:
             print 'Cant report urself'
         elif Report.objects.filter(reported_post = post, reporting_user = self.id).exists():
             print 'already reported'
@@ -212,7 +209,6 @@ class UserProfile(AbstractBaseUser):
             report.save()
             reported_post.no_of_reports = reported_post.no_of_reports + 1
             reported_post.save()      
-         
         
     def can_post(self):
         return self.is_verfied
@@ -221,12 +217,19 @@ class UserProfile(AbstractBaseUser):
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
     def interested_in(self, post_in):
-        if self.canPost:
-            if  Post.objects.filter(pk=post_in.post_id).exists():
-                user1=InterestedIn(user_id_buyer_id=self.user_id,user_id_seller_id=post_in.post_id,post_id_id=post_in.post_id)
+        if self.can_post:
+            if  Post.objects.filter(pk=post_in.id).exists():
+                user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
                 user1.save()
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
+
+    def interested_Notification(self, post_in):
+        user_in = self
+        post_owner = post_in.user_id
+        not_content = unicode(user_in.name) + "is interested in your post"
+        not1 = Notification(user = post_in.user_id, content = not_content)
+        not1.save()
 
     def calculate_rating(self,rate,post,buyer): #self is the post_owner
         owner_id = self.id
@@ -244,8 +247,11 @@ class UserProfile(AbstractBaseUser):
         self.save() 
         return user_rating
 
-
-
+#c2-mohamed
+#this class holds all notifications to all users
+class Notification(models.Model):
+    user = models.ForeignKey(UserProfile)
+    content = models.CharField(max_length=100)
 
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
@@ -294,9 +300,128 @@ class Post(models.Model):
     subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
-    is_sold = models.BooleanField()#class Comments():
-    location = models.CharField(max_length = "100",null = True)
+    is_sold = models.BooleanField()
+    location = models.CharField(max_length = "100")
     
+    #C1-Tharwat) returns to total number of reports on the current post
+    def reportCount(self):
+        return self.no_of_reports
+
+    #C1-Tharwat) this method allows the admin to manually delete (Hide) a post
+    def adminDeleteReportedPost(post):
+        p = Post.objects.get(pk = post.id)
+        p.is_hidden = True
+        p.save()
+
+    #(C1-Tharwat)This method automatically determines the state of the post. Whether it is (New, Old, or Archived)
+    #The method takes in one parameter which is the post itself
+    #the method compares the date of which the post was published in and the current date
+    #It then uses an algorithim to determine the difference in number of days between the current date and the published date
+    #Based on the amount returned, if the amount is less than 30 days, the state = "NEW", if between 30 and 60, the state = "OLD", if greater than 60, the state = "ARCHIVED"
+    def postState(self):
+        current_time = datetime.datetime.now()
+        p = Post.objects.get(id = self.id)
+        #used if the current year is greater than the year of the published post
+        if current_time.year > self.pub_Date.year:
+            #this is in case for exmaple the published month of the post is December and the current month is January
+            #Although the years are diff yet the diff in days may not be greater than 30
+            #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
+            if current_time.month == 1 and self.pub_Date.month ==12 and (current_time.day + (31 - self.pub_Date.day)) > 30:
+                p.state = 'Old'
+                p.save()
+            #this is in case for exmaple the published month of the post is November and the current month is January
+            #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
+            #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
+            elif current_time.month == 1 and self.pub_Date.month ==11 and (current_time.day + (31 - self.pub_Date.day)) < 60:
+                p.state = 'Old'
+                p.save()
+            else:
+                p.state = 'Archived'
+                p.save()
+        #Used when the current year and Published year of the post are the same
+        if current_time.year == self.pub_Date.year:
+
+            day_diff_diff_month = current_time.day + (31 - self.pub_Date.day)
+            day_diff_same_month = current_time.day - self.pub_Date.day
+            month_diff = current_time.month - self.pub_Date.month
+            
+            if month_diff >= 1:
+                month_diff = month_diff - 1
+                total_diff = (month_diff*31) + day_diff_diff_month
+            else:
+                total_diff = day_diff_same_month
+              
+            if total_diff > 30 and total_diff < 60:
+                p.state = 'Old'
+                p.save()
+            if total_diff > 60:
+                p.state = 'Archived'
+                p.save()
+
+    #c2-mohamed awad
+    #this method saves notification in Notification table using content and user id
+    #first i find all users interested and subscribed to this post whether by channel, subchannel or parameter subscription
+    #this is done by finding all users subscribed to channel of the post and we add them to users_subscribed_to_channel_array
+    #then we find all users subscribed to subchannel of the post then we add it to users_subscribed_to_subchannel_array
+    #then we find all users subscribed to all attributes and values of the post and we add it to all_users_subscribed to attributes
+    #then we record all notifications in Notification table
+    def post_Notification(self):
+        all_values_array=[]
+        values_array=[]
+        all_values = Value.objects.filter(Post_id = self)
+        for value in all_values:
+            all_values_array.append(value)
+            values_array.append(value.value)
+        attributes_array = []
+        for value in all_values_array:
+            attribute  = value.attribute_id
+            attributes_array.append(attribute.name)
+        subchannel_of_post = self.sub_channel_id
+        channel_of_post = subchannel_of_post.channel_id
+        users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
+        users_subscribed_to_channel_array = []
+        for i in users_subscribed_to_channel:
+            users_subscribed_to_channel_array.append(i.user)
+        users_subscribed_to_subchannel = UserSubchannelSubscription.objects.filter(sub_channel=subchannel_of_post)
+        users_subscribed_to_subchannel_array = []
+        for x in users_subscribed_to_subchannel:
+            users_subscribed_to_subchannel_array.append(x.user)
+        all_users_subscribed_to_attributes = []
+        i = 0
+        r = 0
+        for z in attributes_array:
+            value_in_array = values_array[i]
+            attribute = Attribute.objects.get(name = attributes_array[r], subchannel_id = subchannel_of_post)
+            print "finished attribute-->" + unicode(attributes_array[r])
+            r = r + 1
+            try:
+                value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
+            except:
+                pass
+            print "finished value-->" + unicode(value_in_array)
+            users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
+            i = i + 1
+            print "finished i OOOOOOOOOOOOOOOOOOOOOOO + "
+            for h in users_subscribed_to_attribute:
+                all_users_subscribed_to_attributes.append(h.user)
+                print "in users_subscribed_to_attributes.append(h.user)"
+                # break
+        for q in users_subscribed_to_channel_array:
+            not_content = "You have new posts to see in " + unicode(channel_of_post.name)
+            not1 = Notification(user = q, content = not_content)
+            not1.save()
+        for a in users_subscribed_to_subchannel_array:
+            not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
+            not1 = Notification(user = a, content = not_content)
+            not1.save()
+        for b in all_users_subscribed_to_attributes:
+            if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
+                if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
+                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
+                    not1 = Notification(user = b, content = not_content)
+                    not1.save()
+                    print "In last for loop"
+
 
     def get_buyer():
         return self.buyer.id
@@ -397,6 +522,10 @@ class Attribute(models.Model):
     name = models.CharField(max_length=64)
     subchannel = models.ForeignKey(SubChannel)
     weight = models.FloatField()
+#this table contains all attributes (attribute_id) refrencing class attribute with all their posiible values(value)
+class AttributeChoice(models.Model):
+    attribute_id = models.ForeignKey(Attribute)
+    value = models.CharField(max_length=64)
 
 class Value(models.Model):
     attribute = models.ForeignKey(Attribute)
@@ -415,41 +544,50 @@ class Subscription(models.Model):
     channel = models.ForeignKey(Channel, null = True)
     sub_channel = models.ForeignKey(SubChannel, null = True)
     parameter = models.ForeignKey(Attribute, null = True)
-    choice = models.ForeignKey(Value, null = True)
-    
-    class Meta:
+    choice = models.ForeignKey(AttributeChoice, null = True)
+    class Meta: #to make sure a subscription doesn't exist twice
         unique_together = ("channel","sub_channel","parameter","choice")
-    def subscribe_by_channel(self, user_in):
-        UserSubchannelSubscription.objects.filter(user = user_in, parent_channel = self.channel).delete()
+    def subscribe_Bychannel(self, user_in): #this def subscribe users who wants to subscribe by channel
+        try:
+            UserSubchannelSubscription.objects.filter(user = user_in, parent_channel = self.channel).delete()
+        except:
+            pass
         channel_to_subscribe = self.channel
         subscription = UserChannelSubscription(user = user_in, channel = channel_to_subscribe)
-        subscription.save()
+        try:
+            subscription.save()
+        except:
+            pass
         
-    def subscribe_by_subchannel(self, user_in):
-        self_parent_channel = self.sub_channel.channel_id
+    def subscribe_Bysubchannel(self, user_in): #this def subscribe users who wants to subscribe by subchannel
+        self_parent_channel = self.sub_channel.channel
         UserChannelSubscription.objects.filter(user = user_in, channel = self_parent_channel).delete()
         sub_channel_to_subscribe = self.sub_channel
         subscription = UserSubchannelSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe)
-        subscription.save()
-        subchannels_with_same_channel = Subchannel.objects.filter(channel_id=self_parent_channel).count()
+        try:
+            subscription.save()
+        except:
+            pass
+        subchannels_with_same_channel = SubChannel.objects.filter(channel_id=self_parent_channel).count()
         subchannels_subscribed_with_same_channel = UserSubchannelSubscription.objects.filter(parent_channel=self_parent_channel, user=user_in).count()
         if subchannels_with_same_channel==subchannels_subscribed_with_same_channel:
-            UserSubchannelSubscription.filter(parent_channel=self.sub_channel.channel).delete()
-            self.subscribe_Bychannel(user_in)
-    def subscribe_by_parameter(self, user_in):
-        self_parent_channel = self.sub_channel.channel_id
+            UserSubchannelSubscription.objects.filter(parent_channel=self.sub_channel.channel_id, user=user_in).delete()
+            subscribe_to_channel = UserChannelSubscription(user=user_in,channel=self_parent_channel)
+            subscribe_to_channel.save()
+    def subscribe_Byparameter(self, user_in): #this def subscribe users who wants to subscribe by attributes
         sub_channel_to_subscribe = self.sub_channel
         self_parent_channel = self.channel
         subscription = UserParameterSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe, parameter = self.parameter, choice = self.choice)
-        subscription.save()
-        
+        try:
+            subscription.save()
+        except:
+            pass
     def __unicode__(self):
-        return self.id
+        return unicode(self.id)
 
-# this model is the result of the Many-to-Many relationship between the model Users and Post
-# this model takes in a the seller's id, buyer's id, and the post id (related to the seller)
-# the model has a primary key combination of all 3 attributes
-
+#C1-Tharwat) this model is the result of the Many-to-Many relationship between the model Users and Post
+#this model takes in a the seller's id, buyer's id, and the post id (related to the seller)
+#the model has a primary key combination of all 3 attributes
 class InterestedIn(models.Model):
     user_id_buyer = models.ForeignKey(UserProfile, related_name = 'buyer')
     user_id_seller = models.ForeignKey(UserProfile, related_name= 'seller')
@@ -460,41 +598,38 @@ class InterestedIn(models.Model):
     
     def __unicode__(self):         #converts the INT to Strings to be displayed
         return unicode(self.post_id) 
-    #the following method takes the post as input and returns the buyer_id 
-    #to be used in other methods like canRate that needs a specified buer.
     
 
-#class Notification():
-
+#c2-mohamed
 #This table holds different values for the attribute (i.e for each attribute there will be different values), attribute_id is a Foreignkey that references the id ofthe attribute from the attributes model,value is the name of the different values that would be given for the attributes, and Post_id is a Foreign key that references the id of the post from the posts model#    
 class UserChannelSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     channel = models.ForeignKey(Channel)
-
-    class Meta:
+    class Meta: #to make sure a user don't subscribe to same channel twice
         unique_together = ("user", "channel")
     def __unicode__(self):
         return unicode(self.user)
 
-
+#c2-mohamed
+#this table holds all users subscribed to subchannels
 class UserSubchannelSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
     sub_channel = models.ForeignKey(SubChannel)
-
-    class Meta:
+    class Meta: #to make sure a user doesn't have the same subscription twice
         unique_together = ("user", "parent_channel", "sub_channel")
     def __unicode__(self):
         return unicode(self.user)
 
+#c2-mohamed
+#this holds all users subscribed to parameters
 class UserParameterSubscription(models.Model):
     user = models.ForeignKey(UserProfile)
     parent_channel = models.ForeignKey(Channel)
     sub_channel = models.ForeignKey(SubChannel)
     parameter = models.ForeignKey(Attribute)
-    choice = models.ForeignKey(Value)
-
-    class Meta:
+    choice = models.ForeignKey(AttributeChoice)
+    class Meta: #to make sure aa user won't have the same subscription twice
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
