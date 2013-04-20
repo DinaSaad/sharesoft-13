@@ -291,10 +291,9 @@ def UserRegistration(request):
 #reportPost in models.py then takes action to finish the reporting proccess
 def report_the_post(request):
     user = request.user
-    print user.id
     post_id = request.POST['post_id']
-    reported_post = Post.objects.get(id = post_id)
     report_reason = request.POST['report_reason']
+    reported_post = Post.objects.get(id = post_id)
     user.report_the_post(reported_post, report_reason)
     return HttpResponse()
 

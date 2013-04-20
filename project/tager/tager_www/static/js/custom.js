@@ -237,7 +237,7 @@ function reportPost(ids){
     }
 });
 }
-function get_interested(id) {
+function get_interested(ids) {
     $.ajax({
     url: "/getInterestedIn/",
     type: "POST",
