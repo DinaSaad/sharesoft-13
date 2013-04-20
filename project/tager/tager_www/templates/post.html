@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<title> Welcome to my test page </title>
+{% if posts %}
+{% for post in posts %}
+
+<div id="{{post.id}}" style = 'display:inline-block' >
+
+<div class="photodiv">
+<img src="{% static "img/logo.png" %}" width="200" height="200" alt="Hi!" /></div>
+
+<div class="description">
+<h2 id = "postID{{post.id}}" name = {{post.id}} value = {{post.id}} >Post ID: {{post.id}} </h2>
+<h3>Posted BY: {{post.user.name}}</h3>
+<p> Posted On: {{post.pub_Date|date:"Y-m-d"}} <br>
+	Post reports: {{post.no_of_reports}} <br>
+	Post State: {{post.state}} <br>
+	
+</p>
+<button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
+<button id = "get_interested_in{{post.id}}" onCLick= "get_interested({{post.id}});">Show Interested</button>
+</div>
+<div id = "listOfBuyers{{post.id}}" style="display:none">
+	{% for buyer in list_of_interested_buyers %}
+		<h3>{{ buyer }}</h3>
+	{% endfor %}
+</div>
+
+<!-- <div class = "reportDIV" style="visibility:hidden"> -->
+<div class = "reportDIV{{ post.id }}" style="display:none">
+
+<form class="reportForm" name="input" action="" method="POST">
+{% csrf_token %}
+
+<div class="reportReasons">	
+	{% for reasons in report_reasons %}
+	<label class="R{{reasons.id}}">
+  		<input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
+  			{{reasons.reported_reason}}
+	</label>
+	{% endfor %}
+
+</div>
+<button id = "postID" onCLick ="reportPost({{post.id}});" type="button">Submit Report</button>
+</form> 
+<button onClick = "cancelReport({{post.id}});">Cancel Report</button>
+</div>
+</div>
+{% endfor %}
+
+{% else %}
+<h1>No Post Avaliable</h1>
+<h2>Please try again later !! :)</h2>
+
+{% endif %}
+
+{% endblock %}

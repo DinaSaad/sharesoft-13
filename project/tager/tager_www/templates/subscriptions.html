@@ -10,7 +10,7 @@
 			</select>
 		</div><br></br>
 		
-			<div id="channel" style="visibility:hidden">
+			<div id="channel" style="display:none">
 				<label>select your channel: </label>
 				<select id="channel_id">
 					<option>--------</option>
@@ -21,8 +21,8 @@
 					{% endif %}
 				</select>
 			</div><br></br>
-			<form method="GET" action="/subscribe/subchannels_sub/">
-				<div id="subchannel" style="visibility:hidden">
+			<form method="GET">
+				<div id="subchannel" style="display:none">
 				<label>select your subchannel: </label>
 				<select id="subchannel_id">
 					<option>--------</option>
@@ -34,7 +34,7 @@
 				</select>
 				</div><br></br>
 			</form>
-			<div id="parameter" style="visibility:hidden">
+			<div id="parameter" style="display:none">
 				<label>select your parameter: </label>
 				<select id="parameter_id">
 					<option>--------</option>
@@ -45,7 +45,7 @@
 					{% endif %}
 				</select>
 			</div><br></br>
-			<div id="choice" style="visibility:hidden">
+			<div id="choice" style="display:none">
 				<label>select your choice: </label>
 				<select id="choice_id">
 					<option>--------</option>

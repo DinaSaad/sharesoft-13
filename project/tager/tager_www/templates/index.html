@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+
+
+
+{% block content %}
+
+<div id="container" class="clearfix masonry" 
+style="
+padding-bottom:30px;
+padding-right:30px;
+padding-left:30px;">
+
+
+
+
+{% for post in post_list %}
+
+
+  <div class="item masonry-brick" ><div class="thumbnail" >
+
+   {% if post.picture %} 
+      <img style="width: 300px;" src="static/img/post.png" alt="{{post.id}}" />
+    {% else %}
+       <img style="width: 300px;" src="static/img/post.png" alt="{{post.id}}" />
+    {% endif %}
+
+      <div class="repinLikeWrapper">
+
+        <button type="button" id="like{{post.id}}"  value={{post.id}} class=" btn-inverse btn ShowModalButton Button primary Module primaryOnHover btn repinSmall" onClick="like({{post.id}});" >
+        <em></em><span class="accessibilityText"><em><i class="icon-white icon-tags"></i></em></span></button>
+        <button data-text-unlike="Unlike" data-text-like="Like" type="button" class="btn btn-inverse Button Module likeSmall hasText btn" onclick="location.href='/showpost?post={{post.id}} '">
+        <em></em><span class="buttonText"><em><i class="icon-external-link"></i></em></span></button>
+
+      </div>
+      
+
+    <span class="priceValue">{{post.price }} EGP</span>
+    {% if post.state == "New" %}
+      <span class="label label-success StateLabel">New</span>  
+      {% elif post.state == "Sold" %}
+      <span class="label label-success StateLabel">Sold</span> 
+      {% endif %}
+<a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4></a>
+
+<p class="stats colorless sysPinOnlyFriendsNeedRemove" style="padding-right:5px;padding-left:5px;">
+  <span class="IntrestedCount" title="Likes"><em><i class="icon-bullhorn"></i></em>&nbsp;&nbsp;{{post.intersed_count}}</span> &nbsp;
+    <span class="CommentsCount" title="Comments"> <em><i class="icon-comments-alt"></i></em>&nbsp;&nbsp;{{post.comments_count}}</span>&nbsp;&nbsp;&nbsp;
+      <span class="QualityIndex" title="Post Quality"><em><i class="icon-bar-chart"></i></em>&nbsp;&nbsp;{{post.quality_index}}%</span>&nbsp;
+ </p> 
+       <p>
+      <small class="text-info"><i class="icon-time"></i> {{ post.pub_Date|timesince }}&nbsp;ago</small><br>
+      <a href="/showuser?user={{post.user_id}} ">
+     <small class="text-info"><i class="icon-user"></i>&nbsp;{{post.get_seller_name}}&nbsp;</small></a>
+    </p>
+</div>  
+
+
+
+
+</div>
+
+
+  
+
+{% endfor %}
+ 
+<!-- a script that handels the auto post order according to the windows size  -->
+<script type="text/javascript">$(function(){
+	var $container = $('#container');
+$container.imagesLoaded(function(){
+  $container.masonry({
+    itemSelector : '.item',
+    columnWidth : 240,
+    isAnimated: true,
+    isFitWidth: true,
+  });
+});
+});
+</script>
+
+<!-- a script that handels the ajax intrested button (currenty not working)  -->
+
+</div>
+
+#<div>
+   # {% if list_of_attributes %}
+   # {% for Attribute in list_of_attributes %}
+   #     <lbl>{{ Attribute.name }} : </lbl> <input></input>
+   #     <input type="submit" value="{{Attribute.id}}" id="addbutton"/><br>
+  #  {% endfor %}
+ #   {% endif %}
+#
+#</div>
+
+
+{% endblock %}
