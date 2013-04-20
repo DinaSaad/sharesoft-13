@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm , ConfirmationForm , BuyerIdentificationForm
+from tager_www.forms import *
 from tager_www.models import UserProfile 
 from django import forms 
 import random 
@@ -14,10 +14,187 @@ import string
 from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
 from django.core.mail import send_mail 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.core.urlresolvers import reverse
+from django.template.response import TemplateResponse
+from django.core.mail import send_mail
+from django.template import loader, Context
+from django.template.loader import get_template
+
+
 
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
+
+
+def return_channels(request):
+    channels = Channel.objects.all()
+    return render_to_response ('subscriptions.html', {'channels': channels})
+
+#c2-mohamed awad
+#this def return subchannels to subscriptions.html for the user to choose a subchannel to subscribe to
+#it takes a request containing the channel id the user has choosen in subscriptions.html and returns all subchannels
+#of that channel for the user to subscribe to
+def return_subchannels(request):
+    s_id = request.GET['ch_id']
+    print s_id
+    channels = Channel.objects.all()
+    current_channel = Channel.objects.get(id=s_id)
+    subchannels = SubChannel.objects.filter(channel_id = current_channel)
+    print {'subchannels': subchannels}
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels})
+
+#c2-mohamed awad
+#this def returns parameters to subscriptions.html for the user to choose a parameter to subscribe to
+#it takes a request containing the subchannel id the user has choosen in subscriptions.html and returns all attributes
+#of that subchannel for the user to choose from
+def return_parameters(request):
+    sc_id = request.GET['sch_id']
+    channels = Channel.objects.all()
+    s_id = SubChannel.objects.get(id = sc_id).channel_id
+    subchannels = SubChannel.objects.filter(channel_id = s_id)
+    parameters = Attribute.objects.filter(subchannel_id = sc_id)
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
+
+#c2-mohamed awad
+#this def return choices to subscriptions.html for the user to choose a choice to subscribe to
+#it takes a request containing the parameter id the user has choosen in subscriptions.html and returns all choices
+#of that parameter for the user to subscribe to
+def return_choices(request):
+    p_id = request.GET['p_id']
+    subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
+    parameters = Attribute.objects.filter(subchannel_id = subchannel_of_parameter)
+    channels = Channel.objects.all()
+    subchannels = SubChannel.objects.all()
+    choices = AttributeChoice.objects.filter(attribute_id = p_id)
+    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
+
+#c2-mohamed awad
+#this def allows user to subscribe by channel only
+#it takes as a request the channel id the user is subscribed to and saves a new record in UserChannelSubscription table
+#containing the user and channel as attributes
+def subscription_by_chann(request):
+    ch_id = request.GET['ch_id']
+    channel=Channel.objects.get(id=ch_id)
+    user = request.user
+    print user
+    subscriptions = Subscription.objects.filter(channel=channel).exclude(sub_channel__isnull=True,parameter__isnull=True,choice__isnull=True)
+    for subscription in subscriptions:
+        subscription.subscribe_Bychannel(user)
+        break
+    return render_to_response('subscriptions.html')
+
+#c2-mohamed awad
+#this def allows user to subscribe by subchannel only
+#it takes as a request the channel id  and sub channel id the user is subscribed to and saves a new record in UserSubChannelSubscription table
+#containing the user, channel, and subchannel as attributes
+def subscription_by_subchann(request):
+    ch_id = request.GET['ch_id']
+    channel=Channel.objects.get(id=ch_id)
+    sch_id = request.GET['sch_id']
+    subchannel=SubChannel.objects.get(id=sch_id)
+    user = request.user
+    subscriptions = Subscription.objects.filter(channel=channel,sub_channel=subchannel).exclude(parameter__isnull=True,choice__isnull=True)
+    for subscription in subscriptions:
+        subscription.subscribe_Bysubchannel(user)
+        break
+    return render_to_response('subscriptions.html')
+
+#c2-mohamed awad
+#this def allows user to subscribe by parameters
+#it takes as a request the channel id, subchannel id, parameter id and choice id the user is subscribed to and saves a new record in UserParameterSubscription table
+#containing the user, channel, parameter and choice as attributes
+def subscribe_by_parameters(request):
+    ch_id = request.GET['ch_id']
+    channel=Channel.objects.get(id=ch_id)
+    sch_id = request.GET['sch_id']
+    subchannel=SubChannel.objects.get(id=sch_id)
+    p_id = request.GET['p_id']
+    parameter=Attribute.objects.get(id=p_id)
+    cho_id = request.GET['cho_id']
+    choice=AttributeChoice.objects.get(id=p_id)
+    user = request.user
+    print user
+    subscriptions = Subscription.objects.filter(channel=channel,sub_channel=subchannel,parameter=parameter,choice=choice)
+    for subscription in subscriptions:
+        subscription.subscribe_Byparameter(user)
+        break
+    return render_to_response('subscriptions.html')
+
+#c2-mohamed awad
+#this def takes a user as a request and returns all his related notifications to notifications.html
+#from Notification table
+def return_notification(request):
+    user_in = request.user
+    all_notifications = Notification.objects.filter(user = user_in)
+    if all_notifications is not None:
+        return render_to_response ('notifications.html', {'all_notifications': all_notifications})
+    else:
+        pass
+
+def view_login(request):
+    return render_to_response ('login.html',context_instance=RequestContext(request))
+
+
+
+
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    sub_channel_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=sub_channel_id)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
+    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
+
+@login_required
+def add_post(request):
+    sub_channel_id = request.GET['sub_ch_id']
+    # location = request.GET['location_id']
+    current_sub_channel = SubChannel.objects.get(id = sub_channel_id)
+    list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
+
+    form = PostForm(request.POST,request.FILES)
+    if form.is_valid():
+        author = request.user
+        subchannel1  = SubChannel.objects.get(pk=sub_channel_id)
+        p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
+            ,description = form.cleaned_data['description'] 
+            ,price = form.cleaned_data['price']
+            ,seller = author
+            ,subchannel = subchannel1
+            ,profile_picture = form.cleaned_data['picture']
+            ,picture1 = form.cleaned_data['picture1']
+            ,picture2 = form.cleaned_data['picture2']
+            ,picture3 = form.cleaned_data['picture3']
+            ,picture4 = form.cleaned_data['picture4']
+            ,picture5 = form.cleaned_data['picture5']
+            ,location = form.cleaned_data['location']
+            ,
+            )
+        # p.post_Notification()
+         
+        
+        for k in request.POST:
+            if k.startswith('option_'):
+                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+        return HttpResponse('Thank you for adding the post')
+    else:
+
+        form = PostForm()
+        initial={'subject': 'I love your site!'}
+    
+
+    return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+
+
 
 #C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
 #which is of type post and it has the email and the password attribute which are 
@@ -28,27 +205,10 @@ def home(request):
 #or information entered is wrong then he is redirected to the login page again.
 
 
-def view_channels(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
-
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
-
-
 def login(request):
-    #print request
-    #print "ldnfldnfndlfd"
-    #print request.method
     mail = request.POST['email']
     password = request.POST['password']
-    # print "before"
-    # user = UserProfile.objects.get(email=mail)
-    # print user.username
-    # pk = user.username
+
     authenticated_user = authenticate(mail=mail, password=password)
     if authenticated_user is not None:
         print "auth"
@@ -64,38 +224,42 @@ def login(request):
         return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
-#C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
-#the rate the seller button which would appear to the buyer of the post only so what it does is
-#it takes object user from the session and checks if this user can rate the post that is imbeded in 
-#the request and then add the results in the dictonary.Then render the post html and pass the 
-#dictionary.
-#
-def view_post(request):
 
-    post = Post.objects.get(pk= request.GET['post_id'])
+def check_Rate_Identify_buyer(request):
+    post = Post.objects.get(pk= request.GET['post'])
     user = request.user
     print user.id
     creator = False
-    if post.user == user:
+    if post.seller == user and post.buyer is None:
          creator = True
-    rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
+    rateSellerButtonFlag = user.can_rate(request.GET['post']) 
     print rateSellerButtonFlag
-    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
-    
-    # if request.method == 'POST':
-    #     form = BuyerIdentificationForm( request.POST )
-    #     if form.is_valid():
-    #         new_buyer_num = form.GetBuyerNum()
-    #         buyer_added = user.add_Buyer(post, new_buyer_num)
-    #         return HttpResponseRedirect( "/" )
-    #     else :
-    #         d.update({'form':form})
-    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
+    return d
 
-    # else:
-    #     form = BuyerIdentificationForm()
-    #     d.update({'form':form})
-    return render_to_response( "post.html", d,context_instance = RequestContext( request ))
+def view_post(request):
+    user = request.user
+    post_id = request.GET['post']
+    print post_id
+    test_post = Post.objects.get(id = post_id)
+    test_post.post_state
+    subchannel1 = test_post.subchannel_id
+    list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
+    list_of_att_values = Value.objects.filter(post = test_post)
+
+    #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
+    list_of_interested_buyers = user.get_interested_in(post_id)
+    #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
+    report_reasons = ReportReasons.objects.all()
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    # dic.update(d)
+
+    d = check_Rate_Identify_buyer(request)
+    dic.update(d)   
+    return render(request, 'ViewPost.html',dic,context_instance=RequestContext(request))
+
+
+
 
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
@@ -132,10 +296,12 @@ def Buyer_identification(request):
     if request.method == 'POST':
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
-            new_buyer_num = form.GetBuyerNum()
-            buyer_added = user.add_Buyer(post, new_buyer_num)
+            new_buyer_num = request.POST['buyer_phone_num']
+            post = Post.objects.get(id=request.GET['post_id'])
+            # new_buyer_num = form.GetBuyerNum()
+            buyer_added = user.add_buyer(post, new_buyer_num)
             d = {'form':form}
-            return render_to_response( "post.html", d, context_instance = RequestContext( request ))
+            return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
         else :
             d = {'form':form}
@@ -143,15 +309,20 @@ def Buyer_identification(request):
 
     else:
         form = BuyerIdentificationForm()
-        d.update({'form':form})
-    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+        d = {'form':form}
+    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
-def index(request):
+def main(request):
     post_list = filter_home_posts()
-    return render_to_response('index.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    
+    #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
+    for i in post_list:
+        i.post_state
+
+    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -162,6 +333,15 @@ def filter_home_posts():
         .exclude(quality_index__lt=50)
         .order_by('-quality_index'))
     return post_list
+
+def filter_posts(post_list):
+    print post_list
+    post_filtered = (post_list.objects.exclude(is_hidden=True)
+        .exclude(expired=True)
+        .exclude(is_sold=True)
+        .order_by('-quality_index'))
+    return post_filtered
+
 
 
 
@@ -199,7 +379,7 @@ class CustomAuthentication:
 def UserRegistration(request):
 
     if request.method == 'POST':
-        print request.POST
+       
         form = RegistrationForm(request.POST) 
         if form.is_valid(): 
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
@@ -211,7 +391,9 @@ def UserRegistration(request):
                 content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
                 send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/profile/')
+
+                return HttpResponseRedirect('/thankyou/')
+
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -220,6 +402,26 @@ def UserRegistration(request):
         #add our registration form to context
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
+
+
+#C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
+def goToTheReportPage(request):
+    return render_to_response('report.html')
+
+#C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
+#reportPost in models.py then takes action to finish the reporting proccess
+def reportThePost(request):
+    return HttpResponse("hello")
+
+#C1-Tharwat) This method takes the user input(reason) for reporting a post and calls the reportPost method in models.py
+#reportPost in models.py then takes action to finish the reporting proccess
+def report_the_post(request):
+    user = request.user
+    post_id = request.POST['post_id']
+    report_reason = request.POST['report_reason']
+    reported_post = Post.objects.get(id = post_id)
+    user.report_the_post(reported_post, report_reason)
+    return HttpResponse()
 
 
 def view_profile(request):
@@ -239,7 +441,9 @@ def view_profile(request):
 
         # GO TO USER PROFILE
 
-
+#mai c2 L registeration thank you , it justs renders the html thank u 
+def thankyou(request):
+    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
@@ -256,24 +460,22 @@ def view_profile(request):
 #if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
 def confirm_email(request):
      
-    print "Start Confirm"
-
-
     if request.method == 'POST':
-        print "the request is POST"  
+        
         form = request.POST['verify'] 
         if form is not None: 
-            print "The form is valid" 
+           
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
                 if not user.is_expired():
-                    print "activation key is exists" 
+                   
                     user.is_verfied=True
-                    print user.is_verfied 
+                   
                     user.save()
+                    return HttpResponseRedirect('/main/')
                 
                 else :  
-                    print "key expired"
+                 
                     return HttpResponse ("sorry your account is disabled because the activation key has expired")
 
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
@@ -288,20 +490,12 @@ def confirm_email(request):
 
 
 
-
 #mai: captcha -registration
 #it takes a request 
 # saves the form with the request data 
 #gets the public key from the settings and saves it in publiic_key
 #then renders the html with the form passed in a dic and the script 
 # result : captcha shown 
-def display_form(request):
-    form = RegistrationForm(request.POST)
-    # assuming your keys are in settings.py
-    public_key = settings.RECAPTCHA_PUBLIC_KEY
-    script = displayhtml(public_key=public_key)
-    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
-
 
 
 
@@ -320,11 +514,169 @@ def verfiy_captcha(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             # Do form processing here...
-           return HttpResponseRedirect('/profile/')
+           return HttpResponseRedirect('/login/')
     else:
         form = RegistrationForm()
         script = displayhtml(public_key=public_key)
     return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
 
+    #mohamed hammad C3 
+    #this method takes as input channel id and then returns its subchannels
+def advanced_view_subchannels(request):
+    # print request.POST
+    s_id = request.POST['ad_ch_id']
+
+    # print s_id
+    #current_channel = Channel.objects.filter(channel_id = s_id)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    #mohamed hammad C3 
+    #this method returns all channels
+
+def advanced_view_channels(request):
+    list_of_channels = Channel.objects.all() 
+    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+
+#mohamed tarek 
+#c3 takes as input the subchannel id sellected then return all attributes of it 
+#para
+def get_attributes_of_subchannel(request):
+    sub_id = request.POST['ad_sub_ch_id']
+    list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    # print list_of_attributes
+
+    return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
+def advanced_search(request):#mohamed tarek c3 
+                             #this method takes attributes as input and takes values from the user them compares them  
+                             #to values to get the value obects containig the attribute ids and value iputed and them 
+                             #searches for all the post ids that have all the searched criteria present the returns a list of post ids
+    sub_id = request.GET['ad_sub_id']
+    print "got subchannel id"
+    print sub_id
+    attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    values =[]
+    post = []
+    value_obj =[]
+    for w in attributes:
+        name = w.name
+        values.append(request.GET[name])
+    result_search_obj = []
+    flag = False
+    result_search = []
+    result = []
+    post = []
+    i = 0
+    f = i+1
+    null = ""
+    for j in range(0,len(values)):
+        if values[j] == null:
+            pass
+        else:
+            result_search_obj+=[ (Value.objects.filter(attribute= attributes[j] 
+            , value = values[j])) ]
+    if not result_search_obj:
+        return HttpResponse("please enter something in the search")
+    else:
+        result_search = [[] for o in result_search_obj]    
+        for k in range(0,len(result_search_obj)):
+            for l in range(0,len(result_search_obj[k])):
+                test = result_search_obj[k][l].value
+                result_search[k].append(result_search_obj[k][l].post.id)
+        tmp=result_search[0]
+        if len(result_search) == 1:
+            post=result_search[0]
+        else:
+            for h in range(1,len(result_search)):
+                post_temp = ""
+                for g in range(0,len(result_search[h])):
+                    if not result_search[h]:
+                        flag = True
+                        pass
+                    else:
+                        if flag == True:
+                            h=h-1
+                        loc = tmp[g]
+                        tmep =result_search[h]
+                        loce = tmep[g]
+                        if loc == tmep[g]:
+                            flag = True
+                            post_temp = tmep[g]
+                            post.append(post_temp)
+        post_list =[]
+        for a_post in post:
+            post_list.append(Post.objects.get(id = a_post))
+        if not post_list:
+            return HttpResponse("there is no posts with these values please refine your search.")
+
+        else:
+            return render(request,'main.html', {'post_list' : post_list})
 
 
+# def advanced_search_helper(basic_search_list):#mohamed tarek c3 
+#                              #this method takes attributes as input and takes values from the user them compares them  
+#                              #to values to get the value obects containig the attribute ids and value iputed and them 
+#                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
+#     sub_id = request.GET['sub_ch_id']
+#     attributes = Attribute.objects.filter(subchannel_id = sub_id)
+#     values =[]
+#     post = []
+#     value_obj =[]
+#     for w in attributes:
+#         name = w.name
+#         values.append(request.GET[name])
+#     result_search_obj = []
+#     flag = False
+#     result_search = []
+#     result = []
+#     post = []
+#     i = 0
+#     f = i+1
+#     null = ""
+#     basic_search_values = []
+#     for r in range(0,len(basic_search_list)):
+#         basic_search_values = [(Value.objects.filter(post = basic_search_list[r])) ]
+#     for j in range(0,len(values)):
+#         if values[j] == null:
+#             pass
+#         else:
+#             for e in range(0,len(values)):
+#             result_search_obj+=[ (Value.objects.filter(attribute_id = attributes[j].id 
+#             , value = values[j])) ]
+#     if not result_search_obj:
+#         return HttpResponse("please enter something in the search")
+#     else:
+#         result_search = [[] for o in result_search_obj]    
+#         for k in range(0,len(result_search_obj)):
+#             for l in range(0,len(result_search_obj[k])):
+#                 test = result_search_obj[k][l].value
+#                 result_search[k].append(result_search_obj[k][l].post.id)
+#         tmp=result_search[0]
+#         if len(result_search) == 1:
+#             post=result_search[0]
+#         else:
+#             for h in range(1,len(result_search)):
+#                 post_temp = ""
+#                 for g in range(0,len(result_search[h])):
+#                     if not result_search[h]:
+#                         flag = True
+#                         pass
+#                     else:
+#                         if flag == True:
+#                             h=h-1
+#                         loc = tmp[g]
+#                         tmep =result_search[h]
+#                         loce = tmep[g]
+#                         if loc == tmep[g]:
+#                             flag = True
+#                             post_temp = tmep[g]
+#                             post.append(post_temp)
+#         post_obj =[]
+#         for a_post in post:
+#             post_obj.append(Post.objects.get(id = a_post))
+#         if not post_obj:
+#             return HttpResponse("there is no posts with these values please refine your search.")
+
+#         else:
+#             print post_obj
+#             post_list=filter_posts(post_obj)
+#             return render('main.html', {'post_list' : post_list})
