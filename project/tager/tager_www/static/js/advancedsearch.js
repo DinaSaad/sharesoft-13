@@ -46,8 +46,8 @@ $(document).ajaxSend(function(event, xhr, settings) {
 
 
 $(document).ready(function(){
-  $('#Channel_dropdown').change(function(){
-    var channel = $('#Channel_dropdown').val()
+  $('#advancedsearch_channels').change(function(){
+    var channel = $('#ad_Channel_dropdown').val()
    $.ajax({
        url: "/advanced_subchannel/",
        type: "POST",
@@ -64,7 +64,7 @@ $(document).ready(function(){
 
 $(document).ready(function(){
 $('#advancedsearch_subchannels').change(function(){
-    var subchannel = $('#subChannel_dropdown').val()
+    var subchannel = $('#ad_subChannel_dropdown').val()
    $.ajax({
        url: "/advanced_att/",
        type: "POST",

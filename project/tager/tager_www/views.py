@@ -435,10 +435,10 @@ def verfiy_captcha(request):
     #mohamed hammad C3 
     #this method takes as input channel id and then returns its subchannels
 def advanced_view_subchannels(request):
-    print request.POST
+    # print request.POST
     s_id = request.POST['ad_ch_id']
 
-    print s_id
+    # print s_id
     #current_channel = Channel.objects.filter(channel_id = s_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
     return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
@@ -454,14 +454,18 @@ def advanced_view_channels(request):
 #para
 def get_attributes_of_subchannel(request):
     sub_id = request.POST['ad_sub_ch_id']
-
     list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
-    return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'ad_sub_ch_id': sub_id})
+    # print list_of_attributes
+
+    return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
 def advanced_search(request):#mohamed tarek c3 
                              #this method takes attributes as input and takes values from the user them compares them  
                              #to values to get the value obects containig the attribute ids and value iputed and them 
                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
-    sub_id = request.GET['sub_ch_id']
+    sub_id = request.GET['ad_sub_id']
+    print "got subchannel id"
+    print sub_id
+
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     values =[]
     post = []
