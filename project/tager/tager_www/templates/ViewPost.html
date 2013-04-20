@@ -57,9 +57,38 @@
     			<div id="star"></div>
     
 				<button type="button" class="btn btn-info"> fb </button>
+
+				<button type="button" class="btn btn-danger"> Report </button>
+				<button type="button" class="btn btn-info"> Interested in </button>  
+
 				<button id = "report_button{{post.id}}" onCLick= "report({{post.id}});">Report</button>
 				<button id = "get_interested_in{{post.id}}" onCLick= "get_interested({{post.id}});">Show Interested</button>
 				<button type="button" class="btn btn-info"> Interested in </button>
+
+
+				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+				<a href="http://twitter.com/home?status=Your%20message%20here:%20
+					http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+
+				<!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
+				the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
+				<a href="https://www.facebook.com/dialog/feed?
+  					app_id=461240817281750&
+  					link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+		  			name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+		  			caption=Reference%20Documentation&
+		  			description=Using%20Dialogs%20to%20interact%20with%20users.&
+		  			redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+
+		  			<img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
+
+		  			<img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
+
+		  			onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>    
+
+
 	 		</div>
  	</div>
 <div id = "listOfBuyers{{post.id}}" style="display:none">

@@ -1,0 +1,34 @@
+<html>
+<head>
+<br>
+<br>
+<br>
+</head>
+
+<body>
+<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+<a href="http://twitter.com/home?status=Your%20message%20here:%20http://www.tager.com/?post_id={{p.id}}" target="_blank"><img src="Twitter-icon.png" width="40px" height="40px" alt="tweet this" title="tweet this" onmouseover="this.src='light-Twitter-icon.png'" onmouseout="this.src='Twitter-icon.png'"></a>
+
+<!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
+the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
+<a href="https://www.facebook.com/dialog/feed?
+  app_id=461240817281750&
+  link=http://www.tager.com/?post_id={{p.id}}&
+  name=http://www.tager.com/?post_id={{p.id}}&
+  caption=Reference%20Documentation&
+  description=Using%20Dialogs%20to%20interact%20with%20users.&
+  redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+  <img src="facebook-icon.png" width="40px" height="40px" alt="share with facebook" title="share this with facebook"
+  onmouseover="this.src='light-facebook-icon.png'" onmouseout="this.src='facebook-icon.png'"></a>
+
+<!-- inviting friends on facebook -->
+<!--<a href="https://www.facebook.com/dialog/apprequests?
+  app_id=461240817281750&
+  message=check%20out%20tager!%20&
+  redirect_uri=http://peaceful-lake-7793.herokuapp.com/response" target="_blank"><img src="http://images.cooltext.com/3034263.png" alt="invite your friends on facebook" onmouseover="this.src='light-fb-invite-friends.png'" onmouseout="this.src='fb-invite-friends.png'"></a> -->
+
+
+</body>
+
+</html>
