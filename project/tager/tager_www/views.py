@@ -465,7 +465,6 @@ def advanced_search(request):#mohamed tarek c3
     sub_id = request.GET['ad_sub_id']
     print "got subchannel id"
     print sub_id
-
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     values =[]
     post = []
@@ -515,15 +514,13 @@ def advanced_search(request):#mohamed tarek c3
                             flag = True
                             post_temp = tmep[g]
                             post.append(post_temp)
-        post_obj =[]
+        post_list =[]
         for a_post in post:
-            post_obj.append(Post.objects.get(id = a_post))
-        if not post_obj:
+            post_list.append(Post.objects.get(id = a_post))
+        if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
 
         else:
-            print post_obj
-            post_list=filter_posts(post_obj)
             return render('main.html', {'post_list' : post_list})
 
 
