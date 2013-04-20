@@ -117,12 +117,6 @@ def login(request):
         return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
-#C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
-#the rate the seller button which would appear to the buyer of the post only so what it does is
-#it takes object user from the session and checks if this user can rate the post that is imbeded in 
-#the request and then add the results in the dictonary.Then render the post html and pass the 
-#dictionary.
-#
 
 def check_Rate_Identify_buyer(request):
     post = Post.objects.get(pk= request.GET['post'])
@@ -137,12 +131,22 @@ def check_Rate_Identify_buyer(request):
     return d
 
 def view_post(request):
+    user = request.user
     post_id = request.GET['post']
+    print post_id
     test_post = Post.objects.get(id = post_id)
+    test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post)
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values}
+
+    #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
+    list_of_interested_buyers = user.get_interested_in(post_id)
+    #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
+    report_reasons = ReportReasons.objects.all()
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    # dic.update(d)
+
     d = check_Rate_Identify_buyer(request)
     dic.update(d)   
     return render(request, 'ViewPost.html',dic,context_instance=RequestContext(request))
@@ -206,6 +210,11 @@ def Buyer_identification(request):
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
     post_list = filter_home_posts()
+    
+    #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
+    for i in post_list:
+        i.post_state
+
     return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
@@ -283,19 +292,11 @@ def UserRegistration(request):
 def report_the_post(request):
     user = request.user
     post_id = request.POST['post_id']
-    reported_post = Post.objects.get(id = post_id)
     report_reason = request.POST['report_reason']
+    reported_post = Post.objects.get(id = post_id)
     user.report_the_post(reported_post, report_reason)
     return HttpResponse()
 
-# C1-Tharwat this method takes in the post object as a parameter. it then calls the get_interested_in method in models.py 
-# to return the list of interested in buyers to the html page
-def get_interested_in(request):
-    user = request.user
-    post_id = request.POST['post_id']
-    post = Post.objects.get(id = post_id)
-    list_of_interested_buyers = user.getInterestedIn(post)
-    return render_to_response('post.html', {'list_of_interested_buyers': list_of_interested_buyers})
 
 def view_profile(request):
     try: 

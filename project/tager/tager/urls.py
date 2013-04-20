@@ -9,6 +9,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
+    
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
 
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
@@ -17,7 +19,6 @@ urlpatterns = patterns('',
     url(r'^getInterestedIn/$', 'tager_www.views.get_interested_in', name='getInterestedIn'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
-    url(r'^logout/$', logout, {'next_page':'/'}),  
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     url(r'^confirm_email/$','tager_www.views.confirm_email'),

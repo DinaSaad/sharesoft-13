@@ -76,9 +76,9 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
-    created = models.DateTimeField(auto_now_add=True)
+    # created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
-    rating = models.FloatField(default=0.0)
+    # rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -184,23 +184,20 @@ class UserProfile(AbstractBaseUser):
     #It returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     #This method returns to the Seller (User) the list of buyers (User) interested in his (specific) post
     def get_interested_in(self, post):       
-        interested = InterestedIn.objects.filter(user_id_seller = self.id, post = post.id)
-        buyer_ids = []
+        interested = InterestedIn.objects.filter(user_id_seller = self, post = post)
         buyer_names = []
         for i in interested:
-            buyer_ids.append(i.user_id_buyer.id)
-        for i in buyer_names:
-            user = UserProfile.objects.get(id = i)
-            buyer_names.append(user.name)
-        return buyer_names
+            buyer_names.append(i.user_id_buyer.name)
 
+        print buyer_names
+        return buyer_names
 
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
     #It takes 2 parameters, the post being reported and the reason of report
     #It then inserts the record into the Report table
     def report_the_post(self, post, report_reason):
         reported_post = Post.objects.get(id = post.id)
-        if post.user.id == self.id:
+        if post.seller.id == self.id:
             print 'Cant report urself'
         elif Report.objects.filter(reported_post = post, reporting_user = self.id).exists():
             print 'already reported'
@@ -221,9 +218,9 @@ class UserProfile(AbstractBaseUser):
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
     def interested_in(self, post_in):
-        if self.canPost:
-            if  Post.objects.filter(pk=post_in.post_id).exists():
-                user1=InterestedIn(user_id_buyer_id=self.user_id,user_id_seller_id=post_in.post_id,post_id_id=post_in.post_id)
+        if self.can_post:
+            if  Post.objects.filter(pk=post_in.id).exists():
+                user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
                 user1.save()
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
@@ -274,7 +271,7 @@ class SubChannel(models.Model):
 
 class Post(models.Model):
     state = models.CharField(max_length=200, default= "New")
-    expired = models.BooleanField(default= False)
+    # expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
     title = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
@@ -283,19 +280,20 @@ class Post(models.Model):
     price = models.IntegerField(null=True)
     edit_date = models.DateField(null=True)
     pub_date = models.DateField(null=True)
-    comments_count = models.IntegerField(default=0)
+    # comments_count = models.IntegerField(default=0)
     intersed_count = models.IntegerField(default=0)
-    profile_picture = models.ImageField(upload_to='media', blank=True)
-    picture1 = models.ImageField(upload_to='media', blank=True)
-    picture2 = models.ImageField(upload_to='media', blank=True)
-    picture3 = models.ImageField(upload_to='media', blank=True)
-    picture4 = models.ImageField(upload_to='media', blank=True)
-    picture5 = models.ImageField(upload_to='media', blank=True)
+    # profile_picture = models.ImageField(upload_to='media', blank=True)
+    # picture1 = models.ImageField(upload_to='media', blank=True)
+    # picture2 = models.ImageField(upload_to='media', blank=True)
+    # picture3 = models.ImageField(upload_to='media', blank=True)
+    # picture4 = models.ImageField(upload_to='media', blank=True)
+    # picture5 = models.ImageField(upload_to='media', blank=True)
     subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()#class Comments():
-    location = models.CharField(max_length = "100",null = True)
+    # location = models.CharField(max_length = "100")
+
     
 
     def get_buyer():

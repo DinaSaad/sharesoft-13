@@ -233,11 +233,11 @@ function reportPost(ids){
       "report_reason" : $("input[name=" + reason + "]:checked").val(),
     }, 
     success: function(result) {
-        alert("Report Submitted... Thank you ! :D");
+        alert("Report Submitted... Thank you ! :D");  
     }
 });
 }
-function get_interested(id) {
+function get_interested(ids) {
     $.ajax({
     url: "/getInterestedIn/",
     type: "POST",
