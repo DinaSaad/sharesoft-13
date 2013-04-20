@@ -2,13 +2,13 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
-
 from django.utils.timezone import utc
 from datetime import datetime, timedelta
 
 EXPIRATION_DAYS = 10
 
 from django.db.models import Sum , Avg 
+
 
 #mai 
 #this is the custome manager made , it inheirts the built in baseUSermanager 
@@ -188,6 +188,8 @@ class UserProfile(AbstractBaseUser):
         buyer_names = []
         for i in interested:
             buyer_names.append(i.user_id_buyer.name)
+
+        print buyer_names
         return buyer_names
 
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
@@ -210,7 +212,6 @@ class UserProfile(AbstractBaseUser):
          
         
     def can_post(self):
-
         return self.is_verfied
 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
@@ -290,11 +291,28 @@ class Post(models.Model):
     subchannel = models.ForeignKey(SubChannel)
     seller = models.ForeignKey(UserProfile, related_name = 'seller_post')
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
-    # is_sold = models.BooleanField()#class Comments():
+    is_sold = models.BooleanField()#class Comments():
     # location = models.CharField(max_length = "100")
+
     
+
     def get_buyer():
-        return self.buyer.id    
+        return self.buyer.id
+ 
+        
+# ''' C1_beshoy Cal Quality index this method takes a post and then calculate its quality 
+# index based on the filled attributes and thier wight'''
+
+    def cal_quality(self):
+        q_index=0
+        attr_list=Attribute.objects.filter(sub_channel_id=self.sub_channel_id_id)
+        values_list_tmp=Values.objects.filter(Post_id=self.post_id_id)
+        for Values in values_list_tmp:
+            if Values.name_of_value is not None:
+                attr_tmp=Attribute.objects.get(Attribute_id=Values.attribute_id_id)
+                q_index=q_index+int(attr_tmp.weight)
+        self.quality_index=q_indexUI    
+
 
     #C1-Tharwat) returns to total number of reports on the current post
     def report_count(self):

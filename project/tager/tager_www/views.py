@@ -35,13 +35,6 @@ def home(request):
 def view_login(request):
     return render_to_response ('login.html',context_instance=RequestContext(request))
 
-#C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
-#which is of type post and it has the email and the password attribute which are 
-#taken in as variables then they are authinticated and the authinticated user is 
-#saved into variable user then there is an condition which check that the user is 
-#actually there and if he is an active user then we log him in and render his profile page
-#in case he has a disabled account then a message would appear. and if the user doesn't exist
-#or information entered is wrong then he is redirected to the login page again.
 
 
 
@@ -95,37 +88,15 @@ def add_post(request):
 
     return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
 
-# def view_location(request):
-    
-#     return render_to_response('addPost.html', {)
 
 
-
-
-# def login(request):
-#     #print request
-#     #print "ldnfldnfndlfd"
-#     #print request.method
-#     mail = request.POST['email']
-#     password = request.POST['password']
-#     # print "before"
-#     # user = UserProfile.objects.get(email=mail)
-#     # print user.username
-#     # pk = user.username
-#     authenticated_user = authenticate(mail=mail, password=password)
-#     if authenticated_user is not None:
-#         print "auth"
-#         print authenticated_user.is_active
-#         if authenticated_user.is_active:
-#             print "act"
-#             django_login(request, authenticated_user)
-#             print "user logged in"
-#             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
-#         else:
-#            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
-#     else:
-#         return render_to_response ('home.html',context_instance=RequestContext(request))
-#        #return redirect("/login/")# Return an 'invalid login' error message.
+#C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
+#which is of type post and it has the email and the password attribute which are 
+#taken in as variables then they are authinticated and the authinticated user is 
+#saved into variable user then there is an condition which check that the user is 
+#actually there and if he is an active user then we log him in and render his profile page
+#in case he has a disabled account then a message would appear. and if the user doesn't exist
+#or information entered is wrong then he is redirected to the login page again.
 
 def login(request):
     mail = request.POST['email']
@@ -147,13 +118,23 @@ def login(request):
        #return redirect("/login/")# Return an 'invalid login' error message.
 
 
+def check_Rate_Identify_buyer(request):
+    post = Post.objects.get(pk= request.GET['post'])
+    user = request.user
+    print user.id
+    creator = False
+    if post.seller == user and post.buyer is None:
+         creator = True
+    rateSellerButtonFlag = user.can_rate(request.GET['post']) 
+    print rateSellerButtonFlag
+    d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
+    return d
 
 def view_post(request):
     user = request.user
-    print user.id
     post_id = request.GET['post']
+    print post_id
     test_post = Post.objects.get(id = post_id)
-    print test_post.seller.id
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
@@ -161,13 +142,18 @@ def view_post(request):
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     list_of_interested_buyers = user.get_interested_in(post_id)
+    #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    # d = check_rating_adding_buyer(request)
-    # print d
     dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
 
-    return render(request, 'ViewPost.html', dic)
+    d = check_Rate_Identify_buyer(request)
+    dic.update(d)   
+    return render(request, 'ViewPost.html',dic,context_instance=RequestContext(request))
+
+
+
+
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
 #as input and imbeded in this request is the session user which is the rater, post_owner which is the user 
 #who posted the post, the post it self and the rating. after taking in the request and storing the attributes
@@ -208,7 +194,7 @@ def Buyer_identification(request):
             # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_buyer(post, new_buyer_num)
             d = {'form':form}
-            return render_to_response( "post.html", d, context_instance = RequestContext( request ))
+            return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
         else :
             d = {'form':form}
@@ -222,9 +208,14 @@ def Buyer_identification(request):
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
-def index(request):
+def main(request):
     post_list = filter_home_posts()
-    return render_to_response('index.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    
+    #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
+    for i in post_list:
+        i.post_state
+
+    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -344,9 +335,6 @@ def thankyou(request):
 #if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
 def confirm_email(request):
      
-  
-
-
     if request.method == 'POST':
         
         form = request.POST['verify'] 
@@ -375,21 +363,6 @@ def confirm_email(request):
         return render_to_response('confirm_email.html', context, context_instance=RequestContext(request))
         
 
-
-
-
-#mai: captcha -registration
-#it takes a request 
-# saves the form with the request data 
-#gets the public key from the settings and saves it in publiic_key
-#then renders the html with the form passed in a dic and the script 
-# result : captcha shown 
-def display_form(request):
-    form = RegistrationForm(request.POST)
-    # assuming your keys are in settings.py
-    public_key = settings.RECAPTCHA_PUBLIC_KEY
-    script = displayhtml(public_key=public_key)
-    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
 
 
 #mai: captcha -registration

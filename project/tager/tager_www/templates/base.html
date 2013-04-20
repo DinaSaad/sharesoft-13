@@ -1,73 +1,30 @@
-<html>
-<head>
-  <title></title>
-
-{% load staticfiles %}
-    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
-    <script type="text/javascript" src="{% static "js/subscriptions.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
-    <script type="text/javascript" src="{% static "js/custom.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/report.js" %}"></script>
-    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
-
-
-    {% block headers %}
-
-    {% endblock %}
-
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-    </style>
-    <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet" media="screen">
-    <link href="{% static "css/custom.css" %}" rel="stylesheet" media="screen">
+{% extends "base2.html" %}
 
 
 
-
-</head>
-
-
-
-
-<body>
-
-  <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="brand" href="#">Project name</a>
+{% block nav %}
+        
           <div class="nav-collapse collapse">
             <ul class="nav">
+              <ul class="nav pull-right">
               <li><a href="#">Home</a></li>
               <li><a href="#contact">Contact</a></li>
-              <li><a href="advanced_search/channel/">Advanced Search</a></li>
-              <!-- <div class="navbar-inner"> -->
-                <form class="navbar-search pull-left">
-                    <input type="text" class="search-query" placeholder="Search">
-                </form>
-              <!-- </div> -->
-
-         
-              <ul class="nav pull-right">
-              <li><a href="advanced_search/channel/">Advanced Search</a></li>
-              <li><a href="#contact">Contact</a></li>
               <li><a href="/notifications">Notification</a></li>
-               <li><a href="/profile?user_id={{user.id}}">Profile</a></li>
+              <li><a href="advanced_search/channel/">Advanced Search</a></li>
+              <li>
+                <div>
+                  <form class="navbar-search pull-left" style="margin-top:10px">
+                    <input type="text" class="search-query" placeholder="Search">
+                  </form>
+                </div>
+              </li>
+              <li><a href="/profile?user_id={{user.id}}" style="margin-left:260px; float:right">Profile</a></li>
 
               <li class="dropdown">
 
          
 
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.name}}<b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="float:inline">{{user.name}}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="/subscribe">Subscribe</a></li>
                   <li><a href="#" id="editing">Manage and edit profile</a></li>
@@ -77,78 +34,10 @@
                   <li><a href="/logout/">Logout</a></li>
                   
                 </ul>
-
+              </li>
 
               </li>
-          </ul>
-        {% block login %}
-
-        {% endblock %}
-        
-        {% block log %}
-        
-        {% endblock %}
             </ul>
-  
-            
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-  
-
-{% block verification %}
-    {% if user.is_authenticated %}
-      {% if check_verified == False %}
-
-        <div class="alert">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}
-        </div> 
-
-      {% endif %}
-    {% endif %}
-  {% endblock %}
-  
-
-<!-- Start main websiteBody Div -->
- <div class="container" style="padding-top: 40px;">
-<!-- Start TMP , Please remove me -->
-
-
-
-
-</script>
-
-{% block content %}
-
-{% block script %}
+          </div>
+        
 {% endblock %}
-<!-- USe this to add your stuff   -->
-{% endblock %}
-
-<script type="text/javascript">
-    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-    if(!options.crossDomain) {
-      if(options.data) {
-        options.data += "&";
-      } else {
-        options.data = "";
-      }
-      options.data += "csrfmiddlewaretoken={{csrf_token}}";
-    }
-    });
-</script>
-<!-- End TMP , Please remove me -->
-      <hr>
-
- <footer>
-        <p>&copy; sharesoft 2013</p>
-      </footer>
-</div>
-<!-- end main websiteBody Div -->
-
-
-
-</body>
-</html>
