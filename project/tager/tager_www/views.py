@@ -2,11 +2,10 @@ from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
 from django.template import RequestContext
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.models import UserProfile 
 from django import forms 
 from tager_www.forms import *
 import random 
@@ -24,9 +23,17 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+import urllib
 
 
-
+APP_ID = '461240817281750'   # From facebook app's settings
+APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
+LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
+FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
+FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
+SCOPE_SEPARATOR = ' '
+# FB_LOGIN = False
+# FIELDS = 'friends'
 
 
 def home(request):
@@ -43,9 +50,16 @@ def view_login(request):
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
 def login(request):
+    # if FB_LOGIN is True:
+    #     mail = request.POST['email']
+    #     facebook_uid = request.POST['facebook_uid']
+    #     authenticated_user = authenticate(mail=mail, facebook_uid=facebook_uid)
+    # else:
+
     mail = request.POST['email']
     password = request.POST['password']
     authenticated_user = authenticate(mail=mail, password=password)
+    print "auth"
     if authenticated_user is not None:
         print "auth"
         print authenticated_user.is_active
@@ -59,6 +73,19 @@ def login(request):
     else:
         return render_to_response ('home.html',context_instance=RequestContext(request))
        
+def fb_login(request, result):
+        mail = result.email
+        password = result.password
+        authenticated_user = authenticate(mail=mail, password=password)
+        if authenticated_user is not None:
+            print authenticated_user.is_active
+            if authenticated_user.is_active:
+                django_login(request, authenticated_user)
+                return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+            else:
+               return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+        else:
+            return render_to_response ('home.html',context_instance=RequestContext(request))
 
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
@@ -150,19 +177,22 @@ def filter_home_posts():
 
 class CustomAuthentication:
     def authenticate(self, mail, password):
+        print "auth"
         try:
+            print "auth try"
             user = UserProfile.objects.get(email=mail)
             if user.password == password:
                 return user
         except UserProfile.DoesNotExist:
             return None
 
-
     def get_user(self, user_id):
         try:
             return UserProfile.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
+
+    
 
 
 
@@ -333,3 +363,74 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
     return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+
+def facebook_login(request):
+    if request.REQUEST.get("device"):
+        device = request.REQUEST.get("device")
+    else:
+        device = "user-agent"
+        params = {}
+        params["client_id"] = APP_ID
+        params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
+        params['scope'] = SCOPE_SEPARATOR.join(FACEBOOK_PERMISSIONS)
+        params["device"] = device
+        url = "https://graph.facebook.com/oauth/authorize?" + urllib.urlencode(params)
+        if 'HTTP_REFERER' in request.META:
+            request.session['next'] = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+        
+
+
+
+def fb_authenticate(request):
+    access_token = None
+    fb_user = None
+    uid = None
+    # assume logging in normal way
+    params = {}
+    params["client_id"] = APP_ID
+    params["client_secret"] = APP_SECRET
+    params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
+    params["code"] = request.GET.get('code', '')
+    url = ("https://graph.facebook.com/oauth/access_token?" + urllib.urlencode(params))
+    from cgi import parse_qs
+    userdata = urllib.urlopen(url).read()
+    res_parse_qs = parse_qs(userdata)
+    # Could be a bot query
+    if not ('access_token') in res_parse_qs:
+        return None
+    access_token = res_parse_qs['access_token'][-1]
+    url = "https://graph.facebook.com/me?access_token=" + access_token
+    import simplejson as json
+    fb_data = json.loads(urllib.urlopen(url).read())
+    uid = fb_data['id']
+    mail = fb_data['email']
+    if not fb_data:
+        return None
+    try:
+        userprofile = UserProfile.objects.get(facebook_uid=int(uid))
+        userprofile.accesstoken = access_token
+        mail = userprofile.email
+        userprofile.save()
+        return userprofile
+
+    except UserProfile.DoesNotExist:
+        uid = fb_data.get('id')
+        userprofile = UserProfile.objects.create(facebook_uid=uid)
+        userprofile.name = fb_data['name']
+        userprofile.email = fb_data.get('email',None)
+        userprofile.accesstoken = access_token
+        userprofile.facebook_uid = fb_data['id']
+        userprofile.save()
+        return userprofile
+
+def facebook_login_done(request):
+    result=fb_authenticate(request)
+    if isinstance(result, UserProfile):
+        fb_login(request, result)
+    if 'next' in request.session:
+        next = request.session['next']
+        del request.session['next']
+        return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
