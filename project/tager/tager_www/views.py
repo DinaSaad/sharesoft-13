@@ -253,14 +253,17 @@ def view_post(request):
     list_of_att_values = Value.objects.filter(post = test_post)
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
-    list_of_interested_buyers = user.get_interested_in(post_id)
+    #if the user is a guest it will render an empty list
+    list_of_interested_buyers=[]
+    if user.id is not None:
+        list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
     dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
-
-    d = check_Rate_Identify_buyer(request)
-    dic.update(d)   
+    if user.id is not None:
+        d = check_Rate_Identify_buyer(request)
+        dic.update(d)   
     return render(request, 'ViewPost.html',dic,context_instance=RequestContext(request))
 
 
@@ -325,7 +328,7 @@ def main(request):
     
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
-        i.post_state
+        i.post_state()
 
     return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
