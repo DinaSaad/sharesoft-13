@@ -418,6 +418,7 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+
 # Heba - C2 editing_info method - the editing_info method is a method that allows logged in users to edit their 
 # information. It takes in a request of type post and varibales that are editable attributes that the user can edit,
 # it includes the user name, his date of birth, phone number, gender, account type checking if prepium or not and  
