@@ -268,6 +268,8 @@ class SubChannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
     channel = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
+    def __unicode__(self):
+        return self.name
 
 #Class Post documentation
 #The model Post define the table of posts in the data base. 
@@ -279,6 +281,7 @@ class SubChannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
+
     state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
@@ -302,6 +305,7 @@ class Post(models.Model):
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()
     location = models.CharField(max_length = "100")
+
     
     #C1-Tharwat) returns to total number of reports on the current post
     def reportCount(self):
@@ -489,6 +493,8 @@ class Post(models.Model):
                 post.state = 'Archived'
                 post.save()
 
+    def __unicode__(self):
+        return self.title
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post

@@ -17,7 +17,6 @@ urlpatterns = patterns('',
     url(r'^main$', 'tager_www.views.main'),
     url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
-    url(r'^getInterestedIn/$', 'tager_www.views.get_interested_in', name='getInterestedIn'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
@@ -29,6 +28,9 @@ urlpatterns = patterns('',
     url(r'^reset/done/$', 'tager_www.views.password_reset_complete'),
     url(r'^reset/confirm/$', 'tager_www.views.password_reset_confirm'),
     
+    url(r'^homepage/$', 'tager_www.views.get_channels'),
+    url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
+
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
     url(r'^subchannels_sub/$', 'tager_www.views.return_subchannels'),
@@ -60,6 +62,7 @@ urlpatterns = patterns('',
     
 
 
+
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -70,7 +73,12 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
+
+	url(r'^tager_www/', include('tager_www.urls')),
+
+
 	# url(r'^tager_www/', include('tager_www.urls')),
+
 )
 
 urlpatterns += patterns('fbregister.facebook',
