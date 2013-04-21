@@ -21,7 +21,9 @@ urlpatterns = patterns('',
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
-    
+    url(r'^homepage/$', 'tager_www.views.get_channels'),
+    url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
+
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
     url(r'^subchannels_sub/$', 'tager_www.views.return_subchannels'),
@@ -53,6 +55,7 @@ urlpatterns = patterns('',
     
 
 
+
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -63,7 +66,12 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
+
+	url(r'^tager_www/', include('tager_www.urls')),
+
+
 	# url(r'^tager_www/', include('tager_www.urls')),
+
 )
 
 urlpatterns += patterns('fbregister.facebook',

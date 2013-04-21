@@ -373,6 +373,12 @@ class CustomAuthentication:
 
 
 
+def  get_user(self):    
+    User = get_user_model()
+    return User
+
+
+
 
 #mai c2: registration
 #this method takes in a post request  
@@ -384,6 +390,7 @@ class CustomAuthentication:
 # then it redirects him to profile page 
 #or if there is errors it renders the same page again with the form and the request and a msg that says "please correct the following fields"
 #if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
+
 def UserRegistration(request):
 
     if request.method == 'POST':
@@ -411,6 +418,44 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+
+
+def get_channels (request):
+    channels = Channel.objects.all()
+    channels_list = [] 
+    for channel in channels:
+        subchannels = SubChannel.objects.filter(channel_id=channel.id)
+        subchannels_list = []
+        for subchannel in subchannels:
+            # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
+            subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    post_list = Post.objects.all()   
+    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
+
+
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# - this method creats variable channels , to store all channels available in the database, 
+# variable subchannels , to store all subchannels available in the database,
+#  channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
+# the method then return the channels_list only , as it holds , every attribute of subchannel
+# and every subchannel of a channel 
+
+def view_checked_subchannel_posts(request):
+    list_of_subchannelsID = request.GET.getlist('list[]')
+    results_of_subchannels = []
+    for li in list_of_subchannelsID:
+        results_of_subchannels.append(SubChannel.objects.filter(id = li))
+    post_list =[]
+    for sub in results_of_subchannels:
+        post_list.append(Post.objects.filter(subchannel = sub))
+    return render(request, "filterPosts.html", {'post_list': post_list})
+    
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# subchannel_id is the id retrieved from the webpage 
+# its is matched with with the subchannel id in the post model , 
+# the method returns the dictionairy of posts related to specific subchannels.
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
@@ -743,3 +788,4 @@ def search(request):
 #             print post_obj
 #             post_list=filter_posts(post_obj)
 #             return render('main.html', {'post_list' : post_list})
+
