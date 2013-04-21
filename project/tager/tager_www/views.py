@@ -453,7 +453,6 @@ def editing_UsersInformation(request):
             if photo != "":
                 tmp_user.photo = photo
                 tmp_user.save()
-            # is_premium = editing_form.cleaned_data['is_premium']
             # return HttpResponseRedirect('/Thank/') #redirect after POST
     else:
         editing_form =EditingUserProfileForm()#an unbound form  
@@ -659,7 +658,6 @@ def view_checked_subchannel_posts(request):
 # subchannel_id is the id retrieved from the webpage 
 # its is matched with with the subchannel id in the post model , 
 # the method returns the dictionairy of posts related to specific subchannels.
->>>>>>> master
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
