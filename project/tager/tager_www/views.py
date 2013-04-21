@@ -418,6 +418,46 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+# Heba - C2 editing_info method - the editing_info method is a method that allows logged in users to edit their 
+# information. It takes in a request of type post and varibales that are editable attributes that the user can edit,
+# it includes the user name, his date of birth, phone number, gender, account type checking if prepium or not and  
+# the photo of the user. The logged in users are directed to the editing page whenever he wants to edit an information
+# about himself in which the editing form will be made available for him to write the modified information and saved 
+# him on his account. For the users who are not logged in or does not exist he will be redirected to the login page.
+@login_required
+def editing_UsersInformation(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditingUserProfileForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            # user_id = request.UserProfile.id
+            tmp_user = UserProfile.objects.get(pk=request.user.id)
+            name          = editing_form.cleaned_data['name']
+            date_Of_birth = editing_form.cleaned_data['date_Of_birth']
+            phone_number  = editing_form.cleaned_data['phone_number']
+            gender        = editing_form.cleaned_data['gender']
+            photo         = editing_form.cleaned_data['photo']
+
+            if name != "":
+                tmp_user.name = name
+                tmp_user.save()
+            if date_Of_birth != "":
+                tmp_user.date_Of_birth = date_Of_birth
+                tmp_user.save()
+            if phone_number != "":
+                tmp_user.phone_number = phone_number
+                tmp_user.save()
+            if gender != "":
+                tmp_user.gender = gender
+                tmp_user.save()
+            if photo != "":
+                tmp_user.photo = photo
+                tmp_user.save()
+            # is_premium = editing_form.cleaned_data['is_premium']
+            # return HttpResponseRedirect('/Thank/') #redirect after POST
+    else:
+        editing_form =EditingUserProfileForm()#an unbound form  
+    context = {'editing_form': editing_form}
+    return render_to_response('editing.html', context, context_instance=RequestContext(request))
 
 
 @csrf_protect
@@ -524,40 +564,6 @@ def password_reset_confirm(request, uidb36=None, token=None,
 
     return render_to_response('password_reset_confirm.html', context, context_instance=RequestContext(request))
 
-@login_required
-def editing_UsersInformation(request):
-    if request.method == 'POST': #if the form has been submitted
-        editing_form = EditingUserProfileForm(request.POST, request.FILES)#a form bound to the POST data
-        if editing_form.is_valid():#all validation rules pass
-            # user_id = request.UserProfile.id
-            tmp_user = UserProfile.objects.get(pk=request.user.id)
-            name          = editing_form.cleaned_data['name']
-            date_Of_birth = editing_form.cleaned_data['date_Of_birth']
-            phone_number  = editing_form.cleaned_data['phone_number']
-            gender        = editing_form.cleaned_data['gender']
-            photo         = editing_form.cleaned_data['photo']
-
-            if name != "":
-                tmp_user.name = name
-                tmp_user.save()
-            if date_Of_birth != "":
-                tmp_user.date_Of_birth = date_Of_birth
-                tmp_user.save()
-            if phone_number != "":
-                tmp_user.phone_number = phone_number
-                tmp_user.save()
-            if gender != "":
-                tmp_user.gender = gender
-                tmp_user.save()
-            if photo != "":
-                tmp_user.photo = photo
-                tmp_user.save()
-            # is_premium = editing_form.cleaned_data['is_premium']
-            # return HttpResponseRedirect('/Thank/') #redirect after POST
-    else:
-        editing_form =EditingUserProfileForm()#an unbound form  
-    context = {'editing_form': editing_form}
-    return render_to_response('editing.html', context, context_instance=RequestContext(request))
 
 def password_reset_complete(request,
                             template_name='password_reset_complete.html',
