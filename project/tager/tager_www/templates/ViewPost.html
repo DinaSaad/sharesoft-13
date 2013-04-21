@@ -1,16 +1,173 @@
-<html>
-<head>
-	<title>Welcome to the post Page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load staticfiles%}
 
-<h1>{{p.title}}</h1>
+{% block headers %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+{% endblock %}
 
-<label> it was published on: {{p.pub_Date}}</label>
+{% block content%}
+<title> Welcome to the post page </title>
+<div class="container-fluid">
+    <div class="row-fluid">
+		    <div  class="span6">
+		    	<div id="imagediv" >		
+		    		 <img style="width: 300px;" src="static/img/post.png">
+			</div>
+			</div>
+    		<div id = "contentdiv"class="span4" position="right">
+	
+				<h3> Title: {{post.title}}</h3>
 
-<label> The price is: {{p.price}}</label>
+				<h3> Description: {{post.description}}</h3>
 
-<label>Description: {{p.Description}}</label>
+				<h3> Price: {{post.price}}</h3>
 
-</body>
-</html>
+				<h3> State: {{post.state}} </h3>
+
+
+				{% if list_of_att_name %}
+
+					{% for Attribute in list_of_att_name %}
+
+					<h3>{{Attribute.name}}</h3>
+
+					{% endfor %}
+				{% endif %}
+
+				{% if list_of_att_values %}
+
+					{% for Value in list_of_att_values %}
+
+					<h3>{{Value.value}}</h3>
+
+					{% endfor %}
+
+				{% endif %}  
+				{% if add_buyer_button %}
+					<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+				{% endif %}
+
+    
+    
+    			{% if view_rating %}
+    				<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
+    			{% endif %}
+    			<div id="star"></div>
+    
+				<button type="button" class="btn btn-info"> fb </button>
+
+				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
+				<button type="button" class="btn btn-info"> Interested in </button>
+				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
+
+
+				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+				<a href="http://twitter.com/home?status=Your%20message%20here:%20
+					http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+
+				<!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
+				the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
+				<a href="https://www.facebook.com/dialog/feed?
+  					app_id=461240817281750&
+  					link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+		  			name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+		  			caption=Reference%20Documentation&
+		  			description=Using%20Dialogs%20to%20interact%20with%20users.&
+		  			redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+
+		  			<img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
+
+		  			<img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
+
+		  			onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>    
+
+</div>
+ 	</div>
+
+
+ 
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Report A Post</h3>
+    <p>
+    	Please provide us with your reason for reporting this post:
+    </p>
+  </div>
+  <div class="modal-body">
+  		{% for reasons in report_reasons %}
+	<label class="R{{reasons.id}}">
+  		<input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
+  			{{reasons.reported_reason}}
+	</label>
+	{% endfor %}
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <button class="btn btn-primary" id = "postID" onCLick ="reportPost({{post.id}});">Submit Report</button>
+  </div>
+</div>
+</div>
+
+
+
+<div id="myModal2" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Buyers Interested in Your Post:</h3>
+    
+  </div>
+  <div class="modal-body">
+  		{% for buyers in list_of_interested_buyers %}
+  			{{ buyers }}
+		{% endfor %}	
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
+  </div>
+</div>
+</div>
+
+
+</div>
+
+
+</div>
+{% block script%}
+
+    <script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#star").css("visibility", "hidden");
+    });
+    $("#rateSeller").click(function(){
+        // window.location.replace("profile?user_id="+$(this).val());
+        $("#star").css("visibility", "visible");
+    });
+    $(document).ready(function(){
+        $('#star').raty({ 
+            score: $('#rating').val(),
+            click: function(score, evt) {
+            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
+            $.ajax({
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                success: function(){  
+                    $('#div.success').css("visibility", "hidden");  
+                }
+
+
+                         });
+
+        },
+
+    });
+});
+    </script>
+    {% endblock %}
+
+
+    {% endblock %}

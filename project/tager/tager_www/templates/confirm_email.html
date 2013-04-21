@@ -1,0 +1,24 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+
+
+{% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
+
+<div class="confirm_email">
+        {% if form.verify.errors %}<p class="error">{{ form.verify.errors }}</p>{% endif %}
+        <p><label for="verify"{% if form.verify.errors %} class="error"{% endif %}>Verify:</label></p>
+        <p>{{ form.verify }}</p>
+</div>
+
+
+
+
+
+
+<p><input type="submit" alt="confirm_email" /></p>
+</form>
+{% endblock %}
