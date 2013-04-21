@@ -863,6 +863,8 @@ def advanced_search(request):#mohamed tarek c3
             post_list.append(Post.objects.get(id = a_post))
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
+        else:
+            return render(request,'main.html', {'post_list' : post_list})
 
 
 
