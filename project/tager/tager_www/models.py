@@ -86,6 +86,7 @@ class UserProfile(AbstractBaseUser):
      )
     gender = models.CharField(max_length=1, choices=gender_choices , null=True)
     
+    friends = models.ManyToManyField ("self")
     
     objects = MyUserManager()  
     
