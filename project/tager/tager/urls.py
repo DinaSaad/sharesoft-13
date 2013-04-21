@@ -24,6 +24,8 @@ urlpatterns = patterns('',
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
 
+    url(r'^profile/$', 'tager_www.views.update_status'),
+
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
     url(r'^subchannels_sub/$', 'tager_www.views.return_subchannels'),

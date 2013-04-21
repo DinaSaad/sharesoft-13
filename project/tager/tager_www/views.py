@@ -418,7 +418,27 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post and the status as a varibale in which the user can update and write what's
+# on his mind. Logged in users click profile whenever they want to update their status to be directed to their profile 
+# page where it displays their information and status. The user can write a new status in the text field whoch will be
+# saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page.
+@login_required
+def update_status(request):
+    if request.method == 'POST':
+        updating_form = UpdateStatusForm(request.POST)
+        if updating_form.is_valid():
+            temporary_user = UserProfile.objects.get(pk=request.user.id)
+            status = updating_form.cleaned_data['status']
+            if status != "":
+                temporary_user.status = status
+                temporary_user.save()
+    else:
+        updating_form = UpdateStatusForm()
 
+    context = {'updating_form': updating_form}
+    return render_to_response('profile.html', context, context_instance=RequestContext(request))
 
 def get_channels (request):
     channels = Channel.objects.all()

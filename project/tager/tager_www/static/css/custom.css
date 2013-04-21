@@ -143,3 +143,9 @@ visibility: visible;
  width: 200px;
 }
 
+.span10{
+    width: 150px;
+    font-size: 30px;
+    margin-left: 200px;
+    padding: 10px;
+}
