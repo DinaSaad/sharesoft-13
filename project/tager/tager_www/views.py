@@ -2,16 +2,45 @@ from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
 from django.template import RequestContext
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-from tager_www.forms import RegistrationForm, BuyerIdentificationForm
-from tager_www.models import UserProfile 
+from django import forms 
+from tager_www.forms import *
+import random 
+import string
+from datetime import datetime, timedelta
+from django.core.mail import send_mail 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.core.urlresolvers import reverse
+from django.template.response import TemplateResponse
+from django.core.mail import send_mail
+from django.template import loader, Context
+from django.template.loader import get_template
+import urllib
+
+
+APP_ID = '461240817281750'   # From facebook app's settings
+APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
+LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
+FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
+FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
+SCOPE_SEPARATOR = ' '
+# FB_LOGIN = False
+# FIELDS = 'friends'
 
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
+
+def view_login(request):
+    return render_to_response ('login.html',context_instance=RequestContext(request))
 
 #C2-mahmoud ahmed-the login method is a method that allows user to log in it takes in a request
 #which is of type post and it has the email and the password attribute which are 
@@ -20,28 +49,17 @@ def home(request):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
-
-def view_channels(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'index.html', {'list_of_channels': list_of_channels})
-
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
-
 def login(request):
-    #print request
-    #print "ldnfldnfndlfd"
-    #print request.method
+    # if FB_LOGIN is True:
+    #     mail = request.POST['email']
+    #     facebook_uid = request.POST['facebook_uid']
+    #     authenticated_user = authenticate(mail=mail, facebook_uid=facebook_uid)
+    # else:
+
     mail = request.POST['email']
     password = request.POST['password']
-    # print "before"
-    # user = UserProfile.objects.get(email=mail)
-    # print user.username
-    # pk = user.username
     authenticated_user = authenticate(mail=mail, password=password)
+    print "auth"
     if authenticated_user is not None:
         print "auth"
         print authenticated_user.is_active
@@ -54,7 +72,20 @@ def login(request):
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
         return render_to_response ('home.html',context_instance=RequestContext(request))
-       #return redirect("/login/")# Return an 'invalid login' error message.
+       
+def fb_login(request, result):
+        mail = result.email
+        password = result.password
+        authenticated_user = authenticate(mail=mail, password=password)
+        if authenticated_user is not None:
+            print authenticated_user.is_active
+            if authenticated_user.is_active:
+                django_login(request, authenticated_user)
+                return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+            else:
+               return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+        else:
+            return render_to_response ('home.html',context_instance=RequestContext(request))
 
 #C2-mahmoud ahmed-this isn't all of view post but this part that i did is concerend with the apperance of the
 #the rate the seller button which would appear to the buyer of the post only so what it does is
@@ -68,25 +99,12 @@ def view_post(request):
     user = request.user
     print user.id
     creator = False
-    if post.user == user:
+    if post.user == user and post.buyer is None:
          creator = True
     rateSellerButtonFlag = user.canRate(request.GET['post_id']) 
     print rateSellerButtonFlag
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator, 'post':post,'user':user}
     
-    # if request.method == 'POST':
-    #     form = BuyerIdentificationForm( request.POST )
-    #     if form.is_valid():
-    #         new_buyer_num = form.GetBuyerNum()
-    #         buyer_added = user.add_Buyer(post, new_buyer_num)
-    #         return HttpResponseRedirect( "/" )
-    #     else :
-    #         d.update({'form':form})
-    #         return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
-
-    # else:
-    #     form = BuyerIdentificationForm()
-    #     d.update({'form':form})
     return render_to_response( "post.html", d,context_instance = RequestContext( request ))
 
 #C2-mahmoud ahmed-As a user i can rate the buyer whom i bought from- User_ratings function takes request 
@@ -104,8 +122,6 @@ def User_Ratings(request):
     post = Post.objects.get(id=request.GET['post_id'])
     rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
-    # d = {"user_rating":user_rating, 'post_owner':post_owner}
-    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
     return HttpResponseRedirect("/")
     
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
@@ -122,9 +138,12 @@ def User_Ratings(request):
 def Buyer_identification(request):
     user = request.user
     if request.method == 'POST':
+        # print request.POST
         form = BuyerIdentificationForm( request.POST )
         if form.is_valid():
-            new_buyer_num = form.GetBuyerNum()
+            new_buyer_num = request.POST['buyer_phone_num']
+            post = Post.objects.get(id=request.GET['post_id'])
+            # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_Buyer(post, new_buyer_num)
             d = {'form':form}
             return render_to_response( "post.html", d, context_instance = RequestContext( request ))
@@ -135,19 +154,37 @@ def Buyer_identification(request):
 
     else:
         form = BuyerIdentificationForm()
-        d = {'form':form}
-    return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
+        d.update({'form':form})
+    return render_to_response( "Post.html", d,context_instance = RequestContext( request ))
+
+    
+'''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
+filtes to the posts then sort them according to quality index AND  render the list to index.html'''
+def index(request):
+    post_list = filter_home_posts()
+    return render_to_response('index.html',{'post_list': post_list},context_instance=RequestContext(request))  
+
+'''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
+ execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
+def filter_home_posts():
+    post_list = (Post.objects.exclude(is_hidden=True)
+        .exclude(expired=True)
+        .exclude(is_sold=True)
+        .exclude(quality_index__lt=50)
+        .order_by('-quality_index'))
+    return post_list
 
 
 class CustomAuthentication:
     def authenticate(self, mail, password):
+        print "auth"
         try:
+            print "auth try"
             user = UserProfile.objects.get(email=mail)
             if user.password == password:
                 return user
         except UserProfile.DoesNotExist:
             return None
-
 
     def get_user(self, user_id):
         try:
@@ -155,29 +192,39 @@ class CustomAuthentication:
         except User.DoesNotExist:
             return None
 
+    
 
 
 
-def  get_user(self):    
-    User = get_user_model()
-    return User
 
 
 
+#mai c2: registration
+#this method takes in a post request  
+#fills in the form (RegistrationForm) with the post data 
+#it then validates the form with is_valid() method to run validation and return a boolean  whether the data was valid, it validates all the fields on the form
+#then a user is made with the attibutes of the form (cleaned data) and user is saved 
+# a random number is then made and sent to the user 
+#sets the varaible creadted with the date of when the key is created 
+# then it redirects him to profile page 
+#or if there is errors it renders the same page again with the form and the request and a msg that says "please correct the following fields"
+#if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
 def UserRegistration(request):
-     #if the user is already logged in , registered , go to profile 
-    #if request.user.is_authenticated():
-     #   return HttpResponseRedirect('/profile/')
-     #if they r submitting the form back
-    print request.POST
+
     if request.method == 'POST':
         print request.POST
-        form = RegistrationForm(request.POST) # takes the registeration form and fills it with what is entered
-        if form.is_valid(): # validates all the fields on the firm,The first time you call is_valid() or access the errors attribute of a ModelForm triggers form validation as well as model validation.
+        form = RegistrationForm(request.POST) 
+        if form.is_valid(): 
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
-                user.save() # this creates the user 
+                 # this creates the user 
+                user.activation_key = ''.join(random.choice(string.ascii_uppercase + string.digits+ user.email) for x in range(20))
+                created = datetime.now()
+                user.save()
+                title = "email verfication"
+                content = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key) 
+                send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
                 
-                return HttpResponseRedirect('/profile/')
+                return HttpResponseRedirect('/')
         else:
                 return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
     else:
@@ -207,10 +254,247 @@ def view_profile(request):
 
 
 
+#mai c2 : registration
+# this method takes a request and checks if the request is a post 
+# at the beging the post is still empty so it goes in the else part 
+#it saves the GEt request in a variable called v_code
+#puts it in the form made (confirmationForm)
+#pass this form in a dictionary 
+#then renders the html with the form
+#goes into the method checks if the post request has the code and saves it in a varable form
+#then gets the user with this activitioncode 
+#checks if the activeationkey is not emty and not expired 
+#sets varable is_verfied = true
+#rsaves the user
+#if the activiation key is expired , a msg saying sry ur accound is disabled will be shown 
+def confirm_email(request):
+     
+    print "Start Confirm"
+
+
+    if request.method == 'POST':
+        print "the request is POST"  
+        form = request.POST['verify'] 
+        if form is not None: 
+            print "The form is valid" 
+            user = UserProfile.objects.get(activation_key=form)
+            if user is not None :
+                if not user.is_expired():
+                    print "activation key is exists" 
+                    user.is_verfied=True
+                    print user.is_verfied 
+                    user.save()
+                
+                else :  
+                    print "key expired"
+                    return HttpResponse ("sorry your account is disabled because the activation key has expired")
+            return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
+
+    else : 
+        #add our registration form to context
+        v_code=request.GET.get('vc', '');
+        form = ConfirmationForm(initial={'verify': v_code })
+        context = {'form': form}
+        return render_to_response('confirm_email.html', context, context_instance=RequestContext(request))
+        
 
 
 
 
+#mai: captcha -registration
+#it takes a request 
+# saves the form with the request data 
+#gets the public key from the settings and saves it in publiic_key
+#then renders the html with the form passed in a dic and the script 
+# result : captcha shown 
+def display_form(request):
+    form = RegistrationForm(request.POST)
+    # assuming your keys are in settings.py
+    public_key = settings.RECAPTCHA_PUBLIC_KEY
+    script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
 
 
-    
+#mai: captcha -registration
+#it takes a request 
+# saves the form with the request data 
+#gets the public key from the settings and saves it in publiic_key
+#then renders the html with the form passed in a dic and the script 
+# result : captcha shown 
+def display_form(request):
+    form = RegistrationForm(request.POST)
+    # assuming your keys are in settings.py
+    public_key = settings.RECAPTCHA_PUBLIC_KEY
+    script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
+
+
+
+
+#mai:captcha 
+#takes a request and checks if its a post 
+#checks if the submited captcha is correct , if not it sends a msg "sry its worng" and renders the html again with the script and captcha
+#if its valid then it process the form normally
+
+def verfiy_captcha(request):
+    if request.method == 'POST':
+        # Check the captcha
+        check_captchaa = captcha.submit(request.POST['recaptcha_challenge_field'], request.POST['recaptcha_response_field'], settings.RECAPTCHA_PRIVATE_KEY, request.META['REMOTE_ADDR'])
+        if check_captchaa.is_valid is False:
+            # Captcha is wrong show a error ...
+            return HttpResponse ("sorry its wrong")
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            # Do form processing here...
+           return HttpResponseRedirect('/login/')
+    else:
+        form = RegistrationForm()
+        script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
+
+
+
+def view_channels(request):
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'index.html', {'list_of_channels': list_of_channels})
+
+def view_subchannels(request):
+    s_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=s_id)
+    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+
+def facebook_login(request):
+    if request.REQUEST.get("device"):
+        device = request.REQUEST.get("device")
+    else:
+        device = "user-agent"
+        params = {}
+        params["client_id"] = APP_ID
+        params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
+        params['scope'] = SCOPE_SEPARATOR.join(FACEBOOK_PERMISSIONS)
+        params["device"] = device
+        url = "https://graph.facebook.com/oauth/authorize?" + urllib.urlencode(params)
+        if 'HTTP_REFERER' in request.META:
+            request.session['next'] = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+        
+
+
+
+def fb_authenticate(request):
+    access_token = None
+    fb_user = None
+    uid = None
+    # assume logging in normal way
+    params = {}
+    params["client_id"] = APP_ID
+    params["client_secret"] = APP_SECRET
+    params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
+    params["code"] = request.GET.get('code', '')
+    url = ("https://graph.facebook.com/oauth/access_token?" + urllib.urlencode(params))
+    from cgi import parse_qs
+    userdata = urllib.urlopen(url).read()
+    res_parse_qs = parse_qs(userdata)
+    # Could be a bot query
+    if not ('access_token') in res_parse_qs:
+        return None
+    access_token = res_parse_qs['access_token'][-1]
+    url = "https://graph.facebook.com/me?access_token=" + access_token
+    import simplejson as json
+    fb_data = json.loads(urllib.urlopen(url).read())
+    uid = fb_data['id']
+    mail = fb_data['email']
+    if not fb_data:
+        return None
+    try:
+        userprofile = UserProfile.objects.get(facebook_uid=int(uid))
+        userprofile.accesstoken = access_token
+        mail = userprofile.email
+        userprofile.save()
+        return userprofile
+
+    except UserProfile.DoesNotExist:
+        uid = fb_data.get('id')
+        userprofile = UserProfile.objects.create(facebook_uid=uid)
+        userprofile.name = fb_data['name']
+        userprofile.email = fb_data.get('email',None)
+        userprofile.accesstoken = access_token
+        userprofile.facebook_uid = fb_data['id']
+        userprofile.save()
+        return userprofile
+
+def facebook_login_done(request):
+    result=fb_authenticate(request)
+    if isinstance(result, UserProfile):
+        fb_login(request, result)
+    if 'next' in request.session:
+        next = request.session['next']
+        del request.session['next']
+        return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
+
+def getContacts(request):
+    access_token = None
+    fb_user = None
+    uid = None
+    # assume logging in normal way
+    params = {}
+    params["client_id"] = APP_ID
+    params["client_secret"] = APP_SECRET
+    params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_import_friends_done"))
+    params["code"] = request.GET.get('code', '')
+    url = ("https://graph.facebook.com/oauth/access_token?" + urllib.urlencode(params))
+    from cgi import parse_qs
+    userdata = urllib.urlopen(url).read()
+    res_parse_qs = parse_qs(userdata)
+    # Could be a bot query
+    if not ('access_token') in res_parse_qs:
+        return None
+    access_token = res_parse_qs['access_token'][-1]
+    fields = "&fields=friends"
+    url = "https://graph.facebook.com/me?access_token=" + access_token + fields
+    import simplejson as json
+    fb_data = json.loads(urllib.urlopen(url).read())
+    uid = fb_data['id']
+    # Get facebook friends array
+    if not fb_data:
+        return None
+    else:
+        # Add these friends to the current user's friends
+        userprofile = UserProfile.objects.get(facebook_uid=int(uid))
+        friends = fb_data["friends"]["data"]
+        for friend in friends:
+            username, _id = friend
+            uid = fb_data['id']
+            friend_uid = friend[_id]
+            name = friend[username]
+            friend_userprofile = UserProfile.objects.create(email=friend_uid,facebook_uid=friend_uid)
+            friend_userprofile.name = name
+            userprofile = UserProfile.objects.get(facebook_uid=uid)
+            friend_user_profile = UserProfile.objects.get(facebook_uid=friend_uid)
+            userprofile.friends.add(friend_user_profile)
+            userprofile.save()
+        return userprofile
+
+def facebook_import_friends(request):
+    if request.REQUEST.get("device"):
+        device = request.REQUEST.get("device")
+    else:
+        device = "user-agent"
+        params = {}
+        params["client_id"] = APP_ID
+        params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_import_friends_done"))
+        params['scope'] = SCOPE_SEPARATOR.join(FACEBOOK_PERMISSIONS)
+        params["device"] = device
+        url = "https://graph.facebook.com/oauth/authorize?" + urllib.urlencode(params)
+        if 'HTTP_REFERER' in request.META:
+            request.session['next'] = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+
+
+def facebook_import_friends_done(request):
+    result=getContacts(request)
+    if isinstance(result, UserProfile):
+        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
