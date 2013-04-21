@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="editbody">
+	<form action="." method="POST" enctype="multipart/form-data"> 
+		<table>
+			<tbody><tr><th><label for="id_name">Name:{{ user.name }}</label></th><td>
+			<input id="id_name" name="name" type="text"></td></tr>
+			<tr><th><label for="id_date_Of_birth" >Birth Date: {{user.date_Of_birth}}</label></th><td>
+			<input id="datepicker" name="date_Of_birth" type="text"></td></tr>
+			<tr><th><label for="id_phone_number">Phone number: {{ user.phone_number}}</label></th><td><input id="id_phone_number" name="phone_number" type="text"></td></tr>
+			<tr><th><label for="id_gender">Gender:</label></th><td><select id="id_gender" name="gender">
+			<option value="M">Male</option>
+			<option value="F">Female</option>
+			</select></td></tr>
+			<tr><th><label for="id_photo">Photo:</label></th><td><input id="id_photo" name="photo" type="file"></td></tr>
+			</tbody>
+		</table>
+	<input id="savebutton" type="submit" class="btn btn-success btn-default" value="Save">
+	</form>
+</div>
+
+ <script type="text/javascript">
+$(document).ready(function(){
+$('#savebutton').click(function() {
+//     document.location.href = '/editing.html/';
+    alert("You information has been updated :)");
+//     return false;
+});
+});
+ </script>
+{%	endblock %}
+

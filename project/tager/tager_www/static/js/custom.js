@@ -259,3 +259,6 @@ function cancelReport(id) {
   $('#report_button' + id).css('display', 'block');
 
 }
+$(function() {
+    $( "#datepicker" ).datepicker();
+  });

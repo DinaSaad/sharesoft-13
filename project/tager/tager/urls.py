@@ -22,6 +22,12 @@ urlpatterns = patterns('',
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
+
+    url(r'^editing/$', 'tager_www.views.editing_UsersInformation'),
+    url(r'^resetpassword/$', 'tager_www.views.password_reset'),
+    url(r'^resetpassword/passwordsent/$', 'tager_www.views.password_reset_done'),
+    url(r'^reset/done/$', 'tager_www.views.password_reset_complete'),
+    url(r'^reset/confirm/$', 'tager_www.views.password_reset_confirm'),
     
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),

@@ -409,6 +409,202 @@ def UserRegistration(request):
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
 
+@csrf_protect
+def password_reset(request, is_admin_site=False,
+                   password_reset_form=PasswordResetForm,
+                   token_generator=default_token_generator,
+                   post_reset_redirect=None,
+                   ):
+    if post_reset_redirect is None:
+        post_reset_redirect = reverse('tager_www.views.password_reset_done')
+    if request.method == "POST":
+        form = password_reset_form(request.POST)
+        if form.is_valid():
+            title = "Reseting Your Password. "
+            content = " You're receiving this email because you requested a password reset for your user account at Tager.com PLEASE follow the link: http://127.0.0.1:8000/reset/confirm/"
+            send_mail(title, content, 'mai.zaied17@gmail.com.', [request.user.email], fail_silently=False)
+            # opts = {
+            #     'use_https': request.is_secure(),
+            #     'token_generator': token_generator,
+            #     'from_email': from_email,
+            #     'email_template_name': email_template_name,
+            #     'subject_template_name': subject_template_name,
+            #     'request': request,
+            # }
+            # if is_admin_site:
+            #     opts = dict(opts, domain_override=request.get_host())
+            # form.save(**opts)
+            # title = "Reseting Your Password. You're receiving this email because you requested a password reset for your user account at Tager.com PLEASE follow the link"
+            # content = "http://127.0.0.1:8000/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/"
+            # send_mail(title, content, 'mai.zaied17@gmail.com.', [request.user.email], fail_silently=False)
+            
+# http://127.0.0.1:8000/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+) +str({% url 'tager_www.views.password_reset_confirm' uidb36=uid token=token %})"             
+            return HttpResponseRedirect(post_reset_redirect)
+    else:
+        form = password_reset_form()
+    context = {
+        'form': form,
+    }
+    
+    # return TemplateResponse(request, template_name, context,
+    #                         current_app=current_app)
+
+    return render_to_response('password_reset_form.html', context, context_instance=RequestContext(request))
+
+def password_reset_done(request,
+                        template_name='password_reset_done.html',
+                        current_app=None):
+# extra_context=None
+    context = {}
+    # if extra_context is not None:
+    #     context.update(extra_context)
+    
+    return render_to_response('password_reset_done.html', context, context_instance=RequestContext(request))
+
+
+    # return TemplateResponse(request, template_name, context,
+    #                         current_app=current_app)
+
+
+# Doesn't need csrf_protect since no-one can guess the URL
+@sensitive_post_parameters()
+@never_cache
+def password_reset_confirm(request, uidb36=None, token=None,
+                           template_name='password_reset_confirm.html',
+                           token_generator=default_token_generator,
+                           set_password_form=SetPasswordForm,
+                           post_reset_redirect=None,
+                           current_app=None):
+# extra_context=None
+    """
+    View that checks the hash in a password reset link and presents a
+    form for entering a new password.
+    """
+    UserModel = get_user_model()
+    assert uidb36 is not None and token is not None  # checked by URLconf
+    if post_reset_redirect is None:
+        post_reset_redirect = reverse('tager_www.views.password_reset_complete')
+    try:
+        uid_int = base36_to_int(uidb36)
+        user = UserModel._default_manager.get(pk=uid_int)
+    except (ValueError, OverflowError, UserModel.DoesNotExist):
+        user = None
+
+    if user is not None and token_generator.check_token(user, token):
+        validlink = True
+        if request.method == 'POST':
+            form = set_password_form(user, request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(post_reset_redirect)
+        else:
+            form = set_password_form(None)
+    else:
+        validlink = False
+        form = None
+    context = {
+        'form': form,
+        'validlink': validlink,
+    }
+    # if extra_context is not None:
+    #     context.update(extra_context)
+    # return TemplateResponse(request, template_name, context,
+    #                         current_app=current_app)
+
+    return render_to_response('password_reset_confirm.html', context, context_instance=RequestContext(request))
+
+@login_required
+def editing_UsersInformation(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditingUserProfileForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            # user_id = request.UserProfile.id
+            tmp_user = UserProfile.objects.get(pk=request.user.id)
+            name          = editing_form.cleaned_data['name']
+            date_Of_birth = editing_form.cleaned_data['date_Of_birth']
+            phone_number  = editing_form.cleaned_data['phone_number']
+            gender        = editing_form.cleaned_data['gender']
+            photo         = editing_form.cleaned_data['photo']
+
+            if name != "":
+                tmp_user.name = name
+                tmp_user.save()
+            if date_Of_birth != "":
+                tmp_user.date_Of_birth = date_Of_birth
+                tmp_user.save()
+            if phone_number != "":
+                tmp_user.phone_number = phone_number
+                tmp_user.save()
+            if gender != "":
+                tmp_user.gender = gender
+                tmp_user.save()
+            if photo != "":
+                tmp_user.photo = photo
+                tmp_user.save()
+            # is_premium = editing_form.cleaned_data['is_premium']
+            # return HttpResponseRedirect('/Thank/') #redirect after POST
+    else:
+        editing_form =EditingUserProfileForm()#an unbound form  
+    context = {'editing_form': editing_form}
+    return render_to_response('editing.html', context, context_instance=RequestContext(request))
+
+def password_reset_complete(request,
+                            template_name='password_reset_complete.html',
+                             current_app=None ):
+# extra_context=None
+    context = {
+        'login_url': resolve_url(settings.LOGIN_URL)
+    }
+    # if extra_context is not None:
+    #     context.update(extra_context)
+    # return TemplateResponse(request, template_name, context,
+    #                         current_app=current_app)
+
+    return render_to_response('password_reset_complete.html', context, context_instance=RequestContext(request))
+
+
+
+@sensitive_post_parameters()
+@csrf_protect
+@login_required
+def password_change(request,
+                    template_name='password_change_form.html',
+                    post_change_redirect=None,
+                    password_change_form=PasswordChangeForm,
+                    current_app=None):
+ # extra_context=None
+    if post_change_redirect is None:
+        post_change_redirect = reverse('tager_www.views.password_change_done')
+    if request.method == "POST":
+        form = password_change_form(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(post_change_redirect)
+    else:
+        form = password_change_form(user=request.user)
+    context = {
+        'form': form,
+    }
+    # if extra_context is not None:
+    #     context.update(extra_context)
+    # return TemplateResponse(request, template_name, context,
+    #                         current_app=current_app)
+    return render_to_response('password_change_form.html', context, context_instance=RequestContext(request))
+
+
+
+@login_required
+def password_change_done(request,
+                         template_name='password_change_done.html',
+                         current_app=None):
+# extra_context=None
+    context = {}
+    # if extra_context is not None:
+    #     context.update(extra_context)
+    # return TemplateResponse(request, template_name, context,
+    #                         current_app=current_app)
+    return render_to_response('password_reset_complete.html', context, context_instance=RequestContext(request))
+
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
     return render_to_response('report.html')
