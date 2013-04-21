@@ -5,6 +5,32 @@
 
 {% block content %}
 
+<form action="/search/" method="get">
+<label for="id_q">Search for : </label>
+           <input id="id_q" name="q" type="text">
+           <input type="submit" value="Search">
+
+<select>
+  <option>All</option>value=""></option>
+  <option>Users</option>value="found_users"></option>
+  <option>Posts</option>value="found_posts"></option>
+  <option>Channels</option>value="found_channels"></option>
+</select>
+
+ <li>You searched for "{{ query_string }}" and the results are listed below. 
+        {% for post in found_posts %}
+           <li> {{ post.title }}</li>
+        {% endfor %}
+        {% for user in found_users %}
+           <li> {{ user.name }}</li> 
+        {% endfor %}
+        {% for channel in found_channels %}
+           <li> {{ channel.name }}</li>
+        {% endfor %}
+    
+  
+
+
 
 <div  class="clearfix masonry" 
 style="
@@ -80,8 +106,6 @@ $container.imagesLoaded(function(){
 <!-- a script that handels the ajax intrested button (currenty not working)  -->
 
 </div>
-
-
 
 
 {% endblock %}
