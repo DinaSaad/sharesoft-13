@@ -7,8 +7,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import get_user_model  
 from django.template import RequestContext
-<<<<<<< HEAD
-=======
 from tager_www.forms import *
 from tager_www.models import UserProfile 
 from django import forms 
@@ -16,7 +14,6 @@ import random
 import string
 from django.contrib.auth import authenticate
 from datetime import datetime, timedelta
->>>>>>> master
 from django.core.mail import send_mail 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
@@ -29,17 +26,11 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
-<<<<<<< HEAD
-=======
 from django.shortcuts import render_to_response
 from django.shortcuts import RequestContext
 import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
->>>>>>> master
-
-
-
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
@@ -501,7 +492,6 @@ def view_profile(request):
 
         # GO TO USER PROFILE
 
-<<<<<<< HEAD
 # Heba - C2 editing_info method - the editing_info method is a method that allows logged in users to edit their 
 # information. It takes in a request of type post and varibales that are editable attributes that the user can edit,
 # it includes the user name, his date of birth, phone number, gender, account type checking if prepium or not and  
@@ -741,7 +731,7 @@ def password_change_done(request,
 # it includes the user name, his date of birth, phone number, gender, account type checking if prepium or not and  
 #  The logged in users are directed to the profile page whenever he wants to view it by clicking on the profile button
 # from above. For the users who are not logged in or does not exist he will be redirected to the login page.
-=======
+
 #mai c2 L registeration thank you , it justs renders the html thank u 
 def thankyou(request):
     return render_to_response ('thankyou.html',context_instance=RequestContext(request))
@@ -1038,5 +1028,3 @@ def search(request):
 #             print post_obj
 #             post_list=filter_posts(post_obj)
 #             return render('main.html', {'post_list' : post_list})
-
->>>>>>> master
