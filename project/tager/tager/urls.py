@@ -15,10 +15,6 @@ urlpatterns = patterns('',
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
 
-    # url(r'^allPosts/$', 'tager_www.views.allPosts'),
-    url(r'^refinedPosts/$', 'tager_www.views.excludePosts'),
-    
-
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),

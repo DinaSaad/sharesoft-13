@@ -7,147 +7,76 @@
   </div>
   <div class="span6"> 
 
-<ul class="nav nav-pills">
-<li class="dropdown">
-  <a href="#" data-toggle="dropdown" class="dropdown-toggle">Channels
-   <b class="caret"></b></a>
-  <ul class="dropdown-menu" id="menu1">
-    
-    <div class="accordion" id="accordion2" style="background: #eee;">
-            {% for i in all_channels %}
-              <div class="accordion-group">
-                <div class="accordion-heading" >
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#channel{{i.channel.id}} " id=" ChannelBar" value="{{i.Channel.id}}">
-                    {{i.channel.name}}
-                  </a>
-                </div>
-                <div id="channel{{i.channel.id}}" class="accordion-body collapse in">
-                  <div class="accordion-inner">
-                    {% for subchannel in i.subchannels_list %} 
-                    <div id="channel{{i.subchannel.id}}" class="accordion-body collapse in">
+    <ul class="nav nav-pills">
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">Channels
+       <b class="caret"></b></a>
+      <ul class="dropdown-menu" id="menu1">
+        
+        <div class="accordion" id="accordion2" style="background: #eee;">
+                {% for i in all_channels %}
+                  <div class="accordion-group">
+                    <div class="accordion-heading" >
+                      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#channel{{i.channel.id}} " id=" ChannelBar" value="{{i.Channel.id}}">
+                        {{i.channel.name}}
+                      </a>
+                    </div>
+                    <div id="channel{{i.channel.id}}" class="accordion-body collapse in">
                       <div class="accordion-inner">
-                        <p>
-                          <input onChange="posts({{subchannel.subchannel.id}});"  type="checkbox"   value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id">  
-                            {{subchannel.subchannel.name}} 
-                        </p>    
+                        {% for subchannel in i.subchannels_list %} 
+                        <div id="channel{{i.subchannel.id}}" class="accordion-body collapse in" >
+                          <div class="accordion-inner">
+                            <p>
+                              
+                              <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
+                                {{subchannel.subchannel.name}} 
+                            </p>    
+                          </div>
+                        </div>
+                        {% endfor %}
                       </div>
                     </div>
-                    {% endfor %}
                   </div>
-                </div>
+                {% endfor %}
               </div>
-            {% endfor %}
-          </div>
-        </ul>
-</li>
-<li class="dropdown">  
-  <a href="#" data-toggle="dropdown" class="dropdown-toggle"> location
-    <b class="caret"></b></a>
-    <ul class="dropdown-menu" id="menu1">
-      <input type="checkbox"  id="expired" checked="checked">
-   <li> expired </li>
+            </ul>
+    </li>
     </ul>
-</li>
-</ul>
-      
   </div>
 </div>  
-<!-- </div> -->
-
     <!-- Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
       this is a collapse method from bootstrap that helps in previing the channels and -->
 
-
-
-
-<!-- <div  id= "mydiv"class="container">
-
-  
-
-    {% for i in posts_of_subchannels %}
-
-
-    <li id ="post_id" >{{i.title}}</li>
-    <li > {{i.Post.title}} </li>
-    {% endfor%}
-  </div>  -->
-
 <div id="posts_result" class="container">
-    
-    {% for post in results %}
-    <li id="post_id2"> {{post.title}} </li>
+    {% for post in post_list %}
+      <li id="post_id2"> {{post.title}}</li>
     {% endfor %}
-  
 </div>
 
 
-
-<!-- div id ="post_exclude" class="container">
-  {% if posts_to_render%}
-  {% for post in posts_to_render %}
-  <li id ="post_exclude_id"> {{post.title}}</li>
-
-  {% endfor %}
-  {% endif %}
-
-  {% if posts_of_subchannels %}
-    {% for i in posts_of_subchannels %}
-
-
-    <li id ="post_id" >{{i.title}}</li>
-    <li > {{i.Post.title}} </li>
-    {% endfor%}
-  {% endif %}
-</div> -->
-
-
-
 <script type="text/javascript">
-function posts(ids)
+
+$(function() 
 {
-  if ($('#subchannel_id').is(':checked')) 
-  {
-    // posts_render(ids);
-    $.ajax
+ var refine_list
+   $('.refiningSubchannels').on('change', function() 
+    {
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+        });
+   $.ajax
     ({
-          type: "GET",
-          url: "/viewingPosts/",
-          data: {"subch_id1" : ids , {{results}} },
-          success: function(req)
-          {
-            // alert("sucess"); 
-            // $("#post_exclude").remove();  
-            // $(req).find('#checked_subchannel').each(function(i)
-            //     {           
-            //       $('#checked_subchannel').replaceAll($(req).find('#post_id2'));
-            //   });
-            $('#posts_result').html(req);
-
-          }
-      });
-  }
-  else 
-  {
-      $.ajax
-    ({
-          type: "GET",
-          url: "/refinedPosts/",
-          data: {"subch_id1" : ids , {{results}}},
-          success: function(req)
-          {
-            // alert("sucess"); 
-            // $("#checked_subchannel").remove();  
-            // $(req).find('#post_exclude').each(function(i)
-            //     {           
-            //       $('#post_exclude').replaceAll($(req).find('#post_id'));
-            //   });
-            $('#posts_result').html(req);
-          }
-      });
-  }
-}
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list },
+       success: function(req)
+       {
+         $('#posts_result').html(req);
+       }
+    });
+    });
+});
 </script>
-
-
-
 {% endblock %}

@@ -111,8 +111,6 @@ def  get_user(self):
     User = get_user_model()
     return User
 
-
-
 def UserRegistration(request):
      #if the user is already logged in , registered , go to profile 
     #if request.user.is_authenticated():
@@ -135,8 +133,6 @@ def UserRegistration(request):
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
 
-
-
 def get_channels (request):
     channels = Channel.objects.all()
     channels_list = [] 
@@ -146,22 +142,9 @@ def get_channels (request):
         for subchannel in subchannels:
             attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
             subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-            
-        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list} )
-    print channels_list
-    results = Post.objects.all()
-    
-    # subchannel_dictionary = {'subchannel' , subchannel}
-    
-    return render(request, 'homepage.html', {'all_channels': channels_list ,'results': results} )
-
-
-# def allPosts():
-#      post_list = Post.objects.all()
-#      return render( 'homepage.html',{'post_list': post_list}) 
-
-
-
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    post_list = Post.objects.all()   
+    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
 
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
@@ -173,52 +156,16 @@ def get_channels (request):
 # and every subchannel of a channel 
 
 def view_checked_subchannel_posts(request):
-    subchannel_id = request.GET["subch_id1 "]
-    original_posts = request.GET ["results"]
-    print sub_channel_id
-    current_subchannel = Subchannel.objects.get(id =subchannel_id)
-    posts_of_subchannel = (Post.objects.filter(sub_channel_id= current_subchannel).order_by('-quality_index'))
-    print posts_of_subchannel
-    results=[]
-    for sub in posts_of_subchannel:
-        for post in original_posts:
-            if sub.id == post.id:
-                results.order_by('-quality_index')
-            else:
-                results.append(sub).order_by('-quality_index')
-     
-    return render(request, "refineResults.html", {'results': results})
-
- 
+    list_of_subchannelsID = request.GET.getlist('list[]')
+    results_of_subchannels = []
+    for li in list_of_subchannelsID:
+        results_of_subchannels.append(Subchannel.objects.filter(id = li))
+    post_list =[]
+    for sub in results_of_subchannels:
+        post_list.append(Post.objects.filter(sub_channel_id = sub))
+    return render(request, "filterPosts.html", {'post_list': post_list})
+    
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # subchannel_id is the id retrieved from the webpage 
 # its is matched with with the subchannel id in the post model , 
 # the method returns the dictionairy of posts related to specific subchannels.
-
-
-# .order_by('-quality_index'))
-    
-# def homePosts(request):
-#     post_list = Post.objects.all()
-#         # .exclude(is_hidden=True)
-#         # .order_by('-quality_index'))
-#     return post_list
-    # render(request, "homepage.html", {'post_list': post_list})
-
-def excludePosts (request):
-    sub_channel_id = request.GET["subch_id1 "]
-    original_posts = request.GET ["results"]
-    print sub_channel_id
-    current_subchannel = Subchannel.objects.get(id =sub_channel_id)
-    posts_of_subchannels = (Post.objects.filter(sub_channel_id= current_subchannel).order_by('-quality_index'))
-    print posts_of_subchannels
-    results= original_posts
-    for sub in posts_of_subchannels:
-        for post in original_posts:
-            if sub.id == post.id:
-                post = Post.objects.filter(id = sub.id)
-                results.remove(post)
-            
-                
-     
-    return render(request, "refineResults.html", {'results': results})

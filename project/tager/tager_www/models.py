@@ -184,6 +184,8 @@ class Subchannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
     channel_id   = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
+    def __unicode__(self):
+        return self.name
 
 #Class Post documentation
 #The model Post define the table of posts in the data base. 
@@ -216,7 +218,7 @@ class Post(models.Model):
         return self.buyer.id
 
     def __unicode__(self):
-        return 'this is a post'
+        return self.title
     
 
 #This table shows the attributes that describes the subchannel, name represents Name of the attribute, subchannel_id is a Foreign key that references the id of the subchannels from the subchannels models, weight is the weight given to the attribute in order to help when measuring the quality index of the post
