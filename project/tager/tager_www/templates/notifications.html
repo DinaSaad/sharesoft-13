@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content%}
+	{% if all_notifications %}
+		{% for notification in all_notifications %}
+			<h3>{{notification.content}}</h3></b>
+		{% endfor %}
+	{% else %}
+		<h3>you have no notifications</h3>
+	{% endif %}
+{% endblock %}

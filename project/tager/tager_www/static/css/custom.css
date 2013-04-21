@@ -19,6 +19,20 @@
     -moz-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33);
     box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33);
 }
+#imagediv{
+    
+border:2px solid #a1a1a1;
+padding:10px 40px; 
+width:300px;
+border-radius:25px;
+
+}
+/**/
+
+
+/*.error{
+    
+}*/
 
 
 body {
@@ -124,5 +138,8 @@ visibility: hidden;
 .item:hover .repinLikeWrapper {
 visibility: visible;
 }
-
+#pass
+ {
+ width: 200px;
+}
 

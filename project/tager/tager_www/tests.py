@@ -1,8 +1,34 @@
-from django.test import TestCase
 
-from tager_www.models import UserProfile
-from tager_www.forms import RegistrationForm
+
+from datetime import datetime
 from django.test import Client
+from django.test import TestCase
+from django.core.urlresolvers import reverse
+from tager_www.models import *
+from django.contrib.auth.models import User
+from django.utils.timezone import utc
+
+class TagerTest(TestCase):
+
+    def setUp(self):
+        self.tharwat = UserProfile.objects.create(name = 'Tharwat', email = '1@.com', password = '123456')
+        self.john = UserProfile.objects.create(name = 'John',  email = '2@.com', password = '123456')
+        self.post = Post.objects.create(state="BMW", user = self.tharwat, no_of_reports=0, is_hidden=False, 
+            pub_Date = datetime.datetime(2013,02,01), buyer = self.john)
+        self.interestedin = InterestedIn.objects.create(user_id_buyer = self.john, user_id_seller = self.tharwat, post = self.post)
+        report_reason = "Offensive"
+        self.report = Report.objects.create(reported_post = self.post, report_type = report_reason, reporting_user = self.john)
+
+    def test_models(self):
+        self.assertEqual(self.post.state, "BMW")
+        self.assertEqual(self.report.objects.count(), 1)
+        self.assertEqual(self.interestedin.objects.count(), 1)
+
+from django.utils import unittest
+from django.test import TestCase
+from django.test import Client
+from tager_www.models import *
+from tager_www.forms import *
 from datetime import datetime, timedelta
 from django.conf import settings
 
@@ -39,57 +65,6 @@ class UserProfileTest(TestCase):
         self.assertEquals(profile3.name,"mahmoud1")
 
 
-        
-
-    
-
-    
-    
-
-
-
-
-# class MyViewTests(TestCase):
-
-    
-#     def setUp(self):
-#         self.client = Client()
-
-#     def test_registeration_views(self):
-#         response = self.client.get("http://127.0.0.1:8000/register/")
-#         self.assertEqual(response.status_code, 200)
-
-#         form = RegistrationForm()
-#         response = self.client.post("http://127.0.0.1:8000/register/",{'form': form})
-#         self.assertEqual(response.status_code, 200) ## Redirect on form success
-
-#         response = self.client.post("http://127.0.0.1:8000/register/", {})
-#         self.assertEqual(response.status_code, 200)
-
-#     def test_registration_form(self):
-
-#         # form = RegistrationForm()
-#         # self.assertEquals(False, form.is_valid())
-
-#         # data = {}
-#         # form = RegistrationForm(data)
-#         # self.assertEquals(False, form.is_valid())
-#         # self.assertEquals([u'This field is required.'], form.errors['email'])
-
-from django.utils import unittest
-from django.test import TestCase
-from django.test import Client
-from tager_www.models import *
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
-
-
-
 class UserActionsTest(unittest.TestCase):
     def setUp(self):
         self.user1 = UserProfile(name="mahmoud", email="mahmoud@me.com",password="me",phone_number="9876543210")
@@ -102,6 +77,8 @@ class UserActionsTest(unittest.TestCase):
         self.subchannel.save()
         self.post1 = Post(title="jeep",user= user1,sub_channel= subchannel,buyer= user2)
         self.post1.save()
+        self.post2 = Post(title="navigator",user= user1 ,sub_channel=subchannel)
+        self.post2.save()
 
     def user_created(self):
         self.assertEqual(self.user1.id, '1')
@@ -109,6 +86,12 @@ class UserActionsTest(unittest.TestCase):
         
         # post,phone_numpost,phone_num
 
+    def add_buyers(self):
+        self.assertEqual(user1.add_buyers(post1,"0123456789"), False)
+        self.assertEqual(user1.add_buyers(post2,"0123456789"), True)
+        self.assertEqual(user1.add_buyers(post1,"9876543210"), False)
+    
+    
     def user_canRate_without_BuyerID(self):
         self.assertTrue(user2.canRate(self.post1),True)
         self.assertTrue(user1.canRate(self.post1),False)
