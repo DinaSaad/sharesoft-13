@@ -281,8 +281,6 @@ def update_status(request):
     context = {'updating_form': updating_form}
     return render_to_response('profile.html', context, context_instance=RequestContext(request))
 
-
-
 # Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
 # status. It takes in a request of type post and the status as a varibale in which the user can update and write what's
 # on his mind. Logged in users click profile whenever they want to update their status to be directed to their profile 
