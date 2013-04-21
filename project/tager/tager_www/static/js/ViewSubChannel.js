@@ -1,6 +1,6 @@
 $(document).ready(function(){
 $('#Channel_dropdown').change(function(){
-	window.location.replace("hello?ch_id="+$(this).val())
+	window.location.replace("viewsubchannels?ch_id="+$(this).val())
 });
 });
 

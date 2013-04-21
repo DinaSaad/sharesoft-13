@@ -4,6 +4,7 @@ import os
 def relative_project_path(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -56,11 +57,13 @@ USE_I18N = True
 USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
+USE_TZ = False
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = '/media/'
+
+MEDIA_ROOT = 'media'
+
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -95,6 +98,10 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '^m!k&z0&tn9i6&1tc6@*@h%s&5yb!1zf%ncxah56drxjf9$cc$'
 
+RECAPTCHA_PUBLIC_KEY = '6Ld8ct8SAAAAAJTUMgacSavqcnzqRVPT2M7Ht5i6'
+RECAPTCHA_PRIVATE_KEY = '6Ld8ct8SAAAAAH6kJ8dcBhqG438D9IwCcAP1whEM'
+RECAPTCHA_USE_SSL = True
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -106,7 +113,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
@@ -120,7 +126,9 @@ WSGI_APPLICATION = 'tager.wsgi.application'
 
 
 TEMPLATE_DIRS = (
+
     # os.path.join(os.path.dirname(__file__), 'templates')
+
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -144,6 +152,8 @@ INSTALLED_APPS = (
 
     'tager_www',
     'fbregister',
+    'captcha',
+  
     
     
 )
@@ -187,7 +197,9 @@ AUTHENTICATION_BACKENDS = (
     'fbregister.facebook.FacebookBackend',
 
     'tager_www.views.CustomAuthentication',
-
+    
     'django.contrib.auth.backends.ModelBackend'
+
+
 
 )

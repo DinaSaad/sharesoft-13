@@ -1,64 +1,39 @@
-<html>
-<head>
-  <title></title>
-
-{% load staticfiles %}
-    <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
-    <script type="text/javascript" src="{% static "js/custom.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
-    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
-    {% block headers %}
-
-    {% endblock %}
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-    </style>
-    <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet" media="screen">
-    <link href="{% static "css/custom.css" %}" rel="stylesheet" media="screen">
-
-
-
-
-</head>
-
-
-
-
-<body>
-
-  <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="brand" href="#">Project name</a>
+{% extends "base2.html" %}
+{% block nav %}
+        
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
+              <ul class="nav pull-right">
+              <li><a href="homepage/">Home</a></li>
               <li><a href="#contact">Contact</a></li>
               <li><a href="/profile?user_id={{user.id}}">Profile</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-<<<<<<< HEAD
-                  <li><a href="/editing">Manage your profile</a></li>
-=======
+              <li><a href="/notifications">Notification</a></li>
+              <li><a href="/advanced_search/channel">Advanced Search</a></li>
+              <li>
+                <div>
+                  <form class="navbar-search pull-left" style="margin-top:10px" action="/search/" method="get" >
+                    <input type="text" class="search-query" placeholder="Search"id="id_q" name="q">
+                  </form>
+                </div>
+              </li>
+              <li><a href="/profile?user_id={{user.id}}" style="margin-left:260px; float:right">Profile</a></li>
+
+              <li class="dropdown">
+
+         
+
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="float:inline">{{user.name}}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="/subscribe">Subscribe</a></li>
                   <li><a href="#" id="editing">Manage and edit profile</a></li>
->>>>>>> demo
                   <li><a href="#">Another action</a></li>
                   <li><a href="#">Something else here</a></li>
                   <li class="divider"></li>
-                  <li class="nav-header">Nav header</li>
-                  <li><a href="#">Separated link</a></li>
-                  <li><a href="#">One more separated link</a></li>
+                  <li><a href="/logout/">Logout</a></li>
+                  
                 </ul>
               </li>
             {% block log %}
@@ -75,38 +50,8 @@
 <!-- Start main websiteBody Div -->
  <div class="container" style="padding-top: 60px;">
 <!-- Start TMP , Please remove me -->
+              </li>
+            </ul>
+          </div>
 
-
-</script>
-
-{% block content %}
-
-{% block script %}
 {% endblock %}
-<!-- USe this to add your stuff   -->
-{% endblock %}
-
-<script type="text/javascript">
-    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-    if(!options.crossDomain) {
-      if(options.data) {
-        options.data += "&";
-      } else {
-        options.data = "";
-      }
-      options.data += "csrfmiddlewaretoken={{csrf_token}}";
-    }
-    });
-<!-- End TMP , Please remove me -->
-      <hr>
-
-      <footer>
-        <p>&copy; sharesoft 2013</p>
-      </footer>
-</div>
-<!-- end main websiteBody Div -->
-
-
-
-</body>
-</html>
