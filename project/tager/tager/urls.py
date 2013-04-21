@@ -16,6 +16,8 @@ urlpatterns = patterns('',
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
+    url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
+    url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
@@ -29,9 +31,9 @@ urlpatterns = patterns('',
     url(r'^fbregister/$', 'fbregister.views.index'),
 )
 
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
+urlpatterns += patterns('tager_www.facebook',
+	# url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
+ #    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
 )
 
 urlpatterns += patterns('fbregister.views',
