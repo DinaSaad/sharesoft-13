@@ -35,6 +35,7 @@ import urllib
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
+REDIRECT_URL = 'http://127.0.0.1:8000/main'
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
@@ -810,9 +811,9 @@ def facebook_login_done(request):
     if 'next' in request.session:
         next = request.session['next']
         del request.session['next']
-        return HttpResponseRedirect(next)
+        return HttpResponseRedirect(REDIRECT_URL)
     else:
-        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
+        return HttpResponseRedirect(REDIRECT_URL)
 
 # def advanced_search_helper(basic_search_list):#mohamed tarek c3 
 #                              #this method takes attributes as input and takes values from the user them compares them  
