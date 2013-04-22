@@ -816,72 +816,19 @@ def facebook_login_done(request):
     else:
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
-# def advanced_search_helper(basic_search_list):#mohamed tarek c3 
-#                              #this method takes attributes as input and takes values from the user them compares them  
-#                              #to values to get the value obects containig the attribute ids and value iputed and them 
-#                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
-#     sub_id = request.GET['sub_ch_id']
-#     attributes = Attribute.objects.filter(subchannel_id = sub_id)
-#     values =[]
-#     post = []
-#     value_obj =[]
-#     for w in attributes:
-#         name = w.name
-#         values.append(request.GET[name])
-#     result_search_obj = []
-#     flag = False
-#     result_search = []
-#     result = []
-#     post = []
-#     i = 0
-#     f = i+1
-#     null = ""
-#     basic_search_values = []
-#     for r in range(0,len(basic_search_list)):
-#         basic_search_values = [(Value.objects.filter(post = basic_search_list[r])) ]
-#     for j in range(0,len(values)):
-#         if values[j] == null:
-#             pass
-#         else:
-#             for e in range(0,len(values)):
-#             result_search_obj+=[ (Value.objects.filter(attribute_id = attributes[j].id 
-#             , value = values[j])) ]
-#     if not result_search_obj:
-#         return HttpResponse("please enter something in the search")
-#     else:
-#         result_search = [[] for o in result_search_obj]    
-#         for k in range(0,len(result_search_obj)):
-#             for l in range(0,len(result_search_obj[k])):
-#                 test = result_search_obj[k][l].value
-#                 result_search[k].append(result_search_obj[k][l].post.id)
-#         tmp=result_search[0]
-#         if len(result_search) == 1:
-#             post=result_search[0]
-#         else:
-#             for h in range(1,len(result_search)):
-#                 post_temp = ""
-#                 for g in range(0,len(result_search[h])):
-#                     if not result_search[h]:
-#                         flag = True
-#                         pass
-#                     else:
-#                         if flag == True:
-#                             h=h-1
-#                         loc = tmp[g]
-#                         tmep =result_search[h]
-#                         loce = tmep[g]
-#                         if loc == tmep[g]:
-#                             flag = True
-#                             post_temp = tmep[g]
-#                             post.append(post_temp)
-#         post_obj =[]
-#         for a_post in post:
-#             post_obj.append(Post.objects.get(id = a_post))
-#         if not post_obj:
-#             return HttpResponse("there is no posts with these values please refine your search.")
+#Beshoy intrested method Takes a request 
+#then then check if the user is verified ,
+#then input the values in  table [IntrestedIn] and Increment Intrested Counter
+@login_required
+def intrested(request):
+    print "intrested views"
+    post_in=request.POST["post_in"]
+    user=request.user
+    if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
+        intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post_in.seller,post=post_in)
+        intrest1.save()
+        post_in.intersed_count=post_in.intersed_count+1
+        post_in.save()
 
-#         else:
-#             print post_obj
-#             post_list=filter_posts(post_obj)
-#             return render('main.html', {'post_list' : post_list})
+    return HttpResponse()
 

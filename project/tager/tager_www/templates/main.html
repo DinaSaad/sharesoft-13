@@ -75,6 +75,21 @@ $container.imagesLoaded(function(){
   });
 });
 });
+
+    function interested(id) {
+    alert(id);
+    $.ajax({
+    url: "/intrested/",
+    type: "POST",
+    data: {
+        "post_in" : id,
+    }, 
+    success: function(result) {
+       $('#intrested_btn'+ id).removeClass('btn btn-info');
+       $('#intrested_btn'+ id).addClass('btn btn-info disabled');
+    }
+});
+}
 </script>
 
 <!-- a script that handels the ajax intrested button (currenty not working)  -->
