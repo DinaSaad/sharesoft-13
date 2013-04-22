@@ -6,7 +6,39 @@
               <ul class="nav pull-right">
               <li><a href="#">Home</a></li>
               <li><a href="#contact">Contact</a></li>
-              <li><a href="/notifications">Notification</a></li>
+              <div id="to_be_replaced" style="float:left; margin-top: 10px">
+                <div id="notifications_div">
+                  <a id="notifications_dropdown" href="#" class="dropdown-toggle" data-toggle="dropdown">Notifications</a>
+                  <ul class="dropdown-menu"  style="margin-left:150px">
+                    <ul id="notifications_menu" style="list-style:none">
+                      {% if all_unread_notifications %}
+                        {% for notification in all_unread_notifications %}
+                          <li style="margin-right:20px"><a href="../{{notification.url}}">{{notification.content}}</a></li>
+                        {% endfor %}
+                      {% endif %}
+                      <li style="margin-right:20px"><a href="../notifications">see all</a></li>
+                      </ul>
+                    </ul>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                      $("#notifications_dropdown").click(function() {
+                        $.ajax({
+                          url: "/refresh_notifications/",
+                          type: "GET",
+                          success: function(req) {
+                            /*$(req).find('#to_be_replaced').each(function(i){*/
+                              /*$('#notifications_div').remove();*/
+                              //$('#notifications_div').remove();
+                              $('#notifications_menu').replaceWith($(req).find('#notifications_menu'));
+                              
+                            /*});*/
+                          }
+                        });
+                      });
+                    });
+                  </script>
+                </div>
+              </div>
               <li><a href="/advanced_search/channel">Advanced Search</a></li>
               <li>
                 <div>

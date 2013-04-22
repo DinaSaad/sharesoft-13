@@ -16,7 +16,7 @@ style="
 {% for post in post_list %}
 
 
-  <div class="item masonry-brick" ><div class="thumbnail" >
+  <div class="item masonry-brick" ><div class="thumbnail" id="mousefollow-examples" >
    {% if post.picture %} 
       <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% else %}
@@ -24,9 +24,10 @@ style="
     {% endif %}
 
       <div class="repinLikeWrapper">
-
-        <button type="button" id="like{{post.id}}"  value={{post.id}} class=" btn-inverse btn ShowModalButton Button primary Module primaryOnHover btn repinSmall" onClick="like({{post.id}});" >
+        
+        <button type="button" onClick="interested({{post.id}});" class=" btn-inverse btn ShowModalButton Button primary Module primaryOnHover btn repinSmall" id="intrested_btn{{post.id}}" >
         <em></em><span class="accessibilityText"><em><i class="icon-white icon-tags"></i></em></span></button>
+        
         <button data-text-unlike="Unlike" data-text-like="Like" type="button" class="btn btn-inverse Button Module likeSmall hasText btn" onclick="location.href='/showpost?post={{post.id}} '">
         <em></em><span class="buttonText"><em><i class="icon-external-link"></i></em></span></button>
 
@@ -75,6 +76,24 @@ $container.imagesLoaded(function(){
   });
 });
 });
+
+
+
+    function interested(id) {
+    alert(id);
+    $.ajax({
+    url: "/intrested/",
+    type: "POST",
+    data: {
+        "post_in" : id,
+    }, 
+    success: function(result) {
+       $('#intrested_btn'+ id).removeClass('btn btn-info');
+       $('#intrested_btn'+ id).addClass('btn btn-info disabled');
+    }
+});
+}
+
 </script>
 
 <!-- a script that handels the ajax intrested button (currenty not working)  -->

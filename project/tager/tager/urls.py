@@ -10,14 +10,18 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
-    
+    url(r'^intrested/$', 'tager_www.views.intrested'),  
+    url(r'^editing/$', 'tager_www.views.edit_user_information'),
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+    url(r'^refresh_notifications/$', 'tager_www.views.unread_notifications'),
+    url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
+    url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
     url(r'^logout/$', logout, {'next_page':'/login'}),  
 
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
-    url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
+    # url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
-    url(r'^getInterestedIn/$', 'tager_www.views.get_interested_in', name='getInterestedIn'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),

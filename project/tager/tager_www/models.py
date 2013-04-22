@@ -216,13 +216,13 @@ class UserProfile(AbstractBaseUser):
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
-    def interested_in(self, post_in):
-        if self.can_post:
-            if  Post.objects.filter(pk=post_in.id).exists():
-                user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
-                user1.save()
-                post_in.intersed_count=post_in.intersed_count+1
-                post_in.save()
+    # def interested_in(self, post_in):
+    #     if self.can_post:
+    #         if  Post.objects.filter(pk=post_in.id).exists():
+    #             user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
+    #             user1.save()
+    #             post_in.intersed_count=post_in.intersed_count+1
+    #             post_in.save()
 
     def interested_Notification(self, post_in):
         user_in = self
@@ -368,7 +368,7 @@ class Post(models.Model):
     def post_Notification(self):
         all_values_array=[]
         values_array=[]
-        all_values = Value.objects.filter(Post_id = self)
+        all_values = Value.objects.filter(post = self)
         for value in all_values:
             all_values_array.append(value)
             values_array.append(value.value)
@@ -376,8 +376,10 @@ class Post(models.Model):
         for value in all_values_array:
             attribute  = value.attribute_id
             attributes_array.append(attribute.name)
-        subchannel_of_post = self.sub_channel_id
-        channel_of_post = subchannel_of_post.channel_id
+        subchannel_of_post = self.subchannel
+        print "look down"
+        print subchannel_of_post
+        channel_of_post = subchannel_of_post.channel
         users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
         users_subscribed_to_channel_array = []
         for i in users_subscribed_to_channel:
@@ -391,7 +393,7 @@ class Post(models.Model):
         r = 0
         for z in attributes_array:
             value_in_array = values_array[i]
-            attribute = Attribute.objects.get(name = attributes_array[r], subchannel_id = subchannel_of_post)
+            attribute = Attribute.objects.get(name = attributes_array[r], subchannel = subchannel_of_post)
             print "finished attribute-->" + unicode(attributes_array[r])
             r = r + 1
             try:
@@ -408,20 +410,22 @@ class Post(models.Model):
                 # break
         for q in users_subscribed_to_channel_array:
             not_content = "You have new posts to see in " + unicode(channel_of_post.name)
-            not1 = Notification(user = q, content = not_content)
+            not_url = "showpost?post="+unicode(self.id)
+            not1 = Notification(user = q, content = not_content, url=not_url)
             not1.save()
         for a in users_subscribed_to_subchannel_array:
             not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
-            not1 = Notification(user = a, content = not_content)
+            not_url = "showpost?post="+unicode(self.id)
+            not1 = Notification(user = a, content = not_content, url=not_url)
             not1.save()
         for b in all_users_subscribed_to_attributes:
             if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
                 if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
-                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
-                    not1 = Notification(user = b, content = not_content)
+                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
+                    not_url = "showpost?post="+unicode(self.id)
+                    not1 = Notification(user = b, content = not_content, url=not_url)
                     not1.save()
                     print "In last for loop"
-
 
     def get_buyer():
         return self.buyer.id

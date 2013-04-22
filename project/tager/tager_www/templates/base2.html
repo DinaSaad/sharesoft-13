@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet">
     <link href="{% static "css/font-awesome.css" %}" rel="stylesheet">
+    <link href="{% static "css/zocial.css" %}" rel="stylesheet">
 
 
     {% block headers %}
@@ -47,9 +48,40 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Tager.com</a>
-          {% block nav %}
+          <a class="brand" href="/main">Tager.com</a>
 
+          {% block nav %}
+              <div class="nav-collapse collapse">
+            <ul class="nav">
+              <ul class="nav pull-right">
+              <li  >
+                <div>
+                  <form class="navbar-search pull-left" style="margin-top:10px" action="/search/" method="get" >
+                    <input type="text" class="search-query" placeholder="Search"id="id_q" name="q">
+                  </form>
+                </div>
+              </li>
+              <li><a href="/profile?user_id={{user.id}}" style="margin-left:260px; float:right">Profile</a></li>
+
+              <li class="dropdown">
+
+         
+
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="float:inline">{{user.name}}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="/subscribe">Subscribe</a></li>
+                  <li><a href="#" id="editing">Manage and edit profile</a></li>
+                  <li><a href="#">Another action</a></li>
+                  <li><a href="#">Something else here</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/logout/">Logout</a></li>
+                  
+                </ul>
+              </li>
+
+              </li>
+            </ul>
+          </div>
           {% endblock %}
             
           

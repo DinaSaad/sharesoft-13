@@ -196,7 +196,7 @@ AUTHENTICATION_BACKENDS = (
 
     'tager_www.views.CustomAuthentication',
     
-    'django.contrib.auth.backends.ModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
 
 
 
