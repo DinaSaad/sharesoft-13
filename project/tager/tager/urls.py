@@ -76,12 +76,3 @@ urlpatterns = patterns('',
 	# url(r'^tager_www/', include('tager_www.urls')),
 
 )
-
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
-
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
-)
