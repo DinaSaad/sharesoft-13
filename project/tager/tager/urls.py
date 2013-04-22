@@ -70,20 +70,4 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
-
-	url(r'^tager_www/', include('tager_www.urls')),
-
-
-	# url(r'^tager_www/', include('tager_www.urls')),
-
-)
-
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
-
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
 )
