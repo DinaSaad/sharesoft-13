@@ -5,7 +5,7 @@ from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
 from datetime import datetime, timedelta
 
-EXPIRATION_DAYS = 10
+
 
 from django.db.models import Sum , Avg 
 
@@ -134,15 +134,7 @@ class UserProfile(AbstractBaseUser):
         return self.is_admin
 
 
-    #mai :registertaion
-    #this method takes self and just checks if the todays date from the time of the creation of the user is greater then
-    #the expired date set then the key is expired so it retunrs true 
-    #else returns false 
-
-    def is_expired(self):
-        if (datetime.now() - self.created).days >= EXPIRATION_DAYS:
-            return True
-        return False
+   
 
 #C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
 #is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
