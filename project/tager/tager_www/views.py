@@ -253,16 +253,14 @@ def confirm_email(request):
            
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
-                if not user.is_expired():
-                   
-                    user.is_verfied=True
-                   
-                    user.save()
-                    return HttpResponseRedirect('/main/')
                 
-                else :  
-                 
-                    return HttpResponse ("sorry your account is disabled because the activation key has expired")
+                   
+                user.is_verfied=True
+               
+                user.save()
+                return HttpResponseRedirect('/main/')
+                
+                
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
     else : 
