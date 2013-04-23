@@ -36,7 +36,7 @@ APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
 REDIRECT_URL = 'http://127.0.0.1:8000/main'
-FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
+FACEBOOK_PERMISSIONS = ['email', 'user_about_me','user_photos']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
@@ -777,11 +777,17 @@ def fb_authenticate(request):
     if not ('access_token') in res_parse_qs:
         return None
     access_token = res_parse_qs['access_token'][-1]
-    url = "https://graph.facebook.com/me?access_token=" + access_token
+    fields = "&fields=id,email,name,picture"
+    url = "https://graph.facebook.com/me?access_token=" + access_token + fields
     import simplejson as json
     fb_data = json.loads(urllib.urlopen(url).read())
+    print fb_data
     uid = fb_data['id']
     mail = fb_data['email']
+    picture = fb_data["picture"]["data"]
+    print picture
+    pic_url = picture['url']
+    print pic_url
     if not fb_data:
         return None
     try:
@@ -800,6 +806,7 @@ def fb_authenticate(request):
         userprofile.email = fb_data.get('email',None)
         userprofile.accesstoken = access_token
         userprofile.facebook_uid = fb_data['id']
+        userprofile.photo = pic_url
         print userprofile
         userprofile.save()
         return userprofile
@@ -883,4 +890,3 @@ def facebook_login_done(request):
 #             print post_obj
 #             post_list=filter_posts(post_obj)
 #             return render('main.html', {'post_list' : post_list})
-
