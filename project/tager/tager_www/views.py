@@ -845,37 +845,28 @@ def getContacts(request):
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         friends = fb_data["friends"]["data"]
         for friend in friends:
-            print friend
             uid = fb_data['id']
-            print uid
             name = friend['name']
             friend_uid = friend['id']
             f_uid = str(friend_uid)
-            print f_uid
             email = f_uid + "@facebook.com"
-            print email
-            # friend_email = friend['email']
-            print name
-            print friend_uid
             picture = friend["picture"]["data"]
             pic_url = picture['url']
-            print pic_url
-        try:
-            friend_userprofile = UserProfile.objects.get(facebook_uid=int(friend_uid))
-            friend_userprofile.name = name
-            friend_userprofile.email = email
-            friend_userprofile.photo = pic_url
-            userprofile.save()
-            return userprofile
-        except UserProfile.DoesNotExist:
-            friend_userprofile = UserProfile.objects.create(name = name, email=email,facebook_uid=friend_uid)
-            friend_userprofile.photo = pic_url
-            userprofile = UserProfile.objects.get(facebook_uid=uid)
-            friend_user_profile = UserProfile.objects.get(facebook_uid=friend_uid)
-            userprofile.friends.add(friend_user_profile)
-            userprofile.save()
+            print name
+            try:
+                friend_userprofile = UserProfile.objects.get(facebook_uid=int(friend_uid))
+                continue
+                return userprofile
+            except UserProfile.DoesNotExist:
+                friend_userprofile = UserProfile.objects.create(name = name, email=email,facebook_uid=friend_uid)
+                friend_userprofile.photo = pic_url
+                userprofile = UserProfile.objects.get(facebook_uid=uid)
+                friend_user_profile = UserProfile.objects.get(facebook_uid=friend_uid)
+                userprofile.friends.add(friend_user_profile)
+                userprofile.save()
+                continue
+                return userprofile
         return userprofile
-
 def facebook_import_friends(request):
     if request.REQUEST.get("device"):
         device = request.REQUEST.get("device")
@@ -894,6 +885,7 @@ def facebook_import_friends(request):
 
 def facebook_import_friends_done(request):
     result=getContacts(request)
+    print result
     if isinstance(result, UserProfile):
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
