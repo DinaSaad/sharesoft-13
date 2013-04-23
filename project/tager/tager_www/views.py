@@ -794,6 +794,7 @@ def fb_authenticate(request):
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         userprofile.accesstoken = access_token
         mail = userprofile.email
+        userprofile.photo = pic_url
         userprofile.save()
         return userprofile
 
