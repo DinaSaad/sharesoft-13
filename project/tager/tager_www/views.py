@@ -31,12 +31,47 @@ def edit_post(request):
     post_id = post_id = request.GET['post']
     current_post = Post.objects.get(id = post_id)
     return render_to_response('editPost.html', {'current_post': current_post})
-def edit_post_title(request):
+
+def edit_post_description(request):
     user = request.user
-    new_title = request.POST['title']
+    new_description = request.POST['description']
     post_id = request.POST['post']
     current_post = Post.objects.get(id = post_id)
+    current_post.description = new_description
+    current_post.save()
+    return HttpResponse()
+
+def edit_post_price(request):
+    user = request.user
+    new_price = request.POST['price']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.price = new_price
+    current_post.save()
+    return HttpResponse()
+
+def edit_post_location(request):
+    user = request.user
+    new_location = request.POST['location']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.location = new_location
+    current_post.save()
+    return HttpResponse()
+
+def edit_post_title(request):
+    user = request.user
+    # new_description = request.POST['description']
+    # new_price = request.POST['price']
+    # new_location = request.POST['location']
+    new_title = request.POST['title']
+    post_id = request.POST['post']
+    print post_id
+    current_post = Post.objects.get(id = post_id)
     current_post.title = new_title
+    # current_post.description = new_description
+    # current_post.price = new_price
+    # current_post.location = new_location
     current_post.save()
     return HttpResponse()
 

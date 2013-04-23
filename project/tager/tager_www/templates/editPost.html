@@ -1,0 +1,189 @@
+{% extends "base.html"%}
+{% load staticfiles %}
+{% block content%}
+<style> 
+.testdiv
+{
+/*padding:10px 40px; */
+background:#dddddd;
+width: :700px;
+}
+.divcontent{
+	padding-left: 350px;
+}
+.maincontent{
+	padding-right: 50px;
+}
+
+</style>
+<div class="row-fluid maincontent">
+	<div class="span1">
+		<label>a5tebar</label>
+	</div>
+<div class="testdiv span10">
+  <div class="row-fluid">
+    <div class="span1">
+      <label>Title:</label>
+      <label>Description:</label>
+      <label>Price:</label>
+      <label>Location:</label>
+    </div>
+    <div class="span9 divcontent">
+	    <label id="title1">{{current_post.title}}</label></label> 
+		<input id="title1value" style="display:none">
+		
+		<label id="description">{{current_post.description}}</label>
+		<input id="descriptionvalue" style="display:none">
+
+		<label id="price">{{current_post.price}}</label>
+		<input id="pricevalue" style="display:none">
+		
+		<label id="location">{{current_post.location}}</label>
+		<input id="locationvalue" style="display:none">
+
+    </div>
+    <div class="span2" >
+
+	<button id="edit_title" onClick="update_title_preparation()">edit</button>
+    <button style="display:none" onClick="update_title({{current_post.id}})" id="titlesave">save</button><br>
+
+    <button id="edit_description" onClick="update_description_preparation()">edit</button>
+    <button style="display:none" onClick="update_description({{current_post.id}})" id="descriptionsave">save</button><br>
+    
+    <button id="edit_price" onClick="update_price_preparation()">edit</button>
+    <button style="display:none" onClick="update_price({{current_post.id}})" id="pricesave">save</button><br>
+    
+    <button id="edit_location" onClick="update_location_preparation()">edit</button>
+    <button style="display:none" onClick="update_location({{current_post.id}})" id="locationsave">save</button>
+    </div>
+  </div>
+</div>
+<div class="span1">
+	<label>dhjksfhkjds</label>
+</div>
+</div>
+<script type="text/javascript">
+function update_title(id){
+    
+    var title = $('#title1value').val();
+    $.ajax({
+    url: "/editposttitle/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "title": title,
+    }, 
+    success: function(result) {
+    alert("Successfully updated")
+    $('#title1').text($('#title1value').val());
+    $('#title1').show();
+    $('#title1value').hide();
+    $('#titlesave').hide();
+    $('#edit_title').show();
+    },
+    });
+}
+
+function update_description(id){
+   var description = $('#descriptionvalue').val();    
+    $.ajax({
+    url: "/editpostdescription/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "description": description,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#description').text($('#descriptionvalue').val());
+    $('#description').show();
+    $('#descriptionvalue').hide();
+    $('#descriptionsave').hide();
+    $('#edit_description').show();
+    },
+
+    });
+}
+function update_price(id){
+   var price = $('#pricevalue').val();        
+    $.ajax({
+    url: "/editpostprice/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "price":price,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#price').text($('#pricevalue').val());
+    $('#price').show();
+    $('#pricevalue').hide();
+    $('#pricesave').hide();
+    $('#edit_price').show();
+    },
+
+    });
+}
+
+function update_location(id){
+   var location = $('#locationvalue').val();        
+    $.ajax({
+    url: "/editpostlocation/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "location":location,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#location').text($('#locationvalue').val());
+    $('#location').show();
+    $('#locationvalue').hide();
+    $('#locationsave').hide();
+    $('#edit_location').show();
+    },
+
+    });
+}
+
+function update_title_preparation() {
+    $("#edit_title").hide();
+    $('#title1').hide();
+    var title = $('#title1').text();
+    $('#title1value').val(title);
+    $('#title1value').css('display', 'block');
+    $('#titlesave').css('display', 'block');
+   
+}    
+function update_description_preparation(){    
+    $("#edit_description").hide();
+    $('#description').hide();
+    var description = $('#description').text();
+    $('#descriptionvalue').val(description);
+    $('#descriptionvalue').css('display', 'block');
+    $('#descriptionsave').css('display', 'block');
+}    
+function update_location_preparation(){
+    $("#edit_location").hide();
+    $('#location').hide();
+    var location = $('#location').text();
+    $("#locationvalue").val (location);
+    $('#locationvalue').css('display', 'block');
+     $('#locationsave').css('display', 'block');
+}
+function update_price_preparation(){
+    $("#edit_price").hide();
+    $('#price').hide();
+    var price = $('#price').text();
+    $('#pricevalue').val(price);
+    $('#pricevalue').css('display', 'block');
+     $('#pricesave').css('display', 'block');
+}
+
+
+
+</script>
+{% endblock %}
