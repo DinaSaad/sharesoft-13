@@ -36,7 +36,7 @@ APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
-FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
+FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists', 'friends_photos','friends_email'] 
 SCOPE_SEPARATOR = ' '
 
 
@@ -786,7 +786,7 @@ def fb_authenticate(request):
     try:
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         userprofile.accesstoken = access_token
-        mail = userprofile.email
+        userprofile.email = mail
         userprofile.save()
         return userprofile
 
@@ -832,7 +832,7 @@ def getContacts(request):
     if not ('access_token') in res_parse_qs:
         return None
     access_token = res_parse_qs['access_token'][-1]
-    fields = "&fields=friends"
+    fields = "&fields=friends.fields(name,email,picture)"
     url = "https://graph.facebook.com/me?access_token=" + access_token + fields
     import simplejson as json
     fb_data = json.loads(urllib.urlopen(url).read())
@@ -845,12 +845,31 @@ def getContacts(request):
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         friends = fb_data["friends"]["data"]
         for friend in friends:
-            username, _id = friend
+            print friend
             uid = fb_data['id']
-            friend_uid = friend[_id]
-            name = friend[username]
-            friend_userprofile = UserProfile.objects.create(email=friend_uid,facebook_uid=friend_uid)
+            print uid
+            name = friend['name']
+            friend_uid = friend['id']
+            f_uid = str(friend_uid)
+            print f_uid
+            email = f_uid + "@facebook.com"
+            print email
+            # friend_email = friend['email']
+            print name
+            print friend_uid
+            picture = friend["picture"]["data"]
+            pic_url = picture['url']
+            print pic_url
+        try:
+            friend_userprofile = UserProfile.objects.get(facebook_uid=int(friend_uid))
             friend_userprofile.name = name
+            friend_userprofile.email = email
+            friend_userprofile.photo = pic_url
+            userprofile.save()
+            return userprofile
+        except UserProfile.DoesNotExist:
+            friend_userprofile = UserProfile.objects.create(name = name, email=email,facebook_uid=friend_uid)
+            friend_userprofile.photo = pic_url
             userprofile = UserProfile.objects.get(facebook_uid=uid)
             friend_user_profile = UserProfile.objects.get(facebook_uid=friend_uid)
             userprofile.friends.add(friend_user_profile)
