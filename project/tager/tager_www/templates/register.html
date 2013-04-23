@@ -11,23 +11,38 @@
 <form action="" method="post">
 {% csrf_token %}
 
+<div class = "header" >
+<h2> Create your account </h2> 
+
+<style type="text/css">
+      .header {
+        color: #333;
+        font-family: 'Georgia';
+        font-size: 35px;
+        text-align: center;
+}
+      }
+    </style>
+</div>
+<div class = "registerationForm">
 {% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
 <div class="register_div">
         {% if form.name.errors %}<p class="error">{{ form.name.errors }}</p>{% endif %}
-        <p><label for="name"{% if form.name.errors %} class="error"{% endif %}>Name:</label></p>
+       
         <p>{{ form.name }}</p>
 </div>
 <div class="register_div">
         {% if form.email.errors %}<p class="error">{{ form.email.errors }}</p>{% endif %}
-        <p><label for="email"{% if form.email.errors %} class="error"{% endif %}>Email:</label></p>
         <p>{{ form.email }}</p>
 </div>
 
-
 <script>
+
 function passwordStrength(password)
 
 {
+    
+     
 
         var desc = new Array();
 
@@ -43,11 +58,17 @@ function passwordStrength(password)
 
         desc[5] = "Strongest";
 
-
+    
 
         var score   = 0;
-
-
+       
+    
+        if (password.length <=1) 
+           $("password").click(function(){
+            $(".hide").hide();
+            });
+        else 
+            $(".hide").show();
 
         //if password bigger than 6 give 1 point
 
@@ -76,12 +97,13 @@ function passwordStrength(password)
         //if password bigger than 12 give another 1 point
 
         if (password.length > 12) score++;
-
-
+        
+        
+         
 
          document.getElementById("passwordDescription").innerHTML = desc[score];
 
-         document.getElementById("passwordStrength").className = "strength" + score;
+         document.getElementById("passwordStrength").className = "strength" + score; 
 
 }
 </script>
@@ -99,21 +121,23 @@ function passwordStrength(password)
 
 
         {% if form.password1.errors %}<p class="error">{{ form.password1.errors }}</p>{% endif %}
-        <p><label for="password"{% if form.password1.errors %} class="error" {% endif %} >Password:</label>
          <!-- <input type="password" name="pass" id="pass" onkeyup="passwordStrength(this.value)" /></p> -->
         <p>{{ form.password1 }}</p>
-</div>
+       
+         <label class ="hide " for="passwordStrength">Password strength </label>
+
+                        <div class = "hide" id="passwordDescription">Password not entered</div>
+
+                        <div class = "hide" id="passwordStrength" class="strength"></div>
+                 
+
 <div class="register_div">
         {% if form.password2.errors %}<p class="error">{{ form.password2.errors }}</p>{% endif %}
-        <p><label for="confirm password"{% if form.password2.errors %} class="error"{% endif %}>confirm Password:</label></p>
+       
         <p>{{ form.password2 }}</p> 
 <p>
 
-                        <label for="passwordStrength">Password strength</label>
-
-                        <div id="passwordDescription">Password not entered</div>
-
-                        <div id="passwordStrength" class="strength0"></div>
+                       
 
                         <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6LdSucISAAAAADc_huFvVv0fCCEfcVJNvbqeY-TN">
                          
@@ -126,11 +150,22 @@ function passwordStrength(password)
                             <p>{{ form.captcha }}</p>
 
 
-                        <p><input type="submit" alt="register" /></p>
+                        <p><button class = "btn btn-warning " type="submit" alt="register" />Create Account </button></p>
                         </div>
 
                 </p>
             </div>
 
+
+<style type="text/css">
+      .registerationForm {
+        margin-left: 450px;
+        padding: 0 14px 20px;
+}
+      }
+    </style>
+
+</div>
 </form>
+
 {% endblock %}
