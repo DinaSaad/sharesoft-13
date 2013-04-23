@@ -852,7 +852,6 @@ def getContacts(request):
             email = f_uid + "@facebook.com"
             picture = friend["picture"]["data"]
             pic_url = picture['url']
-            print name
             try:
                 friend_userprofile = UserProfile.objects.get(facebook_uid=int(friend_uid))
                 continue
