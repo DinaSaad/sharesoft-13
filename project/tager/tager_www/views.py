@@ -781,13 +781,10 @@ def fb_authenticate(request):
     url = "https://graph.facebook.com/me?access_token=" + access_token + fields
     import simplejson as json
     fb_data = json.loads(urllib.urlopen(url).read())
-    print fb_data
     uid = fb_data['id']
     mail = fb_data['email']
     picture = fb_data["picture"]["data"]
-    print picture
     pic_url = picture['url']
-    print pic_url
     if not fb_data:
         return None
     try:
