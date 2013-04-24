@@ -640,3 +640,16 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+
+class Comment(models.Model):
+    content=models.CharField(max_length="500")
+    date=models.DateTimeField()
+    is_Hidden=models.BooleanField(default=False)
+    post_id= models.ForeignKey(Post)
+    user_id=models.ForeignKey(UserProfile)
+   #c1_hala_comment i added def unicode to return the post state 
+   #to identify it while testing to make sure it is saved in d 
+    #i added comment tabel to save data taken from user to save in db 
+    #to easily retreive it from when needed in the post when comment is posted
+    def __unicode__(self):
+        return self.content
