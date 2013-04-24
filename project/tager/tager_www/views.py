@@ -788,7 +788,7 @@ def fb_authenticate(request):
     uid = fb_data['id']
     mail = fb_data['email']
     if not fb_data:
-        return None
+        return Nonet(request, post_id)
     try:
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         userprofile.accesstoken = access_token
@@ -839,4 +839,4 @@ def SavingComment(request, post_id):
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     print "i saved"
     comment.save()
-    return viewPost(request, post_id)
+    return HttpResponseRedirect("/showpost?post="+str(post_id))
