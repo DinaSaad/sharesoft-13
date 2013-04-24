@@ -19,15 +19,13 @@ text-align: right;
 <div>
 <div class="container-fluid mainbackground">
   <div class="row-fluid">
-    <div class="span2">
-      <label>Hello</label>
-    </div>
-    <div class="span10">
-      <div class="span4"><label>Imagearea</label>
+   <div class="span4"><label>Imagearea</label>
         <img src="{{post.profile_picture}" alt="profile pic" />
       </div>
+    <div class="span8">
+     
       <div class="span6">
-        <div class="span2">
+        <div class="span3">
 
         <p> Title: </p>
 
@@ -46,7 +44,7 @@ text-align: right;
         {% endif %}
 
         </div>
-        <div class="span2 valuesdiv">
+        <div class="span3 valuesdiv">
           <p>{{post.title}}</p>
           <p>{{post.description}}</p>
           <p>{{post.price}}</p>
