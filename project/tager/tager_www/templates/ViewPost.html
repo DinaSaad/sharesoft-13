@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load staticfiles%}
 
+
 {% block headers %}
     {% include 'jquery_raty_min_js.html' %}
     <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
@@ -131,35 +132,57 @@
 </div>
 
 
-</div>
-<h5>Comments:</h5>
-<div class='container-fluid'>
+
+<div class="commentsMain" style="margin-top:20px;">
+
+
 {% for comment in comments %}
-{{ comment.user_id.name }}: {{ comment.content}} <br/>
-<small>{{ comment.date }}</small>
-<br/><br/>
+
+    {% if comment.user_id.id == post.seller.id %}
+    <div class="commentWrapper right" class="span4">
+    <p>
+      <div class="commentLeftHead">
+      <div class ="commentName"  class="text-info" style="width:100%;">
+      <small class="text-info"> {{ comment.date|timesince }}&nbsp;ago <i class="icon-time"></i></small>
+      .
+      <a href="/showuser?user={{comment.user_id}} ">
+     &nbsp;{{ comment.user_id.name }}&nbsp;<i class="icon-user"></i></a>
+   </div>
+    </p>
+    <p class="triangle-left" style="width:auto;">
+      Comment UID : {{comment.user_id.id}}
+      Post UID: {{post.seller.id}}
+      {{ comment.content}}</p>
+    </div>
+    </div>
+    {% else %}
+
+    <div class="commentWrapper" class="span4">
+    <p>
+      <div class ="commentName" class="text-info" >
+      <a href="/showuser?user={{comment.user_id}} ">
+     <i class="icon-user"></i>&nbsp;{{ comment.user_id.name }}&nbsp;</a>
+     .<small class="text-info"><i class="icon-time"></i> {{ comment.date|timesince }}&nbsp;ago</small>
+    </p></div>
+    <p class="triangle-right">{{ comment.content}}</p>
+    </div>
+    
+
+    {% endif %}
+
 {% empty %}
   There are currently no comments on this post
 {% endfor %}
 </div>
-<!-- USe this to add your stuff   -->
-<br/>
-<br/>
-<br/>
-<!-- USe this to add your stuff   -->
-<br/>
-<br/>
-<br/>
+
 <form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
       <textarea placeholder='Add your comment' name='content'></textarea>
       <br/>
       <input type="submit" value="Add" class='btn'>
   </form>
-<form action="/hideComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
-      <br/>
-      <input type="submit" value="hide" class='btn'>
-  </form>
 
+
+</div>
 </div>
 {% block script%}
 
