@@ -150,8 +150,6 @@
    </div>
     </p>
     <p class="triangle-left" style="width:auto;">
-      Comment UID : {{comment.user_id.id}}
-      Post UID: {{post.seller.id}}
       {{ comment.content}}</p>
     </div>
     </div>
@@ -173,13 +171,22 @@
 {% empty %}
   There are currently no comments on this post
 {% endfor %}
-</div>
 
+<div><center>
+  {% if user.is_authenticated %}
 <form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
       <textarea placeholder='Add your comment' name='content'></textarea>
       <br/>
       <input type="submit" value="Add" class='btn'>
   </form>
+  {% else %}
+  <a href="/login/"><h4>Please login to add a Comment</h4> &nbsp;</a>
+
+  {% endif %}
+</div></center>
+
+</div>
+
 
 
 </div>
