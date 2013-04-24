@@ -517,4 +517,30 @@ def verfiy_captcha(request):
         form = RegistrationForm()
         script = displayhtml(public_key=public_key)
     return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
-
+ #c2-mohamed awad
+ #this def returns unread notifications to base.html
+def unread_notifications(request):
+    user_in = request.user
+    all_unread_notifications = Notification.objects.filter(user = user_in, read = False)
+    print all_unread_notifications
+    if all_unread_notifications:
+        print "after if"
+        for notification in all_unread_notifications:
+            print "after for"
+            notification.read = True
+            notification.save()
+            print "saved notification"
+            return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
+    else:
+        all_notifications = Notification.objects.filter(user = user_in)
+        all_unread_notifications = []
+        not_counter = 0
+        for notification in all_notifications:
+            all_unread_notifications.append(notification)
+            if not_counter == 5:
+                break
+            else:
+                not_counter = not_counter + 1
+        print "look down"
+        print all_unread_notifications
+        return render_to_response ('base.html',{'all_unread_notifications': all_unread_notifications})
