@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^subscription_by_param/$', 'tager_www.views.subscribe_by_parameters'),
     url(r'^subscription_by_subchann/$', 'tager_www.views.subscription_by_subchann'),
     url(r'^subscription_by_chann/$', 'tager_www.views.subscription_by_chann'),
-
+    url(r'^refresh_notifications/$', 'tager_www.views.unread_notifications'),
     url(r'^confirm_email/$','tager_www.views.confirm_email'),
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
