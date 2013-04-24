@@ -40,7 +40,6 @@ FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists']
 SCOPE_SEPARATOR = ' '
 
 
-
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -252,7 +251,8 @@ def check_Rate_Identify_buyer(request):
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
-    print post_id
+    post = Post.objects.get(id=post_id)
+    post_can_be_wished = user.add_to_wish_list(post)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
@@ -266,7 +266,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)

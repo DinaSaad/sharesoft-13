@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     
     
     url(r'^logout/$', logout, {'next_page':'/login'}),  
-
+    # url(r'^addtowishlist$', 'tager_www.views.add_to_wishlist_view'),
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
