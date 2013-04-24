@@ -266,7 +266,11 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 
+    'list_of_att_values': list_of_att_values, 
+    'report_reasons': report_reasons, 
+    'list_of_interested_buyers': list_of_interested_buyers,
+    'comments': Comment.objects.filter(post_id=post_id) }
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
