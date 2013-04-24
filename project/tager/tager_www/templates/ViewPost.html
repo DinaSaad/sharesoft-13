@@ -175,7 +175,7 @@
 <div><center>
   {% if user.is_authenticated %}
 <form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
-      <textarea placeholder='Add your comment' name='content'></textarea>
+      <textarea placeholder='Add your comment' name='content' required></textarea>
       <br/>
       <input type="submit" value="Add" class='btn'>
   </form>
