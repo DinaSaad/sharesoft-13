@@ -214,6 +214,13 @@ class UserProfile(AbstractBaseUser):
     def can_post(self):
         return self.is_verfied
 
+    def add_to_wish_list(self, post_id):
+        if WishList.objects.filter(post=post_id , user = self).exists():
+            return False
+        else:
+            WishList.objects.create(post = post_id, user=self)
+            return True
+
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
@@ -271,6 +278,8 @@ class SubChannel(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
 
 #Class Post documentation
 #The model Post define the table of posts in the data base. 
@@ -640,3 +649,9 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+
+class WishList(models.Model):
+    user = models.ForeignKey(UserProfile)
+    post = models.ForeignKey(Post)
+    class Meta:
+        unique_together = ("post","user")
