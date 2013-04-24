@@ -216,10 +216,10 @@ class UserProfile(AbstractBaseUser):
 
     def add_to_wish_list(self, post_id):
         if WishList.objects.filter(post=post_id , user = self).exists():
-            return False
+            return "false"
         else:
             WishList.objects.create(post = post_id, user=self)
-            return True
+            return "true"
 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,

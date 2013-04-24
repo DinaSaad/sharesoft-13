@@ -132,9 +132,12 @@
 
 <div>
 {% if canwish %}
-<button>Add to wish list</button>
+<label>The post can be wished</label>
 {% endif %}
+{% if not canwish%}
+<label>THe post can not be wished</label>
 
+{% endif %}
 </div>
 </div>
 
