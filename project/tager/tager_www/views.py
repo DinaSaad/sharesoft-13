@@ -834,9 +834,7 @@ def facebook_login_done(request):
 def SavingComment(request, post_id):
     content = request.POST['content']
     userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
-    print request.user
     post = Post.objects.get(pk=post_id)
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
-    print "i saved"
     comment.save()
     return HttpResponseRedirect("/showpost?post="+str(post_id))
