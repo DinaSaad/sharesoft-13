@@ -835,6 +835,7 @@ def SavingComment(request, post_id):
     content = request.POST['content']
     userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
     post = Post.objects.get(pk=post_id)
+    post.comments_count +=1
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
     return HttpResponseRedirect("/showpost?post="+str(post_id))
