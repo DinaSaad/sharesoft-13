@@ -254,7 +254,7 @@ def view_post(request):
     post_id = request.GET['post']
     print post_id
     test_post = Post.objects.get(id = post_id)
-    test_post.post_state
+    # test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post)
@@ -338,8 +338,8 @@ def main(request):
     post_list = filter_home_posts()
     
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    for i in post_list:
-        i.post_state()
+    # for i in post_list:
+    #     i.post_state()
 
     return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
