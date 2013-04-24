@@ -24,7 +24,8 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
-
+from twilio.rest import TwilioRestClient
+from django.conf import settings
 
 
 
@@ -336,3 +337,11 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=s_id)
     list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
     return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+
+
+# def send_sms(request):
+#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+#     message = client.sms.messages.create(to="+201112285944",
+#                                          from_="+15555555555",
+#                                          body="Hello!")
