@@ -820,72 +820,23 @@ def facebook_login_done(request):
     else:
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
-# def advanced_search_helper(basic_search_list):#mohamed tarek c3 
-#                              #this method takes attributes as input and takes values from the user them compares them  
-#                              #to values to get the value obects containig the attribute ids and value iputed and them 
-#                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
-#     sub_id = request.GET['sub_ch_id']
-#     attributes = Attribute.objects.filter(subchannel_id = sub_id)
-#     values =[]
-#     post = []
-#     value_obj =[]
-#     for w in attributes:
-#         name = w.name
-#         values.append(request.GET[name])
-#     result_search_obj = []
-#     flag = False
-#     result_search = []
-#     result = []
-#     post = []
-#     i = 0
-#     f = i+1
-#     null = ""
-#     basic_search_values = []
-#     for r in range(0,len(basic_search_list)):
-#         basic_search_values = [(Value.objects.filter(post = basic_search_list[r])) ]
-#     for j in range(0,len(values)):
-#         if values[j] == null:
-#             pass
-#         else:
-#             for e in range(0,len(values)):
-#             result_search_obj+=[ (Value.objects.filter(attribute_id = attributes[j].id 
-#             , value = values[j])) ]
-#     if not result_search_obj:
-#         return HttpResponse("please enter something in the search")
-#     else:
-#         result_search = [[] for o in result_search_obj]    
-#         for k in range(0,len(result_search_obj)):
-#             for l in range(0,len(result_search_obj[k])):
-#                 test = result_search_obj[k][l].value
-#                 result_search[k].append(result_search_obj[k][l].post.id)
-#         tmp=result_search[0]
-#         if len(result_search) == 1:
-#             post=result_search[0]
-#         else:
-#             for h in range(1,len(result_search)):
-#                 post_temp = ""
-#                 for g in range(0,len(result_search[h])):
-#                     if not result_search[h]:
-#                         flag = True
-#                         pass
-#                     else:
-#                         if flag == True:
-#                             h=h-1
-#                         loc = tmp[g]
-#                         tmep =result_search[h]
-#                         loce = tmep[g]
-#                         if loc == tmep[g]:
-#                             flag = True
-#                             post_temp = tmep[g]
-#                             post.append(post_temp)
-#         post_obj =[]
-#         for a_post in post:
-#             post_obj.append(Post.objects.get(id = a_post))
-#         if not post_obj:
-#             return HttpResponse("there is no posts with these values please refine your search.")
+#c1_hala this method called savingComment that takes two parameters request and post_id, the 
+#content variable takes from the request the content that the user types in, and userobject variable is a 
+#variable that the user as an object which rather than taking the user_id no takes the user as an object
+#and saves it in the Comment table as an object, and post variable brings the post from post table with id 
+#that matches the post_id that taken as a paramter, and comment variable saves in the comment table 
+#the content taken and the date that was retreived at that time using datetime.now()
+#and takes the user as an object, and takes the post id and saves it in the comment table.
+#comment table by that saves each post with its comment content, date of the comment, and saves 
+#the users owner of the comment next to tthe comment. and at last the method returns the method viewPost
+#which has the post and its past comments saved on it
 
-#         else:
-#             print post_obj
-#             post_list=filter_posts(post_obj)
-#             return render('main.html', {'post_list' : post_list})
-
+def SavingComment(request, post_id):
+    content = request.POST['content']
+    userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
+    print request.user
+    post = Post.objects.get(pk=post_id)
+    comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
+    print "i saved"
+    comment.save()
+    return viewPost(request, post_id)
