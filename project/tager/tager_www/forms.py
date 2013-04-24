@@ -68,3 +68,6 @@ class RegistrationForm(forms.ModelForm):
 #this is for the verication of email 
 class ConfirmationForm(forms.Form):
     verify = forms.CharField(label='verify')
+
+
+
