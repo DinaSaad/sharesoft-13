@@ -11,7 +11,13 @@ urlpatterns = patterns('',
     
     
     url(r'^logout/$', logout, {'next_page':'/login'}),  
-
+    url(r'^editing/$', 'tager_www.views.edit_user_information'),
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+    url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
+    url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
+    url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
+    url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
+    url(r'^editpost/$', 'tager_www.views.edit_post'),
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  

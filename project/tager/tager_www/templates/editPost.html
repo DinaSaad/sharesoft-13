@@ -14,33 +14,60 @@ width: :700px;
 .maincontent{
 	padding-right: 50px;
 }
+.divpad{
+    padding-top: 7.5px;
+}
 
 </style>
 <div class="row-fluid maincontent">
 	<div class="span1">
 		<label>a5tebar</label>
-	</div>
+    </div>
 <div class="testdiv span10">
   <div class="row-fluid">
     <div class="span1">
+      <div class="divpad">
       <label>Title:</label>
+      </div>
+      <div class="divpad">
       <label>Description:</label>
+      </div>
+      <div class="divpad">
       <label>Price:</label>
+      </div>
+      <div class="divpad">
       <label>Location:</label>
+        </div>
+<!--     {% for Attribute in list_of_attribute_name%}
+    <div class="divpad">
+    <label id="{{Attribute.id}}">{{Attribute.name}}</label>
+    </div>
+    {% endfor %} -->
     </div>
     <div class="span9 divcontent">
-	    <label id="title1">{{current_post.title}}</label></label> 
+	    <div class="divpad">
+        <label id="title1">{{current_post.title}}</label></label> 
 		<input id="title1value" style="display:none">
-		
+		</div>
+        <div class="divpad">
 		<label id="description">{{current_post.description}}</label>
 		<input id="descriptionvalue" style="display:none">
-
+        </div>
+        <div class="divpad">
 		<label id="price">{{current_post.price}}</label>
 		<input id="pricevalue" style="display:none">
-		
-		<label id="location">{{current_post.location}}</label>
+		</div>
+		<div class="divpad">
+        <label id="location">{{current_post.location}}</label>
 		<input id="locationvalue" style="display:none">
-
+        </div>
+       <!--  {% for Value in list_of_attribute_values%}
+        <div class="divpad">
+        <label id="{{Value.id}}">{{Value.value}}</label>
+        <input id="value_{{Value.value}}" style="display:none">
+        </div>
+        {% endfor %}
+ -->
     </div>
     <div class="span2" >
 

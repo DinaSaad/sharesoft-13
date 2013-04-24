@@ -26,11 +26,27 @@ from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
 
+def edit_post_attribute(request):
+    user = request.user
+    post_id = request.POST['post']
+    attribute_id = request.POST['attribute']
+    value = request.POST['value']
+    current_value_instant = Value.objects.get(attribute = attribute_id ,post = post_id)
+    current_value_instant.value = value
+    return HttpResponse()
+
 def edit_post(request):
     user = request.user
-    post_id = post_id = request.GET['post']
+    post_id = request.GET['post']
     current_post = Post.objects.get(id = post_id)
-    return render_to_response('editPost.html', {'current_post': current_post})
+    subchannel = current_post.subchannel_id
+    list_of_attribute_name = Attribute.objects.filter(subchannel_id = subchannel)
+    list_of_attribute_values = Value.objects.filter(post = current_post).order_by('attribute')
+    list_of_attributes_numbers = Value.objects.filter(post = current_post).order_by('attribute')
+    return render_to_response('editPost.html', {'current_post': current_post
+    , 'list_of_attribute_name':list_of_attribute_name
+    , 'list_of_attribute_values':list_of_attribute_values
+    ,'list_of_attributes_numbers': list_of_attributes_numbers})
 
 def edit_post_description(request):
     user = request.user
@@ -233,7 +249,9 @@ def add_post(request):
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                print k[7:]
+                print request.POST[k]
         return HttpResponse('Thank you for adding the post')
     else:
 
@@ -294,7 +312,7 @@ def view_post(request):
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
-    list_of_att_values = Value.objects.filter(post = test_post)
+    list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     list_of_interested_buyers = user.get_interested_in(post_id)
