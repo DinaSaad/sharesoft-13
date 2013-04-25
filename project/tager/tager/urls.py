@@ -12,10 +12,13 @@ urlpatterns = patterns('',
     
     
     url(r'^logout/$', logout, {'next_page':'/login'}),  
-
+    
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
+    url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
+ 
     url(r'^intrested/$', 'tager_www.views.intrested'),   
+
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
