@@ -426,19 +426,28 @@ def UserRegistration(request):
 # the status and will be redirected to the login page.
 @login_required
 def update_status(request):
-    if request.method == 'POST':
-        updating_form = UpdateStatusForm(request.POST)
-        if updating_form.is_valid():
-            temporary_user = UserProfile.objects.get(pk=request.user.id)
-            status = updating_form.cleaned_data['status']
-            if status != "":
-                temporary_user.status = status
-                temporary_user.save()
-    else:
-        updating_form = UpdateStatusForm()
+    print 'testing this method'
+    user = request.user
+    user.status = request.POST['status']
+    user.save()
+    return HttpResponse(" ")
 
-    context = {'updating_form': updating_form}
-    return render_to_response('profile.html', context, context_instance=RequestContext(request))
+
+
+# def update_status(request):
+#     if request.method == 'POST':
+#         updating_form = UpdateStatusForm(request.POST)
+#         if updating_form.is_valid():
+#             temporary_user = UserProfile.objects.get(pk=request.user.id)
+#             status = updating_form.cleaned_data['status']
+#             if status != "":
+#                 temporary_user.status = status
+#                 temporary_user.save()
+#     else:
+#         updating_form = UpdateStatusForm()
+
+#     context = {'updating_form': updating_form}
+#     return render_to_response('profile.html', context, context_instance=RequestContext(request))
 
 def get_channels (request):
     channels = Channel.objects.all()

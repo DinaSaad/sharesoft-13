@@ -1,12 +1,5 @@
 {% extends "base.html" %}
-
-
-{% block headers %}
-{% load staticfiles %}
-    {% include 'jquery_raty_min_js.html' %}
-    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
-    
-{% endblock %}
+{% load staticfiles %}  
 {% block content %}
 <body class="body">
   <div class="container-fluid">
@@ -19,7 +12,7 @@
                   <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
                 </div>
                 <div class="facebookfriends" id="box1">
-                  <h5>FacebookFriends </h5>  
+                  <h3>FacebookFriends </h3>  
                 </div>
                 <div class="wishlist" id="box1">
                   <h3>Wish List:D</h3>
@@ -38,15 +31,19 @@
       </div>
       <div class="span7">
         <div class="status" id="box2">
-          <h2>Status:</h2>
+          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)"> 
+            <button id="update_status" class="btn btn-small btn-primary" onClick="update_status_tosave()">Update</button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>
+          
         </div>
+
+
         <div class="information" id="box3">
           <h3>Information:</h3>
-          <h5>Name:: {{ user.name}}</h5>
-          <h5>Email: {{ user.email}}</h5>
-          <h5>Birth date: {{ user.date_Of_birth}}</h5> 
-          <h5>Gender: {{ user.gender}}</h5> 
-          <h5>Works at: {{ user.works_at}}</h5> 
+          <h5>Name:  <label id="name"> {{ user.name}} </label></h5>
+          <h5>Email: <label id="email"> {{ user.email}} </label></h5>
+          <h5>Birth date: <label id="dob"> {{ user.date_Of_birth}}</label></h5> 
+          <h5>Gender: <label id="gender"> {{ user.gender}}</label></h5> 
+          <h5>Works at: <label id="worksat"> {{ user.works_at}}</label></h5> 
         </div>
         <div class="activitylog" id="box3">
           <h3>Activity log</h3>
@@ -56,5 +53,38 @@
       </div>
     </div>
   </div>
+<script type="text/javascript">
+
+function update_status_tosave(){
+  $("#update_status").hide();
+  $("#status").hide();
+  var status1 = $("#status").text();
+  $("#statusvalue").val(status1);
+  $('#statusvalue').css('display', 'block');
+  $('#savestatus').css('display', 'block');
+}
+function statusupdates(){
+  var status = $("#status").val();
+  $.ajax({
+    url: '/updatestatus/',
+    type: "POST",
+    data:{
+    'status' : status,
+    },
+    success:function(result){
+      alert("Your status has been updated and shared =D");
+        $('#status').text($('#statusvalue').val());
+        $('#status').show();
+        $('#statusvalue').hide();
+        $('#savestatus').hide();
+        $('#update_status').show();
+      },
+    error:function(result){
+      alert("Failed to update");
+    },
+  });
+}
+</script>
 </body>
 {% endblock %}
+

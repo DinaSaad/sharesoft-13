@@ -46,7 +46,7 @@ div#box1 > img{
 div#box1 > a{
     display: none;
     position: absolute;
-    margin: 8px 0px 0px 120px;
+    margin: 0px 0px 0px 60px;
     z-index: 3000;
     background: #F0F0F0;
     border: #81A332 1px solid;
@@ -61,16 +61,20 @@ div#box1:hover a{
 div#box2{
     border: #999 2px solid;
     width: 700px;
-    height: 70px;
+    /*height: 200px;*/
     margin: 20px;
     cursor: pointer;
+    
 }
 div#box3{
     border: #999 2px solid;
     width: 700px;
-    height: 200px;
+    /*height: 200px;*/
     margin: 20px;
     cursor: pointer;
+}
+.status{
+    width: 200px;
 }
 
  .item {
