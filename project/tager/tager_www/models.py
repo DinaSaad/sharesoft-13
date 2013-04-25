@@ -211,9 +211,29 @@ class UserProfile(AbstractBaseUser):
             reported_post.no_of_reports = reported_post.no_of_reports + 1
             reported_post.save()      
         
+    
+    #c1_abdelrahman the method takes self as an argument. 
+    # It checks whether the user has the prevalage to post or not.
+    #the return type is whether true or false. 
+    # if the user is not verfied the method returns false 
+    # else if the user is premium the method return true without checking any further condition. 
+    # but if the user is not premium but verfied then the method check the user's number of active posts if it is below three the method return true else it returns false.
     def can_post(self):
-        return self.is_verfied
+        no_of_user_active_posts =  Post.objects.filter(seller = self).exclude(state='sold').exclude(state='Archived').count()
+        print no_of_user_active_posts
+        if not self.is_verfied:
+            return False
+        else:
+            if self.is_premium:
+                return True
+            else:
+                if no_of_user_active_posts < 3:
+                    return True
+                else: 
+                    return False
 
+    #c1 abdelrahman the method takes self, and post id as an arguments it checks whether this combination is in the table if it is in the query set. 
+    # it returns false meaning that the user can not add this post to the wish list, else it returns true.
     def add_to_wish_list(self, post_id):
         if WishList.objects.filter(post=post_id , user = self).exists():
             return "false"
@@ -224,7 +244,7 @@ class UserProfile(AbstractBaseUser):
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
     def interested_in(self, post_in):
-        if self.can_post:
+        if self.is_verfied:
             if  Post.objects.filter(pk=post_in.id).exists():
                 user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
                 user1.save()
@@ -648,7 +668,7 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
-
+#c1_abdelrahman this is the class that holds the users and the posts they added in the wish list.
 class WishList(models.Model):
     user = models.ForeignKey(UserProfile)
     post = models.ForeignKey(Post)

@@ -1,49 +1,73 @@
 {% extends 'base.html' %}
 {% load staticfiles%}
+{% block content %}
+<style type="text/css">
+.valuesdiv{
+  padding-left: 100px;
+}
+.mainbackground{
+  background-color:#DCDCDC; 
+}
+.btndivstyling{
+background-color:#DCDCDC;
+padding-right: 70px;
+padding-top: 50px;
+text-align: right;
+}
+</style>
+<div>
+<div class="container-fluid mainbackground">
+  <div class="row-fluid">
+   <div class="span4"><label>Imagearea</label>
+        <img src="{{post.profile_picture}" alt="profile pic" />
+      </div>
+    <div class="span8">
+     
+      <div class="span6">
+        <div class="span3">
 
-{% block headers %}
-    {% include 'jquery_raty_min_js.html' %}
-    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
-{% endblock %}
+        <p> Title: </p>
 
-{% block content%}
-<title> Welcome to the post page </title>
-<div class="container-fluid">
-    <div class="row-fluid">
-		    <div  class="span6">
-		    	<div id="imagediv" >		
-		    		 <img style="width: 300px;" src="static/img/post.png">
-			</div>
-			</div>
-    		<div id = "contentdiv"class="span4" position="right">
-	
-				<h3> Title: {{post.title}}</h3>
+        <p> Description: </p>
 
-				<h3> Description: {{post.description}}</h3>
+        <p> Price: </p>
 
-				<h3> Price: {{post.price}}</h3>
+        <p> State:  </p>
+        {% if list_of_att_name %}
 
-				<h3> State: {{post.state}} </h3>
+          {% for Attribute in list_of_att_name %}
+
+          <p>{{Attribute.name}}</p>
+
+        {% endfor %}
+        {% endif %}
+
+        </div>
+        <div class="span3 valuesdiv">
+          <p>{{post.title}}</p>
+          <p>{{post.description}}</p>
+          <p>{{post.price}}</p>
+          <p>{{post.state}}</p>
+          {% if list_of_att_values %}
+
+          {% for Value in list_of_att_values %}
+
+          <p>{{Value.value}}</p>
+
+          {% endfor %}
+
+        {% endif %}  
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
-				{% if list_of_att_name %}
 
-					{% for Attribute in list_of_att_name %}
 
-					<h3>{{Attribute.name}}</h3>
 
-					{% endfor %}
-				{% endif %}
-
-				{% if list_of_att_values %}
-
-					{% for Value in list_of_att_values %}
-
-					<h3>{{Value.value}}</h3>
-
-					{% endfor %}
-
-				{% endif %}  
 				{% if add_buyer_button %}
 					<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
 				{% endif %}

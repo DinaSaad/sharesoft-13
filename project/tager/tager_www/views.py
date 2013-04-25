@@ -164,7 +164,10 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
     return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
-
+#c1_abdelrahman the add_post function requires the user to be logged in.
+#the sub_channel_id is received from the previous view. it displays a form to the user. 
+#if the user filled the form correctly then the user will be redirected to the homepage. 
+# if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
     sub_channel_id = request.GET['sub_ch_id']
@@ -190,13 +193,14 @@ def add_post(request):
             ,location = form.cleaned_data['location']
             ,
             )
-        # p.post_Notification()
+
+        p.post_Notification()
          
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
-        return HttpResponse('Thank you for adding the post')
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post = p.id)    
+        return HttpResponseRedirect('/main/')
     else:
 
         form = PostForm()
@@ -255,6 +259,10 @@ def add_to_wish_list(request):
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
     return HttpResponse()
+#c1_abdelrahman this method takes the user as an input and it gets the post.
+#from the the main page the post object object is extracted from the post table.
+#list of attributes are extracted and also list_of_values of the attributes are given.
+#it returns the post, list_of_attributes and list_of values of the attributes.
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
@@ -338,13 +346,15 @@ def Buyer_identification(request):
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
+    user = request.user
+    #c1_abdelrahman check whether the user can post or not.
+    user_can_post = user.can_post()
     post_list = filter_home_posts()
-    
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
         i.post_state()
 
-    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
