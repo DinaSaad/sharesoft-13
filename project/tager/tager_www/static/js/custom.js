@@ -12,23 +12,6 @@ $('#Channel_dropdown').change(function(){
 });
 
 
-function update_attribute(attributeid, postid){
-    alert("kosomak");
-    var value = "13"
-
-    $.ajax({
-    url: "/testing/",
-    type: "POST",
-    data: {
-        "attribute": attributeid,
-        "post": postid,
-        "value": value,
-    }, 
-    success: function(result) {
-    alert("Successfully updated")
-    },
-    });
-}
 
 
 });
