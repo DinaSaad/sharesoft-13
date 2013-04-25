@@ -5,7 +5,7 @@ from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
 import datetime
 from datetime import datetime, timedelta
-
+import datetime
 EXPIRATION_DAYS = 10
 
 from django.db.models import Sum , Avg 
@@ -189,8 +189,6 @@ class UserProfile(AbstractBaseUser):
         buyer_names = []
         for i in interested:
             buyer_names.append(i.user_id_buyer.name)
-
-        print buyer_names
         return buyer_names
 
     #C1-Tharwat) This method is used to report a post for a reason choosen from a pre-defined list
@@ -307,61 +305,6 @@ class Post(models.Model):
     is_sold = models.BooleanField()
     location = models.CharField(max_length = "100")
 
-    
-    #C1-Tharwat) returns to total number of reports on the current post
-    def reportCount(self):
-        return self.no_of_reports
-
-    #C1-Tharwat) this method allows the admin to manually delete (Hide) a post
-    def adminDeleteReportedPost(post):
-        p = Post.objects.get(pk = post.id)
-        p.is_hidden = True
-        p.save()
-
-    #(C1-Tharwat)This method automatically determines the state of the post. Whether it is (New, Old, or Archived)
-    #The method takes in one parameter which is the post itself
-    #the method compares the date of which the post was published in and the current date
-    #It then uses an algorithim to determine the difference in number of days between the current date and the published date
-    #Based on the amount returned, if the amount is less than 30 days, the state = "NEW", if between 30 and 60, the state = "OLD", if greater than 60, the state = "ARCHIVED"
-    def postState(self):
-        current_time = datetime.datetime.now()
-        p = Post.objects.get(id = self.id)
-        #used if the current year is greater than the year of the published post
-        if current_time.year > self.pub_Date.year:
-            #this is in case for exmaple the published month of the post is December and the current month is January
-            #Although the years are diff yet the diff in days may not be greater than 30
-            #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
-            if current_time.month == 1 and self.pub_Date.month ==12 and (current_time.day + (31 - self.pub_Date.day)) > 30:
-                p.state = 'Old'
-                p.save()
-            #this is in case for exmaple the published month of the post is November and the current month is January
-            #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
-            #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
-            elif current_time.month == 1 and self.pub_Date.month ==11 and (current_time.day + (31 - self.pub_Date.day)) < 60:
-                p.state = 'Old'
-                p.save()
-            else:
-                p.state = 'Archived'
-                p.save()
-        #Used when the current year and Published year of the post are the same
-        if current_time.year == self.pub_Date.year:
-
-            day_diff_diff_month = current_time.day + (31 - self.pub_Date.day)
-            day_diff_same_month = current_time.day - self.pub_Date.day
-            month_diff = current_time.month - self.pub_Date.month
-            
-            if month_diff >= 1:
-                month_diff = month_diff - 1
-                total_diff = (month_diff*31) + day_diff_diff_month
-            else:
-                total_diff = day_diff_same_month
-              
-            if total_diff > 30 and total_diff < 60:
-                p.state = 'Old'
-                p.save()
-            if total_diff > 60:
-                p.state = 'Archived'
-                p.save()
 
     #c2-mohamed awad
     #this method saves notification in Notification table using content and user id
@@ -459,41 +402,42 @@ class Post(models.Model):
         current_time = datetime.datetime.now()
         post = Post.objects.get(id = self.id)
         #used if the current year is greater than the year of the published post
-        if current_time.year > self.pub_Date.year:
+        if current_time.year > self.pub_date.year:
             #this is in case for exmaple the published month of the post is December and the current month is January
             #Although the years are diff yet the diff in days may not be greater than 30
             #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
-            if current_time.month == 1 and self.pub_Date.month ==12 and (current_time.day + (31 - self.pub_Date.day)) > 30:
+            if current_time.month == 1 and self.pub_date.month ==12 and (current_time.day + (31 - self.pub_date.day)) > 30:
                 post.state = 'Old'
                 post.save()
             #this is in case for exmaple the published month of the post is November and the current month is January
             #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
             #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
-            elif current_time.month == 1 and self.pub_Date.month ==11 and (current_time.day + (31 - self.pub_Date.day)) < 60:
+            elif current_time.month == 1 and self.pub_date.month ==11 and (current_time.day + (31 - self.pub_date.day)) < 60:
                 post.state = 'Old'
                 post.save()
             else:
                 post.state = 'Archived'
                 post.save()
         #Used when the current year and Published year of the post are the same
-        if current_time.year == self.pub_Date.year:
+        if current_time.year == self.pub_date.year:
 
-            day_diff_diff_month = current_time.day + (31 - self.pub_Date.day)
-            day_diff_same_month = current_time.day - self.pub_Date.day
-            month_diff = current_time.month - self.pub_Date.month
+            day_diff_diff_month = current_time.day + (31 - self.pub_date.day)
+            day_diff_same_month = current_time.day - self.pub_date.day
+            month_diff = current_time.month - self.pub_date.month
+            
             if month_diff >= 1:
                 month_diff = month_diff - 1
                 total_diff = (month_diff*31) + day_diff_diff_month
             else:
                 total_diff = day_diff_same_month
-                          
+            
             if total_diff > 30 and total_diff < 60:
                 post.state = 'Old'
                 post.save()
             if total_diff > 60:
                 post.state = 'Archived'
                 post.save()
-
+    
     def __unicode__(self):
         return self.title
 
