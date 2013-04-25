@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
-    url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
+    url(r'^intrested/$', 'tager_www.views.intrested'),   
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
@@ -23,6 +23,9 @@ urlpatterns = patterns('',
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
+
+    url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
+    url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
 
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
@@ -70,20 +73,4 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
-
-	url(r'^tager_www/', include('tager_www.urls')),
-
-
-	# url(r'^tager_www/', include('tager_www.urls')),
-
-)
-
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
-
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
 )
