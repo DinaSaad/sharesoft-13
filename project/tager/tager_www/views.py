@@ -42,12 +42,6 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
-
-<<<<<<< HEAD
-=======
-
-
->>>>>>> master
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -202,13 +196,13 @@ def add_post(request):
             ,
             )
 
-        p.post_Notification()
+        # p.post_Notification()
          
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post = p.id)    
-        return HttpResponseRedirect('/main/')
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+        return HttpResponseRedirect('/main')
     else:
 
         form = PostForm()
@@ -795,11 +789,6 @@ def facebook_login(request):
 
 
 
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 # def send_sms(request):
