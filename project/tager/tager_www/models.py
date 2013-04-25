@@ -218,7 +218,6 @@ class UserProfile(AbstractBaseUser):
         if WishList.objects.filter(post=post_id , user = self).exists():
             return "false"
         else:
-            WishList.objects.create(post = post_id, user=self)
             return "true"
 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 

@@ -31,26 +31,26 @@
 {% if add_post %}
 <div class="pform">
     <h1>Add Post</h1>
-    <form enctype="multipart/form-data" class="form-horizontal" action="" method="post">
+    <form enctype="multipart/form-data"  action="" method="post">
         <label style ="color:red"> * Required </label>
-        <div class="control-group">
+        <div>
             <label class="control-label" for="id_title"> Title:</label>
-            <div class="controls">
-            <input id="id_title" maxlength="30" name="title" type="text"> *
+            * <input id="id_title" maxlength="30" name="title" type="text"> 
             <lbl id = "titleoutput" style="color:red"></lbl>
             </div>
-        </div>
+        
         
         <div>
             <label for="id_description">Description:</label>
-            <input id="id_description" maxlength="200" name="description" type="text"> *
-            <label id = "descriptionoutput" style="color:red"></label>
+            * <textarea id="id_description" maxlength="200" name="description">
+            </textarea>
+            <lbl id = "descriptionoutput" style="color:red"></lbl>
         </div>
         
         <div>
             <label for="id_price">Price:</label>
-            <input id="id_price" name="price" type="text"> *
-            <label id = "priceoutput" style="color:red"></label> 
+            * <input id="id_price" name="price" type="text">
+            <lbl id = "priceoutput" style="color:red"></lbl> 
         </div>
         
         <label for="id_location">Location:</label>
@@ -96,14 +96,11 @@
 
         <br>
         {% for Attribute in list_of_attributes %}
-            <lbl>{{ Attribute.name }} : </lbl> <br/>
+            <label>{{ Attribute.name }} : </label> 
             <input name='option_{{Attribute.id}}' type="text">
+            <lbl style="color:Green">Optional</lbl>
         {% endfor %}
 
-<!--         <option> Select </option>    
-        {% for Location in list_of_locations %}
-        <option name='l_{{Location.id}}'>{{ Location.city_name }}</option>
-        {% endfor %}  -->
         <br>
         <br>
         <input type="submit" class="btn btn-success btn-medium" value="Submit" id="SubmitAction" disabled>

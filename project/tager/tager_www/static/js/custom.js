@@ -113,7 +113,10 @@ $('#SubmitAction').attr("disabled", true);
   });
 });
 
+
+
 $(document).ready(function() {
+
 $(function(){
   $('#id_price').keyup(function(){
     var data = $(this).val();

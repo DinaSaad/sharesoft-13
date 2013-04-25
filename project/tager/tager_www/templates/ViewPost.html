@@ -54,8 +54,8 @@
     				<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
     			{% endif %}
     			<div id="star"></div>
+
     
-				<button type="button" class="btn btn-info"> fb </button>
 
 				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
 				<button type="button" class="btn btn-info"> Interested in </button>
@@ -82,7 +82,11 @@
 
 		  			<img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
 
-		  			onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>    
+		  			onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
+
+        <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
+        
+            
 
 </div>
  	</div>
@@ -130,52 +134,38 @@
 </div>
 </div>
 
-<div>
-{% if canwish %}
-<label>The post can be wished</label>
-{% endif %}
-{% if not canwish%}
-<label>THe post can not be wished</label>
 
-{% endif %}
-</div>
-</div>
 
 
 </div>
-{% block script%}
+
 
     <script type="text/javascript">
-
-    $(document).ready(function(){
-        $("#star").css("visibility", "hidden");
-    });
-    $("#rateSeller").click(function(){
-        // window.location.replace("profile?user_id="+$(this).val());
-        $("#star").css("visibility", "visible");
-    });
-    $(document).ready(function(){
-        $('#star').raty({ 
-            score: $('#rating').val(),
-            click: function(score, evt) {
-            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
-            $.ajax({
-                type: 'GET',
-                url: '/rateUser/',
-                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
-                success: function(){  
-                    $('#div.success').css("visibility", "hidden");  
-                }
-
-
-                         });
-
-        },
+    var eligible_to_add_to_the_wish_list = {{canwish}}
+    $("#wishlisterror").hide();
+    if(eligible_to_add_to_the_wish_list){
+      $('#wishlist').removeAttr("disabled");
+    }
+    function add_to_list(){
+      $.ajax({
+    url: '/addtomylist',
+    type: "POST",
+    data: {
+        "post" : {{post.id}},
+    }, 
+    success: function(result) {
+      $('#wishlist').attr("disabled", true);
+    alert("Successfully added to your wish list")
+    },
 
     });
-});
+    }
+
+
     </script>
-    {% endblock %}
 
+    
+
+    
 
     {% endblock %}
