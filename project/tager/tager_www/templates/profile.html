@@ -7,36 +7,54 @@
     <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
     
 {% endblock %}
-
 {% block content %}
-	<p> welcome {{ user.name }} to your profile  </p>
-	<hr>
-	<img style="width: 200px;" src="../static/img/mpf.png" alt="{{user.photo}}" />	
-<form action="." method="POST" > 
-	
-	<div class="span6">
-	<label class="span10" for="id_status" style="width: 100px;">Status:</label><input class="txt" id="id_status" name="status" type="text" placeholder="What's on your mind?? ;)">
-	</div>
-
-	<input type="submit" class="btn btn-info btn-default" value="Update">
-</form>
-<label> Last Status: {{ user.status }} </label>
-
-	<button class="btn btn-mini btn-primary" id="post" value="2" type="button">post</button>
-    <div id="star"></div>
-    <input type="hidden" name="rating" id= "rating" value="{{user.rating}}">
-    
-    {% block script %}
-    <script type="text/javascript">
-
-		$(document).ready(function(){
-			$('#star').raty({ 
-			score: $('#rating').val(),
-			readOnly : true,
-		});
-
-	})
-	</script>
-	{% endblock%}
-	
+<body class="body">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span4">
+         <div class="wideColumn">   
+              <div id="userInfo">
+                <div id="box1">
+                  <a href="/editing/?changePhoto=true">Change Profile Picture?</a>
+                  <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
+                </div>
+                <div class="facebookfriends" id="box1">
+                  <h5>FacebookFriends </h5>  
+                </div>
+                <div class="wishlist" id="box1">
+                  <h3>Wish List:D</h3>
+                </div>
+                <div class="interested" id="box1">
+                  <h3>Interested in:</h3>
+                </div>
+              </div>
+              <div id="userDetails">         
+                  <p>
+                    <a href="https://www.facebook.com/profile?user_id={{user.id}}" rel="nofollow" target="_blank" class="fbLink" <img src="https://ss1.4sqi.net/img/facebook_16-8221d882015899c7087b8e9a0d90f4a4.png" alt="Facebook" width="16" height="16"></a>
+                    
+                  </p>
+                </div> 
+          </div>
+      </div>
+      <div class="span7">
+        <div class="status" id="box2">
+          <h2>Status:</h2>
+        </div>
+        <div class="information" id="box3">
+          <h3>Information:</h3>
+          <h5>Name:: {{ user.name}}</h5>
+          <h5>Email: {{ user.email}}</h5>
+          <h5>Birth date: {{ user.date_Of_birth}}</h5> 
+          <h5>Gender: {{ user.gender}}</h5> 
+          <h5>Works at: {{ user.works_at}}</h5> 
+        </div>
+        <div class="activitylog" id="box3">
+          <h3>Activity log</h3>
+        </div>
+        
+        
+      </div>
+    </div>
+  </div>
+</body>
 {% endblock %}

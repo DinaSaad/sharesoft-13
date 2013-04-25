@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
-    url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
+    # url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
@@ -24,7 +24,7 @@ urlpatterns = patterns('',
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
 
-    url(r'^profile/$', 'tager_www.views.update_status'),
+    # url(r'^profile/$', 'tager_www.views.update_status'),
 
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
@@ -69,7 +69,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fbregister/$', 'fbregister.views.index'),
 
-	url(r'^tager_www/', include('tager_www.urls')),
+	# url(r'^tager_www/', include('tager_www.urls')),
 
 
 	# url(r'^tager_www/', include('tager_www.urls')),
