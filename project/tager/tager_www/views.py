@@ -74,8 +74,8 @@ def return_parameters(request):
     sc_id = request.GET['sch_id']
     channels = Channel.objects.all()
     s_id = SubChannel.objects.get(id = sc_id).channel_id
-    subchannels = SubChannel.objects.filter(channel_id = s_id)
-    parameters = Attribute.objects.filter(subchannel_id = sc_id)
+    subchannels = SubChannel.objects.filter(channel = s_id)
+    parameters = Attribute.objects.filter(subchannel = sc_id)
     return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
 
 #c2-mohamed awad
@@ -85,7 +85,7 @@ def return_parameters(request):
 def return_choices(request):
     p_id = request.GET['p_id']
     subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
-    parameters = Attribute.objects.filter(subchannel_id = subchannel_of_parameter)
+    parameters = Attribute.objects.filter(subchannel = subchannel_of_parameter)
     channels = Channel.objects.all()
     subchannels = SubChannel.objects.all()
     choices = AttributeChoice.objects.filter(attribute_id = p_id)
@@ -778,7 +778,7 @@ def facebook_login(request):
 def view_subchannels(request):
     s_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    list_of_subchannels = SubChannel.objects.filter(channel = current_channel)
     return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
