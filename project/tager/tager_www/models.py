@@ -86,6 +86,7 @@ class UserProfile(AbstractBaseUser):
      )
     gender = models.CharField(max_length=1, choices=gender_choices , null=True)
     
+    friends = models.ManyToManyField ("self")
     
     objects = MyUserManager()  
     
@@ -210,19 +211,46 @@ class UserProfile(AbstractBaseUser):
             reported_post.no_of_reports = reported_post.no_of_reports + 1
             reported_post.save()      
         
+    
+    #c1_abdelrahman the method takes self as an argument. 
+    # It checks whether the user has the prevalage to post or not.
+    #the return type is whether true or false. 
+    # if the user is not verfied the method returns false 
+    # else if the user is premium the method return true without checking any further condition. 
+    # but if the user is not premium but verfied then the method check the user's number of active posts if it is below three the method return true else it returns false.
     def can_post(self):
-        return self.is_verfied
+        no_of_user_active_posts =  Post.objects.filter(seller = self).exclude(state='sold').exclude(state='Archived').count()
+        print no_of_user_active_posts
+        if not self.is_verfied:
+            return False
+        else:
+            if self.is_premium:
+                return True
+            else:
+                if no_of_user_active_posts < 3:
+                    return True
+                else: 
+                    return False
+
+    #c1 abdelrahman the method takes self, and post id as an arguments it checks whether this combination is in the table if it is in the query set. 
+    # it returns false meaning that the user can not add this post to the wish list, else it returns true.
+    def add_to_wish_list(self, post_id):
+        if WishList.objects.filter(post=post_id , user = self).exists():
+            return "false"
+        else:
+            return "true"
 
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter
     def interested_in(self, post_in):
-        if self.can_post:
+        if self.is_verfied:
             if  Post.objects.filter(pk=post_in.id).exists():
                 user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
                 user1.save()
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
+
 
     def interested_Notification(self, post_in):
         user_in = self
@@ -268,6 +296,10 @@ class SubChannel(models.Model):
     name = models.CharField(max_length=64)#Holds the name of the subchannel
     channel = models.ForeignKey(Channel) #Foreign key id that references the id of the channel model
 
+    def __unicode__(self):
+        return self.name
+
+
 
 #Class Post documentation
 #The model Post define the table of posts in the data base. 
@@ -279,6 +311,7 @@ class SubChannel(models.Model):
 #Meaning that each buyer will have many purchased posts but each post will have only one buyer.
 
 class Post(models.Model):
+
     state = models.CharField(max_length=200, default= "New")
     expired = models.BooleanField(default= False)
     no_of_reports = models.IntegerField(null=True)
@@ -302,6 +335,7 @@ class Post(models.Model):
     buyer = models.ForeignKey(UserProfile, related_name = 'buyer_post', blank=True, null=True)
     is_sold = models.BooleanField()
     location = models.CharField(max_length = "100")
+
     
     #C1-Tharwat) returns to total number of reports on the current post
     def reportCount(self):
@@ -489,6 +523,8 @@ class Post(models.Model):
                 post.state = 'Archived'
                 post.save()
 
+    def __unicode__(self):
+        return self.title
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
@@ -633,3 +669,9 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+#c1_abdelrahman this is the class that holds the users and the posts they added in the wish list.
+class WishList(models.Model):
+    user = models.ForeignKey(UserProfile)
+    post = models.ForeignKey(Post)
+    class Meta:
+        unique_together = ("post","user")

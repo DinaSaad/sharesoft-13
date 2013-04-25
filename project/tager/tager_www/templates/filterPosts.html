@@ -1,4 +1,4 @@
-
+<script type="text/javascript">
 $(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
@@ -35,38 +35,15 @@ $(document).ajaxSend(function(event, xhr, settings) {
         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
     }
 });
+</script>
 
 
-
-$(document).ready(function(){
-  $('#advancedsearch_channels').change(function(){
-    var channel = $('#ad_Channel_dropdown').val()
-   $.ajax({
-       url: "/advanced_subchannel/",
-       type: "POST",
-       data: {
-       'ad_ch_id' : channel,
-       },
-           success:function(req){
-            $('#advancedsearch_subchannels').html(req)
-      }
-    });
-  });
-});
-
-
-$(document).ready(function(){
-$('#advancedsearch_subchannels').change(function(){
-    var subchannel = $('#ad_subChannel_dropdown').val()
-   $.ajax({
-       url: "/advanced_att/",
-       type: "POST",
-       data: {
-       'ad_sub_ch_id' : subchannel,
-       },
-           success:function(req){
-           	 $('#attributes_id').html(req)
-     }
-    });
-  });
-});
+<div id="posts_result" class="container">
+    {% if post_list %}
+    	{% for post in post_list %}
+    		<li>{{post}}</li> 
+    	{% endfor %}
+    {% else %}
+    	<h5> please select some subchannels to view </h5>
+    {% endif %}  
+</div>

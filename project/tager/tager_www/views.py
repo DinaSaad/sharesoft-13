@@ -25,7 +25,14 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+from django.shortcuts import render_to_response
+from django.shortcuts import RequestContext
+import re
+from tager_www.models import Post , UserProfile , Channel
+from django.db.models import Q
+import urllib
 
+<<<<<<< HEAD
 def edit_post_attribute(request):
     user = request.user
     post_id = request.POST['post']
@@ -92,6 +99,14 @@ def edit_post_title(request):
     return HttpResponse()
 
 
+=======
+APP_ID = '461240817281750'   # From facebook app's settings
+APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
+LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
+FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
+FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
+SCOPE_SEPARATOR = ' '
+>>>>>>> c1_abdelrahman_wishlist
 
 
 def home(request):
@@ -218,7 +233,10 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
     return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
-
+#c1_abdelrahman the add_post function requires the user to be logged in.
+#the sub_channel_id is received from the previous view. it displays a form to the user. 
+#if the user filled the form correctly then the user will be redirected to the homepage. 
+# if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
     sub_channel_id = request.GET['sub_ch_id']
@@ -244,15 +262,21 @@ def add_post(request):
             ,location = form.cleaned_data['location']
             ,
             )
-        # p.post_Notification()
+
+        p.post_Notification()
          
         
         for k in request.POST:
             if k.startswith('option_'):
+<<<<<<< HEAD
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
                 print k[7:]
                 print request.POST[k]
         return HttpResponse('Thank you for adding the post')
+=======
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post = p.id)    
+        return HttpResponseRedirect('/main/')
+>>>>>>> c1_abdelrahman_wishlist
     else:
 
         form = PostForm()
@@ -304,10 +328,22 @@ def check_Rate_Identify_buyer(request):
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
     return d
 
+def add_to_wish_list(request):
+    user = request.user
+    post = request.POST['post']
+    can_wish = user.add_to_wish_list(post)
+    if can_wish:
+        WishList.objects.create(user = user, post_id = post)
+    return HttpResponse()
+#c1_abdelrahman this method takes the user as an input and it gets the post.
+#from the the main page the post object object is extracted from the post table.
+#list of attributes are extracted and also list_of_values of the attributes are given.
+#it returns the post, list_of_attributes and list_of values of the attributes.
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
-    print post_id
+    post = Post.objects.get(id=post_id)
+    post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
@@ -315,14 +351,17 @@ def view_post(request):
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
-    list_of_interested_buyers = user.get_interested_in(post_id)
+    #if the user is a guest it will render an empty list
+    list_of_interested_buyers=[]
+    if user.id is not None:
+        list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
-
-    d = check_Rate_Identify_buyer(request)
-    dic.update(d)   
+    if user.id is not None:
+        d = check_Rate_Identify_buyer(request)
+        dic.update(d)   
     return render(request, 'ViewPost.html',dic,context_instance=RequestContext(request))
 
 
@@ -383,13 +422,15 @@ def Buyer_identification(request):
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
+    user = request.user
+    #c1_abdelrahman check whether the user can post or not.
+    user_can_post = user.can_post()
     post_list = filter_home_posts()
-    
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
-        i.post_state
+        i.post_state()
 
-    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -432,6 +473,12 @@ class CustomAuthentication:
 
 
 
+def  get_user(self):    
+    User = get_user_model()
+    return User
+
+
+
 
 #mai c2: registration
 #this method takes in a post request  
@@ -443,6 +490,7 @@ class CustomAuthentication:
 # then it redirects him to profile page 
 #or if there is errors it renders the same page again with the form and the request and a msg that says "please correct the following fields"
 #if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
+
 def UserRegistration(request):
 
     if request.method == 'POST':
@@ -470,6 +518,44 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+
+
+def get_channels (request):
+    channels = Channel.objects.all()
+    channels_list = [] 
+    for channel in channels:
+        subchannels = SubChannel.objects.filter(channel_id=channel.id)
+        subchannels_list = []
+        for subchannel in subchannels:
+            # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
+            subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    post_list = Post.objects.all()   
+    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
+
+
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# - this method creats variable channels , to store all channels available in the database, 
+# variable subchannels , to store all subchannels available in the database,
+#  channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
+# the method then return the channels_list only , as it holds , every attribute of subchannel
+# and every subchannel of a channel 
+
+def view_checked_subchannel_posts(request):
+    list_of_subchannelsID = request.GET.getlist('list[]')
+    results_of_subchannels = []
+    for li in list_of_subchannelsID:
+        results_of_subchannels.append(SubChannel.objects.filter(id = li))
+    post_list =[]
+    for sub in results_of_subchannels:
+        post_list.append(Post.objects.filter(subchannel = sub))
+    return render(request, "filterPosts.html", {'post_list': post_list})
+    
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# subchannel_id is the id retrieved from the webpage 
+# its is matched with with the subchannel id in the post model , 
+# the method returns the dictionairy of posts related to specific subchannels.
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
@@ -674,6 +760,171 @@ def advanced_search(request):#mohamed tarek c3
             post_list.append(Post.objects.get(id = a_post))
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
-
         else:
             return render(request,'main.html', {'post_list' : post_list})
+<<<<<<< HEAD
+=======
+
+
+
+# c3_Nadeem Barakat: this method is to split the query entered by the user  where the whole sentence is splitted by spaces into words 
+# and the method  get rid of the spaces and groups all the query together
+def normalize_query(query_string,
+                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    normspace=re.compile(r'\s{2,}').sub):
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)] 
+
+
+    #That combination aims to search keywords within a model by testing the given search fields.
+    #1st loop : loops over the search terms enetered by the user in the query one by one
+    #2nd loops is implemented to search for field name in the search fields and check whether it conatins the term (keyword) or not
+
+def get_query(query_string, search_fields):
+    query = None # Query to search for every search term        
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None # Query to search for a given term in each field
+        for field_name in search_fields: 
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+    # this search method gets the search word from the user and takes it to search in the database 
+    # the method filters the model by the search query and return the filtered list, this method
+    # defines 3 new variables called found posts , found users , found channels  which are a list of all 
+    #found results from the search process 
+    # this method takes the query_string which is the query entered by the user 
+    # the _query variable ( searches specific attributes in  each model  ex: post_query : 
+    #searches in title and description)
+def search(request):
+    query_string = ''
+    found_posts = None
+    found_users= None
+    found_channels = None
+
+    if ('q' in request.GET) and request.GET['q'].strip():
+        query_string = request.GET['q']
+        
+        post_query = get_query(query_string, ['title', 'description',])
+        user_query =  get_query(query_string, ['name'])
+        channel_query =get_query(query_string, ['name'])
+        found_posts = Post.objects.filter(post_query).order_by('-pub_date')
+        found_users = UserProfile.objects.filter(user_query).order_by('-name')
+        found_channels = Channel.objects.filter(channel_query)
+          
+        return render_to_response('main.html',{ 'query_string': query_string, 'post_list': found_posts, 'found_users': found_users,'found_channels' : found_channels },context_instance=RequestContext(request))
+    else:
+        return render(request,'main.html', {'post_list' : post_list, 'sorry': sorry})
+
+def fb_login(request, result):
+        mail = result.email
+        password = result.password
+        authenticated_user = authenticate(mail=mail, password=password)
+        if authenticated_user is not None:
+            print authenticated_user.is_active
+            if authenticated_user.is_active:
+                django_login(request, authenticated_user)
+                return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+            else:
+               return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+        else:
+            return render_to_response ('home.html',context_instance=RequestContext(request))
+
+def facebook_login(request):
+    if request.REQUEST.get("device"):
+        device = request.REQUEST.get("device")
+    else:
+        device = "user-agent"
+        params = {}
+        params["client_id"] = APP_ID
+        params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
+        params['scope'] = SCOPE_SEPARATOR.join(FACEBOOK_PERMISSIONS)
+        params["device"] = device
+        url = "https://graph.facebook.com/oauth/authorize?" + urllib.urlencode(params)
+        if 'HTTP_REFERER' in request.META:
+            request.session['next'] = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+        
+
+
+
+def fb_authenticate(request):
+    access_token = None
+    fb_user = None
+    uid = None
+    # assume logging in normal way
+    params = {}
+    params["client_id"] = APP_ID
+    params["client_secret"] = APP_SECRET
+    params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
+    params["code"] = request.GET.get('code', '')
+    url = ("https://graph.facebook.com/oauth/access_token?" + urllib.urlencode(params))
+    from cgi import parse_qs
+    userdata = urllib.urlopen(url).read()
+    res_parse_qs = parse_qs(userdata)
+    # Could be a bot query
+    if not ('access_token') in res_parse_qs:
+        return None
+    access_token = res_parse_qs['access_token'][-1]
+    url = "https://graph.facebook.com/me?access_token=" + access_token
+    import simplejson as json
+    fb_data = json.loads(urllib.urlopen(url).read())
+    uid = fb_data['id']
+    mail = fb_data['email']
+    if not fb_data:
+        return None
+    try:
+        userprofile = UserProfile.objects.get(facebook_uid=int(uid))
+        userprofile.accesstoken = access_token
+        mail = userprofile.email
+        userprofile.save()
+        return userprofile
+
+    except UserProfile.DoesNotExist:
+        uid = fb_data.get('id')
+        name= fb_data['name']
+        email = fb_data.get('email',None)
+        userprofile = UserProfile.objects.create(name=name,facebook_uid=uid,email=email)
+        userprofile.name = fb_data['name']
+        userprofile.email = fb_data.get('email',None)
+        userprofile.accesstoken = access_token
+        userprofile.facebook_uid = fb_data['id']
+        print userprofile
+        userprofile.save()
+        return userprofile
+
+def facebook_login_done(request):
+    result=fb_authenticate(request)
+    if isinstance(result, UserProfile):
+        fb_login(request, result)
+    if 'next' in request.session:
+        next = request.session['next']
+        del request.session['next']
+        return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
+
+#Beshoy intrested method Takes a request 
+#then then check if the user is verified ,
+#then input the values in  table [IntrestedIn] and Increment Intrested Counter
+@login_required
+def intrested(request):
+    print "intrested views"
+    post_in=request.POST["post_in"]
+    user=request.user
+    if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
+        intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post_in.seller,post=post_in)
+        intrest1.save()
+        post_in.intersed_count=post_in.intersed_count+1
+        post_in.save()
+
+    return HttpResponse()
+
+>>>>>>> c1_abdelrahman_wishlist

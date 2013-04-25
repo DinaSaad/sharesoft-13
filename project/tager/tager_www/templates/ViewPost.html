@@ -1,6 +1,70 @@
 {% extends 'base.html' %}
 {% load staticfiles%}
+{% block content %}
+<style type="text/css">
+.valuesdiv{
+  padding-left: 100px;
+}
+.mainbackground{
+  background-color:#DCDCDC; 
+}
+.btndivstyling{
+background-color:#DCDCDC;
+padding-right: 70px;
+padding-top: 50px;
+text-align: right;
+}
+</style>
+<div>
+<div class="container-fluid mainbackground">
+  <div class="row-fluid">
+   <div class="span4"><label>Imagearea</label>
+        <img src="{{post.profile_picture}" alt="profile pic" />
+      </div>
+    <div class="span8">
+     
+      <div class="span6">
+        <div class="span3">
 
+        <p> Title: </p>
+
+        <p> Description: </p>
+
+        <p> Price: </p>
+
+        <p> State:  </p>
+        {% if list_of_att_name %}
+
+          {% for Attribute in list_of_att_name %}
+
+          <p>{{Attribute.name}}</p>
+
+        {% endfor %}
+        {% endif %}
+
+        </div>
+        <div class="span3 valuesdiv">
+          <p>{{post.title}}</p>
+          <p>{{post.description}}</p>
+          <p>{{post.price}}</p>
+          <p>{{post.state}}</p>
+          {% if list_of_att_values %}
+
+          {% for Value in list_of_att_values %}
+
+          <p>{{Value.value}}</p>
+
+          {% endfor %}
+
+        {% endif %}  
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<<<<<<< HEAD
 {% block content%}
 <style type="text/css">
 .valuesdiv{
@@ -66,6 +130,15 @@ text-align: right;
 </div>
 
 
+=======
+
+
+
+
+				{% if add_buyer_button %}
+					<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+				{% endif %}
+>>>>>>> c1_abdelrahman_wishlist
 
 <div class="btndivstyling">
 {% if view_rating %}
@@ -73,10 +146,20 @@ text-align: right;
           {% endif %}
           <div id="star"></div>
     
+<<<<<<< HEAD
         
         <a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
         <button type="button" class="btn btn-info"> Interested in </button>
         <a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
+=======
+    
+    			{% if view_rating %}
+    				<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
+    			{% endif %}
+    			<div id="star"></div>
+
+    
+>>>>>>> c1_abdelrahman_wishlist
 
 
         <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
@@ -99,7 +182,17 @@ text-align: right;
 
             <img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
 
+<<<<<<< HEAD
             onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>    
+=======
+		  			<img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
+
+		  			onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
+
+        <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
+        
+            
+>>>>>>> c1_abdelrahman_wishlist
 
 </div>
   </div>
@@ -148,46 +241,44 @@ text-align: right;
 </div>
 
 
-</div>
 
 
 </div>
+<<<<<<< HEAD
 </div>
 </div>
 {% block script%}
+=======
+
+>>>>>>> c1_abdelrahman_wishlist
 
     <script type="text/javascript">
-
-    $(document).ready(function(){
-        $("#star").css("visibility", "hidden");
-    });
-    $("#rateSeller").click(function(){
-        // window.location.replace("profile?user_id="+$(this).val());
-        $("#star").css("visibility", "visible");
-    });
-    $(document).ready(function(){
-        $('#star').raty({ 
-            score: $('#rating').val(),
-            click: function(score, evt) {
-            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
-            $.ajax({
-                type: 'GET',
-                url: '/rateUser/',
-                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
-                success: function(){  
-                    $('#div.success').css("visibility", "hidden");  
-                }
-
-
-                         });
-
-        },
+    var eligible_to_add_to_the_wish_list = {{canwish}}
+    $("#wishlisterror").hide();
+    if(eligible_to_add_to_the_wish_list){
+      $('#wishlist').removeAttr("disabled");
+    }
+    function add_to_list(){
+      $.ajax({
+    url: '/addtomylist',
+    type: "POST",
+    data: {
+        "post" : {{post.id}},
+    }, 
+    success: function(result) {
+      $('#wishlist').attr("disabled", true);
+    alert("Successfully added to your wish list")
+    },
 
     });
-});
+    }
+
+
     </script>
-    {% endblock %}
 
+    
+
+    
 
 
 {% endblock %}

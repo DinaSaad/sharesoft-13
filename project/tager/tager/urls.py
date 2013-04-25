@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout, login
+from tager_www.views import *
 
 
 
@@ -11,6 +12,7 @@ urlpatterns = patterns('',
     
     
     url(r'^logout/$', logout, {'next_page':'/login'}),  
+<<<<<<< HEAD
     url(r'^editing/$', 'tager_www.views.edit_user_information'),
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
@@ -18,16 +20,26 @@ urlpatterns = patterns('',
     url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
     url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
     url(r'^editpost/$', 'tager_www.views.edit_post'),
+=======
+    
+>>>>>>> c1_abdelrahman_wishlist
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
-    url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
+    url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
+    # url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
+    url(r'^intrested/$', 'tager_www.views.intrested'),   
+
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
-    url(r'^getInterestedIn/$', 'tager_www.views.get_interested_in', name='getInterestedIn'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
-    
+    url(r'^homepage/$', 'tager_www.views.get_channels'),
+    url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
+
+    url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
+    url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
+
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
     url(r'^subchannels_sub/$', 'tager_www.views.return_subchannels'),
@@ -54,6 +66,11 @@ urlpatterns = patterns('',
     url(r'^addpost/$', 'tager_www.views.add_post', name='post_create'),
     url(r'^showpost/$', 'tager_www.views.view_post', name='view post'),
     url(r'^thankyou/$','tager_www.views.thankyou'),
+    url(r'^search/$', 'tager_www.views.search', name='search'),
+    url(r'^search_results/$', 'tager_www.views.search'),
+    
+
+
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
@@ -64,15 +81,4 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
-	# url(r'^tager_www/', include('tager_www.urls')),
-)
-
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
-
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
 )
