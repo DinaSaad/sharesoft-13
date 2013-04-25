@@ -196,7 +196,8 @@ def add_post(request):
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
+                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)
+                p.post_Notification()   
         return HttpResponse('Thank you for adding the post')
     else:
 
@@ -832,3 +833,28 @@ def intrested(request):
 
     return HttpResponse()
 
+#c2-mohamed awad
+#this def returns unread notifications to base.html
+def unread_notifications(request):
+    user_in = request.user
+    all_unread_notifications = Notification.objects.filter(user = user_in, read = False)
+    print all_unread_notifications
+    if all_unread_notifications:
+        print "after if"
+        for notification in all_unread_notifications:
+            print "after for"
+            notification.read = True
+            notification.save()
+            print "saved notification"
+            return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
+    else:
+        all_notifications = Notification.objects.filter(user = user_in)
+        all_unread_notifications = []
+        not_counter = 0
+        for notification in all_notifications:
+            all_unread_notifications.append(notification)
+            if not_counter == 5:
+                break
+            else:
+                not_counter = not_counter + 1
+        return render_to_response ('base.html',{'all_unread_notifications': all_unread_notifications})
