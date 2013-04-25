@@ -10,6 +10,27 @@ $(document).ready(function(){
 $('#Channel_dropdown').change(function(){
 	window.location.replace("viewsubchannels?ch_id="+$(this).val())
 });
+
+
+function update_attribute(attributeid, postid){
+    alert("kosomak");
+    var value = "13"
+
+    $.ajax({
+    url: "/testing/",
+    type: "POST",
+    data: {
+        "attribute": attributeid,
+        "post": postid,
+        "value": value,
+    }, 
+    success: function(result) {
+    alert("Successfully updated")
+    },
+    });
+}
+
+
 });
 
  // $(document).ready(function(){
@@ -221,6 +242,28 @@ function reportPost(ids){
         alert("Report Submitted... Thank you ! :D");  
     }
 });
+}
+function update_status_tosave(){
+  $("#update_status").hide();
+  $("#status").hide();
+  var status1 = $("#status").text();
+  $("#statusvalue").val(status1);
+  $('#statusvalue').css('display', 'block');
+  $('#savestatus').css('display', 'block');
+}
+function updates(){
+  var title = "test"
+  $.ajax({
+    url: "/updatestatus/",
+    type:"POST",
+    data:{
+      "status" : title,
+    },
+    success: function(result){
+      alert("test");
+    },
+
+  })
 }
  $(function() {
     var availableTags = [

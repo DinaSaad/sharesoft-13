@@ -10,25 +10,20 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
-    
+      
     url(r'^logout/$', logout, {'next_page':'/login'}),  
-<<<<<<< HEAD
-    url(r'^editing/$', 'tager_www.views.edit_user_information'),
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
     url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
     url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
     url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
     url(r'^editpost/$', 'tager_www.views.edit_post'),
-=======
-    
->>>>>>> c1_abdelrahman_wishlist
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
     # url(r'^intrested/$', 'tager_www.views.intrested', name="intrested"),  
     url(r'^intrested/$', 'tager_www.views.intrested'),   
-
+    url(r'^testing/$', 'tager_www.views.edit_post_dynamic'),
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
@@ -36,7 +31,6 @@ urlpatterns = patterns('',
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
-
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
 

@@ -32,7 +32,7 @@ from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
 
-<<<<<<< HEAD
+
 def edit_post_attribute(request):
     user = request.user
     post_id = request.POST['post']
@@ -99,14 +99,14 @@ def edit_post_title(request):
     return HttpResponse()
 
 
-=======
+
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
->>>>>>> c1_abdelrahman_wishlist
+
 
 
 def home(request):
@@ -263,20 +263,13 @@ def add_post(request):
             ,
             )
 
-        p.post_Notification()
+        # p.post_Notification()
          
         
         for k in request.POST:
             if k.startswith('option_'):
-<<<<<<< HEAD
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
-                print k[7:]
-                print request.POST[k]
-        return HttpResponse('Thank you for adding the post')
-=======
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post = p.id)    
-        return HttpResponseRedirect('/main/')
->>>>>>> c1_abdelrahman_wishlist
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+        return HttpResponseRedirect('/main')
     else:
 
         form = PostForm()
@@ -328,6 +321,8 @@ def check_Rate_Identify_buyer(request):
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
     return d
 
+
+
 def add_to_wish_list(request):
     user = request.user
     post = request.POST['post']
@@ -335,6 +330,19 @@ def add_to_wish_list(request):
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
     return HttpResponse()
+
+def edit_post_dynamic(request):
+    user = request.user
+    temp_attribute = request.POST['attribute']
+    value = request.POST['value']
+    temp_post = request.POST['post']
+    print "a7aa"
+    required_value = Values.objects.get(attribute_id = attribute, post_id = post)
+    
+    required_value.value = value
+    required_value.save()
+    return HttpResponse()
+
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
@@ -342,14 +350,18 @@ def add_to_wish_list(request):
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
-    post = Post.objects.get(id=post_id)
+    test_post = Post.objects.get(id=post_id)
+    can_edit = False
+    if test_post.seller == user:
+        can_edit = True
     post_can_be_wished = user.add_to_wish_list(post_id)
-    test_post = Post.objects.get(id = post_id)
+    # test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
-    list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
-
+ 
+    list_of_attribute_values = Value.objects.filter(post = test_post).order_by('attribute')
+    list_of_att_number = Attribute.objects.filter(subchannel_id = subchannel1)
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
     list_of_interested_buyers=[]
@@ -357,7 +369,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -443,7 +455,7 @@ def filter_home_posts():
     return post_list
 
 def filter_posts(post_list):
-    print post_list
+    # print post_list
     post_filtered = (post_list.objects.exclude(is_hidden=True)
         .exclude(expired=True)
         .exclude(is_sold=True)
@@ -704,8 +716,8 @@ def advanced_search(request):#mohamed tarek c3
                              #to values to get the value obects containig the attribute ids and value iputed and them 
                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
     sub_id = request.GET['ad_sub_id']
-    print "got subchannel id"
-    print sub_id
+    # print "got subchannel id"
+    # print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     values =[]
     post = []
@@ -762,8 +774,7 @@ def advanced_search(request):#mohamed tarek c3
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
             return render(request,'main.html', {'post_list' : post_list})
-<<<<<<< HEAD
-=======
+
 
 
 
@@ -828,7 +839,7 @@ def fb_login(request, result):
         password = result.password
         authenticated_user = authenticate(mail=mail, password=password)
         if authenticated_user is not None:
-            print authenticated_user.is_active
+            # print authenticated_user.is_active
             if authenticated_user.is_active:
                 django_login(request, authenticated_user)
                 return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
@@ -896,7 +907,7 @@ def fb_authenticate(request):
         userprofile.email = fb_data.get('email',None)
         userprofile.accesstoken = access_token
         userprofile.facebook_uid = fb_data['id']
-        print userprofile
+        # print userprofile
         userprofile.save()
         return userprofile
 
@@ -916,7 +927,7 @@ def facebook_login_done(request):
 #then input the values in  table [IntrestedIn] and Increment Intrested Counter
 @login_required
 def intrested(request):
-    print "intrested views"
+    # print "intrested views"
     post_in=request.POST["post_in"]
     user=request.user
     if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
@@ -927,4 +938,4 @@ def intrested(request):
 
     return HttpResponse()
 
->>>>>>> c1_abdelrahman_wishlist
+

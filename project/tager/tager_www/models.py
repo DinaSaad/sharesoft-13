@@ -239,7 +239,6 @@ class UserProfile(AbstractBaseUser):
             return "false"
         else:
             return "true"
-
     #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
     #then then check if the user is verified ,
     #then input the values in  table [IntrestedIn] and Increment Intrested Counter

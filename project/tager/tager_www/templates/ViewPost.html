@@ -1,200 +1,177 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load staticfiles%}
 {% block content %}
-<style type="text/css">
-.valuesdiv{
-  padding-left: 100px;
+<style> 
+.testdiv
+{
+/*padding:10px 40px; */
+background:#dddddd;
+width: :700px;
 }
-.mainbackground{
-  background-color:#DCDCDC; 
+.divcontent{
+  padding-left: 50px;
 }
-.btndivstyling{
-background-color:#DCDCDC;
-padding-right: 70px;
-padding-top: 50px;
-text-align: right;
+.maincontent{
+  padding-right: 50px;
 }
+.divpad{
+    padding-top: 7.5px;
+}
+.editicons{
+  padding-top: 12px;
+}
+
 </style>
-<div>
-<div class="container-fluid mainbackground">
-  <div class="row-fluid">
-   <div class="span4"><label>Imagearea</label>
-        <img src="{{post.profile_picture}" alt="profile pic" />
-      </div>
-    <div class="span8">
-     
-      <div class="span6">
-        <div class="span3">
-
-        <p> Title: </p>
-
-        <p> Description: </p>
-
-        <p> Price: </p>
-
-        <p> State:  </p>
-        {% if list_of_att_name %}
-
-          {% for Attribute in list_of_att_name %}
-
-          <p>{{Attribute.name}}</p>
-
-        {% endfor %}
-        {% endif %}
-
-        </div>
-        <div class="span3 valuesdiv">
-          <p>{{post.title}}</p>
-          <p>{{post.description}}</p>
-          <p>{{post.price}}</p>
-          <p>{{post.state}}</p>
-          {% if list_of_att_values %}
-
-          {% for Value in list_of_att_values %}
-
-          <p>{{Value.value}}</p>
-
-          {% endfor %}
-
-        {% endif %}  
-        
-        </div>
-      </div>
+{% if not can_edit %}
+<div class="row-fluid maincontent">
+  <div class="span1">
+    <label>a5tebar</label>
     </div>
-  </div>
-</div>
-
-<<<<<<< HEAD
-{% block content%}
-<style type="text/css">
-.valuesdiv{
-  padding-left: 100px;
-}
-.mainbackground{
-  background-color:#DCDCDC; 
-}
-.btndivstyling{
-background-color:#DCDCDC;
-padding-right: 70px;
-padding-top: 50px;
-text-align: right;
-}
-</style>
-<div>
-<div class="container-fluid mainbackground">
+<div class="testdiv span4">
+       <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+</div>    
+<div class="testdiv span6">
   <div class="row-fluid">
-   <div class="span4"><label>Imagearea</label>
-        <img src="{{post.profile_picture}" alt="profile pic" />
+    <div class="span4">
+      <div class="divpad">
+      <label>Title:</label>
       </div>
-    <div class="span8">
-     
-      <div class="span6">
-        <div class="span3">
-
-        <p> Title: </p>
-
-        <p> Description: </p>
-
-        <p> Price: </p>
-
-        <p> State:  </p>
-        {% if list_of_att_name %}
-
-          {% for Attribute in list_of_att_name %}
-
-          <p>{{Attribute.name}}</p>
-
-        {% endfor %}
-        {% endif %}
-
-        </div>
-        <div class="span3 valuesdiv">
-          <p>{{post.title}}</p>
-          <p>{{post.description}}</p>
-          <p>{{post.price}}</p>
-          <p>{{post.state}}</p>
-          {% if list_of_att_values %}
-
-          {% for Value in list_of_att_values %}
-
-          <p>{{Value.value}}</p>
-
-          {% endfor %}
-
-        {% endif %}  
-        
-        </div>
+      <div class="divpad">
+      <label>Description:</label>
       </div>
+      <div class="divpad">
+      <label>Price:</label>
+      </div>
+      <div class="divpad">
+      <label>Location:</label>
+        </div>
+     {% for Attribute in list_of_attribute_name%}
+    <div class="divpad">
+    <label id="{{Attribute.id}}">{{Attribute.name}}</label>
     </div>
+    {% endfor %} 
+    </div>
+    <div class="span8 divcontent">
+      <div class="divpad">
+        <label id="title1">{{post.title}}</label></label> 
+    <input id="title1value" style="display:none">
+    </div>
+        <div class="divpad">
+    <label id="description">{{post.description}}</label>
+    <input id="descriptionvalue" style="display:none">
+        </div>
+        <div class="divpad">
+    <label id="price">{{post.price}}</label>
+    <input id="pricevalue" style="display:none">
+    </div>
+    <div class="divpad">
+        <label id="location">{{post.location}}</label>
+    <input id="locationvalue" style="display:none">
+        </div>
+   <!--  {% for Value in list_of_attribute_values%}
+        <div class="divpad">
+        <label id="{{Value.id}}">{{Value.value}}</label>
+        <input id="value_{{Value.value}}" style="display:none">
+        </div>
+        {% endfor %} -->
+
+    </div>
+  {% endif %}
+
+  {% if can_edit %}
+  <div class="row-fluid maincontent">
+  <div class="span1">
+    <label>a5tebar</label>
+    </div>
+<div class="testdiv span4">
+       <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+</div>    
+<div class="testdiv span6">
+  <div class="row-fluid">
+    <div class="span2">
+      <div class="divpad">
+      <label>Title:</label>
+      </div>
+      <div class="divpad">
+      <label>Description:</label>
+      </div>
+      <div class="divpad">
+      <label>Price:</label>
+      </div>
+      <div class="divpad">
+      <label>Location:</label>
+        </div>
+  {% for Attribute in list_of_attribute_name%}
+    <div class="divpad">
+    <label id="attributelabel_{{Attribute.id}}">{{Attribute.name}}</label>
+    </div>
+    {% endfor %} 
+    </div>
+    <div class="span6 divcontent">
+      <div class="divpad">
+        <label id="title1">{{post.title}}</label></label> 
+    <input id="title1value" style="display:none">
+    </div>
+        <div class="divpad">
+    <label id="description">{{post.description}}</label>
+    <input id="descriptionvalue" style="display:none">
+        </div>
+        <div class="divpad">
+    <label id="price">{{post.price}}</label>
+    <input id="pricevalue" style="display:none">
+    </div>
+    <div class="divpad">
+        <label id="location">{{post.location}}</label>
+    <input id="locationvalue" style="display:none">
+        </div>
+         {% for Value in list_of_attribute_values%}
+        <div class="divpad">
+        <label id="value_{{Value.attribute.id}}">{{Value.value}}</label>
+        <input id="attribute_value_{{Value.attribute.id}}" style="display:none">
+        </div>
+        {% endfor %} 
+ 
+    </div>
+    <div class="span2" >
+
+  <label class="editicons"><i class="icon-edit" id="edit_title" onClick="update_title_preparation()"></i>
+ <i class="icon-ok " style="display:none" onClick="update_title({{post.id}})" id="titlesave"></i></label>
+
+   <label class="editicons"> <i class="icon-edit" id="edit_description" onClick="update_description_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_description({{post.id}})" id="descriptionsave"></i></label>
+<label class= "editicons">
+    <i class="icon-edit" id="edit_price" onClick="update_price_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_price({{post.id}})" id="pricesave"></i>
+    </label>
+    <label class="editicons">
+    <i class="icon-edit" id="edit_location" onClick="update_location_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_location({{post.id}})" id="locationsave"></i>
+    </label>
+    {% for Attribute in no %}
+    <label class="editicons">
+    <i class="icon-edit" id="edit_attribute_button_{{Attribute.id}}" onClick="update_attribute_preparation({{Attribute.id}})"></i>
+
+    <i class="icon-ok" style="display:none" id="save_attribute_button_{{Attribute.id}}" onClick="update_attribute({{Attribute.id}},{{post.id}})" ></i>
+   </label>
+    {% endfor %}
+    {% endif %}
   </div>
+  </div>
+<div>
+<label id="testasd1">testing l 5ra</label>
+</div>
+</div>
+<div class="span1">
+  <label>{{can_edit}}</label>
+  <label>{{post.seller.id}}</label>
+
+</div>
 </div>
 
 
-=======
 
 
 
-
-				{% if add_buyer_button %}
-					<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
-				{% endif %}
->>>>>>> c1_abdelrahman_wishlist
-
-<div class="btndivstyling">
-{% if view_rating %}
-          <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
-          {% endif %}
-          <div id="star"></div>
-    
-<<<<<<< HEAD
-        
-        <a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
-        <button type="button" class="btn btn-info"> Interested in </button>
-        <a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
-=======
-    
-    			{% if view_rating %}
-    				<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
-    			{% endif %}
-    			<div id="star"></div>
-
-    
->>>>>>> c1_abdelrahman_wishlist
-
-
-        <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
-        the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
-        <a href="http://twitter.com/home?status=Your%20message%20here:%20
-          http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
-
-
-        <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
-        the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
-        <a href="https://www.facebook.com/dialog/feed?
-            app_id=461240817281750&
-            link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
-            name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
-            caption=Reference%20Documentation&
-            description=Using%20Dialogs%20to%20interact%20with%20users.&
-            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
-
-            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
-
-            <img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
-
-<<<<<<< HEAD
-            onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>    
-=======
-		  			<img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
-
-		  			onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
-
-        <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
-        
-            
->>>>>>> c1_abdelrahman_wishlist
-
-</div>
   </div>
 
 
@@ -244,13 +221,9 @@ text-align: right;
 
 
 </div>
-<<<<<<< HEAD
 </div>
 </div>
 {% block script%}
-=======
-
->>>>>>> c1_abdelrahman_wishlist
 
     <script type="text/javascript">
     var eligible_to_add_to_the_wish_list = {{canwish}}
@@ -273,6 +246,135 @@ text-align: right;
     });
     }
 
+function update_title_preparation() {
+    $("#edit_title").hide();
+    $('#title1').hide();
+    var title = $('#title1').text();
+    $('#title1value').val(title);
+    $('#title1value').css('display', 'block');
+    $('#titlesave').css('display', 'block');
+   
+}    
+function update_description_preparation(){    
+    $("#edit_description").hide();
+    $('#description').hide();
+    var description = $('#description').text();
+    $('#descriptionvalue').val(description);
+    $('#descriptionvalue').css('display', 'block');
+    $('#descriptionsave').css('display', 'block');
+}    
+function update_location_preparation(){
+    $("#edit_location").hide();
+    $('#location').hide();
+    var location = $('#location').text();
+    $("#locationvalue").val (location);
+    $('#locationvalue').css('display', 'block');
+     $('#locationsave').css('display', 'block');
+}
+function update_price_preparation(){
+    $("#edit_price").hide();
+    $('#price').hide();
+    var price = $('#price').text();
+    $('#pricevalue').val(price);
+    $('#pricevalue').css('display', 'block');
+     $('#pricesave').css('display', 'block');
+}
+function update_attribute_preparation(id){
+    var current_attribute_value = $('#value_'+id).text();
+    $('#value_'+id).hide();
+    $('#attribute_value_'+id).val(current_attribute_value);
+    $('#attribute_value_'+id).css('display', 'block');
+    $('#edit_attribute_button_'+id).css('display', 'none');
+    $('#save_attribute_button_'+id).css('display', 'block');
+}
+
+
+    function update_title(id){
+    
+    var title = $('#title1value').val();
+    $.ajax({
+    url: "/editposttitle/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "title": title,
+    }, 
+    success: function(result) {
+    alert("Successfully updated")
+    $('#title1').text($('#title1value').val());
+    $('#title1').show();
+    $('#title1value').hide();
+    $('#titlesave').hide();
+    $('#edit_title').show();
+    },
+    });
+}
+
+
+function update_description(id){
+   var description = $('#descriptionvalue').val();    
+    $.ajax({
+    url: "/editpostdescription/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "description": description,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#description').text($('#descriptionvalue').val());
+    $('#description').show();
+    $('#descriptionvalue').hide();
+    $('#descriptionsave').hide();
+    $('#edit_description').show();
+    },
+
+    });
+}
+function update_price(id){
+   var price = $('#pricevalue').val();        
+    $.ajax({
+    url: "/editpostprice/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "price":price,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#price').text($('#pricevalue').val());
+    $('#price').show();
+    $('#pricevalue').hide();
+    $('#pricesave').hide();
+    $('#edit_price').show();
+    },
+
+    });
+}
+
+function update_location(id){
+   var location = $('#locationvalue').val();        
+    $.ajax({
+    url: "/editpostlocation/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "location":location,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#location').text($('#locationvalue').val());
+    $('#location').show();
+    $('#locationvalue').hide();
+    $('#locationsave').hide();
+    $('#edit_location').show();
+    },
+
+    });
+}
 
     </script>
 
@@ -284,3 +386,4 @@ text-align: right;
 {% endblock %}
 
 
+{% endblock %}
