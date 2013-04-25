@@ -3,9 +3,24 @@
 
 {% block content %}
     
+    {% load url from future %}
+        {% if request.user.is_authenticated %}
+            Hello {{ request.user.first_name }} {{ request.user.last_name }}, your now connected with facebook
+        {% else %}
+            <div id="content" style="background-color:#EEEEEE;width:100%;height:100%;padding-top:40px;align:center;padding-left:35%;padding-top:25%">
+                        <a href="{% url 'facebook_login' %}"><button class="btn btn-primary btn-large"><i class="icon-white icon-user"></i> Login with Facebook</button></a>
+                        </div>
+        {% endif %}
+
       <div>
         <p class="h4">already have an account ? <a class="brand" href="/login/">sign in</a></p>
       </div>
+      <div>
+        <p class="h4"><a class="brand" href="../register/">sign up</a></p>
+      </div>
+
+
+
 {% endblock %}
 
 

@@ -6,7 +6,7 @@ from django.utils.timezone import utc
 import datetime
 from datetime import datetime, timedelta
 
-EXPIRATION_DAYS = 10
+
 
 from django.db.models import Sum , Avg 
 
@@ -86,6 +86,7 @@ class UserProfile(AbstractBaseUser):
      )
     gender = models.CharField(max_length=1, choices=gender_choices , null=True)
     
+    friends = models.ManyToManyField ("self")
     
     objects = MyUserManager()  
     
@@ -133,15 +134,7 @@ class UserProfile(AbstractBaseUser):
         return self.is_admin
 
 
-    #mai :registertaion
-    #this method takes self and just checks if the todays date from the time of the creation of the user is greater then
-    #the expired date set then the key is expired so it retunrs true 
-    #else returns false 
-
-    def is_expired(self):
-        if (datetime.now() - self.created).days >= EXPIRATION_DAYS:
-            return True
-        return False
+   
 
     #C2-mahmoud ahmed- as a user i should be able to rate seller whom i bought from before- canRate method 
     #is a method that takes in an object user as in "self" and a post id and what it does is it gets the Post
@@ -213,16 +206,8 @@ class UserProfile(AbstractBaseUser):
     def can_post(self):
         return self.is_verfied
 
-    #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
-    #then then check if the user is verified ,
-    #then input the values in  table [IntrestedIn] and Increment Intrested Counter
-    def interested_in(self, post_in):
-        if self.can_post:
-            if  Post.objects.filter(pk=post_in.id).exists():
-                user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
-                user1.save()
-                post_in.intersed_count=post_in.intersed_count+1
-                post_in.save()
+
+
 
     def interested_Notification(self, post_in):
         user_in = self
