@@ -425,39 +425,43 @@ def UserRegistration(request):
 # the photo of the user. The logged in users are directed to the editing page whenever he wants to edit an information
 # about himself in which the editing form will be made available for him to write the modified information and saved 
 # him on his account. For the users who are not logged in or does not exist he will be redirected to the login page.
-@login_required
-def editing_UsersInformation(request):
-    if request.method == 'POST': #if the form has been submitted
-        editing_form = EditingUserProfileForm(request.POST, request.FILES)#a form bound to the POST data
-        if editing_form.is_valid():#all validation rules pass
-            # user_id = request.UserProfile.id
-            tmp_user = UserProfile.objects.get(pk=request.user.id)
-            name          = editing_form.cleaned_data['name']
-            date_Of_birth = editing_form.cleaned_data['date_Of_birth']
-            phone_number  = editing_form.cleaned_data['phone_number']
-            gender        = editing_form.cleaned_data['gender']
-            photo         = editing_form.cleaned_data['photo']
+# @login_required
+# def editing_user_information(request):
+#     user = request.user
+#     user.name = request.POST['user_name']
+#     user.date_Of_birth = request.POST['dateofbirthsubmitted']
+#     user.phone_number = request.POST['telephonenumbersubmitted']
+#     user.gender = request.POST['gender1']
+#     user.works_at = request.POST['work1']
+#     user.save()
 
-            if name != "":
-                tmp_user.name = name
-                tmp_user.save()
-            if date_Of_birth != "":
-                tmp_user.date_Of_birth = date_Of_birth
-                tmp_user.save()
-            if phone_number != "":
-                tmp_user.phone_number = phone_number
-                tmp_user.save()
-            if gender != "":
-                tmp_user.gender = gender
-                tmp_user.save()
-            if photo != "":
-                tmp_user.photo = photo
-                tmp_user.save()
-            # return HttpResponseRedirect('/Thank/') #redirect after POST
-    else:
-        editing_form =EditingUserProfileForm()#an unbound form  
-    context = {'editing_form': editing_form}
-    return render_to_response('editing.html', context, context_instance=RequestContext(request))
+@login_required
+def edit_name(request):
+    print"testing the method"
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse(" ")
+
+@login_required
+def edit_dob(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirthsubmitted']
+    user.save()
+    return HttpResponse(" ")
+
+# @login_required
+# def edit_number(request):
+#     user = request.user
+#     user.phone_number = request.POST['telephonenumbersubmitted']
+#     user.save()
+
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse(" ")
 
 
 @csrf_protect
