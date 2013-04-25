@@ -85,16 +85,6 @@ class RegistrationForm(forms.ModelForm):
 class ConfirmationForm(forms.Form):
     verify = forms.CharField(label='verify')
 
-class EditingUserProfileForm(forms.Form):
-    name          = forms.CharField()
-    date_Of_birth = forms.DateField()
-    phone_number  = forms.CharField()
-    gender_choices = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-     )
-    gender        = forms.ChoiceField(choices=gender_choices)
-    photo         = forms.ImageField()
 
 class PasswordResetForm(forms.Form):
     # error_messages = {
