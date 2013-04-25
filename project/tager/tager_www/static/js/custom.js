@@ -257,5 +257,61 @@ function report(id) {
 function cancelReport(id) {
   $('.reportDIV' + id).css('display', 'none');  
   $('#report_button' + id).css('display', 'block');
-
 }
+
+$(document).ready(function() {
+$(function(){
+  $('#statusoutput').text("Can not be blank");
+  $('#statusvalue').keyup(function(){
+    data = $(this).val();
+    var x = false;    
+    if( data == ""){
+    $('#SubmitAction').attr("disabled", true);    
+    $('#statusoutput').text("The title can not be spacs");
+    }
+    else{
+    if( data.length > 400){
+    $('#SubmitAction').attr("disabled", true);    
+    $('#statusoutput').text("The title can not be more than 400 characters");
+    }
+    else{
+    $('#SubmitAction').removeAttr("disabled");    
+    $('#statusoutput').text("");
+    }
+    }
+    $('#SubmitAction').attr("disabled", true);
+    }
+
+$('#SubmitAction').attr("disabled", true);
+
+});
+  });
+});
+
+$(document).ready(function() {
+$(function(){
+  $('#statusvalue').keyup(function(){
+    var data = $(this).val();
+    var pattern = /[a-z]|[A-Z]|\d+/;
+    if (data.length <= 400 && data.match(pattern)) {
+              $('#SubmitAction').removeAttr("disabled");    
+              $('#statusoutput').text("");
+               
+                return true;
+            }
+
+          else {
+            if( data.length > 400){
+            $('#SubmitAction').attr("disabled", true);    
+            $('#statusoutput').text("The title can not be more than 400 characters");
+            }
+          }
+          else {
+            if( data == ""){
+            $('#SubmitAction').attr("disabled", true);    
+            $('#statusoutput').text("The title can not be spacs");
+            }
+          } 
+});
+  });
+});
