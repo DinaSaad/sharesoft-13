@@ -4,7 +4,6 @@
 	{% block content %}
 	<div id="advancedsearch_channels">
 	{% if channels_list %}
-	<form id="adv_channel" name = "adv_channel_form" method "post" action = "/advanced_search/channel_show/">
 	<select id="ad_Channel_dropdown">
 	<option  value ="">please select a channel</option>
 	{% for channel in channels_list%}
@@ -12,30 +11,32 @@
 	{% endfor %}
 	</select>
 	<button type = "submit" id = "advanced_render_channels">Submit</button>
-	</form>
 	{% endif %}
 	
 	</div>
+	<div id = "advanced_button_sub">
 	<div id="advancedsearch_subchannels">
+	{% if subchannels_list %}
 	<select id = "ad_subChannel_dropdown" >
 	<option id = "" value ="">please select a subchannel</option>
-	{% if subchannels_list %}
 	{% for subchannel in subchannels_list %}
-	<option value = "{{subchannel.id}}">{{subchannel.name}}</option>
+	<option name = "ad_sub_ch_id" value = "{{subchannel.id}}">{{subchannel.name}}</option>
 	{% endfor %}
-	{% endif %}
 	</select>
+	{% endif %}
+	</div>
+	<button type = "submit" id = "advanced_render_subchannels">Submit</button>
 	</div>
 	<div id = "attributes_id">
-	{% if list_of_attributes %}
 	<form id="attributes" name = "attribute_form" method "post" action = "/advanced_search/">
+	{% if list_of_attributes %}
 	{% csrf_token %}
 	<input type="text" name="ad_sub_id" value = "{{sub_id}}" style = "display:none;">
 	{% for Attribute in list_of_attributes %}
 	{{Attribute.name}}: <input id = "attributes_txt" type="text" name="{{Attribute.name}}"><br>
 	{% endfor %}
 	<button type = "submit" id = "advanced_search">Submit</button>
-	</form>
 	{% endif %}
+	</form>
 	</div>
 	{% endblock %}

@@ -584,15 +584,21 @@ def advanced_view_subchannels(request):
 def advanced_view_channels(request):
     channels_list = Channel.objects.all()
     return render(request,'advancedsearch.html', {'channels_list': channels_list})
+    #mohamed hammad
+    #C3
+    #this method takes as input request channel id and renders this channel to main page
 def advanced_render_channels(request):
-    if request.GET['ad_ch_id']:
+    if request.GET.get('ad_ch_id' , False):
         channel_id = request.GET['ad_ch_id']
         channel = Channel.objects.get(id = channel_id)
         return render(request,'main.html', {'channel': channel})
     else: 
         return HttpResponse("please choose a channel")
+    #mohamed hammad
+    #C3
+    #this method takes as input request subchannel id and renders this subchannel to main page
 def advanced_render_subchannels(request):
-    if request.GET['ad_sub_ch_id']:  
+    if request.GET.get('ad_sub_ch_id' , False):  
         subchannel_id = request.GET['ad_sub_ch_id']
         subchannel = SubChannel.objects.get(id = subchannel_id)
         return render(request,'main.html', {'subchannel': subchannel})
