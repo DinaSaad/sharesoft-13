@@ -27,7 +27,7 @@ from django.template.loader import get_template
 from twilio.rest import TwilioRestClient
 from django.conf import settings
 
-
+#mai
 
 
 def home(request):
