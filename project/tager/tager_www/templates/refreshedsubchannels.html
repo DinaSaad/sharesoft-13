@@ -1,7 +1,7 @@
 	<select id = "ad_subChannel_dropdown" >
 	<option id = "" value ="">please select a subchannel</option>
-	{% if list_of_subchannels %}
-	{% for subchannel in list_of_subchannels %}
+	{% if subchannels_list %}
+	{% for subchannel in subchannels_list %}
 	<option value = "{{subchannel.id}}">{{subchannel.name}}</option>
 	{% endfor %}
 	{% endif %}

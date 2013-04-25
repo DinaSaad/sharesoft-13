@@ -576,19 +576,28 @@ def verfiy_captcha(request):
     #mohamed hammad C3 
     #this method takes as input channel id and then returns its subchannels
 def advanced_view_subchannels(request):
-    # print request.POST
     s_id = request.POST['ad_ch_id']
-
-    # print s_id
-    #current_channel = Channel.objects.filter(channel_id = s_id)
-    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
-    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    subchannels_list = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'subchannels_list': subchannels_list})
     #mohamed hammad C3 
     #this method returns all channels
-
 def advanced_view_channels(request):
-    list_of_channels = Channel.objects.all() 
-    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+    channels_list = Channel.objects.all()
+    return render(request,'advancedsearch.html', {'channels_list': channels_list})
+def advanced_render_channels(request):
+    if request.GET['ad_ch_id']:
+        channel_id = request.GET['ad_ch_id']
+        channel = Channel.objects.get(id = channel_id)
+        return render(request,'main.html', {'channel': channel})
+    else: 
+        return HttpResponse("please choose a channel")
+def advanced_render_subchannels(request):
+    if request.GET['ad_sub_ch_id']:  
+        subchannel_id = request.GET['ad_sub_ch_id']
+        subchannel = SubChannel.objects.get(id = subchannel_id)
+        return render(request,'main.html', {'subchannel': subchannel})
+    else:
+        return HttpResponse("please choose a subchannel")
 
 #mohamed tarek 
 #c3 takes as input the subchannel id sellected then return all attributes of it 
@@ -607,6 +616,7 @@ def advanced_search(request):#mohamed tarek c3
     print "got subchannel id"
     print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    price = request.GET['price']
     values =[]
     post = []
     value_obj =[]
@@ -621,7 +631,13 @@ def advanced_search(request):#mohamed tarek c3
     i = 0
     f = i+1
     null = ""
-    for j in range(0,len(values)):
+    if price:
+        result_search_obj+=[ (Post.objects.filter(price = price)) ]
+        result_search = [[] for o in result_search_obj]
+        for aa in range(0,len(result_search_obj[0])):
+            result_search[0].append(result_search_obj[0][aa].id)
+
+    for j in range(1,len(values)):
         if values[j] == null:
             pass
         else:
@@ -629,9 +645,8 @@ def advanced_search(request):#mohamed tarek c3
             , value = values[j])) ]
     if not result_search_obj:
         return HttpResponse("please enter something in the search")
-    else:
-        result_search = [[] for o in result_search_obj]    
-        for k in range(0,len(result_search_obj)):
+    else:    
+        for k in range(1,len(result_search_obj)):
             for l in range(0,len(result_search_obj[k])):
                 test = result_search_obj[k][l].value
                 result_search[k].append(result_search_obj[k][l].post.id)
@@ -720,74 +735,5 @@ def search(request):
         return render_to_response('main.html',{ 'query_string': query_string, 'post_list': found_posts, 'found_users': found_users,'found_channels' : found_channels },context_instance=RequestContext(request))
     else:
         return render(request,'main.html', {'post_list' : post_list, 'sorry': sorry})
-
-
-# def advanced_search_helper(basic_search_list):#mohamed tarek c3 
-#                              #this method takes attributes as input and takes values from the user them compares them  
-#                              #to values to get the value obects containig the attribute ids and value iputed and them 
-#                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
-#     sub_id = request.GET['sub_ch_id']
-#     attributes = Attribute.objects.filter(subchannel_id = sub_id)
-#     values =[]
-#     post = []
-#     value_obj =[]
-#     for w in attributes:
-#         name = w.name
-#         values.append(request.GET[name])
-#     result_search_obj = []
-#     flag = False
-#     result_search = []
-#     result = []
-#     post = []
-#     i = 0
-#     f = i+1
-#     null = ""
-#     basic_search_values = []
-#     for r in range(0,len(basic_search_list)):
-#         basic_search_values = [(Value.objects.filter(post = basic_search_list[r])) ]
-#     for j in range(0,len(values)):
-#         if values[j] == null:
-#             pass
-#         else:
-#             for e in range(0,len(values)):
-#             result_search_obj+=[ (Value.objects.filter(attribute_id = attributes[j].id 
-#             , value = values[j])) ]
-#     if not result_search_obj:
-#         return HttpResponse("please enter something in the search")
-#     else:
-#         result_search = [[] for o in result_search_obj]    
-#         for k in range(0,len(result_search_obj)):
-#             for l in range(0,len(result_search_obj[k])):
-#                 test = result_search_obj[k][l].value
-#                 result_search[k].append(result_search_obj[k][l].post.id)
-#         tmp=result_search[0]
-#         if len(result_search) == 1:
-#             post=result_search[0]
-#         else:
-#             for h in range(1,len(result_search)):
-#                 post_temp = ""
-#                 for g in range(0,len(result_search[h])):
-#                     if not result_search[h]:
-#                         flag = True
-#                         pass
-#                     else:
-#                         if flag == True:
-#                             h=h-1
-#                         loc = tmp[g]
-#                         tmep =result_search[h]
-#                         loce = tmep[g]
-#                         if loc == tmep[g]:
-#                             flag = True
-#                             post_temp = tmep[g]
-#                             post.append(post_temp)
-#         post_obj =[]
-#         for a_post in post:
-#             post_obj.append(Post.objects.get(id = a_post))
-#         if not post_obj:
-#             return HttpResponse("there is no posts with these values please refine your search.")
-
-#         else:
-#             print post_obj
-#             post_list=filter_posts(post_obj)
-#             return render('main.html', {'post_list' : post_list})
-
+def testRender(self):
+    return render_to_response('test.html') 

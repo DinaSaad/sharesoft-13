@@ -39,7 +39,9 @@ urlpatterns = patterns('',
     url(r'^rateUser/$', 'tager_www.views.User_Ratings'),
     url(r'^advanced_att/$','tager_www.views.get_attributes_of_subchannel'),
     url(r'^advanced_subchannel/$','tager_www.views.advanced_view_subchannels'),
+    url(r'^advanced_subchannel_show/$','tager_www.views.advanced_render_subchannels'),
     url(r'^advanced_search/channel/$','tager_www.views.advanced_view_channels'),
+    url(r'^advanced_search/channel_show/$','tager_www.views.advanced_render_channels'),
     url(r'^advanced_search/$','tager_www.views.advanced_search'),
     url(r'^viewsubchannels', 'tager_www.views.view_subchannels', name='index'),
     url(r'^viewchannels$', 'tager_www.views.view_channels', name='index'),
@@ -52,6 +54,9 @@ urlpatterns = patterns('',
     url(r'^thankyou/$','tager_www.views.thankyou'),
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
+    url(r'^test/$' , 'tager_www.views.testRender'),
+
+
     
 
 
