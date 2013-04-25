@@ -289,6 +289,7 @@ function update_attribute_preparation(id){
 }
 
 
+
     function update_title(id){
     
     var title = $('#title1value').val();
@@ -375,6 +376,30 @@ function update_location(id){
 
     });
 }
+
+function update_attribute(attributeid, postid){
+    var value = $('#attribute_value_'+attributeid).val();
+    $.ajax({
+    url: "/testing/",
+    type: "POST",
+    data: {
+
+        "attribute": attributeid,
+        "post": postid,
+        "value": value,
+    }, 
+    success: function(result) {
+    alert("The value has been successfully updated");
+    $('#value_'+attributeid).text(value);
+    $('#attribute_value_'+attributeid).css('display', 'none');
+    $('#value_'+attributeid).show();
+    $('#attribute_value_'+attributeid).val(value);
+    $('#save_attribute_button_'+attributeid).css('display', 'none');
+    $('#edit_attribute_button_'+attributeid).css('display', 'block');    
+    },
+    });
+}
+
 
     </script>
 

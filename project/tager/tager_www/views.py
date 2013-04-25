@@ -32,6 +32,17 @@ from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
 
+def edit_post_dynamic(request):
+    user = request.user
+    temp_attribute = request.POST['attribute']
+    value = request.POST['value']
+    temp_post = request.POST['post']
+    print "a7aa"
+    required_value = Value.objects.get(attribute_id = temp_attribute, post_id = temp_post)
+    
+    required_value.value = value
+    required_value.save()
+    return HttpResponse()
 
 def edit_post_attribute(request):
     user = request.user
@@ -331,17 +342,7 @@ def add_to_wish_list(request):
         WishList.objects.create(user = user, post_id = post)
     return HttpResponse()
 
-def edit_post_dynamic(request):
-    user = request.user
-    temp_attribute = request.POST['attribute']
-    value = request.POST['value']
-    temp_post = request.POST['post']
-    print "a7aa"
-    required_value = Values.objects.get(attribute_id = attribute, post_id = post)
-    
-    required_value.value = value
-    required_value.save()
-    return HttpResponse()
+
 
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
