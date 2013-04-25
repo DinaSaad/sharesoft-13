@@ -536,7 +536,7 @@ def confirm_email(request):
                 user.is_verfied=True
                
                 user.save()
-                return HttpResponseRedirect('/main/')
+                return HttpResponseRedirect('../main')
                 
                 
 
