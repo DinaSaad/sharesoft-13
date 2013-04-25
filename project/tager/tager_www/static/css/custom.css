@@ -1,3 +1,8 @@
+body {
+
+background: #e3e3e3 url(../../static/img/bg1.png) repeat;
+
+}
 
  .item {
     width: 220px;
