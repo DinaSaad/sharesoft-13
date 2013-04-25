@@ -1,11 +1,26 @@
 {% extends "base.html" %}
 
 {% block content%}
+{% load staticfiles %}
+	<h3>Your notifications:</h3>
+	<div style="margin-right:400px; margin-top:25px">
+		<ol class="stream-items" style="list-style:none">
 	{% if all_notifications %}
 		{% for notification in all_notifications %}
-			<h3>{{notification.content}}</h3></b>
+			<a href="../{{notification.url}}">
+				<div style="margin-left:-30px">
+					<li style="border-bottom:solid thin black; margin-left:-100px height:50px; width:795px;">
+						<span style="margin-left:-40px; margin-bottom:-30px">
+                    		<img src="{% static "img/post.png" %}" width="50" height="50" style="margin-left:50px;"/>
+                		</span>
+						<span "font-size:11px; padding-left:-50px; font-family:lucida grande',tahoma,verdana,arial,sans-serif; width:100px; line-height:1.28">{{notification.content}}</span></b>
+					</li>
+				</div>	
+			</a>
 		{% endfor %}
 	{% else %}
 		<h3>you have no notifications</h3>
 	{% endif %}
+</ul>
+	</div>
 {% endblock %}
