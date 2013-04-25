@@ -85,7 +85,7 @@ class RegistrationForm(forms.ModelForm):
 #it has only one filed verify 
 #this is for the verication of email 
 class ConfirmationForm(forms.Form):
-    verify = forms.CharField(label='verify')
+    verify = forms.CharField(label='verify',widget = forms.TextInput(attrs={'readonly': 'readonly '}))
 
 
 
