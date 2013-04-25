@@ -6,7 +6,44 @@
               <ul class="nav pull-right">
               <li><a href="homepage/">Home</a></li>
               <li><a href="#contact">Contact</a></li>
-              <li><a href="/notifications">Notification</a></li>
+              <div id="to_be_replaced" style="float:left; margin-top: 10px;">
+                <div id="notifications_div">
+                  <a id="notifications_dropdown" data-toggle="dropdown"><img id="not_img" src="{% static "img/not.jpg" %}" width="26" height="26"/></a>
+                  <ul  id="notifications" class="dropdown-menu"  style="margin-left:50px; background-color:white" size="7">
+                    <ul id="notifications_menu" style="list-style:none;" width="200">
+                      {% if all_unread_notifications %}
+                        {% for notification in all_unread_notifications %}
+                          <a href="../{{notification.url}}" style="white-space:normal; display:block; background-color:#08c border-bottom:solid thick">
+                          <li id="to_be_shaded" style="margin-right:20px; border-bottom:solid thin black">
+                            <span>
+                              <img src="{% static "img/post.png" %}" width="50" height="50"/>
+                            </span>
+                            <span style="color:black; font-size:13px">{{notification.content}}</span>
+                          </li>
+                        </a>
+                        {% endfor %}
+                        <li style="padding-left:100px;"><a style="color:black" href="../notifications">see all</a></li>
+                      {% else %}
+                        <li style="padding-left:20px;"><a style="color:black; display:block" href="../notifications">see all</a></li>
+                      {% endif %}
+                      </ul>
+                    </ul>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                      
+                      $("#notifications_dropdown").click(function() {
+                        $.ajax({
+                          url: "/refresh_notifications/",
+                          type: "GET",
+                          success: function(req) {
+                            $('#notifications_menu').replaceWith($(req).find('#notifications_menu'));
+                          }
+                        });
+                      });
+                    });
+                  </script>
+                </div>
+              </div>
               <li><a href="/advanced_search/channel">Advanced Search</a></li>
               <li>
                 <div>
