@@ -618,10 +618,11 @@ def advanced_render_channels(request):
     #C3
     #this method takes as input request subchannel id and renders this subchannel to main page
 def advanced_render_subchannels(request):
-    if request.GET.get('ad_sub_ch_id' , False):  
+    if request.GET.get('ad_sub_ch_id' , False):
         subchannel_id = request.GET['ad_sub_ch_id']
+        post_list = [Post.objects.filter(subchannel_id = subchannel_id)]
         subchannel = SubChannel.objects.get(id = subchannel_id)
-        return render(request,'main.html', {'subchannel': subchannel})
+        return render(request,'main.html', {'subchannel': subchannel , 'post_list': post_list})
     else:
         return HttpResponse("please choose a subchannel")
 
