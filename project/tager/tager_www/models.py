@@ -251,6 +251,7 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
+
     def interested_Notification(self, post_in):
         user_in = self
         post_owner = post_in.user_id
