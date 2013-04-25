@@ -658,7 +658,7 @@ def advanced_search(request):#mohamed tarek c3
     f = i+1
     null = ""
     if price:
-        result_search_obj+=[ (Post.objects.filter(price = price)) ]
+        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
         result_search = [[] for o in result_search_obj]
         for aa in range(0,len(result_search_obj[0])):
             result_search[0].append(result_search_obj[0][aa].id)
