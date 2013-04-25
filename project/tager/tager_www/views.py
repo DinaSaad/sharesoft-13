@@ -25,6 +25,9 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+
+
+
 from django.shortcuts import render_to_response
 from django.shortcuts import RequestContext
 import re
@@ -40,6 +43,11 @@ FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists']
 SCOPE_SEPARATOR = ' '
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> master
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -544,16 +552,14 @@ def confirm_email(request):
            
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
-                if not user.is_expired():
-                   
-                    user.is_verfied=True
-                   
-                    user.save()
-                    return HttpResponseRedirect('/main/')
                 
-                else :  
-                 
-                    return HttpResponse ("sorry your account is disabled because the activation key has expired")
+                   
+                user.is_verfied=True
+               
+                user.save()
+                return HttpResponseRedirect('../main')
+                
+                
 
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
@@ -573,6 +579,17 @@ def confirm_email(request):
 #gets the public key from the settings and saves it in publiic_key
 #then renders the html with the form passed in a dic and the script 
 # result : captcha shown 
+
+def display_form(request):
+    form = RegistrationForm(request.POST)
+    # assuming your keys are in settings.py
+    public_key = settings.RECAPTCHA_PUBLIC_KEY
+    script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
+
+
+
+
 
 
 
@@ -776,6 +793,20 @@ def facebook_login(request):
         
 
 
+
+
+def view_subchannels(request):
+    s_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=s_id)
+    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
+
+
+# def send_sms(request):
+#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+#     message = client.sms.messages.create(to="+201112285944",
+#                                          from_="+15555555555",
 
 def fb_authenticate(request):
     access_token = None
