@@ -403,7 +403,7 @@ def  get_user(self):
 #if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
 
 def UserRegistration(request):
-
+    
     if request.method == 'POST':
        
         form = RegistrationForm(request.POST) 
@@ -858,4 +858,26 @@ def intrested(request):
         post_in.save()
 
     return HttpResponse()
+
+
+
+def send_sms():
+
+    account_sid = "AC9ec4b58090b478bc49c58aa6f3644cc7"
+    auth_token  = "79ba8ebb0bf8377302f735f853cd7006"
+    client = TwilioRestClient(account_sid, auth_token)
+
+    message = client.sms.messages.create(body="testing",
+        to="+201112285911",
+        from_="+18587369892")
+    print message.sid
+    
+     
+
+   
+
+    
+     
+
+   
 
