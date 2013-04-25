@@ -46,15 +46,18 @@ class BuyerIdentificationForm(forms.Form):
 
 class RegistrationForm(forms.ModelForm):
     
-    password1 = forms.RegexField(label=("Password"),widget=forms.PasswordInput(attrs={'onkeyup': 'passwordStrength(this.value)'}),regex=r'^.*(?=.{6,})(?=.*[a-z])(?=.*[A-Z]).*$')
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
-    captcha = ReCaptchaField(attrs={'theme' : 'blackglass'})
+    password1 = forms.RegexField(label=("Password"),widget=forms.PasswordInput(attrs={'placeholder': 'password ','onkeyup': 'passwordStrength(this.value)'}),regex=r'^.*(?=.{6,})(?=.*[a-z])(?=.*[A-Z]).*$')
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput(attrs={'placeholder': 'confirm password '}))
+    captcha = ReCaptchaField(attrs={'theme' : 'white'})
 
 
     class Meta:
         model = UserProfile
-        fields = ('email', 'name')
-
+        fields = ('name' , 'email')
+        widgets = {
+            'email': forms.TextInput(attrs = {'placeholder': 'email'}),
+            'name' : forms.TextInput(attrs = {'placeholder': 'name'}),
+        }
 #mai c2:registeration
 #this methods doesnt take any paramters and is useed for validating the password
 #it gets pass1 and pass2 and compares to see if they match or not if they dont an error msg shows saying passwords dont match
@@ -199,3 +202,5 @@ PasswordChangeForm.base_fields = SortedDict([
     (k, PasswordChangeForm.base_fields[k])
     for k in ['old_password', 'new_password1', 'new_password2']
 ])
+    verify = forms.CharField(label='verify',widget = forms.TextInput(attrs={'readonly': 'readonly '}))
+

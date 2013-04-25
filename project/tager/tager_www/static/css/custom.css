@@ -3,6 +3,9 @@ div#box3{
     width: 700px;
     margin: 20px;
     cursor: pointer;
+body {
+
+background: #e3e3e3 url(../../static/img/bg1.png) repeat;
 }
 
  .item {
@@ -147,8 +150,9 @@ visibility: visible;
 #pass
  {
  width: 200px;
+ height: 30px;
 }
-
 .editbody{
     margin-left: 350px
 }
+
