@@ -77,7 +77,7 @@ class UserProfile(AbstractBaseUser):
     is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
-    # created = models.DateTimeField(auto_now_add=True)
+    sms_code = models.CharField(max_length=5 , null=True)
     status = models.CharField(max_length=400 , null=True) 
     # rating = models.FloatField(default=0.0)
     gender_choices = (
