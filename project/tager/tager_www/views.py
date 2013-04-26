@@ -663,7 +663,12 @@ def advanced_search(request):#mohamed tarek c3
     print "got subchannel id"
     print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
-    price = request.GET['price']
+    price_req = request.GET['price']
+    try:
+        price = int(price_req)
+        print price
+    except ValueError:
+        return HttpResponse("please type a number in the price feild")
     values =[]
     post = []
     value_obj =[]
@@ -679,13 +684,10 @@ def advanced_search(request):#mohamed tarek c3
     f = i+1
     null = ""
     if price:
-        if isinstance(price ,(int , long)):
-            result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
-            result_search = [[] for o in result_search_obj]
-            for aa in range(0,len(result_search_obj[0])):
-                result_search[0].append(result_search_obj[0][aa].id)
-        else:
-            return HttpResponse("please type a number in the price feild")
+        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
+        result_search = [[] for o in result_search_obj]
+        for aa in range(0,len(result_search_obj[0])):
+            result_search[0].append(result_search_obj[0][aa].id)
     for j in range(1,len(values)):
         if values[j] == null:
             pass
@@ -720,12 +722,14 @@ def advanced_search(request):#mohamed tarek c3
                             post_temp = tmep[g]
                             post.append(post_temp)
         post_list =[]
+
         for a_post in post:
             post_list.append(Post.objects.get(id = a_post))
+        
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
-            return render(request,'main.html', {'post_list' : post_list})
+            return render(request,'main.html', {'post_filtered' : post_filtered})
 
 
 
