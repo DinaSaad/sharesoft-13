@@ -34,6 +34,10 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
+from twilio.rest import TwilioRestClient
+from django.conf import settings
+from twilio.rest import TwilioRestClient
+
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -860,23 +864,57 @@ def intrested(request):
     return HttpResponse()
 
 
-
-def send_sms():
+def send_sms(to_number,msg_body):
 
     account_sid = "AC9ec4b58090b478bc49c58aa6f3644cc7"
     auth_token  = "79ba8ebb0bf8377302f735f853cd7006"
     client = TwilioRestClient(account_sid, auth_token)
 
-    message = client.sms.messages.create(body="testing",
-        to="+201112285911",
+    message = client.sms.messages.create(body=msg_body,
+        to="+2"+str(to_number),
         from_="+18587369892")
     print message.sid
-    
+
      
 
    
-
+def sms(request):
+    user = request.user
+    if request.method == 'POST':
+        
+        form = smsForm( request.POST )
+        user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+        user.save()
+        phone_no = request.POST['phone_number']
+        send_sms(phone_no ,user.sms_code)
+        return HttpResponseRedirect('/smsvery/')
     
+    else:
+        form = smsForm()
+    return render_to_response( "sms.html",{'form':form},context_instance = RequestContext( request ))
+
+
+def sms_verify(request):
+    if request.method == 'POST':
+       
+            print "yo"
+            smscode = request.POST['sms_code']
+            if smscode is not None: 
+                print smscode
+                user = UserProfile.objects.get(sms_code=smscode)
+                print user.sms_code
+
+                return HttpResponse('correct code')
+
+        # else:
+        #         return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
+    else:
+        
+        form = smsForm()
+        context = {'form': form}
+        return render_to_response('smsvery.html', context, context_instance=RequestContext(request))
+
+
      
 
    
