@@ -21,7 +21,13 @@
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
           </h5> 
           <h5>Email: {{ user.email}}</h5>
-          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none">
+          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
+          <p style="display:none" id="formate">Format options:<br/>
+            <select id="format">
+              <option >Chose formate</option>
+              <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
+            </select>
+          </p>
             <label id = "birthoutput" style="color:red"></label>
            <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5> 
@@ -65,6 +71,7 @@ function edit_dob_preparation(){
   var dob = $('#dateofbirthlabel').text();
     $("#datepicker").val (dob);
     $('#datepicker').show();
+    $('#formate').show();
     $('#savedob').show();
 
 }
@@ -81,9 +88,13 @@ function edit_dob_save(){
         $('#dateofbirthlabel').show();
         $('#datepicker').hide();
         $('#savedob').hide();
+        $('#formate').hide();
         $('#editdob').show();
         alert("Field updated successfully"); 
       },
+      error:function(result){
+        alert("Failed please check the formate!!")
+      }
   });
 }function edit_worksat_preparation(){
   $('#editworksat').hide();
@@ -113,6 +124,9 @@ function edit_worksat_save(){
 }
 $(function() {
     $( "#datepicker" ).datepicker();
+    $( "#format" ).change(function() {
+      $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
+    });
   });
 
 $(document).ready(function(){
