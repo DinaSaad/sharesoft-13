@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form form action="/edit_pic/" method="POST" id="form" enctype="multipart/form-data">
+        
+        <div class="page-header">
+            <h1>change your profile picture</h1>
+        </div> 
+	<table>
+	{{ editing_form.as_p}}
+	</table>
+</form>
+{% endblock %}
