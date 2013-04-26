@@ -31,7 +31,7 @@
       </div>
       <div class="span7">
         <div class="status" id="box2">
-          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="color:red " style="display:none"></label>
+          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span9" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
             <button id="update_status" class="btn btn-small btn-primary" onClick="update_status_tosave()">Update</button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
         <div class="information" id="box3">
@@ -54,6 +54,7 @@
 function update_status_tosave(){
   $("#update_status").hide();
   $("#status").hide();
+  $('#statusoutput').show();
   var status1 = $("#status").text();
   $("#statusvalue").val(status1);
   $('#statusvalue').css('display', 'block');
@@ -106,7 +107,7 @@ $(document).ready(function(){
             }
         }
       }
-      $('#savestatus').attr("disabled", true); 
+    $('#savestatus').attr("disabled", true); 
     });
   });
 });
