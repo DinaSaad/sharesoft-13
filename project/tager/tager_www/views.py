@@ -639,7 +639,7 @@ def advanced_render_subchannels(request):
     subchannel_id = request.GET.get('ad_sub_ch_id' , False)
     if subchannel_id != False:
         print subchannel_id
-        post_list = [Post.objects.filter(subchannel_id = subchannel_id)]
+        post_list = Post.objects.filter(subchannel_id = subchannel_id)
         ret_subchannel = SubChannel.objects.get(id = subchannel_id)
         print post_list
         return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
