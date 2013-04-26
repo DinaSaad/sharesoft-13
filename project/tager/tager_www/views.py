@@ -450,6 +450,12 @@ def UserRegistration(request):
 # page where it displays their information and status. The user can write a new status in the text field whoch will be
 # saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
 # the status and will be redirected to the login page.
+
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post holding status as a varibale in which the user can update and share what's
+# on his mind. The user can write a new status in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page. output of the method saves the new status in database 
 @login_required
 def update_status(request):
     print 'testing this method'
