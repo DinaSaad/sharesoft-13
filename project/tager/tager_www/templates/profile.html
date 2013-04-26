@@ -31,7 +31,7 @@
       </div>
       <div class="span7">
         <div class="status" id="box2">
-          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)"> *<label id="statusoutput" style="color:red " style="display:none">Can not be blank</label>
+          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="color:red " style="display:none"></label>
             <button id="update_status" class="btn btn-small btn-primary" onClick="update_status_tosave()">Update</button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
         <div class="information" id="box3">
@@ -51,7 +51,6 @@
     </div>
   </div>
 <script type="text/javascript">
-
 function update_status_tosave(){
   $("#update_status").hide();
   $("#status").hide();
@@ -81,6 +80,36 @@ function statusupdates(){
     },
   });
 }
+$(document).ready(function(){
+  $(function(){
+    $('#statusvalue').keyup(function(){
+      var status2 = $(this).val();
+      var pattern = /[a-z]|[A-Z]|\d+/;
+      if(status2.length <=400 && status2.match(pattern)){
+        $('#savestatus').removeAttr("disabled");
+        $('#statusoutput').text("");
+        return true;
+      }
+      else{
+        if(status2 == ''){
+          $('#savestatus').attr("disabled", true);
+          $('#statusoutput').text("The name can not be spacs");
+        }
+        else{
+           if( status2.length > 400){
+            $('#savestatus').attr("disabled", true);    
+            $('#statusoutput').text("The name can not be more than 400 characters");
+            }
+            else{
+              $('#savestatus').removeAttr("disabled");    
+              $('#statusoutput').text("");
+            }
+        }
+      }
+      $('#savestatus').attr("disabled", true); 
+    });
+  });
+});
 </script>
 </body>
 {% endblock %}
