@@ -15,18 +15,22 @@
         </div>
         <div class="information" id="box3">
           <h3>Information:</h3>
-        <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none">
-          <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
-          <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
-      	</h5> 
-      	<h5>Email: {{ user.email}}</h5>
-      	<h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none">
-      	 <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
-      	</h5> 
-      	<h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none">
-      		<button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
-      		<button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
-      	</h5>
+	        <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
+	        	<label id = "nameoutput" style="color:red"></label>
+	          <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
+	          <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
+	      	</h5> 
+	      	<h5>Email: {{ user.email}}</h5>
+	      	<h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none">
+	      		<label id = "birthoutput" style="color:red"></label>
+	      	 <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+	      	</h5> 
+	      	<h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
+	      		<label id = "worksoutput" style="color:red"></label>
+	      		<button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
+	      		<button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
+	      	</h5>
+
           
         </div>
 <script type="text/javascript">
@@ -110,5 +114,68 @@ function edit_worksat_save(){
 $(function() {
     $( "#datepicker" ).datepicker();
   });
+
+$(document).ready(function(){
+  $(function(){
+    $('#namevalue').keyup(function(){
+      var data = $(this).val();
+      var pattern = /[a-z]|[A-Z]|\d+/;
+      if(data.length <=40 && data.match(pattern)){
+        $('#savename').removeAttr("disabled");
+        $('#nameoutput').text("");
+        return true;
+      }
+      else{
+        if(data == ''){
+          $('#savename').attr("disabled", true);
+          $('#nameoutput').text("The name can not be spacs");
+        }
+        else{
+           if( data.length > 40){
+            $('#savename').attr("disabled", true);    
+            $('#nameoutput').text("The name can not be more than 40 characters");
+            }
+            else{
+              $('#savename').removeAttr("disabled");    
+              $('#titleoutput').text("");
+            }
+        }
+      }
+      $('#savename').attr("disabled", true); 
+    });
+  });
+});
+$(document).ready(function(){
+  $(function(){
+    $('#worksatvalue').keyup(function(){
+      var workat = $(this).val();
+      var pattern = /[a-z]|[A-Z]|\d+/;
+      if(workat.length <=40 && workat.match(pattern)){
+        $('#saveworksat').removeAttr("disabled");
+        $('#worksoutput').text("");
+        return true;
+      }
+      else{
+        if(workat == ''){
+          $('#saveworksat').attr("disabled", true);
+          $('#worksoutput').text("The name can not be spacs");
+        }
+        else{
+           if( workat
+           	.length > 40){
+            $('#saveworksat').attr("disabled", true);    
+            $('#worksoutput').text("The name can not be more than 40 characters");
+            }
+            else{
+              $('#saveworksat').removeAttr("disabled");    
+              $('#worksoutput').text("");
+            }
+        }
+      }
+      $('#saveworksat').attr("disabled", true); 
+    });
+  });
+});
+
 </script>
 {% endblock %}
