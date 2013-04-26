@@ -1,3 +1,79 @@
+.body{
+    background-color: #BFD4D4
+}
+.button{
+    /*width: 200px;*/
+    /*height: 20px;*/
+    /*line-height: 50px;
+    text-align: center;*/
+
+    /*background: #6292c2;*/
+    /*border: 2px solid #eee;*/
+   /* height: 58px;
+    width: 115px;
+    padding: 0 0 0 50px;
+    overflow: hidden;
+    display: block;*/
+}
+.wideColumn{
+    column-width:250px;
+    column-gap:40px;
+    -moz-column-width:250px; /* Firefox */
+    -webkit-column-width:250px; /* Safari and Chrome */
+}
+.narrowColumn{
+    column-width:100px;
+    -moz-column-width:100px; /* Firefox */
+    -webkit-column-width:100px; /* Safari and Chrome */
+}
+div#box1{
+    border: #999 2px solid;
+    width: 200px;
+    height: 200px;
+    margin: 20px;
+    cursor: pointer;
+    /*display:    -moz-box; /* Firefox */
+    /*display:-webkit-box;  Safari and Chrome */
+    /*display:box;*/
+    /*border:1px solid black;*/
+}
+div#box1 > img{
+    position: absolute;
+    z-index: 2000;
+    width: 200px;
+    max-height: 200px;
+}
+div#box1 > a{
+    display: none;
+    position: absolute;
+    margin: 0px 0px 0px 60px;
+    z-index: 3000;
+    background: #F0F0F0;
+    border: #81A332 1px solid;
+    border-radius: 3px;
+    padding: 5px;
+    font-size: 12px;
+    text-decoration: none;  
+}
+div#box1:hover a{
+    display: block;
+}
+div#box2{
+    border: #999 2px solid;
+    width: 700px;
+    /*height: 200px;*/
+    margin: 20px;
+    cursor: pointer;
+}
+div#box3{
+    border: #999 2px solid;
+    width: 700px;
+    /*height: 200px;*/
+    margin: 20px;
+    cursor: pointer;
+}
+.status{
+    width: 200px;
 body {
 
 background: #e3e3e3 url(../../static/img/bg1.png) repeat;
@@ -148,9 +224,9 @@ visibility: visible;
  width: 200px;
  height: 30px;
 }
-#box3{
-    border: #999 2px solid;
-    width: 700px;
-    margin: 20px;
-    cursor: pointer;;
+.span10{
+    width: 150px;
+    font-size: 30px;
+    margin-left: 200px;
+    padding: 10px;
 }

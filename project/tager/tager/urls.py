@@ -19,6 +19,7 @@ urlpatterns = patterns('',
  
     url(r'^intrested/$', 'tager_www.views.intrested'),  
 
+    url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
     url(r'^edit_name/$', 'tager_www.views.edit_name'),
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
@@ -31,6 +32,8 @@ urlpatterns = patterns('',
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
 
+    url(r'^updatestatus/$', 'tager_www.views.update_status'),
+    
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
 
@@ -79,4 +82,20 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^fbregister/$', 'fbregister.views.index'),
+
+	# url(r'^tager_www/', include('tager_www.urls')),
+
+
+	# url(r'^tager_www/', include('tager_www.urls')),
+
+)
+
+urlpatterns += patterns('fbregister.facebook',
+	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
+    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
+)
+
+urlpatterns += patterns('fbregister.views',
+    url(r'^$', 'index', name="index"),
 )

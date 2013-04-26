@@ -443,6 +443,27 @@ def UserRegistration(request):
         #add our registration form to context
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
+
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post and the status as a varibale in which the user can update and write what's
+# on his mind. Logged in users click profile whenever they want to update their status to be directed to their profile 
+# page where it displays their information and status. The user can write a new status in the text field whoch will be
+# saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page.
+
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post holding status as a varibale in which the user can update and share what's
+# on his mind. The user can write a new status in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page. output of the method saves the new status in database 
+@login_required
+def update_status(request):
+    print 'testing this method'
+    user = request.user
+    user.status = request.POST['status']
+    user.save()
+    return HttpResponse(" ")
+
 # Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
 # name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
 # saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
@@ -477,6 +498,21 @@ def edit_work(request):
     user.works_at = request.POST['userwork']
     user.save()
     return HttpResponse (" ")
+
+@login_required
+def editing_pic(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            success = True
+            photo          = editing_form.cleaned_data['photo']
+            
+    else:
+        editing_form =EditPicForm()#an unbound form
+
+        
+    ctx = {'editing_form': editing_form}
+    return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
 
 def get_channels (request):
