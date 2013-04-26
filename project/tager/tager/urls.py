@@ -19,6 +19,7 @@ urlpatterns = patterns('',
  
     url(r'^intrested/$', 'tager_www.views.intrested'),  
 
+    url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^edit_name/$', 'tager_www.views.edit_name'),
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 

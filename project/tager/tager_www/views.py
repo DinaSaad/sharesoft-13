@@ -499,6 +499,21 @@ def edit_work(request):
     user.save()
     return HttpResponse (" ")
 
+@login_required
+def editing_pic(request):
+     if request.method == 'POST': #if the form has been submitted
+        editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            success = True
+            photo          = editing_form.cleaned_data['photo']
+            
+    else:
+        editing_form =EditPicForm()#an unbound form
+
+        
+    ctx = {'editing_form': editing_form}
+    return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
+
 
 def get_channels (request):
     channels = Channel.objects.all()
