@@ -87,4 +87,3 @@ urlpatterns += patterns('fbregister.facebook',
 urlpatterns += patterns('fbregister.views',
     url(r'^$', 'index', name="index"),
 )
-)
