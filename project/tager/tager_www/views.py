@@ -501,7 +501,7 @@ def edit_work(request):
 
 @login_required
 def editing_pic(request):
-     if request.method == 'POST': #if the form has been submitted
+    if request.method == 'POST': #if the form has been submitted
         editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
         if editing_form.is_valid():#all validation rules pass
             success = True
