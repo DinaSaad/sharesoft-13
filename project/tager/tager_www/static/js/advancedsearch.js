@@ -41,6 +41,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
 $(document).ready(function(){
   $('#advancedsearch_channels').change(function(){
     var channel = $('#ad_Channel_dropdown').val()
+
    $.ajax({
        url: "/advanced_subchannel/",
        type: "POST",
@@ -69,4 +70,15 @@ $('#advancedsearch_subchannels').change(function(){
      }
     });
   });
+});
+$(document).ready(function(){
+$('#advanced_render_channels').click(function(){
+  window.location.replace("/advanced_search/channel_show?ad_ch_id="+$('#ad_Channel_dropdown').val())
+// $('#advanced_render_subchannels').hide();
+});
+});
+$(document).ready(function(){
+$('#advanced_render_subchannels').click(function(){
+  window.location.replace("/advanced_subchannel_show?ad_sub_ch_id="+$('#ad_subChannel_dropdown').val())
+});
 });
