@@ -36,6 +36,10 @@ $(document).ajaxSend(function(event, xhr, settings) {
     }
 });
 
+$(document).ready(function(){
+$('#advanced_render_subchannels').hide();
+$('#attributes_show').hide();
+});
 
 
 $(document).ready(function(){
@@ -49,7 +53,9 @@ $(document).ready(function(){
        'ad_ch_id' : channel,
        },
            success:function(req){
+
             $('#advancedsearch_subchannels').html(req)
+
       }
     });
   });
@@ -66,9 +72,21 @@ $('#advancedsearch_subchannels').change(function(){
        'ad_sub_ch_id' : subchannel,
        },
            success:function(req){
+            $('#advanced_render_channels').hide();
+            $('#advanced_render_subchannels').show();
+            $('#attributes_show').show();
            	 $('#attributes_id').html(req)
+             $('#attributes_id').hide();
+
      }
     });
+  });
+});
+$(document).ready(function(){
+$('#attributes_show').click(function(){
+  $('#advanced_render_subchannels').hide();
+  $('#attributes_id').show();
+  $('#attributes_show').hide();
   });
 });
 $(document).ready(function(){

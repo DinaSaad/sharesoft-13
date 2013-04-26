@@ -17,7 +17,11 @@ urlpatterns = patterns('',
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
  
-    url(r'^intrested/$', 'tager_www.views.intrested'),   
+    url(r'^intrested/$', 'tager_www.views.intrested'),  
+
+    url(r'^edit_name/$', 'tager_www.views.edit_name'),
+    url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
+    url(r'^edit_work/$', 'tager_www.views.edit_work'), 
 
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
@@ -62,7 +66,6 @@ urlpatterns = patterns('',
     url(r'^thankyou/$','tager_www.views.thankyou'),
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
-    url(r'^test/$' , 'tager_www.views.testRender'),
 
 
     

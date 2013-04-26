@@ -464,6 +464,42 @@ def update_status(request):
     user.save()
     return HttpResponse(" ")
 
+# Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
+# name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+#name and will be redirected to the login page. output of the method saves the new name in database 
+@login_required
+def edit_name(request):
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
+# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
+# The user can write the date of birth they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
+@login_required
+def edit_date_of_birth(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirth']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
+# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
+# The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse (" ")
+
+
 def get_channels (request):
     channels = Channel.objects.all()
     channels_list = [] 
@@ -644,17 +680,23 @@ def advanced_render_channels(request):
     if request.GET.get('ad_ch_id' , False):
         channel_id = request.GET['ad_ch_id']
         channel = Channel.objects.get(id = channel_id)
-        return render(request,'main.html', {'channel': channel})
+        subchannels_list = SubChannel.objects.filter(channel_id = channel.id)
+        print subchannels_list
+        return render(request,'main.html', {'channel': channel , 'subchannels_list': subchannels_list})
     else: 
         return HttpResponse("please choose a channel")
     #mohamed hammad
     #C3
     #this method takes as input request subchannel id and renders this subchannel to main page
 def advanced_render_subchannels(request):
-    if request.GET.get('ad_sub_ch_id' , False):  
-        subchannel_id = request.GET['ad_sub_ch_id']
-        subchannel = SubChannel.objects.get(id = subchannel_id)
-        return render(request,'main.html', {'subchannel': subchannel})
+    
+    subchannel_id = request.GET.get('ad_sub_ch_id' , False)
+    if subchannel_id != False:
+        print subchannel_id
+        post_list = Post.objects.filter(subchannel_id = subchannel_id)
+        ret_subchannel = SubChannel.objects.get(id = subchannel_id)
+        print post_list
+        return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
     else:
         return HttpResponse("please choose a subchannel")
 
@@ -675,7 +717,12 @@ def advanced_search(request):#mohamed tarek c3
     print "got subchannel id"
     print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
-    price = request.GET['price']
+    price_req = request.GET['price']
+    try:
+        price = int(price_req)
+        print price
+    except ValueError:
+        return HttpResponse("please type a number in the price feild")
     values =[]
     post = []
     value_obj =[]
@@ -695,7 +742,6 @@ def advanced_search(request):#mohamed tarek c3
         result_search = [[] for o in result_search_obj]
         for aa in range(0,len(result_search_obj[0])):
             result_search[0].append(result_search_obj[0][aa].id)
-
     for j in range(1,len(values)):
         if values[j] == null:
             pass
@@ -730,8 +776,10 @@ def advanced_search(request):#mohamed tarek c3
                             post_temp = tmep[g]
                             post.append(post_temp)
         post_list =[]
+
         for a_post in post:
             post_list.append(Post.objects.get(id = a_post))
+        
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
