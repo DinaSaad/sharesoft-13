@@ -729,7 +729,7 @@ def advanced_search(request):#mohamed tarek c3
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
-            return render(request,'main.html', {'post_filtered' : post_filtered})
+            return render(request,'main.html', {'post_list' : post_list})
 
 
 
