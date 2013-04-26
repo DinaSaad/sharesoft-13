@@ -444,6 +444,26 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+@login_required
+def edit_name(request):
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse (" ")
+
+@login_required
+def edit_date_of_birth(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirth']
+    user.save()
+    return HttpResponse (" ")
+
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse (" ")
 
 
 def get_channels (request):
