@@ -443,7 +443,40 @@ def UserRegistration(request):
         #add our registration form to context
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
+# Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
+# name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+#name and will be redirected to the login page. output of the method saves the new name in database 
+@login_required
+def edit_name(request):
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse (" ")
 
+# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
+# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
+# The user can write the date of birth they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
+@login_required
+def edit_date_of_birth(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirth']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
+# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
+# The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse (" ")
 
 
 def get_channels (request):
