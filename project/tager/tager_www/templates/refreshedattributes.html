@@ -1,9 +1,9 @@
 
 	<form id="attributes" name = "attribute_form" method "post" action = "/advanced_search/">
-	{% if list_of_attributes %}
-	{% csrf_token %}
 	price: <input id = "price" type="text" name="price"><br>
 	<input type="text" name="ad_sub_id" value = "{{sub_id}}" style = "display:none;">
+	{% if list_of_attributes %}
+	{% csrf_token %}
 	{% for Attribute in list_of_attributes %}
 	{{Attribute.name}}: <input id = "attributes_txt" type="text" name="{{Attribute.name}}"><br>
 	{% endfor %}

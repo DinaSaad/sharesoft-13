@@ -626,17 +626,23 @@ def advanced_render_channels(request):
     if request.GET.get('ad_ch_id' , False):
         channel_id = request.GET['ad_ch_id']
         channel = Channel.objects.get(id = channel_id)
-        return render(request,'main.html', {'channel': channel})
+        subchannels_list = SubChannel.objects.filter(channel_id = channel.id)
+        print subchannels_list
+        return render(request,'main.html', {'channel': channel , 'subchannels_list': subchannels_list})
     else: 
         return HttpResponse("please choose a channel")
     #mohamed hammad
     #C3
     #this method takes as input request subchannel id and renders this subchannel to main page
 def advanced_render_subchannels(request):
-    if request.GET.get('ad_sub_ch_id' , False):  
-        subchannel_id = request.GET['ad_sub_ch_id']
-        subchannel = SubChannel.objects.get(id = subchannel_id)
-        return render(request,'main.html', {'subchannel': subchannel})
+    
+    subchannel_id = request.GET.get('ad_sub_ch_id' , False)
+    if subchannel_id != False:
+        print subchannel_id
+        post_list = Post.objects.filter(subchannel_id = subchannel_id)
+        ret_subchannel = SubChannel.objects.get(id = subchannel_id)
+        print post_list
+        return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
     else:
         return HttpResponse("please choose a subchannel")
 
@@ -657,7 +663,12 @@ def advanced_search(request):#mohamed tarek c3
     print "got subchannel id"
     print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
-    price = request.GET['price']
+    price_req = request.GET['price']
+    try:
+        price = int(price_req)
+        print price
+    except ValueError:
+        return HttpResponse("please type a number in the price feild")
     values =[]
     post = []
     value_obj =[]
@@ -677,7 +688,6 @@ def advanced_search(request):#mohamed tarek c3
         result_search = [[] for o in result_search_obj]
         for aa in range(0,len(result_search_obj[0])):
             result_search[0].append(result_search_obj[0][aa].id)
-
     for j in range(1,len(values)):
         if values[j] == null:
             pass
@@ -712,8 +722,10 @@ def advanced_search(request):#mohamed tarek c3
                             post_temp = tmep[g]
                             post.append(post_temp)
         post_list =[]
+
         for a_post in post:
             post_list.append(Post.objects.get(id = a_post))
+        
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
