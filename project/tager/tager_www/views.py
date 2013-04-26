@@ -42,9 +42,6 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
-
-
-
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -169,7 +166,10 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
     return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
-
+#c1_abdelrahman the add_post function requires the user to be logged in.
+#the sub_channel_id is received from the previous view. it displays a form to the user. 
+#if the user filled the form correctly then the user will be redirected to the homepage. 
+# if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
     sub_channel_id = request.GET['sub_ch_id']
@@ -195,13 +195,14 @@ def add_post(request):
             ,location = form.cleaned_data['location']
             ,
             )
+
         # p.post_Notification()
          
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
-        return HttpResponse('Thank you for adding the post')
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+        return HttpResponseRedirect('/main')
     else:
 
         form = PostForm()
@@ -253,15 +254,27 @@ def check_Rate_Identify_buyer(request):
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
     return d
 
+def add_to_wish_list(request):
+    user = request.user
+    post = request.POST['post']
+    can_wish = user.add_to_wish_list(post)
+    if can_wish:
+        WishList.objects.create(user = user, post_id = post)
+    return HttpResponse()
+#c1_abdelrahman this method takes the user as an input and it gets the post.
+#from the the main page the post object object is extracted from the post table.
+#list of attributes are extracted and also list_of_values of the attributes are given.
+#it returns the post, list_of_attributes and list_of values of the attributes.
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
-    print post_id
+    post = Post.objects.get(id=post_id)
+    post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
-    list_of_att_values = Value.objects.filter(post = test_post)
+    list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
@@ -270,7 +283,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -335,13 +348,15 @@ def Buyer_identification(request):
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
+    user = request.user
+    #c1_abdelrahman check whether the user can post or not.
+    user_can_post = user.can_post()
     post_list = filter_home_posts()
-    
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
         i.post_state()
 
-    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -803,11 +818,6 @@ def facebook_login(request):
 
 
 
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 # def send_sms(request):
