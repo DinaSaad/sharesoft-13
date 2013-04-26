@@ -3,36 +3,40 @@
 	{% load staticfiles %}
 	{% block content %}
 	<div id="advancedsearch_channels">
+	{% if channels_list %}
 	<select id="ad_Channel_dropdown">
-	<option id = "" value ="">please select a channel</option>
-	{% if list_of_channels %}
-	{% for channel in list_of_channels%}
-	<option  value ="{{channel.id}}">{{channel.name}}</option>
+	<option  value ="">please select a channel</option>
+	{% for channel in channels_list%}
+	<option name = "ad_ch_id" value ="{{channel.id}}">{{channel.name}}</option>
 	{% endfor %}
-	{% endif %}
 	</select>
+	<button type = "submit" id = "advanced_render_channels">Submit</button>
+	{% endif %}
+	
 	</div>
+	<div id = "advanced_button_sub">
 	<div id="advancedsearch_subchannels">
+	{% if subchannels_list %}
 	<select id = "ad_subChannel_dropdown" >
 	<option id = "" value ="">please select a subchannel</option>
-	{% if list_of_subchannels %}
-	{% for subchannel in list_of_subchannels %}
-	<option value = "{{subchannel.id}}">{{subchannel.name}}</option>
+	{% for subchannel in subchannels_list %}
+	<option name = "ad_sub_ch_id" value = "{{subchannel.id}}">{{subchannel.name}}</option>
 	{% endfor %}
-	{% endif %}
 	</select>
+	{% endif %}
+	</div>
+	<button type = "submit" id = "advanced_render_subchannels">Submit</button>
 	</div>
 	<div id = "attributes_id">
-	{% if list_of_attributes %}
 	<form id="attributes" name = "attribute_form" method "post" action = "/advanced_search/">
+	{% if list_of_attributes %}
 	{% csrf_token %}
 	<input type="text" name="ad_sub_id" value = "{{sub_id}}" style = "display:none;">
 	{% for Attribute in list_of_attributes %}
 	{{Attribute.name}}: <input id = "attributes_txt" type="text" name="{{Attribute.name}}"><br>
 	{% endfor %}
 	<button type = "submit" id = "advanced_search">Submit</button>
-	</form>
 	{% endif %}
-
+	</form>
 	</div>
 	{% endblock %}

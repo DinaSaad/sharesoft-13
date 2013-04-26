@@ -817,19 +817,34 @@ def verfiy_captcha(request):
     #mohamed hammad C3 
     #this method takes as input channel id and then returns its subchannels
 def advanced_view_subchannels(request):
-    # print request.POST
     s_id = request.POST['ad_ch_id']
-
-    # print s_id
-    #current_channel = Channel.objects.filter(channel_id = s_id)
-    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
-    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    subchannels_list = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'subchannels_list': subchannels_list})
     #mohamed hammad C3 
     #this method returns all channels
-
 def advanced_view_channels(request):
-    list_of_channels = Channel.objects.all() 
-    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+    channels_list = Channel.objects.all()
+    return render(request,'advancedsearch.html', {'channels_list': channels_list})
+    #mohamed hammad
+    #C3
+    #this method takes as input request channel id and renders this channel to main page
+def advanced_render_channels(request):
+    if request.GET.get('ad_ch_id' , False):
+        channel_id = request.GET['ad_ch_id']
+        channel = Channel.objects.get(id = channel_id)
+        return render(request,'main.html', {'channel': channel})
+    else: 
+        return HttpResponse("please choose a channel")
+    #mohamed hammad
+    #C3
+    #this method takes as input request subchannel id and renders this subchannel to main page
+def advanced_render_subchannels(request):
+    if request.GET.get('ad_sub_ch_id' , False):  
+        subchannel_id = request.GET['ad_sub_ch_id']
+        subchannel = SubChannel.objects.get(id = subchannel_id)
+        return render(request,'main.html', {'subchannel': subchannel})
+    else:
+        return HttpResponse("please choose a subchannel")
 
 #mohamed tarek 
 #c3 takes as input the subchannel id sellected then return all attributes of it 
@@ -848,6 +863,7 @@ def advanced_search(request):#mohamed tarek c3
     print "got subchannel id"
     print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    price = request.GET['price']
     values =[]
     post = []
     value_obj =[]
@@ -862,7 +878,13 @@ def advanced_search(request):#mohamed tarek c3
     i = 0
     f = i+1
     null = ""
-    for j in range(0,len(values)):
+    if price:
+        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
+        result_search = [[] for o in result_search_obj]
+        for aa in range(0,len(result_search_obj[0])):
+            result_search[0].append(result_search_obj[0][aa].id)
+
+    for j in range(1,len(values)):
         if values[j] == null:
             pass
         else:
@@ -870,9 +892,8 @@ def advanced_search(request):#mohamed tarek c3
             , value = values[j])) ]
     if not result_search_obj:
         return HttpResponse("please enter something in the search")
-    else:
-        result_search = [[] for o in result_search_obj]    
-        for k in range(0,len(result_search_obj)):
+    else:    
+        for k in range(1,len(result_search_obj)):
             for l in range(0,len(result_search_obj[k])):
                 test = result_search_obj[k][l].value
                 result_search[k].append(result_search_obj[k][l].post.id)
