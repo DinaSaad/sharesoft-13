@@ -58,4 +58,27 @@
 			</div><br></br>
 		
 		<button type="button" onClick="subscribe();">Subscribe</button>
+
+		<button type="button" onClick="subscribe();">ChannelsSubscribed</button>
+		
+		<div id="choosings" style>
+			<div id="label"><h2>your subscribed channels:</h2></div>
+			<select id="choosew" method="GET">
+				<option>-------</option>
+				<option value="Channel subscription">Channel</option>
+				<option value="Subchannel subscription">Subchannel</option>
+				<option value="Attribute subscription">Attribute</option>
+			</select>
+		</div><br></br>
+			<div id="channel" style="display:none">
+				<label>select your channel: </label>
+				<select id="channel_id">
+					<option>--------</option>
+  					{% if channels %}
+						{% for channel in channels %}
+							<option value="{{channel.id}}">{{channel.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div><br></br>
 	{% endblock %}
