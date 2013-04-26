@@ -5,13 +5,21 @@
 
 {% block content %}
 
+<div>
+  {{channel.name}}<br>
+  {% if subchannels_list %}
+  {% for subchannel in subchannels_list%}
+  {{subchannel.name}}
+  {% endfor %}
+  {% endif %}
 
+{{ret_subchannel.name}}
+</div>
 <div  class="clearfix masonry" 
 style="
 ">
 
-{{channel.name}}
-{{subchannel.name}}
+
 
 {% for post in post_list %}
 
