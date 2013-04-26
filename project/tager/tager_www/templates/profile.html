@@ -123,7 +123,7 @@ function edit_worksat_save(){
   });
 }
 $(function() {
-    $( "#datepicker" ).datepicker();
+    $( "#datepicker" ).datepicker({ minDate: -20000, maxDate: "+0M +0D" });
     $( "#format" ).change(function() {
       $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
     });
