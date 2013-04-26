@@ -148,3 +148,9 @@ visibility: visible;
  width: 200px;
  height: 30px;
 }
+#box3{
+    border: #999 2px solid;
+    width: 700px;
+    margin: 20px;
+    cursor: pointer;;
+}
