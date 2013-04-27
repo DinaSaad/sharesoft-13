@@ -656,3 +656,16 @@ class WishList(models.Model):
     post = models.ForeignKey(Post)
     class Meta:
         unique_together = ("post","user")
+
+#c2-mohamed awad
+#this class holds all records regarding the activity log of users
+#it contains the content that will be shown to user
+#the user that the content will be shown to
+#the url the user will be directed to upon clicking
+#the log_type whether it is commenting, posting, subscribing..etc.
+class ActivityLog(models.Model):
+    content = models.CharField(max_length = 100)
+    user = models.ForeignKey(UserProfile)
+    url = models.CharField(max_length = 100)
+    log_type = models.CharField(max_length = 10)
+    activity_date = models.DateField()
