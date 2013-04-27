@@ -23,7 +23,8 @@ class PostForm(forms.Form):
     picture4 = forms.ImageField(required = False)
     picture5 = forms.ImageField(required = False)
 
-
+class EditPicForm(forms.Form):
+    photo = forms.ImageField()
 
 #mahmoud ahmed-C2 user can identify the buyer of his post- the BuyerIdentificationForm what it does is 
 #it takes the phone number of the buyer of the post which is provided and submitted buy the issuer of the post.
@@ -85,6 +86,10 @@ class RegistrationForm(forms.ModelForm):
 #it has only one filed verify 
 #this is for the verication of email 
 class ConfirmationForm(forms.Form):
+    verify = forms.CharField(label='verify')
+
+class UpdateStatusForm(forms.Form):
+    status = forms.CharField()
     verify = forms.CharField(label='verify',widget = forms.TextInput(attrs={'readonly': 'readonly '}))
 
 
