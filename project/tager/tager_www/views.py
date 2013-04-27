@@ -469,6 +469,16 @@ def view_checked_subchannel_posts(request):
 # its is matched with with the subchannel id in the post model , 
 # the method returns the dictionairy of posts related to specific subchannels.
 
+def menuForSubchannels(request):
+    sub_channelid = request.GET["sub_ch_id"]
+    print sub_channelid
+    current_subchannel = Subchannel.objects.get(id =subchannel_id)
+    posts_of_subchannels = Post.objects.filter(subchannel_id= current_subchannel)
+    print posts_of_subchannels
+    return render(request, "homepage.html", {'posts_of_subchannels': posts_of_subchannels})
+
+
+
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
     return render_to_response('report.html')
