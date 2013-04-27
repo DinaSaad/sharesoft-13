@@ -439,8 +439,9 @@ def get_channels (request):
         subchannels_list = []
         for subchannel in subchannels:
             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-            subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+            # subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
+            # keep this commented , i'll use it later
+            channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
     post_list = Post.objects.all()   
     return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
 
