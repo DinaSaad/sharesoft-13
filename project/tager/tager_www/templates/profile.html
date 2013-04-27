@@ -1,30 +1,284 @@
 {% extends "base.html" %}
-
-
-{% block headers %}
-{% load staticfiles %}
-    {% include 'jquery_raty_min_js.html' %}
-    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
-    
-{% endblock %}
-
+{% load staticfiles %}  
 {% block content %}
-	<p> welcome {{ user.name }} to your profile  </p>
-	<button class="btn btn-mini btn-primary" id="post" value="2" type="button">post</button>
-    <div id="star"></div>
-    <input type="hidden" name="rating" id= "rating" value="{{user.rating}}">
-    
-    {% block script %}
-    <script type="text/javascript">
+<body class="body">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span4">
+         <div class="wideColumn">   
+              <div id="userInfo">
+                <div id="box1">
+                  <a href="/edit_pic/">Change Profile Picture?</a>
+                  <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
+                </div>
+                <div class="facebookfriends" id="box1">
+                  <h3>FacebookFriends </h3>  
+                </div>
+                <div class="wishlist" id="box1">
+                  <h3>Wish List:D</h3>
+                </div>
+                <div class="interested" id="box1">
+                  <h3>Interested in:</h3>
+                </div>
+              </div>
+              <div id="userDetails">         
+                  <p>
+                    <a href="https://www.facebook.com/profile?user_id={{user.id}}" rel="nofollow" target="_blank" class="fbLink" <img src="https://ss1.4sqi.net/img/facebook_16-8221d882015899c7087b8e9a0d90f4a4.png" alt="Facebook" width="16" height="16"></a>
+                    
+                  </p>
+                </div> 
+          </div>
+      </div>
+      <div class="span7">
+        <div class="status" id="box2">
+          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span9" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
+            <button id="update_status" class="btn btn-small btn-primary" onClick="update_status_tosave()">Update</button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
+        </div>
+        <div class="information" id="box3">
+          <h3>Information:</h3>
+          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
+            <label id = "nameoutput" style="color:red"></label>
+            <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
+            <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
+          </h5> 
+          <h5>Email: {{ user.email}}</h5>
+          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
+          <p style="display:none" id="formate">Format options:<br/>
+            <select id="format">
+              <option >Chose formate</option>
+              <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
+            </select>
+          </p>
+            <label id = "birthoutput" style="color:red"></label>
+           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+          </h5> 
+          <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
+            <label id = "worksoutput" style="color:red"></label>
+            <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
+            <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
+          </h5>
 
-		$(document).ready(function(){
-			$('#star').raty({ 
-			score: $('#rating').val(),
-			readOnly : true,
-		});
+          
+        </div>
+        <div class="activitylog" id="box3">
+          <h3>Activity log</h3>
+        </div>
+        
+        
+      </div>
+    </div>
+  </div>
+<script type="text/javascript">
+function update_status_tosave(){
+  $("#update_status").hide();
+  $("#status").hide();
+  $('#statusoutput').show();
+  var status1 = $("#status").text();
+  $("#statusvalue").val(status1);
+  $('#statusvalue').css('display', 'block');
+  $('#savestatus').css('display', 'block');
+}
+function statusupdates(){
+  var status = $("#status").val();
+  $.ajax({
+    url: '/updatestatus/',
+    type: "POST",
+    data:{
+    'status' : status,
+    },
+    success:function(result){
+      alert("Your status has been updated and shared =D");
+        $('#status').text($('#statusvalue').val());
+        $('#status').show();
+        $('#statusvalue').hide();
+        $('#savestatus').hide();
+        $('#update_status').show();
+      },
+    error:function(result){
+      alert("Failed to update");
+    },
+  });
+}
+$(document).ready(function(){
+  $(function(){
+    $('#statusvalue').keyup(function(){
+      var status2 = $(this).val();
+      var pattern = /[a-z]|[A-Z]|\d+/;
+      if(status2.length <=400 && status2.match(pattern)){
+        $('#savestatus').removeAttr("disabled");
+        $('#statusoutput').text("");
+        return true;
+      }
+      else{
+        if(status2 == ''){
+          $('#savestatus').attr("disabled", true);
+          $('#statusoutput').text("The name can not be spacs");
+        }
+        else{
+           if( status2.length > 400){
+            $('#savestatus').attr("disabled", true);    
+            $('#statusoutput').text("The name can not be more than 400 characters");
+            }
+            else{
+              $('#savestatus').removeAttr("disabled");    
+              $('#statusoutput').text("");
+            }
+        }
+      }
+    $('#savestatus').attr("disabled", true); 
+    });
+  });
+});
+function edit_name_preparation(){
+  $('#editname').hide();
+  $('#nameLabel').hide();
+  var name = $('#nameLabel').text();
+  $('#namevalue').show();
+  $('#savename').show();
+  }
+function edit_name_save(){
+  var name1 = $("#namevalue").val()
+  $.ajax({
+    url: "/edit_name/",
+    type: "POST",
+    data:{
+    'user_name' : name1,
+    },
+      success:function(result){
+        $('#nameLabel').text($('#namevalue').val());
+        $('#nameLabel').show();
+        $('#namevalue').hide();
+        $('#savename').hide();
+        $('#editname').show();
+        alert("Field updated successfully"); 
+      },
+  });
+}
+function edit_dob_preparation(){
+  $('#editdob').hide();
+  $('#dateofbirthlabel').hide();
+  var dob = $('#dateofbirthlabel').text();
+    $("#datepicker").val (dob);
+    $('#datepicker').show();
+    $('#formate').show();
+    $('#savedob').show();
 
-	})
-	</script>
-	{% endblock%}
-	
+}
+function edit_dob_save(){
+  var dateofbirthsubmitted = $("#datepicker").val()
+  $.ajax({
+    url: "/edit_dob/",
+    type: "POST",
+    data:{
+    'dateofbirth' : dateofbirthsubmitted,
+    },
+      success:function(result){
+        $('#dateofbirthlabel').text($('#datepicker').val());
+        $('#dateofbirthlabel').show();
+        $('#datepicker').hide();
+        $('#savedob').hide();
+        $('#formate').hide();
+        $('#editdob').show();
+        alert("Field updated successfully"); 
+      },
+      error:function(result){
+        alert("Failed please check the formate!!")
+      }
+  });
+}function edit_worksat_preparation(){
+  $('#editworksat').hide();
+  $('#worksatlabel').hide();  
+  var work = $('#worksatlabel').text();
+    $("#worksatvalue").val (work);
+    $('#worksatvalue').show();
+    $('#saveworksat').show();
+}
+function edit_worksat_save(){
+  var work1 = $("#worksatvalue").val()
+  $.ajax({
+    url: "/edit_work/",
+    type: "POST",
+    data:{
+    'userwork' : work1,
+    },
+      success:function(result){
+        $('#worksatlabel').text($('#worksatvalue').val());
+        $('#worksatlabel').show();
+        $('#worksatvalue').hide();
+        $('#saveworksat').hide();
+        $('#editworksat').show();
+        alert("Field updated successfully"); 
+      },
+  });
+}
+$(function() {
+    $( "#datepicker" ).datepicker({ minDate: -20000, maxDate: "+0M +0D" });
+    $( "#format" ).change(function() {
+      $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
+    });
+  });
+
+$(document).ready(function(){
+  $(function(){
+    $('#namevalue').keyup(function(){
+      var data = $(this).val();
+      var pattern = /[a-z]|[A-Z]|\d+/;
+      if(data.length <=40 && data.match(pattern)){
+        $('#savename').removeAttr("disabled");
+        $('#nameoutput').text("");
+        return true;
+      }
+      else{
+        if(data == ''){
+          $('#savename').attr("disabled", true);
+          $('#nameoutput').text("The name can not be spacs");
+        }
+        else{
+           if( data.length > 40){
+            $('#savename').attr("disabled", true);    
+            $('#nameoutput').text("The name can not be more than 40 characters");
+            }
+            else{
+              $('#savename').removeAttr("disabled");    
+              $('#titleoutput').text("");
+            }
+        }
+      }
+      $('#savename').attr("disabled", true); 
+    });
+  });
+});
+$(document).ready(function(){
+  $(function(){
+    $('#worksatvalue').keyup(function(){
+      var workat = $(this).val();
+      var pattern = /[a-z]|[A-Z]|\d+/;
+      if(workat.length <=40 && workat.match(pattern)){
+        $('#saveworksat').removeAttr("disabled");
+        $('#worksoutput').text("");
+        return true;
+      }
+      else{
+        if(workat == ''){
+          $('#saveworksat').attr("disabled", true);
+          $('#worksoutput').text("The name can not be spacs");
+        }
+        else{
+           if( workat
+            .length > 40){
+            $('#saveworksat').attr("disabled", true);    
+            $('#worksoutput').text("The name can not be more than 40 characters");
+            }
+            else{
+              $('#saveworksat').removeAttr("disabled");    
+              $('#worksoutput').text("");
+            }
+        }
+      }
+      $('#saveworksat').attr("disabled", true); 
+    });
+  });
+});
+
+</script>
 {% endblock %}

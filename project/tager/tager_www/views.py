@@ -25,6 +25,9 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+
+
+
 from django.shortcuts import render_to_response
 from django.shortcuts import RequestContext
 import re
@@ -115,7 +118,6 @@ LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be re
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
-
 
 
 def home(request):
@@ -272,7 +274,7 @@ def add_post(request):
             ,
             )
 
-        # p.post_Notification()
+        # p.post_Notification();
         for k in request.POST:
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
@@ -528,6 +530,75 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post and the status as a varibale in which the user can update and write what's
+# on his mind. Logged in users click profile whenever they want to update their status to be directed to their profile 
+# page where it displays their information and status. The user can write a new status in the text field whoch will be
+# saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page.
+
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post holding status as a varibale in which the user can update and share what's
+# on his mind. The user can write a new status in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page. output of the method saves the new status in database 
+@login_required
+def update_status(request):
+    print 'testing this method'
+    user = request.user
+    user.status = request.POST['status']
+    user.save()
+    return HttpResponse(" ")
+
+# Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
+# name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+#name and will be redirected to the login page. output of the method saves the new name in database 
+@login_required
+def edit_name(request):
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
+# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
+# The user can write the date of birth they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
+@login_required
+def edit_date_of_birth(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirth']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
+# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
+# The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse (" ")
+
+@login_required
+def editing_pic(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            success = True
+            photo          = editing_form.cleaned_data['photo']
+            
+    else:
+        editing_form =EditPicForm()#an unbound form
+
+        
+    ctx = {'editing_form': editing_form}
+    return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
 
 def get_channels (request):
@@ -630,16 +701,14 @@ def confirm_email(request):
            
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
-                if not user.is_expired():
-                   
-                    user.is_verfied=True
-                   
-                    user.save()
-                    return HttpResponseRedirect('/main/')
                 
-                else :  
-                 
-                    return HttpResponse ("sorry your account is disabled because the activation key has expired")
+                   
+                user.is_verfied=True
+               
+                user.save()
+                return HttpResponseRedirect('../main')
+                
+                
 
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
@@ -659,6 +728,17 @@ def confirm_email(request):
 #gets the public key from the settings and saves it in publiic_key
 #then renders the html with the form passed in a dic and the script 
 # result : captcha shown 
+
+def display_form(request):
+    form = RegistrationForm(request.POST)
+    # assuming your keys are in settings.py
+    public_key = settings.RECAPTCHA_PUBLIC_KEY
+    script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
+
+
+
+
 
 
 
@@ -686,19 +766,40 @@ def verfiy_captcha(request):
     #mohamed hammad C3 
     #this method takes as input channel id and then returns its subchannels
 def advanced_view_subchannels(request):
-    # print request.POST
     s_id = request.POST['ad_ch_id']
-
-    # print s_id
-    #current_channel = Channel.objects.filter(channel_id = s_id)
-    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
-    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    subchannels_list = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'subchannels_list': subchannels_list})
     #mohamed hammad C3 
     #this method returns all channels
-
 def advanced_view_channels(request):
-    list_of_channels = Channel.objects.all() 
-    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+    channels_list = Channel.objects.all()
+    return render(request,'advancedsearch.html', {'channels_list': channels_list})
+    #mohamed hammad
+    #C3
+    #this method takes as input request channel id and renders this channel to main page
+def advanced_render_channels(request):
+    if request.GET.get('ad_ch_id' , False):
+        channel_id = request.GET['ad_ch_id']
+        channel = Channel.objects.get(id = channel_id)
+        subchannels_list = SubChannel.objects.filter(channel_id = channel.id)
+        print subchannels_list
+        return render(request,'main.html', {'channel': channel , 'subchannels_list': subchannels_list})
+    else: 
+        return HttpResponse("please choose a channel")
+    #mohamed hammad
+    #C3
+    #this method takes as input request subchannel id and renders this subchannel to main page
+def advanced_render_subchannels(request):
+    
+    subchannel_id = request.GET.get('ad_sub_ch_id' , False)
+    if subchannel_id != False:
+        print subchannel_id
+        post_list = Post.objects.filter(subchannel_id = subchannel_id)
+        ret_subchannel = SubChannel.objects.get(id = subchannel_id)
+        print post_list
+        return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
+    else:
+        return HttpResponse("please choose a subchannel")
 
 #mohamed tarek 
 #c3 takes as input the subchannel id sellected then return all attributes of it 
@@ -717,6 +818,12 @@ def advanced_search(request):#mohamed tarek c3
     # print "got subchannel id"
     # print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    price_req = request.GET['price']
+    try:
+        price = int(price_req)
+        print price
+    except ValueError:
+        return HttpResponse("please type a number in the price feild")
     values =[]
     post = []
     value_obj =[]
@@ -731,7 +838,12 @@ def advanced_search(request):#mohamed tarek c3
     i = 0
     f = i+1
     null = ""
-    for j in range(0,len(values)):
+    if price:
+        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
+        result_search = [[] for o in result_search_obj]
+        for aa in range(0,len(result_search_obj[0])):
+            result_search[0].append(result_search_obj[0][aa].id)
+    for j in range(1,len(values)):
         if values[j] == null:
             pass
         else:
@@ -739,9 +851,8 @@ def advanced_search(request):#mohamed tarek c3
             , value = values[j])) ]
     if not result_search_obj:
         return HttpResponse("please enter something in the search")
-    else:
-        result_search = [[] for o in result_search_obj]    
-        for k in range(0,len(result_search_obj)):
+    else:    
+        for k in range(1,len(result_search_obj)):
             for l in range(0,len(result_search_obj[k])):
                 test = result_search_obj[k][l].value
                 result_search[k].append(result_search_obj[k][l].post.id)
@@ -766,8 +877,10 @@ def advanced_search(request):#mohamed tarek c3
                             post_temp = tmep[g]
                             post.append(post_temp)
         post_list =[]
+
         for a_post in post:
             post_list.append(Post.objects.get(id = a_post))
+        
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
@@ -863,6 +976,15 @@ def facebook_login(request):
         
 
 
+
+
+
+
+# def send_sms(request):
+#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+#     message = client.sms.messages.create(to="+201112285944",
+#                                          from_="+15555555555",
 
 def fb_authenticate(request):
     access_token = None

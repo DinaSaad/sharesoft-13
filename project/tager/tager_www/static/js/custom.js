@@ -278,5 +278,4 @@ function report(id) {
 function cancelReport(id) {
   $('.reportDIV' + id).css('display', 'none');  
   $('#report_button' + id).css('display', 'block');
-
 }
