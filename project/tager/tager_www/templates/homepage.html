@@ -1,5 +1,11 @@
 {% extends "base.html" %}
-{% block content %}
+{% load staticfiles%}
+
+{% block headers %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/filtering.css" %}" rel="stylesheet" media="screen">
+{% endblock %}
+{% block content %}}
 
 <div class="container-fluid">
 <div class="row-fluid">
