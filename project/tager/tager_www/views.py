@@ -37,9 +37,7 @@ def edit_post_dynamic(request):
     temp_attribute = request.POST['attribute']
     value = request.POST['value']
     temp_post = request.POST['post']
-    print "a7aa"
-    required_value = Value.objects.get(attribute_id = temp_attribute, post_id = temp_post)
-    
+    required_value = Value.objects.get(attribute_id = temp_attribute, post_id = temp_post)    
     required_value.value = value
     required_value.save()
     return HttpResponse()
@@ -275,8 +273,6 @@ def add_post(request):
             )
 
         # p.post_Notification()
-         
-        
         for k in request.POST:
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
@@ -362,6 +358,7 @@ def view_post(request):
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
  
     list_of_attribute_values = Value.objects.filter(post = test_post).order_by('attribute')
+    print list_of_attribute_values.count()
     list_of_att_number = Attribute.objects.filter(subchannel_id = subchannel1)
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list

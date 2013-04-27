@@ -123,6 +123,7 @@ $(document).ready(function() {
 
 $(function(){
   $('#id_price').keyup(function(){
+    alert("text");
     var data = $(this).val();
     var pattern = /^[0-9]+$/;
     if (data.length > 1 && data.match(pattern)) {
