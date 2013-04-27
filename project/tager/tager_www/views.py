@@ -34,6 +34,9 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
+from django.utils.timezone import utc
+import datetime
+from datetime import datetime, timedelta
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -201,7 +204,12 @@ def add_post(request):
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
+                post_activity_url = "showpost?post=" + unicode(p.id)
+                post_log_type = "post"
+                post_log_date = datetime.datetime.now()
+                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, activity_date = post_log_date, user = author) 
         return HttpResponseRedirect('/main')
     else:
 
@@ -260,6 +268,11 @@ def add_to_wish_list(request):
     can_wish = user.add_to_wish_list(post)
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
+        post_activity_content = "you added " + unicode(post.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post.id)
+        post_log_type = "wish"
+        post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, activity_date = post_log_date, user = author)
     return HttpResponse()
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
@@ -473,6 +486,11 @@ def edit_name(request):
     user = request.user
     user.name = request.POST['user_name']
     user.save()
+    post_activity_content = "you edited your name to " + unicode(user.name) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, activity_date = post_log_date, user = author)
     return HttpResponse (" ")
 
 # Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
@@ -485,6 +503,11 @@ def edit_date_of_birth(request):
     user = request.user
     user.date_Of_birth = request.POST['dateofbirth']
     user.save()
+    post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, activity_date = post_log_date, user = author)
     return HttpResponse (" ")
 
 # Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
@@ -497,6 +520,11 @@ def edit_work(request):
     user = request.user
     user.works_at = request.POST['userwork']
     user.save()
+    post_activity_content = "you edited your place of work to " + unicode(user.works_at) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, activity_date = post_log_date, user = author)
     return HttpResponse (" ")
 
 @login_required
