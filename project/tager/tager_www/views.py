@@ -46,9 +46,6 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
-
-
-
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -173,7 +170,10 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
     return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
-
+#c1_abdelrahman the add_post function requires the user to be logged in.
+#the sub_channel_id is received from the previous view. it displays a form to the user. 
+#if the user filled the form correctly then the user will be redirected to the homepage. 
+# if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
     sub_channel_id = request.GET['sub_ch_id']
@@ -199,13 +199,14 @@ def add_post(request):
             ,location = form.cleaned_data['location']
             ,
             )
+
         # p.post_Notification()
          
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
-        return HttpResponse('Thank you for adding the post')
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+        return HttpResponseRedirect('/main')
     else:
 
         form = PostForm()
@@ -257,15 +258,27 @@ def check_Rate_Identify_buyer(request):
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
     return d
 
+def add_to_wish_list(request):
+    user = request.user
+    post = request.POST['post']
+    can_wish = user.add_to_wish_list(post)
+    if can_wish:
+        WishList.objects.create(user = user, post_id = post)
+    return HttpResponse()
+#c1_abdelrahman this method takes the user as an input and it gets the post.
+#from the the main page the post object object is extracted from the post table.
+#list of attributes are extracted and also list_of_values of the attributes are given.
+#it returns the post, list_of_attributes and list_of values of the attributes.
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
-    print post_id
+    post = Post.objects.get(id=post_id)
+    post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
-    list_of_att_values = Value.objects.filter(post = test_post)
+    list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
@@ -274,7 +287,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -339,13 +352,15 @@ def Buyer_identification(request):
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
+    user = request.user
+    #c1_abdelrahman check whether the user can post or not.
+    user_can_post = user.can_post()
     post_list = filter_home_posts()
-    
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
         i.post_state()
 
-    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -433,6 +448,75 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post and the status as a varibale in which the user can update and write what's
+# on his mind. Logged in users click profile whenever they want to update their status to be directed to their profile 
+# page where it displays their information and status. The user can write a new status in the text field whoch will be
+# saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page.
+
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post holding status as a varibale in which the user can update and share what's
+# on his mind. The user can write a new status in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page. output of the method saves the new status in database 
+@login_required
+def update_status(request):
+    print 'testing this method'
+    user = request.user
+    user.status = request.POST['status']
+    user.save()
+    return HttpResponse(" ")
+
+# Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
+# name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+#name and will be redirected to the login page. output of the method saves the new name in database 
+@login_required
+def edit_name(request):
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
+# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
+# The user can write the date of birth they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
+@login_required
+def edit_date_of_birth(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirth']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
+# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
+# The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse (" ")
+
+@login_required
+def editing_pic(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            success = True
+            photo          = editing_form.cleaned_data['photo']
+            
+    else:
+        editing_form =EditPicForm()#an unbound form
+
+        
+    ctx = {'editing_form': editing_form}
+    return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
 
 def get_channels (request):
@@ -600,19 +684,40 @@ def verfiy_captcha(request):
     #mohamed hammad C3 
     #this method takes as input channel id and then returns its subchannels
 def advanced_view_subchannels(request):
-    # print request.POST
     s_id = request.POST['ad_ch_id']
-
-    # print s_id
-    #current_channel = Channel.objects.filter(channel_id = s_id)
-    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
-    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    subchannels_list = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'subchannels_list': subchannels_list})
     #mohamed hammad C3 
     #this method returns all channels
-
 def advanced_view_channels(request):
-    list_of_channels = Channel.objects.all() 
-    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+    channels_list = Channel.objects.all()
+    return render(request,'advancedsearch.html', {'channels_list': channels_list})
+    #mohamed hammad
+    #C3
+    #this method takes as input request channel id and renders this channel to main page
+def advanced_render_channels(request):
+    if request.GET.get('ad_ch_id' , False):
+        channel_id = request.GET['ad_ch_id']
+        channel = Channel.objects.get(id = channel_id)
+        subchannels_list = SubChannel.objects.filter(channel_id = channel.id)
+        print subchannels_list
+        return render(request,'main.html', {'channel': channel , 'subchannels_list': subchannels_list})
+    else: 
+        return HttpResponse("please choose a channel")
+    #mohamed hammad
+    #C3
+    #this method takes as input request subchannel id and renders this subchannel to main page
+def advanced_render_subchannels(request):
+    
+    subchannel_id = request.GET.get('ad_sub_ch_id' , False)
+    if subchannel_id != False:
+        print subchannel_id
+        post_list = Post.objects.filter(subchannel_id = subchannel_id)
+        ret_subchannel = SubChannel.objects.get(id = subchannel_id)
+        print post_list
+        return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
+    else:
+        return HttpResponse("please choose a subchannel")
 
 #mohamed tarek 
 #c3 takes as input the subchannel id sellected then return all attributes of it 
@@ -631,6 +736,12 @@ def advanced_search(request):#mohamed tarek c3
     print "got subchannel id"
     print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    price_req = request.GET['price']
+    try:
+        price = int(price_req)
+        print price
+    except ValueError:
+        return HttpResponse("please type a number in the price feild")
     values =[]
     post = []
     value_obj =[]
@@ -645,7 +756,12 @@ def advanced_search(request):#mohamed tarek c3
     i = 0
     f = i+1
     null = ""
-    for j in range(0,len(values)):
+    if price:
+        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
+        result_search = [[] for o in result_search_obj]
+        for aa in range(0,len(result_search_obj[0])):
+            result_search[0].append(result_search_obj[0][aa].id)
+    for j in range(1,len(values)):
         if values[j] == null:
             pass
         else:
@@ -653,9 +769,8 @@ def advanced_search(request):#mohamed tarek c3
             , value = values[j])) ]
     if not result_search_obj:
         return HttpResponse("please enter something in the search")
-    else:
-        result_search = [[] for o in result_search_obj]    
-        for k in range(0,len(result_search_obj)):
+    else:    
+        for k in range(1,len(result_search_obj)):
             for l in range(0,len(result_search_obj[k])):
                 test = result_search_obj[k][l].value
                 result_search[k].append(result_search_obj[k][l].post.id)
@@ -680,8 +795,10 @@ def advanced_search(request):#mohamed tarek c3
                             post_temp = tmep[g]
                             post.append(post_temp)
         post_list =[]
+
         for a_post in post:
             post_list.append(Post.objects.get(id = a_post))
+        
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
         else:
@@ -778,11 +895,6 @@ def facebook_login(request):
 
 
 
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = Subchannel.objects.filter(channel_id = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 # def send_sms(request):

@@ -113,7 +113,10 @@ $('#SubmitAction').attr("disabled", true);
   });
 });
 
+
+
 $(document).ready(function() {
+
 $(function(){
   $('#id_price').keyup(function(){
     var data = $(this).val();
@@ -134,25 +137,7 @@ $(function(){
 
 });
 
-// $(document).ready(function() {
-// if($("#id_location").val().length == 0){
-//   $('#descriptionoutput').text("Can not be blank");   please check correct syntax because its corrupting 
-// }                                                      the whole file.
-// });
 
-
-
-// $(document).ready(function() {
-//  $(function() {
-//     var availableTags = [
-//       "Cairo","Alexandria","Sharkia","Assiut","Beni-Suif","Aswan","Luxor","Minya","Dakhlia","Gharbia","Monofia","Sohag","Matrouh","Beheira","Al Wadi al gdeed","Kafr el heikh","North Sinai","South Sinai","Red Sea","Portsaied","Suez","Qina", "Ismailia", "Giza", "Damietta"
-//     ]
-//     alert("1");
-//     $("#id_location").autocomplete({
-//       source: availableTags
-//     });
-//   });
-// });
 
 
 $(document).ready(function() {
@@ -237,6 +222,15 @@ function reportPost(ids){
     }
 });
 }
+ $(function() {
+    var availableTags = [
+      "Cairo","Alexandria","Sharkia","Assiut","Beni-Suif","Aswan","Luxor","Minya","Dakhlia","Gharbia","Monofia","Sohag","Matrouh","Beheira","Al Wadi al gdeed","Kafr el heikh","North Sinai","South Sinai","Red Sea","Portsaied","Suez","Qina", "Ismailia", "Giza", "Damietta"
+    ]
+    $("#id_location").autocomplete({
+      source: availableTags
+    });
+  });
+ 
 function get_interested(ids) {
     $.ajax({
     url: "/getInterestedIn/",
@@ -257,5 +251,4 @@ function report(id) {
 function cancelReport(id) {
   $('.reportDIV' + id).css('display', 'none');  
   $('#report_button' + id).css('display', 'block');
-
 }
