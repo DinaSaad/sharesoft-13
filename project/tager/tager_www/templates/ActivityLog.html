@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content%}
+{% load staticfiles %}
+	<div id="ActivityGlobalContainer">
+		<div id="activity_content">
+			<div id="activity_content_column">
+				<div id="activity_right_col">
+
+				</div>
+				<div id="activity_content_area">
+					<div id="activity_selection">
+						<div style="font-family: tahoma,verdana; font-size:25px; line-height:1.5; border-bottom:thin;">Activity Log</div>
+						<div id="activity_selections">
+							<ul id="activity_ul" style="list-style:none">
+								<li class="activity_item" value="all" onClick="activity_all()">All <span>
+									<img id="all" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								
+								<li class="activity_item" value="your posts" onClick="activity_post()">Your Posts <span>
+									<img id="post" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								<li class="activity_item" value="wish list" onClick="activity_wishlist()">Wish list <span>
+									<img id="wish" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								<li class="activity_item" value="interested in" onClick="activity_interested()">Interested in <span>
+									<img id="interested" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								<li class="activity_item" value="profile" onClick="activity_profile()">Profile <span>
+									<img id="profile" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+							</ul>
+						</div>
+					</div>
+					<div id="activities_area">
+						<div style="width:100%; height:123px;">
+							{% if activities_log %}
+								{% for log in activities_log %}
+									<span>{{log.content}}</span><b></b>
+									<img id="profile" src="{% static "img/post.png" %}" />
+								{% endfor %}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+	</div>
+	<style type="text/css">
+    	#ActivityGlobalContainer {
+    		clear: both;
+    		padding-right: 205px;
+    		width: 981px;
+    		margin: 0 auto;
+    		position: relative;
+    		zoom: 1;
+    		line-height: 1.28;
+    		text-align: left;
+    		direction: ltr;
+    		height: 100%;
+		}
+		#content {
+			min-height: 100px;
+			margin: 0;
+			outline: none;
+			padding: 0;
+			width: auto;
+			height: auto;
+		}
+		#activity_right_col{
+			margin-right: -5px;
+			width: 122px;
+			margin-top: 0px;
+			float: right;
+			padding-right: 0px;
+			word-wrap: break-word;
+			height: auto;
+		}
+		#activity_content_area{
+			position: relative;
+			width: 851px !important;
+			float: left;
+			margin-right: 0px;
+			height: auto;
+		}
+		#activity_selection{
+			margin: auto;
+			width: 173px;
+			z-index: 2;
+			float: left;
+			position: fixed !important;
+			display: block;
+			height: auto;
+			/*background-color: #BCD2EE;*/
+		}
+		#activity_selections{
+			width: 161px;
+			height: 375px;
+			direction: ltr;
+			overflow: hidden;
+			position: relative;
+			margin-right: 5px;
+			margin-top: 10px;
+			display: block;
+			font-size: 11px;
+			height: auto;
+		}
+		#activity_ul{
+			font-size: 14px;
+			line-height: 1.28;
+		}
+		.activity_item{
+			margin-bottom: 15px;
+			padding-right: 20px;
+			margin-left: -10px;
+			width: 100%;
+			display: list-item;
+			color: #333;
+			height: 100%;
+		}
+		#activities_area{
+			min-height: 682px;
+			width: 687px;
+			float: right;
+			display: block;
+			margin-top: 45px;
+		}
+		#all{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#post{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#wish{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#interested{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#profile{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+    </style>
+    <script type="text/javascript">
+    	$(document).ready(function(){
+			$('.activity_item').mouseover(function() {
+  				$('.activity_item').css('cursor', 'pointer');
+  				/*$('.activity_item').css('box-shadow', '5px 5px 5px #BCD2EE');*/
+
+			});
+			$('.activity_item').mouseleave(function() {
+  				$('.activity_item').css('box-shadow', 'none');
+			});
+		});
+		function activity_all(){
+  			$('#all').css('display','block');
+  		}
+  		function activity_post(){
+  			$('#post').css('display','block');
+  		}
+  		function activity_wishlist(){
+  			$('#wish').css('display','block');
+  		}
+  		function activity_interested(){
+  			$('#interested').css('display','block');
+  		}
+  		function activity_profile(){
+  			$('#profile').css('display','block');
+  		}
+    </script>
+{% endblock %}
