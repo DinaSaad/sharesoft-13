@@ -999,3 +999,23 @@ def intrested(request):
 
     return HttpResponse()
 
+
+def all_log(request):
+    activities_log = ActivityLog.objects.all()
+    return render (request, 'ActivityLog.html', {'activities_log':all_log})
+
+def all_log_post(request):
+    activities_log = ActivityLog.objects.filter(type="post")
+    return render (request, 'ActivityLog.html', {'activities_log':all_log})
+
+def all_log_interested(request):
+    activities_log = ActivityLog.objects.filter(type="interested")
+    return render (request, 'ActivityLog.html', {'activities_log':all_log})
+
+def all_log_wish(request):
+    activities_log = ActivityLog.objects.filter(type="wish")
+    return render (request, 'ActivityLog.html', {'activities_log':all_log})
+
+def all_log_profile(request):
+    activities_log = ActivityLog.objects.filter(type="profile")
+    return render (request, 'ActivityLog.html', {'activities_log':all_log})
