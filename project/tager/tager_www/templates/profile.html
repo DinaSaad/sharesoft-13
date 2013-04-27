@@ -1,26 +1,68 @@
 {% extends "base.html" %}
 {% load staticfiles %}  
+
+
 {% block content %}
 <body class="body">
   <div class="container-fluid">
     <div class="row-fluid">
+
+
+  <script type="text/javascript">
+$.fn.editable.defaults.mode = 'inline';
+$('#user_name').editable();
+  </script>
+
       <div class="span4">
          <div class="wideColumn">   
               <div id="userInfo">
+                    <center>
                 <div id="box1">
                   <a href="/edit_pic/">Change Profile Picture?</a>
                   <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
                 </div>
-                <div class="facebookfriends" id="box1">
-                  <h3>FacebookFriends </h3>  
+                </center>
+<br>
+
+                <div class="facebookfriends" class="item" id="box1">
+                  <div class="thumbnail" >
+                  <div class="profileHeader" class="active" wotsearchprocessed="true">
+                    <center><h4 >Friends</h4> </center>
+                  </div>
+                  <br>
+                  <br>
+                  <br>
+                  </div>
                 </div>
-                <div class="wishlist" id="box1">
-                  <h3>Wish List:D</h3>
+<br>
+
+                <div class="wishlist" class="item" id="box1">
+                  <div class="thumbnail" >
+
+                  <div class="profileHeader" class="active" wotsearchprocessed="true">
+                   <center> <h4>Wish List</h4>  </center>
+                  </div>
+
+                  <br>
+                  <br>
+                  <br>
+
                 </div>
-                <div class="interested" id="box1">
-                  <h3>Interested in:</h3>
                 </div>
+<br>
+                <div class="interested" class="item" id="box1">
+                  <div class="thumbnail" >
+                  <div class="profileHeader" class="active" wotsearchprocessed="true">
+                  <center><h4>Interested</h4></center>
+                  </div>
+                  <br>
+                  <br>
+                  <br>
+                </div>
+                </div>
+
               </div>
+
               <div id="userDetails">         
                   <p>
                     <a href="https://www.facebook.com/profile?user_id={{user.id}}" rel="nofollow" target="_blank" class="fbLink" <img src="https://ss1.4sqi.net/img/facebook_16-8221d882015899c7087b8e9a0d90f4a4.png" alt="Facebook" width="16" height="16"></a>
@@ -29,13 +71,20 @@
                 </div> 
           </div>
       </div>
+
       <div class="span7">
-        <div class="status" id="box2">
-          <h2>Status: <label id="status">{{user.status}}</label></h2> <input type="text" name="status" id="statusvalue" style="display:none" class="span9" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
+        
+        <div class="status" id="box3" >
+          <div class="thumbnail" >
+          <h4>Status<label id="status">{{user.status}}</label></h4> <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
             <button id="update_status" class="btn btn-small btn-primary" onClick="update_status_tosave()">Update</button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
+      </div>
         <div class="information" id="box3">
+          <div class="thumbnail" >
           <h3>Information:</h3>
+          <!-- <a href="#" id="user_name">{{user.name}}</a> -->
+
           <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
             <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
@@ -68,6 +117,16 @@
       </div>
     </div>
   </div>
+  <script type="text/javascript">
+$.fn.editable.defaults.mode = 'inline';
+$('#user_name').editable({
+    type: 'text',
+    url: '/edit_name',    
+    pk: {{user.id}},    
+    placement: 'top',
+    title: 'Enter username'    
+});
+  </script>
 <script type="text/javascript">
 function update_status_tosave(){
   $("#update_status").hide();
