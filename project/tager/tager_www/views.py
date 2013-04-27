@@ -892,7 +892,7 @@ def view_subchannels(request):
     s_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=s_id)
     list_of_subchannels = SubChannel.objects.filter(channel = current_channel)
-    return render(request, 'index.html~', {'list_of_subchannels': list_of_subchannels})
+    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 # def send_sms(request):
