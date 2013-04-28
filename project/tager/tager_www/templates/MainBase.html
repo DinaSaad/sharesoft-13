@@ -86,7 +86,6 @@
 
 
 {% block content %}
-
 {% block script %}
 {% endblock %}
 <!-- USe this to add your stuff   -->
@@ -105,15 +104,43 @@
     });
 </script>
 <!-- End TMP , Please remove me -->
-      <hr>
+      
 
- <footer>
-        <p>&copy; sharesoft 2013</p>
+ <footer id = "footer">
+        <p style = "display:inline" >&copy; sharesoft 2013</p>
+        <a href="#aboutUs" data-toggle="modal" >About Us</a>
       </footer>
+
 </div>
 <!-- end main websiteBody Div -->
+<center>
+<div  id="aboutUs" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header" width ="1000">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h1 id="myModalLabel">Tager</h1>
+    </div>
+    <div class="modal-body">
+        <h3>Tager.com</h3>
+        <p>Tager Is the website built to enhance online marketing transactions in Egypt Its goal is to electronify transactions in Egypt !!!</p>
+        <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
+        </div>
+        </div>
+    </div>
 
-
-
+</center>
 </body>
 </html>
+
+
+     <style type="text/css">
+      #footer {
+        text-align: center;
+        margin-left: -100;1
+            border-top: solid thin;
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:60px;   /* Height of the footer */
+}
+      </style>
