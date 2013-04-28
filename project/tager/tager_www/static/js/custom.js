@@ -123,7 +123,7 @@ $(document).ready(function() {
 
 $(function(){
   $('#id_price').keyup(function(){
-    alert("text");
+
     var data = $(this).val();
     var pattern = /^[0-9]+$/;
     if (data.length > 1 && data.match(pattern)) {
@@ -249,6 +249,16 @@ function updates(){
 
   })
 }
+ $(function() {
+    var availableTags = [
+      "Other","Cairo","Alexandria","Sharkia","Assiut","Beni-Suif","Aswan","Luxor","Minya","Dakhlia","Gharbia","Monofia","Sohag","Matrouh","Beheira","Al Wadi al gdeed","Kafr el heikh","North Sinai","South Sinai","Red Sea","Portsaied","Suez","Qina", "Ismailia", "Giza", "Damietta"
+    ]
+    $("#locationvalue").autocomplete({
+      source: availableTags
+    });
+  });
+
+
  $(function() {
     var availableTags = [
       "Cairo","Alexandria","Sharkia","Assiut","Beni-Suif","Aswan","Luxor","Minya","Dakhlia","Gharbia","Monofia","Sohag","Matrouh","Beheira","Al Wadi al gdeed","Kafr el heikh","North Sinai","South Sinai","Red Sea","Portsaied","Suez","Qina", "Ismailia", "Giza", "Damietta"
