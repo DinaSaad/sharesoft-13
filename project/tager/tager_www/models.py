@@ -1,4 +1,4 @@
-
+x
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
@@ -73,7 +73,11 @@ class UserProfile(AbstractBaseUser):
     phone_number = models.CharField(max_length=20 , null=True)
     is_admin = models.BooleanField(default=False)           
     is_verfied = models.BooleanField(default=False)
-    is_premium = models.BooleanField(default=False)
+    account_choices = (
+        ('F', 'Free'),
+        ('P', 'Premium'),
+        )
+    accout_type = models.CharField(max_length=1, choices=account_choices)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
     # created = models.DateTimeField(auto_now_add=True)
