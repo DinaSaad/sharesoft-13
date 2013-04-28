@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
-{% load staticfiles%}
+
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+
 {% block content %}
 <style type="text/css">
 .valuesdiv{
@@ -163,8 +170,10 @@ text-align: right;
 
 </div>
 
+    {% block script%}
 
     <script type="text/javascript">
+
     var eligible_to_add_to_the_wish_list = {{canwish}}
     $("#wishlisterror").hide();
     if(eligible_to_add_to_the_wish_list){
@@ -185,8 +194,31 @@ text-align: right;
     });
     }
 
+    $(document).ready(function(){
+        $("#star").css("visibility", "hidden");
+    });
+    $("#rateSeller").click(function(){
+        // window.location.replace("profile?user_id="+$(this).val());
+        $("#star").css("visibility", "visible");
+    });
+    $(document).ready(function(){
+        $('#star').raty({ 
+            score: $('#rating').val(),
+            click: function(score, evt) {
+            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
+            $.ajax({
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                         });
 
+
+        },
+
+    });
+});
     </script>
+    {% endblock %}
 
     
 
