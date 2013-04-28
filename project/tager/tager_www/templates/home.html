@@ -1,27 +1,59 @@
-{% extends "base2.html" %}
-
+{% extends "MainBase.html" %}
+{% load staticfiles%}
 
 {% block content %}
-    
-    {% load url from future %}
-        {% if request.user.is_authenticated %}
-            Hello {{ request.user.first_name }} {{ request.user.last_name }}, your now connected with facebook
-        {% else %}
-            <div id="content" style="background-color:#EEEEEE;width:100%;height:100%;padding-top:40px;align:center;padding-left:35%;padding-top:25%">
-                        <a href="{% url 'facebook_login' %}"><button class="btn btn-primary btn-large"><i class="icon-white icon-user"></i> Login with Facebook</button></a>
-                        </div>
-        {% endif %}
 
-      <div>
-        <p class="h4">already have an account ? <a class="brand" href="/login/">sign in</a></p>
-      </div>
-      <div>
-        <p class="h4"><a class="brand" href="../register/">sign up</a></p>
-      </div>
-
-
+<center>
+    <div id = "site_logo">
+        <a href=""><img src="{% static "img/tager-logo.png" %}" style = "width:800"/></a>
+    </div>
+    <br>
+    <div>
+        <div id = "fb_button">
+            <a href="#" class="zocial facebook">Sign in with Facebook</a>
+        </div>
+        <br>
+        <div id = "user_buttons_sign" >
+            <p class="h4" style="display:inline">Already have an account ? <a href="#signIn" data-toggle="modal" class="btn btn-info">Sign In </a></p>
+            or 
+            <p class="h4" style="display:inline"><a href="../register/" data-toggle="modal" class="btn btn-info">Sign Up </a></p>
+        </div>
+    </div>
+    <div  id="signIn" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header" width ="1000">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Enter Your mail and password:</h3>
+    </div>
+    <div class="modal-body">
+        <form form action="/logged/" method="POST" id="form" class="kissmetrics-login">
+            {% csrf_token %}
+            <div class="control-group">
+                <label class="control-label" for="inputEmail">Email:</label>
+                <div class="controls">
+                    <input type="email" name="email" id="inputEmail" placeholder="Email address" autofocus =""/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Password:</label>
+                <div class="controls">
+                    <input type="password" name="password" id="inputPassword" placeholder="Password"/>
+                </div>
+            </div>
+            <div class="cf">
+                <div class="left">
+                    <input type="submit" class="btn btn-success btn-large" value="Login">
+                </div>
+                <div class="right">
+                    <a href="//app.gathercontent.com/forgotten" class="link-option">Forgot your password?</a>
+                    <!-- </div> -->
+                </div>
+        </form>
+        <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
+        </div>
+        </div>
+    </div>
+</center>
+<br>
 
 {% endblock %}
-
-
-

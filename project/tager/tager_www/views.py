@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User, check_password
 from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
@@ -41,6 +42,16 @@ LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be re
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
+
+
+
+#c1-abdelrahman it takes a request as an input.
+# it returns a list of all the wished posts by the user to the profile.html
+
+def view_posts_wished(request):
+    user = request.user
+    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
@@ -222,15 +233,16 @@ def add_post(request):
 def login(request):
     mail = request.POST['email']
     password = request.POST['password']
-
+    # print "in"
     authenticated_user = authenticate(mail=mail, password=password)
+    # print "in1"
     if authenticated_user is not None:
-        print "auth"
+        # print "auth"
         print authenticated_user.is_active
         if authenticated_user.is_active:
-            print "act"
+            # print "act"
             django_login(request, authenticated_user)
-            print "user logged in"
+            # print "user logged in"
             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
@@ -266,7 +278,9 @@ def view_post(request):
     user = request.user
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
-    post_can_be_wished = user.add_to_wish_list(post_id)
+    post_can_be_wished = False
+    if user.is_authenticated():
+        post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
@@ -346,8 +360,10 @@ def Buyer_identification(request):
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
     user = request.user
+    user_can_post = False
     #c1_abdelrahman check whether the user can post or not.
-    user_can_post = user.can_post()
+    if user.is_authenticated():
+        user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
@@ -380,7 +396,8 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            if user.password == password:
+            pwd_valid = check_password(password, user.password)
+            if pwd_valid:
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -575,9 +592,9 @@ def view_profile(request):
         # print user
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        print "v"
+        list_of_wished_posts = WishList.objects.filter(user_id = "3")
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link}
+        d = {'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
