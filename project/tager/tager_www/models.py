@@ -78,7 +78,7 @@ class UserProfile(AbstractBaseUser):
     activation_key = models.CharField(max_length=40 , null=True)
     # created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
-    # rating = models.FloatField(default=0.0)
+    rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
