@@ -611,4 +611,4 @@ class ActivityLog(models.Model):
     user = models.ForeignKey(UserProfile)
     url = models.CharField(max_length = 100)
     log_type = models.CharField(max_length = 10)
-    activity_date = models.DateField()
+    # activity_date = models.DateField()
