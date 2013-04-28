@@ -258,16 +258,30 @@ class UserProfile(AbstractBaseUser):
         self.save() 
         return user_rating
 
+#c2-mahmoud ahmed-as a user i should be able to see the people i interacted with through buying 
+#and selling activities - what get_interacting_people does is that it first gets the posts where
+#the current user is found as the buyer of a post in the Posts table then it loops the list that is 
+#returned from the filter and it gets the ids of the sellers which the user bought the post from
+#and then get them as objects and add them to the list. and then the same procedure is repeated 
+#for the posts where he was the post owner and the post is sold so it gets the buyers and then add
+#them to the interacting peoples list. and at the end it returns the list.
+
     def get_interacting_people(self):
         interacting_people = []
-        people_bought_from = Post.objects.filter(buyer_id = self.id)
-        for person in people_bought_from:
-            seller = person
-            interacting_people.append(buyer)
-        people_sold_to = Post.objects.filter(seller_id = self.id, is_sold = True)
-        for person in people_sold_to:
-            buyer = person
-            interacting_people.append(buyer)
+        
+        posts_bought = Post.objects.filter(buyer_id = self.id)
+        for post in posts_bought:
+            seller_identifciation = post.seller.id
+            seller_obj = UserProfile.objects.get(id=seller_identifciation)
+            interacting_people.append(seller_obj)
+        
+        post_sold_to = Post.objects.filter(seller_id = self.id, is_sold = True)
+        
+        for post in post_sold_to:
+            buyer_identification = post.buyer.id
+            buyer_obj = UserProfile.objects.get(id=buyer_identification)
+            interacting_people.append(buyer_obj)
+
         return interacting_people
 
 
