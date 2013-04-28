@@ -1,10 +1,13 @@
 {% extends "MainBase.html" %}
 {% load staticfiles%}
+
 {% block content %}
+
 <center>
     <div id = "site_logo">
-        <a href=""><img src="{% static "img/tager-logo.png" %}"/></a>
+        <a href=""><img src="{% static "img/tager-logo.png" %}" style = "width:800"/></a>
     </div>
+    <br>
     <div>
         <div id = "fb_button">
             <a href="#" class="zocial facebook">Sign in with Facebook</a>
@@ -51,4 +54,6 @@
         </div>
     </div>
 </center>
+<br>
+
 {% endblock %}
