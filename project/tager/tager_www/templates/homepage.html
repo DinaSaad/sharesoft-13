@@ -13,51 +13,26 @@
 <div class="row-fluid">
   <div class="span2">
       <!--Sidebar content-->
-      
-      <!-- <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-        {% for i in all_channels %} 
-          {% if i.subchannels_list %}
-            <li><a tabindex="-1" href="#">{{i.channel.name}}</a></li>
-          {% else %}
-                
-            <li class="dropdown-submenu">
-              <a tabindex="-1" href="#">{{i.channel.name}}</a>
-              <ul class="dropdown-menu">
-                {% for subchannel in i.subchannels_list %}
-                  <li><a tabindex="-1" href="#" onClick="posts_render({{subchannel.subchannel.id}})">{{subchannel.subchannel.name}}</a></li>
-                {% endfor %}
-              </ul>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>  -->
-        
-      <div class=​"lftnav ">​
-        <ul>
-          {% for i in all_channels %} 
-          <li class=​"cat">​
-            <a class=​"rt" href=​"http:​/​/​www.motors.ebay.com" _sp=​"p2050601.m1381.l3264" role=​"menuitem" aria-haspopup=​"true">​
-              {{i.channel.name}}
-              <i>​</i>​
-            </a>​
-              <div class=​"sub" role=​"menu">​
-                <ul class=​"col">​
-                  <!-- <li class=​"title">​Top categories​</li>​ -->
-                  {% for subchannel in i.subchannels_list %} 
-                  <li class=​"icn">​
-                    <a sp=​"p2050601.m1381.l3266" role=​"menuitem" aria-haspopup=​"false">​
-                      <li> {{subchannel.subchannel.name}} </li>
-                    ​</a>​
-                </li>​
-                {% endfor %}
-                </ul>
-              </div>
-            </li>
-            {% endfor %}
-        </ul>
-        </div>
 
-    </div>
+
+
+      <div id='cssmenu'>
+        <ul>
+          <!-- <li><a href='#'><span>Home</span></a></li> -->
+          {% for i in all_channels %}
+          <li class='active has-sub'><a href='#'><span>{{i.channel.name}}</span></a>
+            <ul>
+              {% for subchannel in i.subchannels_list %} 
+              <li class='has-sub' onClick="posts_render({{subchannel.subchannel.id}})"><a href='#'><span>{{subchannel.subchannel.name}}</span></a>
+                
+              </li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div> 
     <div class="span10">
       <!--Body content-->
       <div class="span6">

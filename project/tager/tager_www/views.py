@@ -439,7 +439,8 @@ def get_channels (request):
         subchannels_list = []
         for subchannel in subchannels:
             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-            # subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
+            subchannels_list.append({'subchannel': subchannel})
+            # , 'attributes': attributes
             # keep this commented , i'll use it later
             channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
     post_list = Post.objects.all()   
@@ -470,12 +471,12 @@ def view_checked_subchannel_posts(request):
 # the method returns the dictionairy of posts related to specific subchannels.
 
 def menuForSubchannels(request):
-    sub_channelid = request.GET["sub_ch_id"]
-    print sub_channelid
-    current_subchannel = Subchannel.objects.get(id =subchannel_id)
+    subchannel_id = request.GET["sub_ch_id"]
+    print subchannel_id
+    current_subchannel = SubChannel.objects.get(id =subchannel_id)
     posts_of_subchannels = Post.objects.filter(subchannel_id= current_subchannel)
     print posts_of_subchannels
-    return render(request, "homepage.html", {'posts_of_subchannels': posts_of_subchannels})
+    return render(request, "filterPosts.html", {'posts_of_subchannels': posts_of_subchannels})
 
 
 
