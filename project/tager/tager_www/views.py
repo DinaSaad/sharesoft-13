@@ -269,8 +269,12 @@ def add_to_wish_list(request):
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
 #it returns the post, list_of_attributes and list_of values of the attributes.
+
 def view_post(request):
     user = request.user
+    form = sms(request)
+    form1 = sms_verify(request)
+    print form
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = user.add_to_wish_list(post_id)
@@ -280,6 +284,8 @@ def view_post(request):
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
 
+
+
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
     list_of_interested_buyers=[]
@@ -287,7 +293,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'form1':form1 , 'form':form, 'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -992,25 +998,41 @@ def send_sms(to_number,msg_body):
    
 def sms(request):
     user = request.user
+    print "im in" 
+
     if request.method == 'POST':
+     # if 'phone' in request.POST:
+            print request.POST
         
-        form = smsForm( request.POST )
-        user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
-        user.save()
-        phone_no = request.POST['phone_number']
-        send_sms(phone_no ,user.sms_code)
-        return HttpResponseRedirect('/smsvery/')
+            form = smsForm( request.POST )
+            user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+            user.save()
+          
+            phone_no = request.POST['phone_number']
+            user.phone_number = phone_no
+            user.save()
+            print phone_no
+            send_sms(phone_no ,user.sms_code)
+             
+
     
     else:
+        print " imhere to"
         form = smsForm()
-    return render_to_response( "sms.html",{'form':form},context_instance = RequestContext( request ))
+        print form
+        return form
 
 
 def sms_verify(request):
+  
     if request.method == 'POST':
-       
+        if 'code' in request.POST:
+            print "im a post"
+            form = smsForm()
             print "yo"
             smscode = request.POST['sms_code']
+
+     
             if smscode is not None: 
                 print smscode
                 user = UserProfile.objects.get(sms_code=smscode)
@@ -1018,14 +1040,12 @@ def sms_verify(request):
 
                 return HttpResponse('correct code')
 
-        # else:
-        #         return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
+
     else:
         
         form = smsForm()
-        context = {'form': form}
-        return render_to_response('smsvery.html', context, context_instance=RequestContext(request))
-
+        
+        return form
 
      
 
