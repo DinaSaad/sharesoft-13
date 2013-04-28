@@ -113,8 +113,8 @@ class UserProfile(AbstractBaseUser):
         return self.name
  
     def __unicode__(self):
-        return self.email + str(self.is_verfied) + str(self.activation_key)
-
+        return self.email
+        # return self.email + str(self.is_verfied) + str(self.activation_key)
      # this methods taked in a permission and the objects and returns true or false regarding wherther the objec entered has permission or not (user)
     def has_perm(self, perm, obj=None):
         
@@ -237,6 +237,11 @@ class UserProfile(AbstractBaseUser):
         not1 = Notification(user = post_in.user_id, content = not_content)
         not1.save()
 
+#C2-mahmoud ahmed- as a user i can rate sellers whom i bought from. the method takes the rate and the post
+#and the buyer as inputs and then it inserts these inputs into the rating table and save the record after
+#that the post_owner rating is calculated and the average is brought and saved instead of the old rating.
+#and then the average rating is returned.
+
     def calculate_rating(self,rate,post,buyer): #self is the post_owner
         owner_id = self.id
         #print owner_id
@@ -252,6 +257,19 @@ class UserProfile(AbstractBaseUser):
         self.rating = user_rating
         self.save() 
         return user_rating
+
+    def get_interacting_people(self):
+        interacting_people = []
+        people_bought_from = Post.objects.filter(buyer_id = self.id)
+        for person in people_bought_from:
+            seller = person
+            interacting_people.append(buyer)
+        people_sold_to = Post.objects.filter(seller_id = self.id, is_sold = True)
+        for person in people_sold_to:
+            buyer = person
+            interacting_people.append(buyer)
+        return interacting_people
+
 
 #c2-mohamed
 #this class holds all notifications to all users
