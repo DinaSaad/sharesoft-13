@@ -500,7 +500,7 @@ def get_channels (request):
 # subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
 # the method then return the channels_list only , as it holds , every attribute of subchannel
 # and every subchannel of a channel 
-
+    
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
     results_of_subchannels = []
@@ -951,24 +951,22 @@ def remove_post(request, post_id):
         return render_to_response('ViewPost.html',context_instance=RequestContext(request))
 
 def show(request):
-    user = request.user
-    channels_list=Channel.objects.all()
-    channels = UserChannelSubscription.objects.values_list('channel', flat=True).filter(user = user)
-    channels_list=[]
-    for channel in channels:
-        channels_list.append({'channel':channel})
-    return render(request, 'subscriptions.html', {'channels_list':channels_list})
+    list_of_channels = Channel.objects.all()    
+    return render(request, 'hala.html', {'list_of_channels': list_of_channels})
+    # user = request.user
+    # channel_list = UserChannelSubscription.objects.filter(user = user).values()
+    # channel_list = UserChannelSubscription.objects.filter(user= user).values_list('channel', flat=True)
+    # lightdata = list(weather)
+    # for channel in channel_list:
+    #     print channel 
+    #     return render_to_response('subscriptions.html', context_instance=RequestContext(request)) 
 
-
-
-    # channels = Channel.objects.all()
-    # channels_list = [] 
-    # for channel in channels:
-    #     subchannels = SubChannel.objects.filter(channel_id=channel.id)
-    #     subchannels_list = []
-    #     for subchannel in subchannels:
-    #         # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-    #         subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-    #     channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-    # post_list = Post.objects.all()   
-    # return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
+    # def view_checked_subchannel_posts(request):
+#     list_of_subchannelsID = request.GET.getlist('list[]')
+#     results_of_subchannels = []
+#     for li in list_of_subchannelsID:
+#         results_of_subchannels.append(SubChannel.objects.filter(id = li))
+#     post_list =[]
+#     for sub in results_of_subchannels:
+#         post_list.append(Post.objects.filter(subchannel = sub))
+#     return render(request, "filterPosts.html", {'post_list': post_list})
