@@ -90,7 +90,7 @@ width: :700px;
   {% if can_edit %}
   <div class="row-fluid maincontent">
   <div class="span1">
-    <label>a5tebar</label>
+    <label></label>
     </div>
 <div class="testdiv span4">
        <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
@@ -119,12 +119,15 @@ width: :700px;
     <div class="span6 divcontent">
       <div class="divpad">
         <label id="title1">{{post.title}}</label></label> 
-    <input id="title1value" style="display:none">
-    </div>
-        <div class="divpad">
+        <input id="title1value" style="display:none">
+        <lbl id = "titleoutput" style="color:red"></lbl>
+
+      </div>
+      <div class="divpad">
     <label id="description">{{post.description}}</label>
     <input id="descriptionvalue" style="display:none">
-        </div>
+    <lbl id = "descriptionoutput" style="color:red"></lbl>
+      </div>
         <div class="divpad">
     <label id="price">{{post.price}}</label>
     <input id="pricevalue" style="display:none">
