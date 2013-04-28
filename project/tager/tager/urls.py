@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
     url(r'^menu_posts/$', 'tager_www.views.menuForSubchannels'),
+    url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
     
 
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
