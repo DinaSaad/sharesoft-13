@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% load staticfiles %}  
 {% block content %}
+<style type="text/css">
+.wishtitle{
+  padding-top: 10px;
+  padding-left: 25px;
+}
+
+</style>
 <body class="body">
   <div class="container-fluid">
     <div class="row-fluid">
@@ -14,8 +21,23 @@
                 <div class="facebookfriends" id="box1">
                   <h3>FacebookFriends </h3>  
                 </div>
+                <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Report A Post</h3>
+                <p>
+                Please provide us with your reason for reporting this post:
+                </p>
+                </div>
+             
+
                 <div class="wishlist" id="box1">
-                  <h3>Wish List:D</h3>
+
+                  {% if  list_of_wished_posts %}
+                  {% for WishList in list_of_wished_posts %}
+                 <label class="wishtitle"> <a href="#modal2" role="button" data-toggle="modal">{{WishList.post.title}}</a><br><br></label>
+                  {% endfor %}
+                  {% endif %}
                 </div>
                 <div class="interested" id="box1">
                   <h3>Interested in:</h3>
@@ -68,6 +90,7 @@
       </div>
     </div>
   </div>
+
 <script type="text/javascript">
 function update_status_tosave(){
   $("#update_status").hide();
