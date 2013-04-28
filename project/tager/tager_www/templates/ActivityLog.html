@@ -33,14 +33,14 @@
 						</div>
 					</div>
 					<div id="activities_area">
-						<div style="width:100%; height:123px;">
-							{% if activities_log %}
-								{% for log in activities_log %}
-									<span>{{log.content}}</span><b></b>
-									<img id="profile" src="{% static "img/post.png" %}" />
-								{% endfor %}
-							{% endif %}
-						</div>
+						{% if activities_log %}
+							{% for log in activities_log %}
+								<div class="activity_item" style="width:100%; height:auto;">
+									<span>{{log.content}}</span><br>
+									<span><img src="{% static "img/post.png" %}" hight="90"></span>
+								</div>
+							{% endfor %}
+						{% endif %}
 					</div>
 				</div>
 			</div>
@@ -117,6 +117,7 @@
 			display: list-item;
 			color: #333;
 			height: 100%;
+			list-style: none;
 		}
 		#activities_area{
 			min-height: 682px;
@@ -162,6 +163,42 @@
 		}
     </style>
     <script type="text/javascript">
+    	$(document).ajaxSend(function(event, xhr, settings) {
+    		function getCookie(name) {
+        		var cookieValue = null;
+        		if (document.cookie && document.cookie != '') {
+            		var cookies = document.cookie.split(';');
+            		for (var i = 0; i < cookies.length; i++) {
+                		var cookie = jQuery.trim(cookies[i]);
+                		// Does this cookie string begin with the name we want?
+                		if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    		cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    		break;
+                		}
+            		}
+        		}
+        		return cookieValue;
+    		}
+    		function sameOrigin(url) {
+        		// url could be relative or scheme relative or absolute
+        		var host = document.location.host; // host + port
+        		var protocol = document.location.protocol;
+        		var sr_origin = '//' + host;
+        		var origin = protocol + sr_origin;
+       	 		// Allow absolute or scheme relative URLs to same origin
+        		return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            		(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            		// or any other URL that isn't scheme relative or absolute i.e relative.
+            		!(/^(\/\/|http:|https:).*/.test(url));
+    		}
+    		function safeMethod(method) {
+        		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    		}
+
+    		if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        		xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    		}
+		});    
     	$(document).ready(function(){
 			$('.activity_item').mouseover(function() {
   				$('.activity_item').css('cursor', 'pointer');
@@ -174,18 +211,58 @@
 		});
 		function activity_all(){
   			$('#all').css('display','block');
+  			$.ajax({
+                url: "/all_log/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#all').css('display','none');
+                }
+            });
   		}
   		function activity_post(){
   			$('#post').css('display','block');
+  			$.ajax({
+                url: "/all_log_post/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#post').css('display','none');
+                }
+            });
   		}
   		function activity_wishlist(){
   			$('#wish').css('display','block');
+  			$.ajax({
+                url: "/all_log_wish/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#wish').css('display','none');
+                }
+            });
   		}
   		function activity_interested(){
   			$('#interested').css('display','block');
+  			$.ajax({
+                url: "/all_log_interested/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#interested').css('display','none');
+                }
+            });
   		}
   		function activity_profile(){
   			$('#profile').css('display','block');
+  			$.ajax({
+                url: "/all_log_profile/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#profile').css('display','none');
+                }
+            });
   		}
     </script>
 {% endblock %}
