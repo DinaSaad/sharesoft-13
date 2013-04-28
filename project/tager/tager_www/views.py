@@ -699,7 +699,8 @@ def advanced_render_channels(request):
         print subchannels_list
         return render(request,'main.html', {'channel': channel , 'subchannels_list': subchannels_list})
     else: 
-        return HttpResponse("please choose a channel")
+        message = "please choose a channel"
+        return render(request, 'advancedsearch.html' , {'message' : message})
     #mohamed hammad
     #C3
     #this method takes as input request subchannel id and renders this subchannel to main page
@@ -713,7 +714,8 @@ def advanced_render_subchannels(request):
         print post_list
         return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
     else:
-        return HttpResponse("please choose a subchannel")
+        message = "please choose a subchannel"
+        return render(request, 'advancedsearch.html' , {'message' : message})
 
 #mohamed tarek 
 #c3 takes as input the subchannel id sellected then return all attributes of it 
@@ -721,87 +723,102 @@ def advanced_render_subchannels(request):
 def get_attributes_of_subchannel(request):
     sub_id = request.POST['ad_sub_ch_id']
     list_of_attributes = Attribute.objects.filter(subchannel_id = sub_id)
-    # print list_of_attributes
-
     return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
-def advanced_search(request):#mohamed tarek c3 
-                             #this method takes attributes as input and takes values from the user them compares them  
-                             #to values to get the value obects containig the attribute ids and value iputed and them 
-                             #searches for all the post ids that have all the searched criteria present the returns a list of post ids
+#mohamed tarek
+#c3 this method takes as input the price and subchannel id and filter post to get all post objects with this price and subchannel id   
+def adv_get_posts(price , sub_id):
+    return Post.objects.filter(price = price , subchannel_id = sub_id)
+#mohamed tarek
+#c3 this generator takes  as input list of attributes and list of values and generates a list of queryset containing filtered objects
+def adv_search_generator(attributes,values):   
+    null = ""
+    for attribute , value in map(None , attributes , values):
+        if value == null:
+            continue
+        else:
+            yield Value.objects.filter(attribute = attribute , value = value)
+#mohamed tarek
+#c3 this method takes  as input list of attributes and list of values and a list of posts and filters the end product of common_posts() to return a post list containing the post objects filtered
+def common_posts(posts , attributes ,values):
+    post_list = []
+    values_list = []
+    flag = False
+    for query in adv_search_generator(attributes ,values):
+        values_list.append(query)
+    if posts and values_list:
+        for post in posts:
+            for values in values_list:
+                if bool(values.filter(post = post)):
+                    flag = True
+                    temp = post.id
+                    continue
+                else:
+                    flag = False
+                    break
+            if flag:
+                post_list.append(Post.objects.get(id = temp))
+        return post_list
+    else:
+        if values_list and not posts:
+            if len(values_list) ==1:
+                for values in values_list:
+                    for value in values:
+                        post_list.append(Post.objects.get(id = value.post.id))
+                return post_list
+            else:
+                if values_list:
+                    posts = values_list[0] 
+                    for post in posts:
+                        for values in values_list:
+                            if bool(values.filter(post = post.post)):
+                                flag = True
+                                temp = post.post.id
+                                continue
+                            else:
+                                flag = False
+                                break
+                        if flag:
+                            post_list.append(Post.objects.get(id = temp))
+                    return post_list
+        else:
+            if posts and not values_list:
+                post_list = posts
+                return post_list
+            else:
+                return 1
+#mohamed tarek
+#c3 this method takes as input request and handels all the cases and calls the other methods to render the posts_list to the main page
+def advanced_search (request):
     sub_id = request.GET['ad_sub_id']
-    print "got subchannel id"
-    print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     price_req = request.GET['price']
-    try:
-        price = int(price_req)
-        print price
-    except ValueError:
-        return HttpResponse("please type a number in the price feild")
     values =[]
-    post = []
-    value_obj =[]
+    posts = []
     for w in attributes:
         name = w.name
         values.append(request.GET[name])
-    result_search_obj = []
-    flag = False
-    result_search = []
-    result = []
-    post = []
-    i = 0
-    f = i+1
-    null = ""
-    if price:
-        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
-        result_search = [[] for o in result_search_obj]
-        for aa in range(0,len(result_search_obj[0])):
-            result_search[0].append(result_search_obj[0][aa].id)
-    for j in range(1,len(values)):
-        if values[j] == null:
-            pass
+    if price_req:
+        try:
+            price = int(price_req)
+        except ValueError:
+            message = "please type a number in the price feild"
+            return render(request, 'advancedsearch.html' , {'message' : message})
+        posts = adv_get_posts(price , sub_id)
+        post_list = common_posts(posts , attributes , values)
+        print post_list
+    else:
+        check = common_posts(posts , attributes , values)
+        if check != 1:
+            post_list = common_posts(posts , attributes , values)
+            if post_list:
+                    return render(request , 'main.html' , {'post_list' : post_list})
+            else:
+                message = "there is no posts with these values please refine your search"
+                return render(request, 'advancedsearch.html' , {'message' : message})
         else:
-            result_search_obj+=[ (Value.objects.filter(attribute= attributes[j] 
-            , value = values[j])) ]
-    if not result_search_obj:
-        return HttpResponse("please enter something in the search")
-    else:    
-        for k in range(1,len(result_search_obj)):
-            for l in range(0,len(result_search_obj[k])):
-                test = result_search_obj[k][l].value
-                result_search[k].append(result_search_obj[k][l].post.id)
-        tmp=result_search[0]
-        if len(result_search) == 1:
-            post=result_search[0]
-        else:
-            for h in range(1,len(result_search)):
-                post_temp = ""
-                for g in range(0,len(result_search[h])):
-                    if not result_search[h]:
-                        flag = True
-                        pass
-                    else:
-                        if flag == True:
-                            h=h-1
-                        loc = tmp[g]
-                        tmep =result_search[h]
-                        loce = tmep[g]
-                        if loc == tmep[g]:
-                            flag = True
-                            post_temp = tmep[g]
-                            post.append(post_temp)
-        post_list =[]
-
-        for a_post in post:
-            post_list.append(Post.objects.get(id = a_post))
-        
-        if not post_list:
-            return HttpResponse("there is no posts with these values please refine your search.")
-        else:
-            return render(request,'main.html', {'post_list' : post_list})
-
-
-
+            message = "please enter something in the search"
+            return render(request, 'advancedsearch.html' , {'message' : message})
+    return render(request , 'main.html' , {'post_list' : post_list})
 # c3_Nadeem Barakat: this method is to split the query entered by the user  where the whole sentence is splitted by spaces into words 
 # and the method  get rid of the spaces and groups all the query together
 def normalize_query(query_string,

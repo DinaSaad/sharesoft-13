@@ -2,6 +2,9 @@
 	{% extends "base.html" %}
 	{% load staticfiles %}
 	{% block content %}
+		{% if message %}
+	{{message}}
+	{% endif %}
 	<div id="advancedsearch_channels">
 	{% if channels_list %}
 	<select id="ad_Channel_dropdown">
