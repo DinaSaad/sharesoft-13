@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User, check_password
 from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
@@ -233,15 +234,16 @@ def add_post(request):
 def login(request):
     mail = request.POST['email']
     password = request.POST['password']
-
+    # print "in"
     authenticated_user = authenticate(mail=mail, password=password)
+    # print "in1"
     if authenticated_user is not None:
-        print "auth"
+        # print "auth"
         print authenticated_user.is_active
         if authenticated_user.is_active:
-            print "act"
+            # print "act"
             django_login(request, authenticated_user)
-            print "user logged in"
+            # print "user logged in"
             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
@@ -396,7 +398,8 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            if user.password == password:
+            pwd_valid = check_password(password, user.password)
+            if pwd_valid:
                 return user
         except UserProfile.DoesNotExist:
             return None
