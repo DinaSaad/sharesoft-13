@@ -19,10 +19,11 @@ urlpatterns = patterns('',
  
     url(r'^intrested/$', 'tager_www.views.intrested'),  
 
-    url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
+    url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^edit_name/$', 'tager_www.views.edit_name'),
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
+    url(r'^change_account/$', 'tager_www.views.change_accounttype'),
 
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
