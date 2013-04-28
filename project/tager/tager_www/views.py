@@ -949,3 +949,26 @@ def remove_post(request, post_id):
         hidepost.is_hidden = True
         hidepost.save()
         return render_to_response('ViewPost.html',context_instance=RequestContext(request))
+
+def show(request):
+    user = request.user
+    channels_list=Channel.objects.all()
+    channels = UserChannelSubscription.objects.values_list('channel', flat=True).filter(user = user)
+    channels_list=[]
+    for channel in channels:
+        channels_list.append({'channel':channel})
+    return render(request, 'subscriptions.html', {'channels_list':channels_list})
+
+
+
+    # channels = Channel.objects.all()
+    # channels_list = [] 
+    # for channel in channels:
+    #     subchannels = SubChannel.objects.filter(channel_id=channel.id)
+    #     subchannels_list = []
+    #     for subchannel in subchannels:
+    #         # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
+    #         subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
+    #     channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    # post_list = Post.objects.all()   
+    # return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
