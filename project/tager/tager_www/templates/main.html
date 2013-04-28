@@ -4,7 +4,9 @@
 
 
 {% block content %}
-
+{% if canpost %}
+<button>addPost</button>
+{% endif %}
 <div>
   {{channel.name}}<br>
   {% if subchannels_list %}
@@ -15,6 +17,8 @@
 
 {{ret_subchannel.name}}
 </div>
+
+
 <div  class="clearfix masonry" 
 style="
 ">
