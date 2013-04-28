@@ -1,20 +1,7 @@
 .body{
     background-color: #BFD4D4
 }
-.button{
-    /*width: 200px;*/
-    /*height: 20px;*/
-    /*line-height: 50px;
-    text-align: center;*/
 
-    /*background: #6292c2;*/
-    /*border: 2px solid #eee;*/
-   /* height: 58px;
-    width: 115px;
-    padding: 0 0 0 50px;
-    overflow: hidden;
-    display: block;*/
-}
 .wideColumn{
     column-width:250px;
     column-gap:40px;
@@ -32,7 +19,6 @@ div#box1{
 /*    width: 200px;
     height: 200px;*/
     /*margin: 20px;*/
-    cursor: pointer;
     /*display:    -moz-box; /* Firefox */
     /*display:-webkit-box;  Safari and Chrome */
     /*display:box;*/
@@ -45,13 +31,15 @@ div#box1{
 div#box1 > img{
 /*    position: absolute;
     z-index: 2000;*/
-    -webkit-border-radius: 3px 3px 3px 3px;
-    -moz-border-radius: 3px 3px 3px 3px;
-    -ms-border-radius: 3px 3px 3px 3px;
-    -o-border-radius: 3px 3px 3px 3px;
+
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -ms-border-radius: 4px 4px 4px 4px;
+    -o-border-radius: 4px 4px 4px 4px;
     width: 200px;
     max-height: 200px;
 }
+
 div#box1 > a{
     display: none;
     position: absolute;
@@ -77,7 +65,7 @@ div#box2{
     width: 700px;
     /*height: 200px;*/
     /*margin: 20px;*/
-    cursor: pointer;
+    /*cursor: pointer;*/
 }
 div#box3{
     background: #eee;
@@ -88,7 +76,7 @@ div#box3{
     width: auto;
     /*height: 200px;*/
     margin: 10px;
-    cursor: pointer;
+    /*cursor: pointer;*/
 }
 .status{
     width: 200px;}
@@ -236,6 +224,13 @@ visibility: hidden;
 }
 
 .item:hover .repinLikeWrapper {
+visibility: visible;
+}
+.thumbnail .ProfileInfo {
+visibility: hidden;
+}
+
+.profileEdit:hover .repinLikeWrapper {
 visibility: visible;
 }
 #pass

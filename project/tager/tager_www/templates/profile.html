@@ -1,25 +1,28 @@
 {% extends "base.html" %}
 {% load staticfiles %}  
-
-
 {% block content %}
 <body class="body">
   <div class="container-fluid">
     <div class="row-fluid">
 
 
-  <script type="text/javascript">
-$.fn.editable.defaults.mode = 'inline';
-$('#user_name').editable();
-  </script>
 
       <div class="span4">
-         <div class="wideColumn">   
+         <div class="wideColumn"> 
+
               <div id="userInfo">
                     <center>
+
                 <div id="box1">
+
                   <a href="/edit_pic/">Change Profile Picture?</a>
-                  <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
+                     <div class="thumbnail" >  
+                  <img src="{% static "img/mpf.png" %}" alt="picture">
+                    <h4>{{user.name}}</h4>
+                  <div class="profileHeader" class="active" wotsearchprocessed="true">
+                   <center> <h4>Stars Goes Here</h4>  </center>
+                  </div>
+                    </div>
                 </div>
                 </center>
 <br>
@@ -29,6 +32,22 @@ $('#user_name').editable();
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
                     <center><h4 >Friends</h4> </center>
                   </div>
+
+                  <div id="thumbnail" style="display:inline;">
+                  <img src="{% static "img/mpf.png" %}" alt="picture" style="width: 75px;     margin: 5px;">
+                </div>
+                                  <div id="thumbnail" style="display:inline;">
+                  <img src="{% static "img/mpf.png" %}" alt="picture" style="width: 75px; margin: 5px; ">
+                </div>
+                                  <div id="thumbnail" style="display:inline;">
+                  <img src="{% static "img/mpf.png" %}" alt="picture" style="width: 75px;     margin: 5px;">
+                </div>
+                                  <div id="thumbnail" style="display:inline;">
+                  <img src="{% static "img/mpf.png" %}" alt="picture" style="width: 75px;     margin: 5px;">
+                </div>
+                                  <div id="thumbnail" style="display:inline;">
+                  <img src="{% static "img/mpf.png" %}" alt="picture" style="width: 75px;     margin: 5px;">
+                </div>
                   <br>
                   <br>
                   <br>
@@ -43,6 +62,22 @@ $('#user_name').editable();
                    <center> <h4>Wish List</h4>  </center>
                   </div>
 
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
                   <br>
                   <br>
                   <br>
@@ -54,6 +89,15 @@ $('#user_name').editable();
                   <div class="thumbnail" >
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
                   <center><h4>Interested</h4></center>
+                  </div>
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
                   </div>
                   <br>
                   <br>
@@ -73,69 +117,119 @@ $('#user_name').editable();
       </div>
 
       <div class="span7">
-        
+        <div class="ProfileInfo">
         <div class="status" id="box3" >
+          <br>
+
           <div class="thumbnail" >
-          <h4>Status<label id="status">{{user.status}}</label></h4> <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
-            <button id="update_status" class="btn btn-small btn-primary" onClick="update_status_tosave()">Update</button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
+          <h4>Status<label id="status">{{user.status}}</label></h4>
+          <div class="editeInfo">
+           <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)" required> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
+
+            <button id="update_status" class="btn btn-small btn-primary primaryOnHove" onClick="update_status_tosave()"><i class="icon-white icon-pencil"></i></button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
-      </div>
+        </div>
+      <br>
         <div class="information" id="box3">
           <div class="thumbnail" >
           <h3>Information:</h3>
-          <!-- <a href="#" id="user_name">{{user.name}}</a> -->
+          <i class="icon-user" title="Name"></i>:<label id="nameLabel" value="{{user.name}}" style="display:inline;"> <h5 style="display:inline;">{{user.name}} </h5> </label> 
 
-          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
+          
+            <input type="text" id="namevalue" class="span8" style="display:none" value="{{user.name}}" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
-            <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
+            <div class="editeInfo">
+            <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" ><i class="icon-white icon-pencil"></i></button>
+          </div>
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
-          </h5> 
-          <h5>Email: {{ user.email}}</h5>
-          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
+        
+          <br>
+          <i class="icon-envelope"></i>: <h5 style="display:inline;">{{ user.email}}</h5>
+          <br>
+          <h5 style="display:inline;"><i class="icon-calendar"></i>Date of Birth: <label id="dateofbirthlabel" value="{{user.date_of_birth}}"> {{user.date_of_birth}} </label><input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
           <p style="display:none" id="formate">Format options:<br/>
             <select id="format">
               <option >Chose formate</option>
               <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
             </select>
+          <br>
+
           </p>
             <label id = "birthoutput" style="color:red"></label>
-           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            <div class="editeInfo">
+           <!-- <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" ><i class="icon-white icon-pencil"></i></button> --></div>
+            <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5> 
-          <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
+          <br>
+          <i class="icon-briefcase"></i>
+          <h5 style="display:inline;">Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
-            <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
+            <div class="editeInfo">
+            <!-- <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" ><i class="icon-white icon-pencil"></i></button> --></div>
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
+        </div>
+          <br>
 
-          
+          </div>
+          </div>
         </div>
         <div class="activitylog" id="box3">
-          <h3>Activity log</h3>
+          <center>
+          <div class="thumbnail" >
+            <div class="profileHeader" class="active" wotsearchprocessed="true">
+            <center><h4>Activity log</h4></center>
+            </div>
+
+            <br>
+            <h3>Activity 1</h3>
+           <h3> Activity 2</h3>
         </div>
+        </center>
+        </div>
+
+        <div class="activitylog" id="box3">
+          <center>
+          <div class="thumbnail" >
+            <div class="profileHeader" class="active" wotsearchprocessed="true">
+            <center><h4>My Posts</h4></center>
+            </div>
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+
+                    <div id="thumbnail" style="display:inline;">
+                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                  </div>
+            <br>
+
+        </div>
+        </center>
+        </div>
+
+
         
         
       </div>
     </div>
   </div>
-  <script type="text/javascript">
-$.fn.editable.defaults.mode = 'inline';
-$('#user_name').editable({
-    type: 'text',
-    url: '/edit_name',    
-    pk: {{user.id}},    
-    placement: 'top',
-    title: 'Enter username'    
-});
-  </script>
 <script type="text/javascript">
 function update_status_tosave(){
-  $("#update_status").hide();
-  $("#status").hide();
-  $('#statusoutput').show();
+  $("#update_status").fadeOut();
+  $("#status").fadeOut();
+  $('#statusoutput').fadeIn();
   var status1 = $("#status").text();
   $("#statusvalue").val(status1);
-  $('#statusvalue').css('display', 'block');
-  $('#savestatus').css('display', 'block');
+  $('#statusvalue').fadeIn();
+  $('#savestatus').fadeIn();
 }
 function statusupdates(){
   var status = $("#status").val();
@@ -148,10 +242,10 @@ function statusupdates(){
     success:function(result){
       alert("Your status has been updated and shared =D");
         $('#status').text($('#statusvalue').val());
-        $('#status').show();
-        $('#statusvalue').hide();
-        $('#savestatus').hide();
-        $('#update_status').show();
+        $('#status').fadeIn();
+        $('#statusvalue').fadeOut();
+        $('#savestatus').fadeOut();
+        $('#update_status').fadeIn();
       },
     error:function(result){
       alert("Failed to update");
@@ -189,11 +283,13 @@ $(document).ready(function(){
   });
 });
 function edit_name_preparation(){
-  $('#editname').hide();
-  $('#nameLabel').hide();
+  $('#editname').fadeOut();
+  $('#nameLabel').fadeOut();
   var name = $('#nameLabel').text();
-  $('#namevalue').show();
-  $('#savename').show();
+  edit_dob_preparation()
+  edit_worksat_preparation()
+  $('#namevalue').fadeIn();
+  $('#savename').fadeIn();
   }
 function edit_name_save(){
   var name1 = $("#namevalue").val()
@@ -205,22 +301,22 @@ function edit_name_save(){
     },
       success:function(result){
         $('#nameLabel').text($('#namevalue').val());
-        $('#nameLabel').show();
-        $('#namevalue').hide();
-        $('#savename').hide();
-        $('#editname').show();
+        $('#nameLabel').fadeIn();
+        $('#namevalue').fadeOut();
+        $('#savename').fadeOut();
+        $('#editname').fadeIn();
         alert("Field updated successfully"); 
       },
   });
 }
 function edit_dob_preparation(){
-  $('#editdob').hide();
-  $('#dateofbirthlabel').hide();
+  $('#editdob').fadeOut();
+  $('#dateofbirthlabel').fadeOut();
   var dob = $('#dateofbirthlabel').text();
     $("#datepicker").val (dob);
-    $('#datepicker').show();
-    $('#formate').show();
-    $('#savedob').show();
+    $('#datepicker').fadeIn();
+    $('#formate').fadeIn();
+    $('#savedob').fadeIn();
 
 }
 function edit_dob_save(){
@@ -233,11 +329,11 @@ function edit_dob_save(){
     },
       success:function(result){
         $('#dateofbirthlabel').text($('#datepicker').val());
-        $('#dateofbirthlabel').show();
-        $('#datepicker').hide();
-        $('#savedob').hide();
-        $('#formate').hide();
-        $('#editdob').show();
+        $('#dateofbirthlabel').fadeIn();
+        $('#datepicker').fadeOut();
+        $('#savedob').fadeOut();
+        $('#formate').fadeOut();
+        $('#editdob').fadeIn();
         alert("Field updated successfully"); 
       },
       error:function(result){
@@ -245,12 +341,12 @@ function edit_dob_save(){
       }
   });
 }function edit_worksat_preparation(){
-  $('#editworksat').hide();
-  $('#worksatlabel').hide();  
+  $('#editworksat').fadeOut();
+  $('#worksatlabel').fadeOut();  
   var work = $('#worksatlabel').text();
     $("#worksatvalue").val (work);
-    $('#worksatvalue').show();
-    $('#saveworksat').show();
+    $('#worksatvalue').fadeIn();
+    $('#saveworksat').fadeIn();
 }
 function edit_worksat_save(){
   var work1 = $("#worksatvalue").val()
@@ -262,10 +358,10 @@ function edit_worksat_save(){
     },
       success:function(result){
         $('#worksatlabel').text($('#worksatvalue').val());
-        $('#worksatlabel').show();
-        $('#worksatvalue').hide();
-        $('#saveworksat').hide();
-        $('#editworksat').show();
+        $('#worksatlabel').fadeIn();
+        $('#worksatvalue').fadeOut();
+        $('#saveworksat').fadeOut();
+        $('#editworksat').fadeIn();
         alert("Field updated successfully"); 
       },
   });
