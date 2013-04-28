@@ -1,0 +1,22 @@
+{% extends "base.html"%}
+{% load staticfiles %}
+{% block content%} 
+
+<div align="left">
+    {% if list_of_channels %}
+    <h3>Channel</h3>
+    <select id="Channel_dropdown">
+    <option> Select The Channel Please</option>    
+    {% for Channel in list_of_channels %}
+    
+    <option value="{{Channel.id}}">{{ Channel.name }}</option>
+    {% endfor %} 
+    </select>
+    {% endif %}
+    </div>
+
+<!-- <FORM ACTION="/show/">
+<INPUT TYPE=SUBMIT VALUE="Subscribed Channels">
+</FORM> -->
+    {% endblock %}
+
