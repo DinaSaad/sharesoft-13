@@ -57,13 +57,6 @@
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
-          <h5>Account Type: <label id="typevalue">{{ user.is_premium }}</label></h5> <a href="#" onClick="change_account_preparation()">Change account type</a>
-          <p style="display:none" id="account">Account options:<br/>
-            <select id="type">
-              <option value="Premium">Premium</option>
-            </select>
-          </p>
-          <button id="saveaccount" style="display:none" class="btn btn-success btn-small" onClick="change_account_save()" >Save</button>
                     
         </div>
         <div class="activitylog" id="box3">
@@ -95,37 +88,6 @@ $(function(){
   });
 }); 
 });
-function change_account_preparation(){
-  $('#typevalue').hide();
-  $("#account").show();
-  $('#saveaccount').show();
-}
-function change_account_save(){
-  var type = $("#type").val();
-  if(type == 'Free'){
-    type = false;
-  }
-  else{
-    type = true;
-  }
-  $.ajax({
-    url: '/change_account/',
-    type: "POST",
-    data:{
-    'Type' : type,
-    },
-    success:function(result){
-        $('#typevalue').text($('#type').val());
-        $('#typevalue').show();
-        $('#saveaccount').hide();
-        $('#account').hide();
-        alert("Your account type has been successfully changed ;)");
-      },
-    error:function(result){
-      alert("Sorry, failed to change you account type");
-    },
-  });
-}
 function update_status_tosave(){
   $("#update_status").hide();
   $("#status").hide();
