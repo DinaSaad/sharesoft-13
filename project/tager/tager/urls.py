@@ -100,3 +100,6 @@ urlpatterns += patterns('fbregister.facebook',
 urlpatterns += patterns('fbregister.views',
     url(r'^$', 'index', name="index"),
 )
+urlpatterns += patterns('django.views.static',
+        (r'media/(?P<path>.*)', 'serve', {'document_root': settings.MEDIA_ROOT}),
+    )

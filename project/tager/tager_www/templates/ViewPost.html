@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% load staticfiles%}
 {% block content %}
 
@@ -14,15 +14,23 @@ width: :700px;
 }
 .maincontent{
   padding-right: 50px;
+  padding-bottom: 10px;
 }
 .divpad{
     padding-top: 7.5px;
+    margin-bottom: 10px;
 }
 .editicons{
   padding-top: 12px;
 }
 .labelval {
   width:1px;
+}
+.carouselpadding{
+  padding-top: 10px;
+}
+.labelspadding{
+  padding-left: 5px;
 }
 
 </style>
@@ -32,11 +40,29 @@ width: :700px;
   <div class="span1">
     </div>
 <div class="testdiv span4">
-       <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+
+    <div id="myCarousel" class="carousel slide carouselpadding">
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+  </ol>
+  <!-- Carousel items -->
+  <div class="carousel-inner">
+    <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
+    <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+    <div class="item"><img src="{{post.profile_picture.url}}" alt="profile pic" /> </div>
+  </div>
+  <!-- Carousel nav -->
+  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+</div>
+
+       
 </div>    
 <div class="testdiv span6">
-  <div class="row-fluid">
-    <div class="span4">
+  <div class="row-fluid labelspadding">
+    <div class="span4 ">
       <div class="divpad">
       <label>Title:</label>
       </div>
@@ -93,12 +119,53 @@ width: :700px;
     <label></label>
     </div>
 <div class="testdiv span4">
-       <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+  {% if not post.profile_picture %}
+<img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+  {% else %}
+  <div id="myCarousel" class="carousel slide carouselpadding">
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+    <li data-target="#myCarousel" data-slide-to="5"></li>
+  </ol>
+  <!-- Carousel items -->
+  <div class="carousel-inner">
+    {% if post.profile_picture %}
+    <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
+    {% endif %}
+    {% if post.picture1 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture2 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture3 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture4 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture5 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture6 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
+    {% endif %}
+
+  </div>
+  <!-- Carousel nav -->
+  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+</div>
+{% endif %}
 </div>    
 <div class="testdiv span6">
-  <div class="row-fluid">
+  <div class="row-fluid labelspadding">
     <div class="span2">
-      <div class="divpad">
+      <div class="divpad ">
       <label>Title:</label>
       </div>
       <div class="divpad">
