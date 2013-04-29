@@ -67,7 +67,11 @@
   {% endfor %} 
 </table>
   <div class="modal-footer">
+    {% if list_of_wished_posts %}
     <button class="btn" onClick="delete_all_wished_posts();">Empty the wish list</button>
+    {% else %}
+    <button class="btn" onClick="delete_all_wished_posts();" disabled>Empty the wish list</button>
+    {% endif %}
     <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
   </div>
 </div>
