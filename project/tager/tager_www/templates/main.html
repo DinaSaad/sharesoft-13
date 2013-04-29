@@ -39,6 +39,21 @@ style="
         <button data-text-unlike="Unlike" data-text-like="Like" type="button" class="btn btn-inverse Button Module likeSmall hasText btn" onclick="location.href='/showpost?post={{post.id}} '">
         <em></em><span class="buttonText"><em><i class="icon-external-link"></i></em></span></button>
 
+        <!--twitter-->
+        <a href="http://twitter.com/home?status={{post.title}}: {{post.description}}  http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/twitter-baloon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this"></a>
+            
+        <!--picture={{post.picture1}}-->
+        <a href="https://www.facebook.com/dialog/feed?
+            app_id=461240817281750&
+            link=http://127.0.0.1:8000/post/?post={{post.id}}&
+            name={{post.title}}&
+            caption={{post.description}}&
+            description=&
+            picture=http://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Stick_Figure.svg/170px-Stick_Figure.svg.png&
+            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+
+            <img src="{% static "img/fb-baloon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"></a>    
+
       </div>
       
 
