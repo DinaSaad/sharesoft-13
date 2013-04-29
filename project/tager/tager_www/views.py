@@ -583,8 +583,10 @@ def view_profile(request):
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
         print "v"
+        print request.GET
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
         interacting_list = user.get_interacting_people()
+        print interacting_list
         d = {'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
     except: 
         err_msg = 'This user doesn\'t exist'
