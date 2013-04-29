@@ -941,11 +941,13 @@ def intrested(request):
 #then the method checks first if he is an admin or not , then brings the post the user wants if the user is an admin 
 # will change the is_hidden to true to be hidden , then will return to viewPost to make sure that the post is hidden
 #if the user is not an admin he will be rendered to http response he is not an admin to make post hidden 
+
 def remove_post(request, post_id):
     admin= request.user 
     hidepost=Post.objects.get(pk=post_id)
     print admin, admin.is_admin
     if admin.is_admin:
-        hidepost.is_hidden = True
-        hidepost.save()
+        if hidepost.no_of_reports >= 20:
+            hidepost.is_hidden = True
+            hidepost.save()
         return render_to_response('ViewPost.html',context_instance=RequestContext(request))
