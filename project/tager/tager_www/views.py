@@ -1073,6 +1073,7 @@ def intrested(request):
 
     return HttpResponse()
 
+
 #c1_abdelrahman this method takes request as an input.
 #it takes the post id and the user_id from the request.
 #it deletes the post from the WishList table.

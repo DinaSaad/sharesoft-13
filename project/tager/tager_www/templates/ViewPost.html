@@ -125,7 +125,7 @@ width: :700px;
       </div>
       <div class="divpad">
     <label id="description">{{post.description}}</label>
-    <input id="descriptionvalue" style="display:none">
+    <textarea id="descriptionvalue" style="display:none"></textarea>
     <lbl id = "descriptionoutput" style="display:none"></lbl>
       </div>
         <div class="divpad">
@@ -136,7 +136,7 @@ width: :700px;
     <div class="divpad">
         <label id="location">{{post.location}}</label>
         <input id="locationvalue" style="display:none">
-        <lbl id = "locationoutput" style="display:none">Please choose the location from the list</lbl>
+        <lbl id = "locationoutput" style="display:none"></lbl>
         </div>
         {% for Value in list_of_attribute_values%}
         <div class="divpad">
@@ -333,34 +333,50 @@ width: :700px;
 
     });
 });
+//       $('#locationvalue').keyup(function(){
+//   var data = $(this).val();
+//   var pattern = /[a-z]|[A-Z]|\d+/;
+//     if (data.length < 5){
+//       $('#locationsave').hide();
+//       $('locationoutput').text("Too short")
+//     }
+//     else{
+//       $('#locationsave').show();
+//     }
+
+
+// });
+
 
 
   $('#descriptionvalue').keyup(function(){
   var data = $(this).val();
   var pattern = /[a-z]|[A-Z]|\d+/;
     if (data.length > 25 && data.match(pattern)) {
-       $('#descriptionoutput').css('color', 'Green');
-                
+       $('#descriptionoutput').css('color', 'Green'); 
               $('#descriptionoutput').text("Ok");
                $('#descriptionsave').css('display', 'block');
+              
             }
 
           else {
             if(data.length < 1){
               $('#descriptionoutput').css('color', 'Red');  
               $('#descriptionoutput').text("Title can not be blank");
-
+              $("#descriptionsave").hide();
             }
             else
             {
             if(! data.match(pattern)){
               $('#descriptionoutput').css('color', 'Red');  
               $('#descriptionoutput').text("Title can not be only spaces");
+              $("#descriptionsave").hide();
               }
               else{
                 if( data.length < 25){
                $('#descriptionoutput').css('color', 'Red');  
               $('#descriptionoutput').text("Title can not be less than 25 characters");   
+                $('#descriptionsave').hide();
                 }
               }  
           }  
@@ -382,21 +398,40 @@ $('#pricevalue').keyup(function(){
           else {
             if(data.length < 2 && data.match(pattern)){
               $('#priceoutput').css('color','Red');
-              $('#priceoutput').text("Price must be 2 digits number");  
+              $('#priceoutput').text("Price must be 2 digits number");
+              $('#pricesave').hide();  
             }
             else{
               if(data.length > 1 && !data.match(pattern)){
                 $('#priceoutput').css('color','Red');
               $('#priceoutput').text("Price can not start with zero");
+              $('#pricesave').hide();
               }
               else{
                 if(data.length == 0){
-$('#priceoutput').css('color','Red');
+              $('#priceoutput').css('color','Red');
               $('#priceoutput').text("Can not be blank");
                 }
               }
             }
             }   
+});
+$('#locationvalue').keyup(function(){
+    var data = $(this).val();
+ var pattern = /[a-z]|[A-Z]|\d+/;
+    // var pattern = ([a-zA-Z0-9]+([\\s][a-zA-Z0-9]+)*);
+      if(data.length < 5 || !data.match(pattern)){
+        $('#locationsave').hide();
+        $("#locationoutput").css('color','red'); 
+        $("#locationoutput").text("Invalid");
+        $('#locationsave').hide();
+      }
+      else{
+       $("#locationoutput").css('color','Green'); 
+       $("#locationoutput").text("ok");
+       $('#locationsave').show(); 
+      }
+             
 });
 
 
@@ -464,6 +499,7 @@ function update_title_preparation() {
 }    
 function update_description_preparation(){    
     $("#edit_description").hide();
+    $("#save_description").hide();
     $('#description').hide();
     $('#descriptionoutput').css('display', 'block'); 
     var description = $('#description').text();
@@ -586,6 +622,7 @@ function update_price(id){
     $('#pricevalue').hide();
     $('#pricesave').hide();
     $('#edit_price').show();
+    $('#priceoutput').css('display','none');
     },
 
     });
