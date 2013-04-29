@@ -951,8 +951,31 @@ def remove_post(request, post_id):
         return render_to_response('ViewPost.html',context_instance=RequestContext(request))
 
 def show(request):
-    list_of_channels = Channel.objects.all()    
-    return render(request, 'hala.html', {'list_of_channels': list_of_channels})
+    user = request.user
+    channel = UserChannelSubscription.objects.filter(user = user)
+    #da haygeblek kol alchannels 2ely aluser subscribed leeha
+    all_channels=[]
+    for c in channel:
+        all_channel.append(c)
+    all_posts = Post.objects.all()
+    all_posts_to_render = []
+    for post in all_posts:
+        for ch in all_channel:
+            if post.subchannel.channel == ch:
+                all_posts_to_render.append(post)
+    # return then you render all_posts_to_render
+    # list_id = UserChannelSubscription.objects.filter(user =user).values_list("channel", flat=True)
+    # return render(request, 'hala.html', {'list_id': list_id})
+    # list = UserChannelSubscription.objects.values_list('user', 'channel')
+    # t = loader.get_template('hala.html')
+    # c = Context({'list': list})
+    # html = t.render(c)
+    # return HttpResponse(html) 
+# def show(request):
+#     user = request.user
+#     list_of_channels = UserChannelSubscription.objects.all().values_list('channel')
+    
+#     return render(request, 'hala.html', {'list_of_channels': list_of_channels})
     # user = request.user
     # channel_list = UserChannelSubscription.objects.filter(user = user).values()
     # channel_list = UserChannelSubscription.objects.filter(user= user).values_list('channel', flat=True)
