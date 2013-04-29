@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load staticfiles%}
 {% block content %}
+{% if post.is_hidden %}
+<p>the post is hidden</p>
+{% else %}
 <style type="text/css">
 .valuesdiv{
   padding-left: 100px;
@@ -85,7 +88,17 @@ text-align: right;
 				<button type="button" class="btn btn-info"> Interested in </button>
 				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 
-
+{% if user.is_admin %}
+    {% if post.no_of_reports >= 20 %}
+<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
+<form action="/hidePost/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
+      <br/>
+<input type="submit" value="Hide" class='btn' onclick="JavaScript:alert('The post is successfully hidden')" style="background-color:#2576D9" />
+  </form> 
+    {% else %}
+        <p>the no of reports of the post didn't reach its maximum to be able to hide it</p>
+    {% endif%}
+{% endif %}
 				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
 				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
 				<a href="http://twitter.com/home?status=Your%20message%20here:%20
@@ -191,5 +204,5 @@ text-align: right;
     
 
     
-
+   {% endif %}
     {% endblock %}
