@@ -348,15 +348,17 @@ def Buyer_identification(request):
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
+    print "i am in"
+
     user = request.user
     #c1_abdelrahman check whether the user can post or not.
-    user_can_post = user.can_post()
+    # user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    for i in post_list:
-        i.post_state()
+    # for i in post_list:
+    #     i.post_state()
 
-    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -718,7 +720,7 @@ def advanced_search(request):#mohamed tarek c3
     null = ""
     if price:
         result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
-        result_search = [[] for o in result_search_obj]
+        result_search = [[] for o in result_searcainh_obj]
         for aa in range(0,len(result_search_obj[0])):
             result_search[0].append(result_search_obj[0][aa].id)
     for j in range(1,len(values)):
@@ -950,20 +952,77 @@ def remove_post(request, post_id):
         hidepost.save()
         return render_to_response('ViewPost.html',context_instance=RequestContext(request))
 
+
+
+    # print "i am in"
+    # user = request.user
+    # channel = UserChannelSubscription.objects.filter(user = user)
+    # all_channel=[]
+    # for c in channel:
+    #     all_channel.append(c)
+    # print all_channel
+
+
+    # subchannel=SubChannel.objects.all()
+    # all_subchannels=[]
+    # for s in subchannel:
+    #     all_subchannels.append(s)
+    # print all_subchannels
+
+    # all_posts = Post.objects.all()
+    # all_Posts =[] 
+    # for a in all_posts:
+    #     all_Posts.append(a)
+    # print all_posts
+
+
+    # all_things=[]
+    # for sub in all_subchannels:
+    #     for chan in all_channel:
+    #         if sub.channel== chan:
+    #             all_things.append(sub)
+    # print all_things
+
+
+    # all_posts_to_render = []
+    # for post in all_posts:
+
+    #     for ch in all_channel:
+    #         if post.subchannel.channel == ch:
+    #             all_posts_to_render.append(post)
+    # print all_posts_to_render
 def show(request):
+    print "i am in"
     user = request.user
     channel = UserChannelSubscription.objects.filter(user = user)
-    #da haygeblek kol alchannels 2ely aluser subscribed leeha
     all_channels=[]
     for c in channel:
-        all_channel.append(c)
+        all_channels.append(c)
+    print all_channels
     all_posts = Post.objects.all()
     all_posts_to_render = []
     for post in all_posts:
-        for ch in all_channel:
+        for ch in all_channels:
             if post.subchannel.channel == ch:
                 all_posts_to_render.append(post)
-    # return then you render all_posts_to_render
+    print all_posts_to_render
+    return render_to_response('main.html',{'post_list':all_posts_to_render},context_instance=RequestContext(request))
+
+# def show(request):
+#     print "i am in"
+#     user = request.user
+#     channel = UserChannelSubscription.objects.filter(user = user)
+#     all_channels=[]
+#     for c in channel:
+#         all_channel.append(c)
+#     all_posts = Post.objects.all()
+#     all_posts_to_render = []
+#     for post in all_posts:
+#         for ch in all_channel:
+#             if post.subchannel.channel == ch:
+#                 all_posts_to_render.append(post)
+#     print all_posts_to_render
+#     return render (request, 'hala.html', {'all_posts_to_render': all_posts_to_render})  
     # list_id = UserChannelSubscription.objects.filter(user =user).values_list("channel", flat=True)
     # return render(request, 'hala.html', {'list_id': list_id})
     # list = UserChannelSubscription.objects.values_list('user', 'channel')
