@@ -54,6 +54,20 @@
 </div>
 
 
+<!-- <div>
+<form>
+ <input type="button" value="Show" style="background-color:#2576D9" class='btn' />
+</form>
+</div> -->
+<div class="container"> 
+ {% if all_posts_to_render %}
+        {% for post in all_posts_to_render %}
+            <li>{{post}}</li> 
+        {% endfor %}
+    {% else %}
+        <h5> please subscribe to some channels to render their related posts</h5>
+    {% endif %} 
+    </div>
 <script type="text/javascript">
 
 $(function() 
