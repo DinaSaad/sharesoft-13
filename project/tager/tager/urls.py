@@ -10,9 +10,11 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
-    
     url(r'^logout/$', logout, {'next_page':'/login'}),  
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
+
+    url(r'^logout/$', logout, {'next_page':'/'}),  
+    
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
@@ -25,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
 
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
-    url(r'^login/$', 'tager_www.views.view_login'),
+    # url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),

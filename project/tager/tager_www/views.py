@@ -393,7 +393,7 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)
-            if pwd_valid:
+            if pwd_valid:    
                 return user
         except UserProfile.DoesNotExist:
             return None
