@@ -510,6 +510,20 @@ def edit_work(request):
     return HttpResponse (" ")
 
 @login_required
+def edit_phone(request):
+    user = request.user
+    user.phone_number = request.POST['userphone']
+    user.save()
+    return HttpResponse (" ")  
+
+@login_required
+def hide_phone(request):
+    user = request.user
+    user.phone_number = request.POST['userphone2']
+    user.save()
+    return HttpResponse (" ")
+
+@login_required
 def editing_pic(request):
     if request.method == 'POST': #if the form has been submitted
         editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
