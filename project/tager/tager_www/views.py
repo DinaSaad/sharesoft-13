@@ -45,13 +45,6 @@ SCOPE_SEPARATOR = ' '
 
 
 
-#c1-abdelrahman it takes a request as an input.
-# it returns a list of all the wished posts by the user to the profile.html
-
-def view_posts_wished(request):
-    user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
-    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
@@ -592,12 +585,12 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        # print user
+        #c1-abdelrahman this line retrieves the wished posts by the user.
+        list_of_wished_posts = WishList.objects.filter(user = user)
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        list_of_wished_posts = WishList.objects.filter(user_id = "3")
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -988,6 +981,7 @@ def intrested(request):
 
     return HttpResponse()
 
+
 #c1_hala
 # this method called removePost is a method that takes two parameters request and post_id, request to bring from it the 
 # user who is logged to check if he is an admin or not , then post_id to bring this post from Post object
@@ -1003,3 +997,27 @@ def remove_post(request, post_id):
             hidepost.is_hidden = True
             hidepost.save()
         return render_to_response('ViewPost.html',context_instance=RequestContext(request))
+
+#c1_abdelrahman this method takes request as an input.
+#it takes the post id and the user_id from the request.
+#it deletes the post from the WishList table.
+
+def remove_post_from_wishlist(request):
+    user = request.user
+    post = request.POST['post']
+    WishList.objects.get(user = user, post_id = post).delete()
+    return HttpResponse()
+
+#c1_abdelrahman this method takes request as an input from the user. 
+#then it retrieves a list from the table with all the posts wished by this user and deletes all of them.  
+def empty_wish_list(request):
+    user = request.user
+    WishList.objects.filter(user=user).delete()
+    return HttpResponse()
+
+
+
+
+
+
+
