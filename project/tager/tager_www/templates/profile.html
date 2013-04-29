@@ -135,41 +135,30 @@
         <div class="information" id="box3">
           <div class="thumbnail" >
           <h3>Information:</h3>
-          <i class="icon-user" title="Name"></i>:<label id="nameLabel" value="{{user.name}}" style="display:inline;"> <h5 style="display:inline;">{{user.name}} </h5> </label> 
-
-          
-            <input type="text" id="namevalue" class="span8" style="display:none" value="{{user.name}}" maxlength="40"> 
+          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
-            <div class="editeInfo">
-            <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" ><i class="icon-white icon-pencil"></i></button>
-          </div>
+            <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
-        
-          <br>
-          <i class="icon-envelope"></i>: <h5 style="display:inline;">{{ user.email}}</h5>
-          <br>
-          <h5 style="display:inline;"><i class="icon-calendar"></i>Date of Birth: <label id="dateofbirthlabel" value="{{user.date_of_birth}}"> {{user.date_of_birth}} </label><input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
+          </h5> 
+          <h5>Email: {{ user.email}}</h5>
+          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
           <p style="display:none" id="formate">Format options:<br/>
             <select id="format">
               <option >Chose formate</option>
               <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
             </select>
-          <br>
-
           </p>
             <label id = "birthoutput" style="color:red"></label>
-            <div class="editeInfo">
-           <!-- <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" ><i class="icon-white icon-pencil"></i></button> --></div>
-            <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5> 
-          <br>
-          <i class="icon-briefcase"></i>
-          <h5 style="display:inline;">Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
+          <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
-            <div class="editeInfo">
-            <!-- <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" ><i class="icon-white icon-pencil"></i></button> --></div>
+            <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
+          
+       
+          
         </div>
           <br>
 
