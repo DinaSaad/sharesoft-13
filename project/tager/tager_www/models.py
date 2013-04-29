@@ -626,6 +626,8 @@ class UserChannelSubscription(models.Model):
         unique_together = ("user", "channel")
     def __unicode__(self):
         return unicode(self.user)
+    def __unicode__(self):
+        return unicode(self.channel)
 
 #c2-mohamed
 #this table holds all users subscribed to subchannels
