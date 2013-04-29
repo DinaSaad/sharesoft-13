@@ -385,8 +385,9 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            pwd_valid = check_password(password, user.password)
-            if pwd_valid:
+            # pwd_valid = check_password(password, user.password)
+            # if pwd_valid:
+            if user.password == password:
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -583,7 +584,8 @@ def view_profile(request):
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
         print "v"
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link}
+        interacting_list = user.get_interacting_people()
+        d = {'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
