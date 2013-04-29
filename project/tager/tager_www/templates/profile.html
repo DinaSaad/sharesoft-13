@@ -57,17 +57,14 @@
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
-          <h5>Account Type: <label id="typevalue">{{ user.account_type }}</label></h5> <a href="#" onClick="change_account_preparation()">Change account type</a>
+          <h5>Account Type: <label id="typevalue">{{ user.is_premium }}</label></h5> <a href="#" onClick="change_account_preparation()">Change account type</a>
           <p style="display:none" id="account">Account options:<br/>
             <select id="type">
-              <option>Free</option>
-              <option>Premium</option>
+              <option value="Premium">Premium</option>
             </select>
           </p>
           <button id="saveaccount" style="display:none" class="btn btn-success btn-small" onClick="change_account_save()" >Save</button>
-
-
-          
+                    
         </div>
         <div class="activitylog" id="box3">
           <h3>Activity log</h3>
@@ -78,6 +75,26 @@
     </div>
   </div>
 <script type="text/javascript">
+$("#target").click(function() {
+  alert("Handler for .click() called.");
+});
+$(document).ready(function() {
+$(function(){
+  $('#typevalue').keyup(function(){
+    var type1 = $(this).val();
+            if( type1 == "Free"){
+            $('Free').attr("disabled", "disabled");
+            $('#saveaccount').attr("disabled", true);
+            }
+          else {
+            if( type1 == "Premium"){
+            $('Premium').attr("disabled", "disabled");  
+            $('#saveaccount').attr("disabled", true);
+            }
+          }
+  });
+}); 
+});
 function change_account_preparation(){
   $('#typevalue').hide();
   $("#account").show();
@@ -85,6 +102,12 @@ function change_account_preparation(){
 }
 function change_account_save(){
   var type = $("#type").val();
+  if(type == 'Free'){
+    type = false;
+  }
+  else{
+    type = true;
+  }
   $.ajax({
     url: '/change_account/',
     type: "POST",
@@ -96,7 +119,7 @@ function change_account_save(){
         $('#typevalue').show();
         $('#saveaccount').hide();
         $('#account').hide();
-        alert("Your account type has been changed ;)");
+        alert("Your account type has been successfully changed ;)");
       },
     error:function(result){
       alert("Sorry, failed to change you account type");
@@ -251,7 +274,21 @@ $(function() {
       $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
     });
   });
-
+$(document).ready(function(){
+  $(function(){
+     $('#typevalue').keyup(function(){
+      var type1 = $(this).val();
+      if(type1 == 'Free'){
+        $('#free').attr("disabled", true);
+      }
+      else{
+        if(type1 == 'Premium'){
+        $('#premium').attr("disabled", true);
+      }
+    }
+  });
+});
+});
 $(document).ready(function(){
   $(function(){
     $('#namevalue').keyup(function(){

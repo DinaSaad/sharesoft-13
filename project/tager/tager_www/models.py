@@ -72,11 +72,7 @@ class UserProfile(AbstractBaseUser):
     phone_number = models.CharField(max_length=20 , null=True)
     is_admin = models.BooleanField(default=False)           
     is_verfied = models.BooleanField(default=False)
-    account_choices = (
-        ('Free', 'Free'),
-        ('Premium', 'Premium'),
-        )
-    account_type = models.CharField(max_length=7, choices=account_choices)
+    is_premium = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
     # created = models.DateTimeField(auto_now_add=True)
