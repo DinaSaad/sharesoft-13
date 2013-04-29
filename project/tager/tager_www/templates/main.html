@@ -4,7 +4,9 @@
 
 
 {% block content %}
-
+{% if canpost %}
+<button>addPost</button>
+{% endif %}
 <div>
   {{channel.name}}<br>
   {% if subchannels_list %}
@@ -15,6 +17,8 @@
 
 {{ret_subchannel.name}}
 </div>
+
+
 <div  class="clearfix masonry" 
 style="
 ">
@@ -25,6 +29,7 @@ style="
 
 
   <div class="item masonry-brick" ><div class="thumbnail" >
+
    {% if post.picture %} 
       <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% else %}
@@ -43,6 +48,7 @@ style="
       
 
     <span class="priceValue">{{post.price }} EGP</span>
+    Posted By: <a href="../profile/?user_id={{post.seller.id}}">{{post.seller.name}}</a> 
     {% if post.state == "New" %}
       <span class="label label-success StateLabel">New</span>  
       {% elif post.state == "Sold" %}
