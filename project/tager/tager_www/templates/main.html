@@ -71,7 +71,13 @@ style="
   
 
 {% endfor %}
- 
+  {% if all_posts_to_render %}
+        {% for post in all_posts_to_render %}
+            <li>{{post.title}}</li> 
+        {% endfor %}
+    {% else %}
+        <h5> please subscribe to some channels to render their related posts</h5>
+    {% endif %} 
 <!-- a script that handels the auto post order according to the windows size  -->
 <script type="text/javascript">$(function(){
 	var $container = $('#container');
