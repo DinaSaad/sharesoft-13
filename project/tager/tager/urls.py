@@ -9,8 +9,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    
-<<<<<<< HEAD
 
       
     url(r'^logout/$', logout, {'next_page':'/login'}),  
@@ -22,12 +20,11 @@ urlpatterns = patterns('',
     url(r'^editpost/$', 'tager_www.views.edit_post'),
     url(r'^editpostattribute/$', 'tager_www.views.edit_post_attribute'),
 
-    
-=======
+
     url(r'^logout/$', logout, {'next_page':'/login'}),  
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
 
->>>>>>> master
+
     url(r'^logout/$', logout, {'next_page':'/'}),  
     
 
