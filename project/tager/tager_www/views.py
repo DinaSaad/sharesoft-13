@@ -37,6 +37,7 @@ import tweepy
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
+REDIRECT_URL = 'http://127.0.0.1:8000/main'
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists', 'friends_photos','friends_email'] 
 SCOPE_SEPARATOR = ' '
@@ -901,17 +902,31 @@ def twitter_login(request):
     return HttpResponseRedirect(url)
     
 def twitter_auth_done(request):
-    result = twitter_login(request)
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     x = request.session.get('request_token.key')
     y = request.session.get('request_token.secret')
-    auth.request_token.key = x
-    auth.request_token.secret = y
-    auth.set_request_token( x , y)
+    auth.set_request_token(x, y)
     verifier = request.REQUEST.get('oauth_verifier')
-    accesstoken = tweepy.OAuthHandler.get_access_token(auth, verifier)
-    print 912
-    return HttpResponse("testing")
+    access = tweepy.OAuthHandler.get_access_token(auth,verifier)
+    request.session['access_token.key'] = auth.access_token.key
+    request.session['access_token.secret'] = auth.access_token.secret
+    a = auth.access_token.key
+    b = auth.access_token.secret
+    auth.set_access_token(a,b)
+    userName = tweepy.OAuthHandler.get_username(auth)
+    try:
+        userprofile = UserProfile.objects.get(twitter_name=(userName))
+        userprofile.tw_tok_k = a
+        userprofile.tw_tok_s = b
+        userprofile.save()
+        return HttpResponseRedirect(REDIRECT_URL)
+    except UserProfile.DoesNotExist:
+        userprofile = UserProfile.objects.create(twitter_name=(userName))
+        userprofile.tw_tok_k = a
+        userprofile.tw_tok_s = b
+        userprofile.save()
+        return HttpResponseRedirect(REDIRECT_URL)
+    
 # def advanced_search_helper(basic_search_list):#mohamed tarek c3 
 #                              #this method takes attributes as input and takes values from the user them compares them  
 #                              #to values to get the value obects containig the attribute ids and value iputed and them 
