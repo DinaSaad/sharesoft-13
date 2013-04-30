@@ -32,7 +32,6 @@
                 <div id="box1">
                   <a href="/edit_pic/">Change Profile Picture?</a>
                   <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
-                  <div id="star"></div>
                   <button class="btn btn-mini btn-primary" id="post" value="1" type="button">post</button>
                 </div>
                 <div class="facebookfriends" id="box1">
@@ -85,12 +84,6 @@
 </div>
 
   
- 
-               <!--    {% if  list_of_wished_posts %}
-                  {% for WishList in list_of_wished_posts %}
-                 <label class="wishtitle"> <a href="/showpost?post={{WishList.post.id}}">{{WishList.post.title}}</a><br><br></label>
-                  {% endfor %}
-                  {% endif %} -->
                 </div>
                 <div class="interested" id="box1">
                   <h3>Interested in:</h3>
@@ -143,6 +136,9 @@
       </div>
 
     </div>
+        
+    <div id="star"></div>
+    <input type="hidden" name="rating" id= "rating" value="{{user.rating}}">
     <div>
     <h3>interacted with:</h3>
     <div style = "width: 500px;">
@@ -406,12 +402,12 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
-	$('#star').raty({ 
-		score: $('#rating').val(),
-		readOnly : true,
-		});
+      $('#star').raty({ 
+      score: $('#rating').val(),
+      readOnly : true,
+    });
 
-	});
+  })
 	
 
 </script>
