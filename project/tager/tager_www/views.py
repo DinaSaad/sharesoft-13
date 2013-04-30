@@ -526,8 +526,9 @@ def editing_pic(request):
 
 def return_account_type(request):
      return render_to_response ('account.html',context_instance=RequestContext(request))
-# Heba - C2 change_accounttype method - as a user i should be able to change my account type from free to 
-# premium and vise versa anytime i want. The it allows logged in users to be able to change the account type through
+
+# Heba - C2 change_faccounttype method - as a user i should be able to change my account type from premium to 
+# free. The it allows logged in users to be able to change the account type through
 # taking a request of type post holding a value for the account type, it takes this value and saves it in the
 # users account_type value. the output of the method saves the new value for the account_type in the database.
 def change_faccounttype(request):
@@ -537,10 +538,13 @@ def change_faccounttype(request):
         user.is_premium = False
     else:
         user.is_premium = True
-
     user.save()
     return HttpResponse(" ")
 
+# Heba - C2 change_paccounttype method - as a user i should be able to change my account type from free to 
+# premium. The it allows logged in users to be able to change the account type through
+# taking a request of type post holding a value for the account type, it takes this value and saves it in the
+# users account_type value. the output of the method saves the new value for the account_type in the database.
 def change_paccounttype(request):
     print"tesssffffffffffffffff"
     user = request.user
