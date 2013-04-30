@@ -1141,7 +1141,9 @@ def intrested(request):
         log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
 
     return HttpResponse()
-
+#c2-mohamed
+#thismethod renders to Activity.html
+#it renders all activity log that belongs to that user
 def all_log(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(user = author)
@@ -1150,6 +1152,9 @@ def all_log(request):
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type post that belongs to that user
 def all_log_post(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="post", user = author)
@@ -1158,6 +1163,9 @@ def all_log_post(request):
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type interested that belongs to that user
 def all_log_interested(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
@@ -1166,6 +1174,9 @@ def all_log_interested(request):
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type wish that belongs to that user
 def all_log_wish(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
@@ -1174,6 +1185,9 @@ def all_log_wish(request):
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type profile that belongs to that user
 def all_log_profile(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
