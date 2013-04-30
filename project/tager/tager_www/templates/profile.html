@@ -214,18 +214,11 @@
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
-<<<<<<< HEAD
-                    
-=======
-          
-       
-          
         </div>
           <br>
 
           </div>
           </div>
->>>>>>> master
         </div>
         <div class="activitylog" id="box3">
           <center>
@@ -387,16 +380,10 @@ function edit_name_preparation(){
   $('#editname').fadeOut();
   $('#nameLabel').fadeOut();
   var name = $('#nameLabel').text();
-<<<<<<< HEAD
-  $('#namevalue').show();
-  $('#savename').show();
-  $('#hidename').show();
-=======
   edit_dob_preparation()
   edit_worksat_preparation()
   $('#namevalue').fadeIn();
   $('#savename').fadeIn();
->>>>>>> master
   }
 function edit_name_save(){
   var name1 = $("#namevalue").val()
@@ -476,17 +463,14 @@ function edit_dob_save(){
         alert("Failed please check the formate!!")
       }
   });
-<<<<<<< HEAD
 }
 
 function edit_worksat_preparation(){
   $('#editworksat').hide();
   $('#worksatlabel').hide();  
-=======
 }function edit_worksat_preparation(){
   $('#editworksat').fadeOut();
   $('#worksatlabel').fadeOut();  
->>>>>>> master
   var work = $('#worksatlabel').text();
     $("#worksatvalue").val (work);
     $('#worksatvalue').fadeIn();
