@@ -339,6 +339,12 @@ def Buyer_identification(request):
             post = Post.objects.get(id=request.GET['post_id'])
             # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_buyer(post, new_buyer_num)
+            
+            if buyer_added == False :
+                form = BuyerIdentificationForm()
+                d = {'form':form}
+                return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
+            
             d = {'form':form}
             return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
@@ -393,7 +399,8 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)    
-            if pwd_valid:    
+            if pwd_valid: 
+            # if user.password == password:   
                 return user
         except UserProfile.DoesNotExist:
             return None
