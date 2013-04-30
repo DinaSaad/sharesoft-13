@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
 import datetime
@@ -158,8 +159,11 @@ class UserProfile(AbstractBaseUser):
     def add_buyer(self,post,phone_num):
         p = post        
         if p.seller_id == self.id:
-            post_buyer = UserProfile.objects.get(phone_number = phone_num)
-            #post_buyer_id = post_buyer.id
+            try:
+                post_buyer = UserProfile.objects.get(phone_number = phone_num)
+            except UserProfile.DoesNotExist:
+                return False
+             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer
             p.is_sold = True
             p.save()
