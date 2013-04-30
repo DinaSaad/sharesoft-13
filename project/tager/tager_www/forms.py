@@ -94,6 +94,3 @@ class UpdateStatusForm(forms.Form):
 
 
 
-class smsForm(forms.Form):
-    phone_number = forms.CharField(label='phone number',widget=forms.TextInput(attrs={'placeholder':'enter your phone number'}))
-    sms_code = forms.CharField(label = 'sms code',widget=forms.TextInput(attrs={'placeholder':'enter the sms code '}))

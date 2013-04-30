@@ -82,7 +82,8 @@ text-align: right;
     
 
 				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
-				<button type="button" class="btn btn-info"> Interested in </button>
+				 <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info"><i class="icon-heart"></i> interested</a>
+
 				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 
 
@@ -110,13 +111,97 @@ text-align: right;
 
         <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
         
-            
-
+           
 </div>
  	</div>
-
+<!-- Button to trigger modal -->
 
  
+<!-- Modal -->
+<div id="smsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">sms verifcation</h3>
+  </div>
+  <div class="modal-body">
+
+     <!--  <label> Phone:
+      <input type="text" id="phone_input" checked>
+  </label> -->
+
+<!--       <label> Code:
+      <input type="text" id="code_input" checked>
+  </label>
+ -->
+<!--   <button class="btn btn-info" id="wishlist" onClick="send_phone()">
+    Add to my wishList
+  </button> -->
+
+<script type="text/javascript">
+    function send_phone_num(){
+      $.ajax({
+        url: '/send_phone/',
+        type: "POST",
+        data: {
+          "phone_number" : $("#phone").val()
+        }, 
+        success: function(result) {
+          alert("An sms verfication has been sent . This might take a few mins");
+        },
+
+    });
+    }
+
+    function send_sms_num(){
+
+      $.ajax({
+        url: '/send_sms/',
+        type: "POST",
+        data: {
+          "sms_code" : $("#sms").val()
+        }, 
+        success: function(data) {
+          if(data == "true") {
+            $("#message").html("correct code")
+             $(function()
+              { $('#sms').css('border-color', '#CCC');
+            });
+          }
+          else {
+            $("#message").html("please enter the right code ")
+             $(function()
+              { $('#sms').css('border-color', 'red');
+            });
+
+          }
+        },
+
+    });
+    }
+
+</script>
+
+<div class="sms" id = "phonediv">
+        <p><input type="text" id ="phone" name="phone" placeholder = " enter your phone number"></p>
+        <p><button onClick="send_phone_num();" id = "phone_submit">Send</button></p>
+    </div>
+
+<div class="sms" id = "codediv">     
+    <p><input type="text" id ="sms" name="sms" placeholder = "enter sms verification code"></p>
+    <p><button onClick="send_sms_num();" id = "sms_submit">Send</button></p>
+    <div id="message"></div>
+</div>
+
+<script language="JavaScript">
+
+
+</script>
+
+  </div>
+ 
+</div>
+
+
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">

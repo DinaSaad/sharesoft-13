@@ -284,9 +284,9 @@ def add_to_wish_list(request):
 
 def view_post(request):
     user = request.user
-    form = sms(request)
+    print "i am form 1yyyyyy"
     form1 = sms_verify(request)
-    print form
+    print "after"
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
@@ -307,7 +307,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'form1':form1 , 'form':form, 'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'form1':form1 , 'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -1014,55 +1014,44 @@ def send_sms(to_number,msg_body):
 
    
 def sms(request):
+    print 'lama nshuf'
     user = request.user
-    print "im in" 
-
-    if request.method == 'POST':
+    print user
      # if 'phone' in request.POST:
-            print request.POST
-        
-            form = smsForm( request.POST )
-            user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
-            user.save()
-          
-            phone_no = request.POST['phone_number']
-            user.phone_number = phone_no
-            user.save()
-            print phone_no
-            send_sms(phone_no ,user.sms_code)
-             
-
-    
-    else:
-        print " imhere to"
-        form = smsForm()
-        print form
-        return form
+    print request.POST
+    user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+    user.save()
+  
+    phone_no = request.POST['phone_number']
+    user.phone_number = phone_no
+    user.save()
+    print phone_no
+    send_sms(phone_no ,user.sms_code)
+    return HttpResponse(" ")
 
 
 def sms_verify(request):
-  
+    print "im in verfify"
     if request.method == 'POST':
-        if 'code' in request.POST:
-            print "im a post"
-            form = smsForm()
-            print "yo"
-            smscode = request.POST['sms_code']
+        print "im a post"
+        print "yo"
+        smscode = request.POST['sms_code']
 
-     
-            if smscode is not None: 
-                print smscode
+ 
+        if smscode is not None: 
+            print smscode
+            try:
                 user = UserProfile.objects.get(sms_code=smscode)
+                if user.id == request.user.id:
+                    print 'lalalalalalala'
+                    return HttpResponse('true')
+                else:
+                    return HttpResponse('false')
                 print user.sms_code
+            except:
+                return HttpResponse('false')
+            return HttpResponse('correct code')
 
-                return HttpResponse('correct code')
-
-
-    else:
-        
-        form = smsForm()
-        
-        return form
 
      
 
