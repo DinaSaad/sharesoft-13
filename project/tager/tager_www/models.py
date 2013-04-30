@@ -268,23 +268,35 @@ class UserProfile(AbstractBaseUser):
 #returned from the filter and it gets the ids of the sellers which the user bought the post from
 #and then get them as objects and add them to the list. and then the same procedure is repeated 
 #for the posts where he was the post owner and the post is sold so it gets the buyers and then add
-#them to the interacting peoples list. and at the end it returns the list.
+#them to the interacting peoples list. and at the end it returns the list. duplicate records was handeled
 
     def get_interacting_people(self):
         interacting_people = []
+        refined_interacting_people = []
         
         posts_bought = Post.objects.filter(buyer_id = self.id)
         for post in posts_bought:
             seller_identifciation = post.seller.id
             seller_obj = UserProfile.objects.get(id=seller_identifciation)
-            interacting_people.append(seller_obj)
+            if seller_obj not in interacting_people:
+                interacting_people.append(seller_obj)
+                
         
         post_sold_to = Post.objects.filter(seller_id = self.id, is_sold = True)
         
         for post in post_sold_to:
             buyer_identification = post.buyer.id
             buyer_obj = UserProfile.objects.get(id=buyer_identification)
-            interacting_people.append(buyer_obj)
+            if buyer_obj not in interacting_people:
+                interacting_people.append(buyer_obj)
+                    
+
+        # for p in interacting_people:
+        #     if new not in refined_interacting_people:
+        #         refined_interacting_people.append(p)
+        
+        print interacting_people
+        print refined_interacting_people
 
         return interacting_people
 
