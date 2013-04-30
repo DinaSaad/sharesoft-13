@@ -468,11 +468,12 @@ def UserRegistration(request):
 # the status and will be redirected to the login page. output of the method saves the new status in database 
 @login_required
 def update_status(request):
-    print 'testing this method'
     user = request.user
+    print user
     user.status = request.POST['status']
+    print request.POST['status']
     user.save()
-    return HttpResponse(" ")
+    return render(request, 'profile.html', {'user':user})
 
 # Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
 # name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
@@ -482,6 +483,7 @@ def update_status(request):
 def edit_name(request):
     user = request.user
     user.name = request.POST['user_name']
+    print"fffffffffffff"
     user.save()
     return HttpResponse (" ")
 
@@ -517,11 +519,14 @@ def edit_phone(request):
     return HttpResponse (" ")  
 
 @login_required
-def hide_phone(request):
-    user = request.user
-    user.phone_number = request.POST['userphone2']
+def view_private(request):
+    return render_to_response ('private.html', context_instance=RequestContext(request))
+@login_required
+def hide_birth(request):
+    user =request.user
+    user.date_Of_birth = request.POST['Birth']
     user.save()
-    return HttpResponse (" ")
+    return HttpResponse(" ")
 
 @login_required
 def editing_pic(request):
