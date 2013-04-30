@@ -1,0 +1,87 @@
+{% extends "base2.html" %}
+
+
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+<h2>Please change the data that you want</h2>
+{% block content %}
+	<label id="nameLabel" value="{{user.name}}">  {{user.name}} </label>
+	<input id="namevalue" style="display:none"><br>
+	<label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label>
+	<input id="dateofbirthvalue" style="display:none"><br>
+	
+	<label id="Gender" value="{{user.gender}}">{{user.gender}}</label>
+	<input id="gendervalue" style="display:none"><br>	
+	<label id="phonenumber" value="{{user.phone_number}}">{{user.phone_number}}</label>
+	<input id="phonenumbervalue" style="display:none"><br>
+	<button id="edituser" onClick="edit_profile_information_preparation();" class="btn btn-success btn-small">Edit</button>
+	<button id="saveuser" onClick="edit_profile_information();" class="btn btn-success btn-small">Save</button>
+	
+<script type="text/javascript">
+
+function edit_profile_information_preparation(){
+	$('#nameLabel').hide();
+	$('#dateofbirthlabel').hide();
+	$('#Gender').hide();
+	$('#phonenumber').hide();
+	$('#saveuser').show();
+	$('#edituser').hide();
+
+	var name = $('#nameLabel').text();
+    $("#namevalue").val (name);
+    $('#namevalue').css('display', 'block');
+	
+    var gender = $('#Gender').text();
+    $("#gendervalue").val (gender);
+    $('#gendervalue').css('display', 'block');
+    
+    var dob = $('#dateofbirthlabel').text();
+    $("#dateofbirthvalue").val (dob);
+    $('#dateofbirthvalue').css('display', 'block');
+
+    var phonenumberval = $('#phonenumber').text();
+    $("#phonenumbervalue").val (phonenumberval);
+    $('#phonenumbervalue').css('display', 'block');    
+}
+function edit_profile_information(){
+  var name1 = $('#namevalue').val();
+  console.log(name1);
+
+  var gender1 = $('#gendervalue').val();
+  var dateofbirthsubmitted = $('#dateofbirthvalue').val();
+  var telephonenumbersubmitted = $('#phonenumbervalue').val();
+  $.ajax({
+    url: "/editing/",
+    type: "POST",
+    data: {
+    	"user_name" : name1,
+    	"dateofbirth" : dateofbirthsubmitted,
+    	"gender": gender1,
+    	"phonenumber": telephonenumbersubmitted, 
+    }, 
+    success: function(result) {
+	$('#nameLabel').text($('#namevalue').val());
+	$('#nameLabel').show();
+	$('#dateofbirthlabel').text($('#dateofbirthvalue').val());
+	$('#dateofbirthlabel').show();
+	$('#Gender').text($('#gendervalue').val());
+	$('#Gender').show();
+	$('#phonenumber').text($('#phonenumbervalue').val());
+	$('#phonenumber').show();
+	$('#namevalue').hide();
+	$('#dateofbirthvalue').hide();
+	$('#gendervalue').hide();
+	$('#phonenumbervalue').hide();
+	$('#saveuser').hide();
+	$('#edituser').show();
+
+    alert("Profile updated successfully");  
+    }
+});
+}
+</script>
+{% endblock %}
