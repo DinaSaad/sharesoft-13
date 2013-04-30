@@ -8,15 +8,16 @@ from tager_www.views import *
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',      
-    url(r'^logout/$', logout, {'next_page':'/login'}),  
-    url(r'^profile/$', 'tager_www.views.view_profile'),
+
+urlpatterns = patterns('',
+              
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
     url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
     url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
     url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
     url(r'^editpost/$', 'tager_www.views.edit_post'),
     url(r'^editpostattribute/$', 'tager_www.views.edit_post_attribute'),
+
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
     url(r'^logout/$', logout, {'next_page':'/'}),  
     url(r'^$', 'tager_www.views.home'),
@@ -30,7 +31,7 @@ urlpatterns = patterns('',
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
-    # url(r'^login/$', 'tager_www.views.view_login'),
+    url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),

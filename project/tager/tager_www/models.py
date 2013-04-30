@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
 import datetime
@@ -81,7 +82,7 @@ class UserProfile(AbstractBaseUser):
     activation_key = models.CharField(max_length=40 , null=True)
     sms_code = models.CharField(max_length=5 , null=True)
     status = models.CharField(max_length=400 , null=True) 
-    # rating = models.FloatField(default=0.0)
+    rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -116,8 +117,8 @@ class UserProfile(AbstractBaseUser):
         return self.name
  
     def __unicode__(self):
-        return self.email + str(self.is_verfied) + str(self.activation_key)
-
+        return self.email
+        # return self.email + str(self.is_verfied) + str(self.activation_key)
      # this methods taked in a permission and the objects and returns true or false regarding wherther the objec entered has permission or not (user)
     def has_perm(self, perm, obj=None):
         
@@ -161,8 +162,11 @@ class UserProfile(AbstractBaseUser):
     def add_buyer(self,post,phone_num):
         p = post        
         if p.seller_id == self.id:
-            post_buyer = UserProfile.objects.get(phone_number = phone_num)
-            #post_buyer_id = post_buyer.id
+            try:
+                post_buyer = UserProfile.objects.get(phone_number = phone_num)
+            except UserProfile.DoesNotExist:
+                return False
+             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer
             p.is_sold = True
             p.save()
@@ -250,6 +254,11 @@ class UserProfile(AbstractBaseUser):
         not1 = Notification(user = post_in.user_id, content = not_content)
         not1.save()
 
+#C2-mahmoud ahmed- as a user i can rate sellers whom i bought from. the method takes the rate and the post
+#and the buyer as inputs and then it inserts these inputs into the rating table and save the record after
+#that the post_owner rating is calculated and the average is brought and saved instead of the old rating.
+#and then the average rating is returned.
+
     def calculate_rating(self,rate,post,buyer): #self is the post_owner
         owner_id = self.id
         #print owner_id
@@ -265,6 +274,45 @@ class UserProfile(AbstractBaseUser):
         self.rating = user_rating
         self.save() 
         return user_rating
+
+#c2-mahmoud ahmed-as a user i should be able to see the people i interacted with through buying 
+#and selling activities - what get_interacting_people does is that it first gets the posts where
+#the current user is found as the buyer of a post in the Posts table then it loops the list that is 
+#returned from the filter and it gets the ids of the sellers which the user bought the post from
+#and then get them as objects and add them to the list. and then the same procedure is repeated 
+#for the posts where he was the post owner and the post is sold so it gets the buyers and then add
+#them to the interacting peoples list. and at the end it returns the list. duplicate records was handeled
+
+    def get_interacting_people(self):
+        interacting_people = []
+        refined_interacting_people = []
+        
+        posts_bought = Post.objects.filter(buyer_id = self.id)
+        for post in posts_bought:
+            seller_identifciation = post.seller.id
+            seller_obj = UserProfile.objects.get(id=seller_identifciation)
+            if seller_obj not in interacting_people:
+                interacting_people.append(seller_obj)
+                
+        
+        post_sold_to = Post.objects.filter(seller_id = self.id, is_sold = True)
+        
+        for post in post_sold_to:
+            buyer_identification = post.buyer.id
+            buyer_obj = UserProfile.objects.get(id=buyer_identification)
+            if buyer_obj not in interacting_people:
+                interacting_people.append(buyer_obj)
+                    
+
+        # for p in interacting_people:
+        #     if new not in refined_interacting_people:
+        #         refined_interacting_people.append(p)
+        
+        print interacting_people
+        print refined_interacting_people
+
+        return interacting_people
+
 
 #c2-mohamed
 #this class holds all notifications to all users
