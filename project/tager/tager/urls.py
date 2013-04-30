@@ -75,8 +75,11 @@ urlpatterns = patterns('',
     url(r'^all_log_interested/$', 'tager_www.views.all_log_interested'),
     url(r'^all_log_profile/$', 'tager_www.views.all_log_profile'),
     url(r'^all_log_wish/$', 'tager_www.views.all_log_wish'),
+    url(r'^send_phone/$', 'tager_www.views.sms'),
+    url(r'^send_sms/$', 'tager_www.views.sms_verify'),
 
     
+
 
 
 

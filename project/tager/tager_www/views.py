@@ -38,6 +38,9 @@ import urllib
 from django.utils.timezone import utc
 import datetime
 from datetime import datetime, timedelta
+from django.conf import settings
+from twilio.rest import TwilioRestClient
+
 
 #c1_abdelrahman this method takes request as an input then it updates the attribute value by the value extracted from request.post.
 def edit_post_attribute(request):
@@ -373,8 +376,12 @@ def add_to_wish_list(request):
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
 #it returns the post, list_of_attributes and list_of values of the attributes.
+
 def view_post(request):
     user = request.user
+    print "i am form 1yyyyyy"
+    form1 = sms_verify(request)
+    print "after"
     post_id = request.GET['post']
 
     test_post = Post.objects.get(id=post_id)
@@ -390,10 +397,17 @@ def view_post(request):
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
+
+    list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
+
+
+
+
  
     list_of_attribute_values = Value.objects.filter(post = test_post).order_by('attribute')
     print list_of_attribute_values.count()
     list_of_att_number = Attribute.objects.filter(subchannel_id = subchannel1)
+
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
     list_of_interested_buyers=[]
@@ -401,7 +415,12 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
+
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+
+
     dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -539,7 +558,7 @@ def  get_user(self):
 #if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
 
 def UserRegistration(request):
-
+    
     if request.method == 'POST':
        
         form = RegistrationForm(request.POST) 
@@ -1196,6 +1215,79 @@ def all_log_profile(request):
     print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#mai c2 : sms verfication 
+# this methods taked in the number that u want to send the message to and the body 
+# it doesnt return anything, it just sends the msg 
+def send_sms(to_number,msg_body):
+
+    account_sid = "AC9ec4b58090b478bc49c58aa6f3644cc7"
+    auth_token  = "79ba8ebb0bf8377302f735f853cd7006"
+    client = TwilioRestClient(account_sid, auth_token)
+
+    message = client.sms.messages.create(body=msg_body,
+        to="+2"+str(to_number),
+        from_="+18587369892")
+    print message.sid
+
+     
+
+#mai c2 : sms verfication 
+#this method takes a request 
+# it creates a 5 charcter codde and saves this code to the user belong to the request 
+# it takes the phone from the field of pphone number in the templates and saves this phone 
+# then calls the mehtod that send the msg which takes thie phone number and the code that was generated 
+# returns an emtpy response 
+def sms(request):
+    
+    user = request.user
+    
+    
+    user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+    user.save()
+  
+    phone_no = request.POST['phone_number']
+    user.phone_number = phone_no
+    user.save()
+    
+    send_sms(phone_no ,user.sms_code)
+    return HttpResponse(" ")
+
+
+#mai : c2 : sms verifcation
+#this method takes a request and checks if its a post
+# it takes the code from the field in the template 
+# then gets the user with that code 
+# if the user id if the one who is doing the request 
+#then it returns an httprespons with true   
+
+def sms_verify(request):
+   
+    if request.method == 'POST':
+       
+        smscode = request.POST['sms_code']
+
+ 
+        if smscode is not None: 
+           
+            try:
+                user = UserProfile.objects.get(sms_code=smscode)
+                if user.id == request.user.id:
+                   
+                    return HttpResponse('true')
+                else:
+                    return HttpResponse('false')
+                
+            except:
+                return HttpResponse('false')
+            return HttpResponse('correct code')
+
+
+     
+
+   
+
+
 
 #c1_abdelrahman this method takes request as an input.
 #it takes the post id and the user_id from the request.
