@@ -453,10 +453,10 @@ def main(request):
         user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    for i in post_list:
-        i.post_state()
+    # for i in post_list:
+    #     i.post_state()
 
-    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -825,6 +825,7 @@ def get_attributes_of_subchannel(request):
     # print list_of_attributes
 
     return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
+
 def advanced_search(request):#mohamed tarek c3 
                              #this method takes attributes as input and takes values from the user them compares them  
                              #to values to get the value obects containig the attribute ids and value iputed and them 
