@@ -67,7 +67,7 @@ urlpatterns = patterns('',
     url(r'^thankyou/$','tager_www.views.thankyou'),
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
-
+    url(r'^twitterImportFriends/$', 'tager_www.views.twitterImport'),
 
     
 
