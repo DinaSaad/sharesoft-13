@@ -145,7 +145,8 @@
       {% for person in interacting_list %}
            <!-- <div style="display:inline;">  -->
               <div class="thumbnail" style="width: 80px;display: inline-block;">
-                <a href="/profile/?user_id={{person.id}}"><img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture"></a>
+                <a href="/profile/?user_id={{person.id}}"><img src="{{person.photo}}" alt="picture"></a>
+                <!-- <a href="/profile/?user_id={{person.id}}">{{person.photo}}</a> --> 
               </div>
             <!-- </div> -->
       {% endfor %} 
