@@ -31,6 +31,8 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
+import tweepy
+
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -39,6 +41,9 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists', 'friends_photos','friends_email'] 
 SCOPE_SEPARATOR = ' '
 
+consumer_key = 'kg5paGppvJZeLcJky5sw'
+consumer_secret = 'eHwNTEeIQRmw7HIYIe1Kmr4dLxdIlBRonk81sOWMiTs'
+callback_url = 'http://127.0.0.1:8000/twitter/auth/done'
 
 
 def home(request):
@@ -888,6 +893,25 @@ def facebook_import_friends_done(request):
     if isinstance(result, UserProfile):
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
+def twitter_login(request):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+    url = tweepy.OAuthHandler.get_authorization_url(auth)
+    request.session['request_token.key'] = auth.request_token.key
+    request.session['request_token.secret'] = auth.request_token.secret
+    return HttpResponseRedirect(url)
+    
+def twitter_auth_done(request):
+    result = twitter_login(request)
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+    x = request.session.get('request_token.key')
+    y = request.session.get('request_token.secret')
+    auth.request_token.key = x
+    auth.request_token.secret = y
+    auth.set_request_token( x , y)
+    verifier = request.REQUEST.get('oauth_verifier')
+    accesstoken = tweepy.OAuthHandler.get_access_token(auth, verifier)
+    print 912
+    return HttpResponse("testing")
 # def advanced_search_helper(basic_search_list):#mohamed tarek c3 
 #                              #this method takes attributes as input and takes values from the user them compares them  
 #                              #to values to get the value obects containig the attribute ids and value iputed and them 

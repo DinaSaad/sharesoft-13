@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     url(r'^getContacts/done$', 'tager_www.views.facebook_import_friends_done', name="facebook_import_friends_done"),
     url(r'^twitter/login$', 'tager_www.views.twitter_login', name="twitter_login"),
     url(r'^twitter/auth/done$', 'tager_www.views.twitter_auth_done', name="twitter_auth_done"),
+
     
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
