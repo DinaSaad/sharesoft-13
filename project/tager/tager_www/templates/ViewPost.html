@@ -298,13 +298,13 @@ width: :700px;
         <button type="button" class="btn btn-info"> Interested in </button>
         <a href="#myModal" role="button" class="btn btn-info " data-toggle="modal">Report </a>
 
-{% if user.is_admin %}
+<!-- {% if user.is_admin %}
 <a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 <form action="/hidePost/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
       <br/>
       <input type="submit" value="Hide" class='btn'>
   </form> 
-{% endif %}
+{% endif %} -->
       {% if add_buyer_button %}
           <button class="btn btn-info" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
         {% endif %}
