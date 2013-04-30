@@ -2,9 +2,12 @@
 	{% extends "base.html" %}
 	{% load staticfiles %}
 	{% block content %}
-		{% if message %}
-	{{message}}
-	{% endif %}
+	{% if message %}
+<div id="dialog" title="Error">
+    <p>{{message}}</p>
+    <p>Please click the the box to try again</p>
+</div>
+{% endif %}
 	<div id="advancedsearch_channels">
 	{% if channels_list %}
 	<select id="ad_Channel_dropdown">

@@ -100,3 +100,10 @@ $('#advanced_render_subchannels').click(function(){
   window.location.replace("/advanced_subchannel_show?ad_sub_ch_id="+$('#ad_subChannel_dropdown').val())
 });
 });
+ $(function() {
+    $( "#dialog" ).dialog();
+    $('#dialog').click(function(){
+  window.location.replace("/advanced_search_channel")
+// $('#advanced_render_subchannels').hide();
+});
+  });
