@@ -32,7 +32,7 @@
 /*  Font Awesome styles
     ------------------------------------------------------- */
 [class^="icon-"],
-[class*=" icon-"] {
+[class*=" icon-"] not(.icon-envelope) not(.icon-pencil)  {
   font-family: FontAwesome;
   font-weight: normal;
   font-style: normal;
@@ -63,11 +63,11 @@
 .dropdown-menu > .active > a > [class^="icon-"],
 .dropdown-menu > .active > a > [class*=" icon-"],
 .dropdown-submenu:hover > a > [class^="icon-"],
-.dropdown-submenu:hover > a > [class*=" icon-"] {
+.dropdown-submenu:hover > a > [class*=" icon-"] not(.icon-pencil{
   background-image: none;
 }
 [class^="icon-"]:before,
-[class*=" icon-"]:before {
+[class*=" icon-"]:before  {
   text-decoration: inherit;
   display: inline-block;
   speak: none;
@@ -85,7 +85,7 @@ a [class*=" icon-"] {
 .btn [class^="icon-"],
 .nav [class^="icon-"],
 .btn [class*=" icon-"],
-.nav [class*=" icon-"] {
+.nav [class*=" icon-"] not(.icon-pencil{
   display: inline;
   /* keeps button heights with and without icons the same */
 
@@ -274,7 +274,7 @@ ul.icons li [class*=" icon-"] {
 .icon-glass:before                { content: "\f000"; }
 .icon-music:before                { content: "\f001"; }
 .icon-search:before               { content: "\f002"; }
-.icon-envelope:before             { content: "\f003"; }
+/*.icon-envelope:before             { content: "\f003"; }*/
 .icon-heart:before                { content: "\f004"; }
 .icon-star:before                 { content: "\f005"; }
 .icon-star-empty:before           { content: "\f006"; }
@@ -336,7 +336,7 @@ ul.icons li [class*=" icon-"] {
 .icon-facetime-video:before       { content: "\f03d"; }
 .icon-picture:before              { content: "\f03e"; }
 
-.icon-pencil:before               { content: "\f040"; }
+/*.icon-pencil:before               { content: "\f040"; }*/
 .icon-map-marker:before           { content: "\f041"; }
 .icon-adjust:before               { content: "\f042"; }
 .icon-tint:before                 { content: "\f043"; }
@@ -484,7 +484,7 @@ ul.icons li [class*=" icon-"] {
 .icon-sort-down:before            { content: "\f0dd"; }
 .icon-sort-up:before              { content: "\f0de"; }
 
-.icon-envelope-alt:before         { content: "\f0e0"; }
+/*.icon-envelope-alt:before         { content: "\f0e0"; }*/
 .icon-linkedin:before             { content: "\f0e1"; }
 .icon-undo:before                 { content: "\f0e2"; }
 .icon-legal:before                { content: "\f0e3"; }
