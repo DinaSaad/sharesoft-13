@@ -1,20 +1,7 @@
 .body{
     background-color: #BFD4D4
 }
-.button{
-    /*width: 200px;*/
-    /*height: 20px;*/
-    /*line-height: 50px;
-    text-align: center;*/
 
-    /*background: #6292c2;*/
-    /*border: 2px solid #eee;*/
-   /* height: 58px;
-    width: 115px;
-    padding: 0 0 0 50px;
-    overflow: hidden;
-    display: block;*/
-}
 .wideColumn{
     column-width:250px;
     column-gap:40px;
@@ -27,22 +14,32 @@
     -webkit-column-width:100px; /* Safari and Chrome */
 }
 div#box1{
-    border: #999 2px solid;
-    width: 200px;
-    height: 200px;
-    margin: 20px;
-    cursor: pointer;
+
+    /*border: #999 2px solid;*/
+/*    width: 200px;
+    height: 200px;*/
+    /*margin: 20px;*/
     /*display:    -moz-box; /* Firefox */
     /*display:-webkit-box;  Safari and Chrome */
     /*display:box;*/
     /*border:1px solid black;*/
+    -webkit-border-radius: 3px 3px 3px 3px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -ms-border-radius: 3px 3px 3px 3px;
+    -o-border-radius: 3px 3px 3px 3px;
 }
 div#box1 > img{
-    position: absolute;
-    z-index: 2000;
+/*    position: absolute;
+    z-index: 2000;*/
+
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -ms-border-radius: 4px 4px 4px 4px;
+    -o-border-radius: 4px 4px 4px 4px;
     width: 200px;
     max-height: 200px;
 }
+
 div#box1 > a{
     display: none;
     position: absolute;
@@ -59,21 +56,31 @@ div#box1:hover a{
     display: block;
 }
 div#box2{
-    border: #999 2px solid;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -ms-border-radius: 3px 3px 3px 3px;
+    -o-border-radius: 3px 3px 3px 3px;
+
+    /*border: #999 2px solbackground: #eee;id;*/
     width: 700px;
     /*height: 200px;*/
-    margin: 20px;
-    cursor: pointer;
+    /*margin: 20px;*/
+    /*cursor: pointer;*/
 }
 div#box3{
-    border: #999 2px solid;
-    width: 700px;
+    background: #eee;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -ms-border-radius: 3px 3px 3px 3px;
+    -o-border-radius: 3px 3px 3px 3px;
+    width: auto;
     /*height: 200px;*/
-    margin: 20px;
-    cursor: pointer;
+    margin: 10px;
+    /*cursor: pointer;*/
 }
 .status{
-    width: 200px;
+    width: 200px;}
+
 body {
 
 background: #e3e3e3 url(../../static/img/bg1.png) repeat;
@@ -219,6 +226,13 @@ visibility: hidden;
 .item:hover .repinLikeWrapper {
 visibility: visible;
 }
+.thumbnail .ProfileInfo {
+visibility: hidden;
+}
+
+.profileEdit:hover .repinLikeWrapper {
+visibility: visible;
+}
 #pass
  {
  width: 200px;
@@ -230,3 +244,41 @@ visibility: visible;
     margin-left: 200px;
     padding: 10px;
 }
+
+
+.profileHeader {
+background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f3f3f3), color-stop(100%, #e5e5e5));
+background: -webkit-linear-gradient(#f3f3f3,#e5e5e5);
+background: -moz-linear-gradient(#f3f3f3,#e5e5e5);
+background: -o-linear-gradient(#f3f3f3,#e5e5e5);
+background: linear-gradient(#f3f3f3,#e5e5e5);
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+-ms-border-radius: 4px;
+-o-border-radius: 4px;
+border-radius: 4px;
+-webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.14);
+-moz-box-shadow: 0 1px 4px rgba(0,0,0,0.14);
+box-shadow: 0 1px 4px rgba(0,0,0,0.14);
+overflow: hidden;
+background-color: #f3f3f3;
+border-left: 1px solid #d4d4d4;
+border-left: 1px solid rgba(0,0,0,0.17);
+border-top: 1px solid rgba(0,0,0,0.1);
+border-right: 1px solid rgba(0,0,0,0.17);
+border-left: 1px solid #d4d4d4;
+border-bottom: 1px solid rgba(0,0,0,0.2);
+clear: both;
+color: #333;
+position: relative;
+overflow: hidden;
+display: block;
+list-style-type: disc;
+border-right: 1px solid #cdcdcd;
+color: #333;
+line-height: 44px;
+-webkit-box-shadow: -1px 0 3px rgba(0,0,0,0.05) inset;
+-moz-box-shadow: -1px 0 3px rgba(0,0,0,0.05) inset;
+box-shadow: -1px 0 3px rgba(0,0,0,0.05) inset;
+}
+

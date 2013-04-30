@@ -78,6 +78,7 @@ class UserProfile(AbstractBaseUser):
     private_work = models.BooleanField(default=False)
     works_at = models.CharField(max_length=100, null=True)
     photo = models.ImageField(upload_to='img',blank=True)
+    photo = models.ImageField(upload_to='img',blank=True,default="mpf.png")
     activation_key = models.CharField(max_length=40 , null=True)
     # created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=400 , null=True) 
@@ -232,6 +233,16 @@ class UserProfile(AbstractBaseUser):
         else:
             return "true"
 
+    #The Method Takes 2 arguments(User who clicked intrested,Post Which the user has clicked the button in) 
+    #then then check if the user is verified ,
+    #then input the values in  table [IntrestedIn] and Increment Intrested Counter
+    def interested_in(self, post_in):
+        if self.is_verfied:
+            if  Post.objects.filter(pk=post_in.id).exists():
+                user1=InterestedIn(user_id_buyer =self,user_id_seller =post_in.seller,post=post_in)
+                user1.save()
+                post_in.intersed_count=post_in.intersed_count+1
+                post_in.save()
 
     def interested_Notification(self, post_in):
         user_in = self
