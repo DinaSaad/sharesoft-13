@@ -392,10 +392,8 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            # pwd_valid = check_password(password, user.password)
-            if user.password == password:    
-                # if pwd_valid:    
-            
+            pwd_valid = check_password(password, user.password)    
+            if pwd_valid:    
                 return user
         except UserProfile.DoesNotExist:
             return None
