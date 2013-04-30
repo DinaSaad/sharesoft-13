@@ -523,7 +523,11 @@ def return_account_type(request):
 def change_faccounttype(request):
     print"tessstttiinnggggg"
     user = request.user
-    user.is_premium = request.POST['Type']
+    if request.POST['Type'] == 'false':
+        user.is_premium = False
+    else:
+        user.is_premium = True
+
     user.save()
     return HttpResponse(" ")
 
