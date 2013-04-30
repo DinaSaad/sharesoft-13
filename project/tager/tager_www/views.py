@@ -209,6 +209,9 @@ def add_post(request):
         for k in request.POST:
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                #c2-mohamed
+                #the next five lines are written to save a tuple in ActivityLog table
+                #to save it to make the user retrieve it when he logs into his activity log
                 post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
                 post_activity_url = "showpost?post=" + unicode(p.id)
                 post_log_type = "post"
@@ -273,11 +276,15 @@ def add_to_wish_list(request):
     can_wish = user.add_to_wish_list(post)
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
-        post_activity_content = "you added " + unicode(post.title) + " to your wish list."
-        post_activity_url = "showpost?post=" + unicode(post.id)
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity lo
+        post_object = Post.objects.get(id=post)
+        post_activity_content = "you added " + unicode(post_object.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post_object.id)
         post_log_type = "wish"
         # post_log_date = datetime.datetime.now()
-        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author)
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse()
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
@@ -496,6 +503,12 @@ def edit_name(request):
     user = request.user
     user.name = request.POST['user_name']
     user.save()
+    #c2-mohamed
+    #the next lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
     post_activity_content = "you edited your name to " + unicode(user.name) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
@@ -515,6 +528,12 @@ def edit_date_of_birth(request):
     user = request.user
     user.date_Of_birth = request.POST['dateofbirth']
     user.save()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
     post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
@@ -534,6 +553,12 @@ def edit_work(request):
     user = request.user
     user.works_at = request.POST['userwork']
     user.save()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
     post_activity_content = "you edited your place of work to " + unicode(user.works_at) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
@@ -1010,6 +1035,14 @@ def intrested(request):
         intrest1.save()
         post_in.intersed_count=post_in.intersed_count+1
         post_in.save()
+        #post_activity_content is to save the activity log content that will be shown to user
+        #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+        #post_log_type is the type of the log type the user will choose in the activity log page
+        post_activity_content = "you added " + unicode(post_in.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post_in.id)
+        post_log_type = "profile"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
 
     return HttpResponse()
 
@@ -1061,6 +1094,13 @@ def remove_post_from_wishlist(request):
     user = request.user
     post = request.POST['post']
     WishList.objects.get(user = user, post_id = post).delete()
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
+    post_activity_url = "showpost?post=" + unicode(post_in.id)
+    post_log_type = "wish"
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse()
 
 #c1_abdelrahman this method takes request as an input from the user. 
