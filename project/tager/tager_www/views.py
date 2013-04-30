@@ -1136,6 +1136,11 @@ def facebook_import_friends_done(request):
     if isinstance(result, UserProfile):
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
+
+# Ahmed C3: Twitter login
+# This method uses the twitter app data (consumer key and consumer secret) to create a connection with twitter
+# and fetch a request token
+
 def twitter_login(request):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     url = tweepy.OAuthHandler.get_authorization_url(auth)
@@ -1143,6 +1148,12 @@ def twitter_login(request):
     request.session['request_token.secret'] = auth.request_token.secret
     return HttpResponseRedirect(url)
     
+# Ahmed C3: Twitter login
+# This method uses the twitter request token key and secret to fetch the access token key and secret from twitter
+# Done that, the method gets the user screen name, creates a new user for him if the user is logging in for the first time
+# or checks the presense of the user in the table, then redirects the user to the main page
+
+
 def twitter_auth_done(request):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     x = request.session.get('request_token.key')
@@ -1158,14 +1169,14 @@ def twitter_auth_done(request):
     userName = tweepy.OAuthHandler.get_username(auth)
     try:
         userprofile = UserProfile.objects.get(twitter_name=(userName))
-        userprofile.tw_tok_k = a
-        userprofile.tw_tok_s = b
+        userprofile.twitter_token_key = a
+        userprofile.twitter_token_secret = b
         userprofile.save()
         return HttpResponseRedirect(REDIRECT_URL)
     except UserProfile.DoesNotExist:
         userprofile = UserProfile.objects.create(twitter_name=(userName))
-        userprofile.tw_tok_k = a
-        userprofile.tw_tok_s = b
+        userprofile.twitter_token_key = a
+        userprofile.twitter_token_secret = b
         userprofile.save()
         return HttpResponseRedirect(REDIRECT_URL)
     
