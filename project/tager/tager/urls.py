@@ -33,6 +33,7 @@ urlpatterns = patterns('',
     url(r'^private_number/$', 'tager_www.views.private_number'),
     url(r'^private_work/$', 'tager_www.views.private_work'),
     url(r'^public_number/$', 'tager_www.views.public_number'),
+    url(r'^public_work/$', 'tager_www.views.public_work'),
 
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     # url(r'^login/$', 'tager_www.views.view_login'),
