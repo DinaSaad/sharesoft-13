@@ -621,13 +621,17 @@ def twitter_auth(request):
         print user
     return HttpResponse("testing")
 
-
-
+#C3-Sara ismail
+#this view does the importing by doing a loop over the users followers after getting them
+#puts them in a list after checking that the comming username exists in the database(filter)
+#gets the contact id and the user id and inserts them into the friends table, and then
+#a message appears to the users that the importing is finished
 def twitterImport(request):
     consumer_key="qgiGaTPdiF2JukTUakXhKA"
     consumer_secret="JdcsJrJk39DBfdJFIbcyC8GMzehixuxbetZmctYDjOk"
     access_token="1324517838-mHUW3Gm3Yf8BYBRwlPlj8e92o7eserhAnk93BqG"
     access_token_secret="qeE5HBzNpiCV25PrIEum5sAQEYoQCWz4hlcEYLNOdic"
+    callback_url="http://127.0.0.1:8000/twitterImportFriends/"
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
