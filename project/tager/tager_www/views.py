@@ -35,75 +35,9 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
-
-#c1_abdelrahman this method takes request as an input then it updates the attribute value by the value extracted from request.post.
-def edit_post_attribute(request):
-    user = request.user
-    post_id = request.POST['post']
-    attribute_id = request.POST['attribute']
-    value = request.POST['value']
-    current_value_instant = Value.objects.get(attribute = attribute_id ,post = post_id)
-    current_value_instant.value = value
-    current_value_instant.post.edit_date = datetime.now()
-    current_value_instant.post.save()
-    current_value_instant.save()
-    return HttpResponse()
-#c1_abdelrahman this method takes request as an input then it returns the post and the list of the attributes of the subchannel that the post belongs to and the list of the values of the attributes that is saved in the Values table.
-#it checks whether the current of the user and then it renders to the html the list and whether the user can edit the post or not.
-def edit_post(request):
-    user = request.user
-    post_id = request.GET['post']
-    current_post = Post.objects.get(id = post_id)
-    subchannel = current_post.subchannel_id
-    list_of_attribute_name = Attribute.objects.filter(subchannel_id = subchannel)
-    list_of_attribute_values = Value.objects.filter(post = current_post).order_by('attribute')
-    list_of_attributes_numbers = Value.objects.filter(post = current_post).order_by('attribute')
-    return render_to_response('editPost.html', {'current_post': current_post
-    , 'list_of_attribute_name':list_of_attribute_name
-    , 'list_of_attribute_values':list_of_attribute_values
-    ,'list_of_attributes_numbers': list_of_attributes_numbers})
-#c1_abdelrahman this method takes request as an input then it extracts the new description from the POST then it save it in the post table. it returns blank httpresponse. 
-def edit_post_description(request):
-    user = request.user
-    new_description = request.POST['description']
-    post_id = request.POST['post']
-    current_post = Post.objects.get(id = post_id)
-    current_post.description = new_description
-    current_post.edit_date = datetime.now()
-    current_post.save()
-    return HttpResponse()
-#c1_abdelrahman this method takes request as an input then it extracts the new price from the POST then it save it in the post table. it returns blank httpresponse.
-def edit_post_price(request):
-    user = request.user
-    new_price = request.POST['price']
-    post_id = request.POST['post']
-    current_post = Post.objects.get(id = post_id)
-    current_post.price = new_price
-    current_post.edit_date = datetime.now()
-    current_post.save()
-    return HttpResponse()
-#c1_abdelrahman this method takes request as an input then it extracts the new location from the POST then it save it in the post table. it returns blank httpresponse.
-def edit_post_location(request):
-    user = request.user
-    new_location = request.POST['location']
-    post_id = request.POST['post']
-    current_post = Post.objects.get(id = post_id)
-    current_post.location = new_location
-    current_post.edit_date = datetime.now()
-    current_post.save()
-    return HttpResponse()
-#c1_abdelrahman this method takes request as an input then it extracts the new title from the POST then it save it in the post table. it returns blank httpresponse.
-def edit_post_title(request):
-    user = request.user
-    new_title = request.POST['title']
-    post_id = request.POST['post']
-    print post_id
-    current_post = Post.objects.get(id = post_id)
-    current_post.title = new_title
-    current_post.edit_date = datetime.now()
-    current_post.save()
-    return HttpResponse()
-
+from twilio.rest import TwilioRestClient
+from django.conf import settings
+from twilio.rest import TwilioRestClient
 
 
 APP_ID = '461240817281750'   # From facebook app's settings
@@ -113,16 +47,6 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
-
-
-
-#c1-abdelrahman it takes a request as an input.
-# it returns a list of all the wished posts by the user to the profile.html
-
-def view_posts_wished(request):
-    user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
-    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 
 
@@ -280,7 +204,9 @@ def add_post(request):
             ,
             )
 
-        # p.post_Notification();
+        # p.post_Notification()
+         
+        
         for k in request.POST:
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
@@ -337,8 +263,6 @@ def check_Rate_Identify_buyer(request):
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
     return d
 
-
-
 def add_to_wish_list(request):
     user = request.user
     post = request.POST['post']
@@ -346,34 +270,30 @@ def add_to_wish_list(request):
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
     return HttpResponse()
-
-
-
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
 #it returns the post, list_of_attributes and list_of values of the attributes.
+
 def view_post(request):
     user = request.user
+    print "i am form 1yyyyyy"
+    form1 = sms_verify(request)
+    print "after"
     post_id = request.GET['post']
-
-    test_post = Post.objects.get(id=post_id)
-    can_edit = False
-    if test_post.seller == user:
-        can_edit = True
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
     if user.is_authenticated():
         post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
-
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
- 
+    list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
     list_of_attribute_values = Value.objects.filter(post = test_post).order_by('attribute')
     print list_of_attribute_values.count()
     list_of_att_number = Attribute.objects.filter(subchannel_id = subchannel1)
+
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
     list_of_interested_buyers=[]
@@ -381,7 +301,11 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+
+    # dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+     dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+
+
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -430,6 +354,12 @@ def Buyer_identification(request):
             post = Post.objects.get(id=request.GET['post_id'])
             # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_buyer(post, new_buyer_num)
+            
+            if buyer_added == False :
+                form = BuyerIdentificationForm()
+                d = {'form':form}
+                return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
+            
             d = {'form':form}
             return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
@@ -453,10 +383,10 @@ def main(request):
         user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    # for i in post_list:
-    #     i.post_state()
+    for i in post_list:
+        i.post_state()
 
-    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -469,7 +399,7 @@ def filter_home_posts():
     return post_list
 
 def filter_posts(post_list):
-    # print post_list
+    print post_list
     post_filtered = (post_list.objects.exclude(is_hidden=True)
         .exclude(expired=True)
         .exclude(is_sold=True)
@@ -483,7 +413,7 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            pwd_valid = check_password(password, user.password)
+            pwd_valid = check_password(password, user.password)    
             if pwd_valid:    
                 return user
         except UserProfile.DoesNotExist:
@@ -519,7 +449,7 @@ def  get_user(self):
 #if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
 
 def UserRegistration(request):
-
+    
     if request.method == 'POST':
        
         form = RegistrationForm(request.POST) 
@@ -708,7 +638,9 @@ def view_profile(request):
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
+        interacting_list = user_profile.get_interacting_people()
+        # print interacting_list
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -852,14 +784,13 @@ def get_attributes_of_subchannel(request):
     # print list_of_attributes
 
     return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
-
 def advanced_search(request):#mohamed tarek c3 
                              #this method takes attributes as input and takes values from the user them compares them  
                              #to values to get the value obects containig the attribute ids and value iputed and them 
                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
     sub_id = request.GET['ad_sub_id']
-    # print "got subchannel id"
-    # print sub_id
+    print "got subchannel id"
+    print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
     price_req = request.GET['price']
     try:
@@ -931,7 +862,6 @@ def advanced_search(request):#mohamed tarek c3
 
 
 
-
 # c3_Nadeem Barakat: this method is to split the query entered by the user  where the whole sentence is splitted by spaces into words 
 # and the method  get rid of the spaces and groups all the query together
 def normalize_query(query_string,
@@ -993,7 +923,7 @@ def fb_login(request, result):
         password = result.password
         authenticated_user = authenticate(mail=mail, password=password)
         if authenticated_user is not None:
-            # print authenticated_user.is_active
+            print authenticated_user.is_active
             if authenticated_user.is_active:
                 django_login(request, authenticated_user)
                 return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
@@ -1070,7 +1000,7 @@ def fb_authenticate(request):
         userprofile.email = fb_data.get('email',None)
         userprofile.accesstoken = access_token
         userprofile.facebook_uid = fb_data['id']
-        # print userprofile
+        print userprofile
         userprofile.save()
         return userprofile
 
@@ -1090,7 +1020,7 @@ def facebook_login_done(request):
 #then input the values in  table [IntrestedIn] and Increment Intrested Counter
 @login_required
 def intrested(request):
-    # print "intrested views"
+    print "intrested views"
     post_in=request.POST["post_in"]
     user=request.user
     if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
@@ -1101,6 +1031,75 @@ def intrested(request):
 
     return HttpResponse()
 
+
+#mai c2 : sms verfication 
+# this methods taked in the number that u want to send the message to and the body 
+# it doesnt return anything, it just sends the msg 
+def send_sms(to_number,msg_body):
+
+    account_sid = "AC9ec4b58090b478bc49c58aa6f3644cc7"
+    auth_token  = "79ba8ebb0bf8377302f735f853cd7006"
+    client = TwilioRestClient(account_sid, auth_token)
+
+    message = client.sms.messages.create(body=msg_body,
+        to="+2"+str(to_number),
+        from_="+18587369892")
+    print message.sid
+
+     
+
+#mai c2 : sms verfication 
+#this method takes a request 
+# it creates a 5 charcter codde and saves this code to the user belong to the request 
+# it takes the phone from the field of pphone number in the templates and saves this phone 
+# then calls the mehtod that send the msg which takes thie phone number and the code that was generated 
+# returns an emtpy response 
+def sms(request):
+    
+    user = request.user
+    
+    
+    user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+    user.save()
+  
+    phone_no = request.POST['phone_number']
+    user.phone_number = phone_no
+    user.save()
+    
+    send_sms(phone_no ,user.sms_code)
+    return HttpResponse(" ")
+
+
+#mai : c2 : sms verifcation
+#this method takes a request and checks if its a post
+# it takes the code from the field in the template 
+# then gets the user with that code 
+# if the user id if the one who is doing the request 
+#then it returns an httprespons with true   
+
+def sms_verify(request):
+   
+    if request.method == 'POST':
+       
+        smscode = request.POST['sms_code']
+
+ 
+        if smscode is not None: 
+           
+            try:
+                user = UserProfile.objects.get(sms_code=smscode)
+                if user.id == request.user.id:
+                   
+                    return HttpResponse('true')
+                else:
+                    return HttpResponse('false')
+                
+            except:
+                return HttpResponse('false')
+            return HttpResponse('correct code')
+
+
+     
 
 #c1_abdelrahman this method takes request as an input.
 #it takes the post id and the user_id from the request.
@@ -1118,3 +1117,10 @@ def empty_wish_list(request):
     user = request.user
     WishList.objects.filter(user=user).delete()
     return HttpResponse()
+
+
+
+
+
+
+
