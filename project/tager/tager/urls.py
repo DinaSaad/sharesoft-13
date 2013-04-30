@@ -10,7 +10,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     
-    url(r'^logout/$', logout, {'next_page':'/login'}),  
+    url(r'^logout/$', logout, {'next_page':'/main'}),  
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
 
     url(r'^logout/$', logout, {'next_page':'/'}),  
