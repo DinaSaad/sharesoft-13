@@ -39,7 +39,8 @@ import urllib
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
-FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
+REDIRECT_URL = 'http://127.0.0.1:8000/main'
+FACEBOOK_PERMISSIONS = ['email', 'user_about_me','user_photos']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
@@ -868,6 +869,14 @@ def search(request):
     else:
         return render(request,'main.html', {'post_list' : post_list, 'sorry': sorry})
 
+
+
+# def send_sms(request):
+#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+#     message = client.sms.messages.create(to="+201112285944",
+#                                          from_="+15555555555",
+
 def fb_login(request, result):
         mail = result.email
         password = result.password
@@ -900,15 +909,6 @@ def facebook_login(request):
 
 
 
-
-
-
-# def send_sms(request):
-#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-
-#     message = client.sms.messages.create(to="+201112285944",
-#                                          from_="+15555555555",
-
 def fb_authenticate(request):
     access_token = None
     fb_user = None
@@ -927,17 +927,21 @@ def fb_authenticate(request):
     if not ('access_token') in res_parse_qs:
         return None
     access_token = res_parse_qs['access_token'][-1]
-    url = "https://graph.facebook.com/me?access_token=" + access_token
+    fields = "&fields=id,email,name,picture"
+    url = "https://graph.facebook.com/me?access_token=" + access_token + fields
     import simplejson as json
     fb_data = json.loads(urllib.urlopen(url).read())
     uid = fb_data['id']
     mail = fb_data['email']
+    picture = fb_data["picture"]["data"]
+    pic_url = picture['url']
     if not fb_data:
         return None
     try:
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         userprofile.accesstoken = access_token
         mail = userprofile.email
+        userprofile.photo = pic_url
         userprofile.save()
         return userprofile
 
@@ -950,6 +954,7 @@ def fb_authenticate(request):
         userprofile.email = fb_data.get('email',None)
         userprofile.accesstoken = access_token
         userprofile.facebook_uid = fb_data['id']
+        userprofile.photo = pic_url
         print userprofile
         userprofile.save()
         return userprofile
@@ -961,9 +966,10 @@ def facebook_login_done(request):
     if 'next' in request.session:
         next = request.session['next']
         del request.session['next']
-        return HttpResponseRedirect(next)
+        return HttpResponseRedirect(REDIRECT_URL)
     else:
-        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
+        return HttpResponseRedirect(REDIRECT_URL)
+
 
 #Beshoy intrested method Takes a request 
 #then then check if the user is verified ,
