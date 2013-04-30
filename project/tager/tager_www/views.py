@@ -554,6 +554,30 @@ def change_accounttype(request):
     user.save()
     return HttpResponse(" ")
 
+def private_number(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_number = request.POST['Number']
+    user.phone_number = "The user has set this field to hidden"
+    user.save()
+    return HttpResponse(" ")
+
+def public_number(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_number = request.POST['Number1']
+    user.phone_number = {{user.phone_number}}
+    user.save()
+    return HttpResponse(" ")
+
+def private_work(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_number = request.POST['Work']
+    user.works_at= "The user has set this field to hidden"
+    user.save()
+    return HttpResponse(" ")
+
 def get_channels (request):
     channels = Channel.objects.all()
     channels_list = [] 

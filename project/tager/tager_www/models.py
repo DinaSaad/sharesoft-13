@@ -76,6 +76,7 @@ class UserProfile(AbstractBaseUser):
     private_birth = models.BooleanField(default=False)
     private_number = models.BooleanField(default=False)
     private_work = models.BooleanField(default=False)
+    works_at = models.CharField(max_length=100, null=True)
     photo = models.ImageField(upload_to='img',blank=True)
     activation_key = models.CharField(max_length=40 , null=True)
     # created = models.DateTimeField(auto_now_add=True)
