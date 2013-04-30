@@ -1,40 +1,36 @@
-{% extends "base2.html" %}
+{% extends "MainBase.html" %}
+{% load staticfiles %}
 {% block nav %}
-        
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <ul class="nav pull-right">
-              <li><a href="homepage/">Home</a></li>
-              <li><a href="#contact">Contact</a></li>
-              <li><a href="/notifications">Notification</a></li>
-              <li><a href="/advanced_search/channel">Advanced Search</a></li>
-              <li>
-                <div>
-                  <form class="navbar-search pull-left" style="margin-top:10px" action="/search/" method="get" >
-                    <input type="text" class="search-query" placeholder="Search"id="id_q" name="q">
-                  </form>
-                </div>
-              </li>
-              <li><a href="/profile?user_id={{user.id}}" style="margin-left:260px; float:right">Profile</a></li>
 
-              <li class="dropdown">
 
-         
 
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="float:inline">{{request.user.name}}<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="/subscribe">Subscribe</a></li>
-                  <li><a href="#" id="editing">Manage and edit profile</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="/logout/">Logout</a></li>
-                  
+<div class="nav-collapse collapse"  style="font-size:18">
+    <ul class="nav">
+    <ul class="nav pull-right">
+        <li><a  href="../notifications"><img src="/static/img/notifications-logoo.png" width="25" height="22"
+                    ></a></li>
+        <li>
+            <div style="float:right;margin-left: 240;font-size:30; color:#2795F5">
+                <form class="navbar-search pull-left" style="margin-top:10px" action="/search/" method="get" >
+                    <input  type="text" class="search-query" style="text-align:center;font-size:15" placeholder="I'm Looking for ..."id="id_q" name="q">
+                </form>
+            </div>
+        </li>
+        <li><a style="font-size:16;color:#2795F5" href="../advanced_search/channel">Advanced Search</a></li>
+        <li ><a  style="margin-left: 200px;font-size:16;color:#2795F5" href="../profile?user_id={{request.user.id}}" >{{request.user.name}}</a></li>
+        <li class="dropdown" style = "float:right">
+            <div>
+                <a style="margin-top:5px;font-size:16;color:#2795F5" href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/static/img/settings-icon.png" width="30" height="30" style="
+                    margin-top: 5;
+                    "></a>
+                <ul class="dropdown-menu" style = "font-size:16">
+                    <li><a href="/subscribe">Subscribe</a></li>
+                    <li><a href="#" id="editing">Manage and Edit profile</a></li>
+                    <li class="divider"></li>
+                    <li><a href="../logout/">Logout</a></li>
                 </ul>
-              </li>
-
-              </li>
-            </ul>
-          </div>
-
+            </div>
+        </li>
+    </ul>
+</div>
 {% endblock %}

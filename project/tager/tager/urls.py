@@ -9,16 +9,15 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    
-    
+      
+    url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
     url(r'^logout/$', logout, {'next_page':'/'}),  
-    
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
  
     url(r'^intrested/$', 'tager_www.views.intrested'),  
-
+    url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
     url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
     url(r'^edit_name/$', 'tager_www.views.edit_name'),
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),

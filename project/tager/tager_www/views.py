@@ -43,6 +43,9 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
+
+
+
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
 
@@ -271,7 +274,9 @@ def view_post(request):
     user = request.user
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
-    post_can_be_wished = user.add_to_wish_list(post_id)
+    post_can_be_wished = False
+    if user.is_authenticated():
+        post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     subchannel1 = test_post.subchannel_id
@@ -351,8 +356,10 @@ def Buyer_identification(request):
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
     user = request.user
+    user_can_post = False
     #c1_abdelrahman check whether the user can post or not.
-    user_can_post = user.can_post()
+    if user.is_authenticated():
+        user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
@@ -386,8 +393,9 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             # pwd_valid = check_password(password, user.password)
-            # if pwd_valid:
-            if user.password == password:
+            if user.password == password:    
+                # if pwd_valid:    
+            
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -579,15 +587,14 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        # print user
+        #c1-abdelrahman this line retrieves the wished posts by the user.
+        list_of_wished_posts = WishList.objects.filter(user = user)
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        print "v"
-        print request.GET
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
         interacting_list = user_profile.get_interacting_people()
-        print interacting_list
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
+        # print interacting_list
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -977,4 +984,27 @@ def intrested(request):
         post_in.save()
 
     return HttpResponse()
+
+#c1_abdelrahman this method takes request as an input.
+#it takes the post id and the user_id from the request.
+#it deletes the post from the WishList table.
+
+def remove_post_from_wishlist(request):
+    user = request.user
+    post = request.POST['post']
+    WishList.objects.get(user = user, post_id = post).delete()
+    return HttpResponse()
+
+#c1_abdelrahman this method takes request as an input from the user. 
+#then it retrieves a list from the table with all the posts wished by this user and deletes all of them.  
+def empty_wish_list(request):
+    user = request.user
+    WishList.objects.filter(user=user).delete()
+    return HttpResponse()
+
+
+
+
+
+
 
