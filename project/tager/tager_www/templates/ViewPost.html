@@ -46,12 +46,35 @@ width: :700px;
     <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
     <li data-target="#myCarousel" data-slide-to="1"></li>
     <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+    <li data-target="#myCarousel" data-slide-to="5"></li>
+    <li data-target="#myCarousel" data-slide-to="6"></li>
   </ol>
   <!-- Carousel items -->
   <div class="carousel-inner">
+    {% if post.profile_picture %}
     <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
-    <img style="" src="{% static "img/post.png" %}" alt="{{post.id}}" />
-    <div class="item"><img src="{{post.profile_picture.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture1 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture2 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture3 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture4 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture5 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture6 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
+    {% endif %}
+
   </div>
   <!-- Carousel nav -->
   <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
