@@ -90,10 +90,9 @@ text-align: right;
 
 {% if user.is_admin %}
     {% if post.no_of_reports >= 20 %}
-<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 <form action="/hidePost/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
       <br/>
-<input type="submit" value="Hide" class='btn' onclick="JavaScript:alert('The post is successfully hidden')" style="background-color:#2576D9" />
+<input type="button" value="Hide" class='btn' onclick="JavaScript:alert('The post is successfully hidden')" style="background-color:#2576D9" />
   </form> 
     {% else %}
         <p>the no of reports of the post didn't reach its maximum to be able to hide it</p>
@@ -202,7 +201,7 @@ text-align: right;
     </script>
 
     
-
+{% endif %}
     
 
     {% endblock %}
