@@ -13,20 +13,20 @@
 						<div style="font-family: tahoma,verdana; font-size:25px; line-height:1.5; border-bottom:thin;">Activity Log</div>
 						<div id="activity_selections">
 							<ul id="activity_ul" style="list-style:none">
-								<li class="activity_item" value="all" onClick="activity_all()">All <span>
+								<li id="all_li"class="activity_item" value="all" onClick="activity_all()">All <span>
 									<img id="all" src="{% static "img/loading.gif" %}" />
 								</span>	</li>
 								
-								<li class="activity_item" value="your posts" onClick="activity_post()">Your Posts <span>
+								<li id="post_li" class="activity_item" value="your posts" onClick="activity_post()">Your Posts <span>
 									<img id="post" src="{% static "img/loading.gif" %}" />
 								</span>	</li>
-								<li class="activity_item" value="wish list" onClick="activity_wishlist()">Wish list <span>
+								<li id="wish_li" class="activity_item" value="wish list" onClick="activity_wishlist()">Wish list <span>
 									<img id="wish" src="{% static "img/loading.gif" %}" />
 								</span>	</li>
-								<li class="activity_item" value="interested in" onClick="activity_interested()">Interested in <span>
+								<li id="interested_li" class="activity_item" value="interested in" onClick="activity_interested()">Interested in <span>
 									<img id="interested" src="{% static "img/loading.gif" %}" />
 								</span>	</li>
-								<li class="activity_item" value="profile" onClick="activity_profile()">Profile <span>
+								<li id="profile_li" class="activity_item" value="profile" onClick="activity_profile()">Profile <span>
 									<img id="profile" src="{% static "img/loading.gif" %}" />
 								</span>	</li>
 							</ul>
@@ -35,10 +35,21 @@
 					<div id="activities_area">
 						{% if activities_log %}
 							{% for log in activities_log %}
-								<div class="activity_item" style="width:100%; height:auto;">
-									<span>{{log.content}}</span><br>
-									<span><img src="{% static "img/post.png" %}" hight="90"></span>
-								</div>
+								<a href="../{{log.url}}">
+									<div id="activity_item_2" value="{{log.url}}" onclick="redirecting(value)" class="shadow" style="width:100%; height:auto;">
+										<span style="margin-left: 10px;">{{log.content}}</span>
+										<span style="float:right; margin-left:50px;">{{log.activity_date}}</span>
+										<br>
+										<span>
+											{% if log.picture %} 
+      											<img class="activity_image" style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+    										{% else %}
+       											<img class="activity_image" style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+    										{% endif %}
+										</span>
+										<hr>
+									</div>
+								</a>
 							{% endfor %}
 						{% endif %}
 					</div>
@@ -161,6 +172,13 @@
 			display: none;
 			float:right;
 		}
+		.activity_image {
+			width: 20px;
+			margin-left: 40%;
+		}
+		li.activity_item:hover {
+			background-color: #c9dbf1 !important;
+		}
     </style>
     <script type="text/javascript">
     	$(document).ajaxSend(function(event, xhr, settings) {
@@ -200,17 +218,27 @@
     		}
 		});    
     	$(document).ready(function(){
+    		$('li.activity_item:hover').css('background-color', '#BCD2EE');
+    		$('#footer').css('display', 'none');
 			$('.activity_item').mouseover(function() {
   				$('.activity_item').css('cursor', 'pointer');
+  				/*$('.activity_item').css('background-color', '#BCD2EE');*/
   				/*$('.activity_item').css('box-shadow', '5px 5px 5px #BCD2EE');*/
 
 			});
 			$('.activity_item').mouseleave(function() {
-  				$('.activity_item').css('box-shadow', 'none');
+  				/*$('.activity_item').css('box-shadow', 'none');*/
+  				/*$('.activity_item').css('background-color', 'inherit');*/
 			});
 		});
 		function activity_all(){
   			$('#all').css('display','block');
+  			$('#all_li').css('background-color','#BCD2EE');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','inherit');
+  			
   			$.ajax({
                 url: "/all_log/",
                 type: "POST",
@@ -222,6 +250,12 @@
   		}
   		function activity_post(){
   			$('#post').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','#BCD2EE');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','inherit');
+  			
   			$.ajax({
                 url: "/all_log_post/",
                 type: "POST",
@@ -233,6 +267,12 @@
   		}
   		function activity_wishlist(){
   			$('#wish').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','#BCD2EE');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','inherit');
+  			
   			$.ajax({
                 url: "/all_log_wish/",
                 type: "POST",
@@ -244,6 +284,12 @@
   		}
   		function activity_interested(){
   			$('#interested').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','#BCD2EE');
+  			$('#profile_li').css('background-color','inherit');
+  			
   			$.ajax({
                 url: "/all_log_interested/",
                 type: "POST",
@@ -255,6 +301,12 @@
   		}
   		function activity_profile(){
   			$('#profile').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','#BCD2EE');
+  			
   			$.ajax({
                 url: "/all_log_profile/",
                 type: "POST",
