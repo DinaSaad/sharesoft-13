@@ -8,24 +8,27 @@ from tager_www.views import *
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    
+urlpatterns = patterns('',      
     url(r'^logout/$', logout, {'next_page':'/login'}),  
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+    url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
+    url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
+    url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
+    url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
+    url(r'^editpost/$', 'tager_www.views.edit_post'),
+    url(r'^editpostattribute/$', 'tager_www.views.edit_post_attribute'),
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
-
     url(r'^logout/$', logout, {'next_page':'/'}),  
-    
     url(r'^$', 'tager_www.views.home'),
     url(r'^main$', 'tager_www.views.main'),
-    url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),
- 
+    url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),  
+    url(r'^intrested/$', 'tager_www.views.intrested'),   
     url(r'^intrested/$', 'tager_www.views.intrested'),  
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
     url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
     url(r'^edit_name/$', 'tager_www.views.edit_name'),
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
-
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     # url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
@@ -33,12 +36,9 @@ urlpatterns = patterns('',
     url(r'^register/$', 'tager_www.views.UserRegistration'),
     url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
-
     url(r'^updatestatus/$', 'tager_www.views.update_status'),
-    
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
-
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),
     url(r'^subchannels_sub/$', 'tager_www.views.return_subchannels'),
@@ -47,7 +47,6 @@ urlpatterns = patterns('',
     url(r'^subscription_by_param/$', 'tager_www.views.subscribe_by_parameters'),
     url(r'^subscription_by_subchann/$', 'tager_www.views.subscription_by_subchann'),
     url(r'^subscription_by_chann/$', 'tager_www.views.subscription_by_chann'),
-
     url(r'^confirm_email/$','tager_www.views.confirm_email'),
     url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^post/$', 'tager_www.views.view_post'),
@@ -101,3 +100,6 @@ urlpatterns += patterns('fbregister.facebook',
 urlpatterns += patterns('fbregister.views',
     url(r'^$', 'index', name="index"),
 )
+urlpatterns += patterns('django.views.static',
+        (r'media/(?P<path>.*)', 'serve', {'document_root': settings.MEDIA_ROOT}),
+    )
