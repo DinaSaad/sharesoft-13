@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User, check_password
 from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from tager_www.models import *
@@ -25,6 +26,9 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+
+
+
 from django.shortcuts import render_to_response
 from django.shortcuts import RequestContext
 import re
@@ -32,7 +36,6 @@ from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
 import tweepy
-
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -45,6 +48,85 @@ SCOPE_SEPARATOR = ' '
 consumer_key = 'kg5paGppvJZeLcJky5sw'
 consumer_secret = 'eHwNTEeIQRmw7HIYIe1Kmr4dLxdIlBRonk81sOWMiTs'
 callback_url = 'http://127.0.0.1:8000/twitter/auth/done'
+
+#c1_abdelrahman this method takes request as an input then it updates the attribute value by the value extracted from request.post.
+def edit_post_attribute(request):
+    user = request.user
+    post_id = request.POST['post']
+    attribute_id = request.POST['attribute']
+    value = request.POST['value']
+    current_value_instant = Value.objects.get(attribute = attribute_id ,post = post_id)
+    current_value_instant.value = value
+    current_value_instant.post.edit_date = datetime.now()
+    current_value_instant.post.save()
+    current_value_instant.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it returns the post and the list of the attributes of the subchannel that the post belongs to and the list of the values of the attributes that is saved in the Values table.
+#it checks whether the current of the user and then it renders to the html the list and whether the user can edit the post or not.
+def edit_post(request):
+    user = request.user
+    post_id = request.GET['post']
+    current_post = Post.objects.get(id = post_id)
+    subchannel = current_post.subchannel_id
+    list_of_attribute_name = Attribute.objects.filter(subchannel_id = subchannel)
+    list_of_attribute_values = Value.objects.filter(post = current_post).order_by('attribute')
+    list_of_attributes_numbers = Value.objects.filter(post = current_post).order_by('attribute')
+    return render_to_response('editPost.html', {'current_post': current_post
+    , 'list_of_attribute_name':list_of_attribute_name
+    , 'list_of_attribute_values':list_of_attribute_values
+    ,'list_of_attributes_numbers': list_of_attributes_numbers})
+#c1_abdelrahman this method takes request as an input then it extracts the new description from the POST then it save it in the post table. it returns blank httpresponse. 
+def edit_post_description(request):
+    user = request.user
+    new_description = request.POST['description']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.description = new_description
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new price from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_price(request):
+    user = request.user
+    new_price = request.POST['price']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.price = new_price
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new location from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_location(request):
+    user = request.user
+    new_location = request.POST['location']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.location = new_location
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new title from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_title(request):
+    user = request.user
+    new_title = request.POST['title']
+    post_id = request.POST['post']
+    print post_id
+    current_post = Post.objects.get(id = post_id)
+    current_post.title = new_title
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+
+
+
+#c1-abdelrahman it takes a request as an input.
+# it returns a list of all the wished posts by the user to the profile.html
+
+def view_posts_wished(request):
+    user = request.user
+    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
+
 
 
 def home(request):
@@ -171,7 +253,10 @@ def view_subchannels(request):
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
     return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
-
+#c1_abdelrahman the add_post function requires the user to be logged in.
+#the sub_channel_id is received from the previous view. it displays a form to the user. 
+#if the user filled the form correctly then the user will be redirected to the homepage. 
+# if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
     sub_channel_id = request.GET['sub_ch_id']
@@ -197,13 +282,12 @@ def add_post(request):
             ,location = form.cleaned_data['location']
             ,
             )
-        # p.post_Notification()
-         
-        
+
+        # p.post_Notification();
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id_id=k[7:], value= request.POST[k], Post_id_id = p.id)    
-        return HttpResponse('Thank you for adding the post')
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+        return HttpResponseRedirect('/main')
     else:
 
         form = PostForm()
@@ -226,15 +310,16 @@ def add_post(request):
 def login(request):
     mail = request.POST['email']
     password = request.POST['password']
-
+    # print "in"
     authenticated_user = authenticate(mail=mail, password=password)
+    # print "in1"
     if authenticated_user is not None:
-        print "auth"
+        # print "auth"
         print authenticated_user.is_active
         if authenticated_user.is_active:
-            print "act"
+            # print "act"
             django_login(request, authenticated_user)
-            print "user logged in"
+            # print "user logged in"
             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
@@ -255,16 +340,43 @@ def check_Rate_Identify_buyer(request):
     d = {'view_rating':rateSellerButtonFlag, 'add_buyer_button': creator,'user':user}
     return d
 
+
+
+def add_to_wish_list(request):
+    user = request.user
+    post = request.POST['post']
+    can_wish = user.add_to_wish_list(post)
+    if can_wish:
+        WishList.objects.create(user = user, post_id = post)
+    return HttpResponse()
+
+
+
+#c1_abdelrahman this method takes the user as an input and it gets the post.
+#from the the main page the post object object is extracted from the post table.
+#list of attributes are extracted and also list_of_values of the attributes are given.
+#it returns the post, list_of_attributes and list_of values of the attributes.
 def view_post(request):
     user = request.user
     post_id = request.GET['post']
-    print post_id
+
+    test_post = Post.objects.get(id=post_id)
+    can_edit = False
+    if test_post.seller == user:
+        can_edit = True
+    post = Post.objects.get(id=post_id)
+    post_can_be_wished = False
+    if user.is_authenticated():
+        post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
+
     test_post.post_state
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
-    list_of_att_values = Value.objects.filter(post = test_post)
-
+ 
+    list_of_attribute_values = Value.objects.filter(post = test_post).order_by('attribute')
+    print list_of_attribute_values.count()
+    list_of_att_number = Attribute.objects.filter(subchannel_id = subchannel1)
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
     list_of_interested_buyers=[]
@@ -272,7 +384,7 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -337,11 +449,15 @@ def Buyer_identification(request):
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
 def main(request):
+    user = request.user
+    user_can_post = False
+    #c1_abdelrahman check whether the user can post or not.
+    if user.is_authenticated():
+        user_can_post = user.can_post()
     post_list = filter_home_posts()
-    
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    for i in post_list:
-        i.post_state()
+    # for i in post_list:
+    #     i.post_state()
 
     return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
@@ -356,7 +472,7 @@ def filter_home_posts():
     return post_list
 
 def filter_posts(post_list):
-    print post_list
+    # print post_list
     post_filtered = (post_list.objects.exclude(is_hidden=True)
         .exclude(expired=True)
         .exclude(is_sold=True)
@@ -370,7 +486,8 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            if user.password == password:
+            pwd_valid = check_password(password, user.password)
+            if pwd_valid:    
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -431,6 +548,75 @@ def UserRegistration(request):
         context = {'form': form}
         return render_to_response('register.html', context, context_instance=RequestContext(request))
 
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post and the status as a varibale in which the user can update and write what's
+# on his mind. Logged in users click profile whenever they want to update their status to be directed to their profile 
+# page where it displays their information and status. The user can write a new status in the text field whoch will be
+# saved on his account. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page.
+
+# Heba - C2 updating status method - the update_Status method is a method that allows logged in users to update their 
+# status. It takes in a request of type post holding status as a varibale in which the user can update and share what's
+# on his mind. The user can write a new status in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to update
+# the status and will be redirected to the login page. output of the method saves the new status in database 
+@login_required
+def update_status(request):
+    print 'testing this method'
+    user = request.user
+    user.status = request.POST['status']
+    user.save()
+    return HttpResponse(" ")
+
+# Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
+# name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+#name and will be redirected to the login page. output of the method saves the new name in database 
+@login_required
+def edit_name(request):
+    user = request.user
+    user.name = request.POST['user_name']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
+# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
+# The user can write the date of birth they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
+@login_required
+def edit_date_of_birth(request):
+    user = request.user
+    user.date_Of_birth = request.POST['dateofbirth']
+    user.save()
+    return HttpResponse (" ")
+
+# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
+# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
+# The user can write a the name they want in the text field which will be
+# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
+# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
+@login_required
+def edit_work(request):
+    user = request.user
+    user.works_at = request.POST['userwork']
+    user.save()
+    return HttpResponse (" ")
+
+@login_required
+def editing_pic(request):
+    if request.method == 'POST': #if the form has been submitted
+        editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
+        if editing_form.is_valid():#all validation rules pass
+            success = True
+            photo          = editing_form.cleaned_data['photo']
+            
+    else:
+        editing_form =EditPicForm()#an unbound form
+
+        
+    ctx = {'editing_form': editing_form}
+    return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
 
 def get_channels (request):
@@ -493,12 +679,12 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        # print user
+        #c1-abdelrahman this line retrieves the wished posts by the user.
+        list_of_wished_posts = WishList.objects.filter(user = user)
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        print "v"
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link}
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -533,16 +719,14 @@ def confirm_email(request):
            
             user = UserProfile.objects.get(activation_key=form)
             if user is not None :
-                if not user.is_expired():
-                   
-                    user.is_verfied=True
-                   
-                    user.save()
-                    return HttpResponseRedirect('/main/')
                 
-                else :  
-                 
-                    return HttpResponse ("sorry your account is disabled because the activation key has expired")
+                   
+                user.is_verfied=True
+               
+                user.save()
+                return HttpResponseRedirect('../main')
+                
+                
 
             return render_to_response('confirm_email.html', {'form': form}, context_instance=RequestContext(request))
 
@@ -562,6 +746,17 @@ def confirm_email(request):
 #gets the public key from the settings and saves it in publiic_key
 #then renders the html with the form passed in a dic and the script 
 # result : captcha shown 
+
+def display_form(request):
+    form = RegistrationForm(request.POST)
+    # assuming your keys are in settings.py
+    public_key = settings.RECAPTCHA_PUBLIC_KEY
+    script = displayhtml(public_key=public_key)
+    return render_to_response('register.html', {'form':form,'script':script}, context_instance=RequestContext(request))
+
+
+
+
 
 
 
@@ -589,19 +784,40 @@ def verfiy_captcha(request):
     #mohamed hammad C3 
     #this method takes as input channel id and then returns its subchannels
 def advanced_view_subchannels(request):
-    # print request.POST
     s_id = request.POST['ad_ch_id']
-
-    # print s_id
-    #current_channel = Channel.objects.filter(channel_id = s_id)
-    list_of_subchannels = SubChannel.objects.filter(channel_id = s_id)
-    return render(request ,'refreshedsubchannels.html', {'list_of_subchannels': list_of_subchannels})
+    subchannels_list = SubChannel.objects.filter(channel_id = s_id)
+    return render(request ,'refreshedsubchannels.html', {'subchannels_list': subchannels_list})
     #mohamed hammad C3 
     #this method returns all channels
-
 def advanced_view_channels(request):
-    list_of_channels = Channel.objects.all() 
-    return render(request,'advancedsearch.html', {'list_of_channels': list_of_channels})
+    channels_list = Channel.objects.all()
+    return render(request,'advancedsearch.html', {'channels_list': channels_list})
+    #mohamed hammad
+    #C3
+    #this method takes as input request channel id and renders this channel to main page
+def advanced_render_channels(request):
+    if request.GET.get('ad_ch_id' , False):
+        channel_id = request.GET['ad_ch_id']
+        channel = Channel.objects.get(id = channel_id)
+        subchannels_list = SubChannel.objects.filter(channel_id = channel.id)
+        print subchannels_list
+        return render(request,'main.html', {'channel': channel , 'subchannels_list': subchannels_list})
+    else: 
+        return HttpResponse("please choose a channel")
+    #mohamed hammad
+    #C3
+    #this method takes as input request subchannel id and renders this subchannel to main page
+def advanced_render_subchannels(request):
+    
+    subchannel_id = request.GET.get('ad_sub_ch_id' , False)
+    if subchannel_id != False:
+        print subchannel_id
+        post_list = Post.objects.filter(subchannel_id = subchannel_id)
+        ret_subchannel = SubChannel.objects.get(id = subchannel_id)
+        print post_list
+        return render(request,'main.html', {'ret_subchannel': ret_subchannel , 'post_list': post_list})
+    else:
+        return HttpResponse("please choose a subchannel")
 
 #mohamed tarek 
 #c3 takes as input the subchannel id sellected then return all attributes of it 
@@ -612,14 +828,21 @@ def get_attributes_of_subchannel(request):
     # print list_of_attributes
 
     return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
+
 def advanced_search(request):#mohamed tarek c3 
                              #this method takes attributes as input and takes values from the user them compares them  
                              #to values to get the value obects containig the attribute ids and value iputed and them 
                              #searches for all the post ids that have all the searched criteria present the returns a list of post ids
     sub_id = request.GET['ad_sub_id']
-    print "got subchannel id"
-    print sub_id
+    # print "got subchannel id"
+    # print sub_id
     attributes = Attribute.objects.filter(subchannel_id = sub_id)
+    price_req = request.GET['price']
+    try:
+        price = int(price_req)
+        print price
+    except ValueError:
+        return HttpResponse("please type a number in the price feild")
     values =[]
     post = []
     value_obj =[]
@@ -634,7 +857,12 @@ def advanced_search(request):#mohamed tarek c3
     i = 0
     f = i+1
     null = ""
-    for j in range(0,len(values)):
+    if price:
+        result_search_obj+=[ (Post.objects.filter(price = price , subchannel_id = sub_id)) ]
+        result_search = [[] for o in result_search_obj]
+        for aa in range(0,len(result_search_obj[0])):
+            result_search[0].append(result_search_obj[0][aa].id)
+    for j in range(1,len(values)):
         if values[j] == null:
             pass
         else:
@@ -642,9 +870,8 @@ def advanced_search(request):#mohamed tarek c3
             , value = values[j])) ]
     if not result_search_obj:
         return HttpResponse("please enter something in the search")
-    else:
-        result_search = [[] for o in result_search_obj]    
-        for k in range(0,len(result_search_obj)):
+    else:    
+        for k in range(1,len(result_search_obj)):
             for l in range(0,len(result_search_obj[k])):
                 test = result_search_obj[k][l].value
                 result_search[k].append(result_search_obj[k][l].post.id)
@@ -669,10 +896,15 @@ def advanced_search(request):#mohamed tarek c3
                             post_temp = tmep[g]
                             post.append(post_temp)
         post_list =[]
+
         for a_post in post:
             post_list.append(Post.objects.get(id = a_post))
+        
         if not post_list:
             return HttpResponse("there is no posts with these values please refine your search.")
+        else:
+            return render(request,'main.html', {'post_list' : post_list})
+
 
 
 
@@ -737,7 +969,7 @@ def fb_login(request, result):
         password = result.password
         authenticated_user = authenticate(mail=mail, password=password)
         if authenticated_user is not None:
-            print authenticated_user.is_active
+            # print authenticated_user.is_active
             if authenticated_user.is_active:
                 django_login(request, authenticated_user)
                 return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
@@ -763,6 +995,15 @@ def facebook_login(request):
         
 
 
+
+
+
+
+# def send_sms(request):
+#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+#     message = client.sms.messages.create(to="+201112285944",
+#                                          from_="+15555555555",
 
 def fb_authenticate(request):
     access_token = None
@@ -805,7 +1046,7 @@ def fb_authenticate(request):
         userprofile.email = fb_data.get('email',None)
         userprofile.accesstoken = access_token
         userprofile.facebook_uid = fb_data['id']
-        print userprofile
+        # print userprofile
         userprofile.save()
         return userprofile
 
@@ -872,6 +1113,7 @@ def getContacts(request):
                 continue
                 return userprofile
         return userprofile
+
 def facebook_import_friends(request):
     if request.REQUEST.get("device"):
         device = request.REQUEST.get("device")
@@ -995,4 +1237,36 @@ def twitter_auth_done(request):
 #             print post_obj
 #             post_list=filter_posts(post_obj)
 #             return render('main.html', {'post_list' : post_list})
+#Beshoy intrested method Takes a request 
+#then then check if the user is verified ,
+#then input the values in  table [IntrestedIn] and Increment Intrested Counter
+@login_required
+def intrested(request):
+    # print "intrested views"
+    post_in=request.POST["post_in"]
+    user=request.user
+    if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
+        intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post_in.seller,post=post_in)
+        intrest1.save()
+        post_in.intersed_count=post_in.intersed_count+1
+        post_in.save()
 
+    return HttpResponse()
+
+
+#c1_abdelrahman this method takes request as an input.
+#it takes the post id and the user_id from the request.
+#it deletes the post from the WishList table.
+
+def remove_post_from_wishlist(request):
+    user = request.user
+    post = request.POST['post']
+    WishList.objects.get(user = user, post_id = post).delete()
+    return HttpResponse()
+
+#c1_abdelrahman this method takes request as an input from the user. 
+#then it retrieves a list from the table with all the posts wished by this user and deletes all of them.  
+def empty_wish_list(request):
+    user = request.user
+    WishList.objects.filter(user=user).delete()
+    return HttpResponse()
