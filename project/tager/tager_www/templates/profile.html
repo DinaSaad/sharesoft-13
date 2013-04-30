@@ -38,7 +38,9 @@
           <h3>Information:</h3>
           <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
+            {% ifequal request.user user %}
             <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
+            {% endifequal %}
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
           </h5> 
           <h5>Email: {{ user.email}}</h5>
@@ -50,11 +52,16 @@
             </select>
           </p>
             <label id = "birthoutput" style="color:red"></label>
-           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            {% ifequal request.user user %}
+          <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
+          {% endifequal %}
+          <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5> 
           <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
+            {% ifequal request.user user %}
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
+            {% endifequal %}
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
                     
