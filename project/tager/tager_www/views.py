@@ -612,12 +612,6 @@ def edit_phone(request):
 @login_required
 def view_private(request):
     return render_to_response ('private.html', context_instance=RequestContext(request))
-@login_required
-def hide_birth(request):
-    user =request.user
-    user.date_Of_birth = request.POST['Birth']
-    user.save()
-    return HttpResponse(" ")
 
 @login_required
 def editing_pic(request):
@@ -645,34 +639,49 @@ def change_accounttype(request):
     user.save()
     return HttpResponse(" ")
 
+# Heba -C2 private_number method. is a method that allows the users to hide his number through taking a request 
+# of type POST holding a value for private_number to be set to true and sets the phone_number of the user to a 
+# string that says it is hidden.
 def private_number(request):
     print"tessstttiinnggggg"
     user = request.user
     user.private_number = request.POST['Number']
+    user.phone_number2 = user.phone_number
     user.phone_number = "The user has set this field to hidden"
     user.save()
     return HttpResponse(" ")
 
+# Heba -C2 public_number method. is a method that allows the users to show his number through taking a request 
+# of type POST holding a value for private_number to be set to false and sets the phone_number of the user to his
+# actual number is the database.
 def public_number(request):
-    print"tessstttiinnggggg"
     user = request.user
+    print user.phone_number
     user.private_number = request.POST['Number1']
-    user.phone_number = {{user.phone_number}}
+    print request.POST['Number1']
+    user.phone_number = user.phone_number2
     user.save()
     return HttpResponse(" ")
 
+# Heba -C2 public_work method. is a method that allows the users to show his work through taking a request 
+# of type POST holding a value for private_work to be set to false and sets the works_at of the user to his
+# actual work is the database.
 def public_work(request):
     print"tessstttiinnggggg"
     user = request.user
-    user.private_number = request.POST['Work1']
-    user.phone_number = {{user.phone_number}}
+    user.private_work = request.POST['Work1']
+    user.works_at = user.works_at2
     user.save()
     return HttpResponse(" ")
 
+# Heba -C2 private_work method. is a method that allows the users to hide his works_at through taking a request 
+# of type POST holding a value for private_work to be set to true and sets the works_at of the user to a 
+# string that says it is hidden.
 def private_work(request):
     print"tessstttiinnggggg"
     user = request.user
-    user.private_number = request.POST['Work']
+    user.private_work = request.POST['Work']
+    user.works_at2 =user.works_at
     user.works_at= "The user has set this field to hidden"
     user.save()
     return HttpResponse(" ")
