@@ -49,13 +49,6 @@ SCOPE_SEPARATOR = ' '
 
 
 
-#c1-abdelrahman it takes a request as an input.
-# it returns a list of all the wished posts by the user to the profile.html
-
-def view_posts_wished(request):
-    user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
-    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
@@ -307,7 +300,11 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
+<<<<<<< HEAD
     dic = {'form1':form1 , 'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+=======
+    dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+>>>>>>> 3b6dfd568beb702781cb38406b8624348328c6cf
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -379,10 +376,10 @@ def main(request):
         user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    for i in post_list:
-        i.post_state()
+    # for i in post_list:
+    #     i.post_state()
 
-    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -410,7 +407,7 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)
-            if pwd_valid:
+            if pwd_valid:    
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -602,12 +599,12 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        # print user
+        #c1-abdelrahman this line retrieves the wished posts by the user.
+        list_of_wished_posts = WishList.objects.filter(user = user)
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        list_of_wished_posts = WishList.objects.filter(user_id = "3")
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -751,6 +748,7 @@ def get_attributes_of_subchannel(request):
     # print list_of_attributes
 
     return render(request, 'refreshedattributes.html', {'list_of_attributes' : list_of_attributes, 'sub_id': sub_id})
+
 def advanced_search(request):#mohamed tarek c3 
                              #this method takes attributes as input and takes values from the user them compares them  
                              #to values to get the value obects containig the attribute ids and value iputed and them 
@@ -999,6 +997,7 @@ def intrested(request):
     return HttpResponse()
 
 
+
 def send_sms(to_number,msg_body):
 
     account_sid = "AC9ec4b58090b478bc49c58aa6f3644cc7"
@@ -1056,4 +1055,26 @@ def sms_verify(request):
      
 
    
+
+#c1_abdelrahman this method takes request as an input.
+#it takes the post id and the user_id from the request.
+#it deletes the post from the WishList table.
+
+def remove_post_from_wishlist(request):
+    user = request.user
+    post = request.POST['post']
+    WishList.objects.get(user = user, post_id = post).delete()
+    return HttpResponse()
+
+#c1_abdelrahman this method takes request as an input from the user. 
+#then it retrieves a list from the table with all the posts wished by this user and deletes all of them.  
+def empty_wish_list(request):
+    user = request.user
+    WishList.objects.filter(user=user).delete()
+    return HttpResponse()
+
+
+
+
+
 
