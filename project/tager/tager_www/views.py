@@ -35,6 +35,7 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
+import tweepy
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -400,6 +401,7 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)
+
             if pwd_valid:
                 return user
         except UserProfile.DoesNotExist:
@@ -587,6 +589,66 @@ def report_the_post(request):
     reported_post = Post.objects.get(id = post_id)
     user.report_the_post(reported_post, report_reason)
     return HttpResponse()
+
+
+def twitter_userlogin(request):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+    url = tweepy.OAuthHandler.get_authorization_url(auth)
+    request.session['request_token.key'] = auth.request_token.key
+    request.session['request_token.secret'] = auth.request_token.secret
+    return HttpResponseRedirect(url)
+    
+def twitter_auth(request):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+    x = request.session.get('request_token.key')
+    y = request.session.get('request_token.secret')
+    auth.set_request_token(x, y)
+    verifier = request.REQUEST.get('oauth_verifier')
+    access = tweepy.OAuthHandler.get_access_token(auth,verifier)
+    request.session['access_token.key'] = auth.access_token.key
+    request.session['access_token.secret'] = auth.access_token.secret
+    a = auth.access_token.key
+    b = auth.access_token.secret
+    auth.set_access_token(a,b)
+    userName = tweepy.OAuthHandler.get_username(auth)
+    try:
+        userprofile = UserProfile.objects.get(twitter_name=(userName))
+        userprofile.tw_tok_k = a
+        userprofile.tw_tok_s = b
+    except UserProfile.DoesNotExist:
+        api = tweepy.api.API(auth)
+        user = api.get_user()
+        print user
+    return HttpResponse("testing")
+
+
+
+def twitterImport(request):
+    consumer_key="qgiGaTPdiF2JukTUakXhKA"
+    consumer_secret="JdcsJrJk39DBfdJFIbcyC8GMzehixuxbetZmctYDjOk"
+    access_token="1324517838-mHUW3Gm3Yf8BYBRwlPlj8e92o7eserhAnk93BqG"
+    access_token_secret="qeE5HBzNpiCV25PrIEum5sAQEYoQCWz4hlcEYLNOdic"
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
+
+    user_id= request.user.id
+
+    id_list = api.followers_ids()
+    for id in id_list:
+        username = api.get_user(id).name
+        print username
+        l=UserProfile.objects.filter(twitter_screen_name = username)
+        print 'list'
+        print l
+        if len(l) >= 1:
+            contact_id = l[0].id
+            UserProfile_friends.objects.create(user_id, contact_id)
+            UserProfile.save()
+            print user_object.twitter_name
+    d={'importMsg':"done importing"}
+    
+    return render_to_response('twitterImportFriends.html',d)
 
 
 def view_profile(request):
