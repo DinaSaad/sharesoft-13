@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 {% load staticfiles %}  
 {% block content %}
+<style type="text/css">
+.wishtitle{
+  padding-top: 10px;
+  padding-left: 25px;
+}
+.tablebackground{
+  background-color: #DCDCDC;
+}
+.rowseperator{
+  border-bottom: solid 1px black;
+}
+.coloumnspacing{
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+</style>
 <body class="body">
   <div class="container-fluid">
     <div class="row-fluid">
@@ -12,10 +29,61 @@
                   <img src="https://is0.4sqi.net/userpix_thumbs/SNN3KUIQLYL0XXJA.jpg" alt="picture">
                 </div>
                 <div class="facebookfriends" id="box1">
-                  <h3>FacebookFriends </h3>  
+                  <h3>FacebookFriends </h3> 
+
                 </div>
                 <div class="wishlist" id="box1">
-                  <h3>Wish List:D</h3>
+                  <a class="btn btn-info" href="#myModal" role="button" data-toggle="modal"> View my wishlist </a>
+                  <div id="myModal" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Posts in your wish list</h3>
+    <p>
+      These are your wished posts
+    </p>
+  </div>
+  <div class="modal-body">
+    <table align="center" border="0" cellpadding="10">
+<tr class="tablebackground">
+<th class="coloumnspacing" align="left"></th>
+<th class="coloumnspacing" align="left">Product</th>
+<th class="coloumnspacing" align="left">Date</th>
+<th class="coloumnspacing" align="left">Price</th>
+<th class="coloumnspacing" align="left">Location</th>
+
+<tr align="left">
+   
+      {% for WishList in list_of_wished_posts %}
+        
+          <tr class="rowseperator">
+            <td class="coloumnspacing" style="border:0"><i onClick="delete_item_from_wishlist({{WishList.post.id}});" class="icon-remove"></i></td>
+          <td  class="coloumnspacing" style="border:0"> <a href="http://127.0.0.1:8000/showpost?post={{WishList.post.id}}">{{WishList.post.title}}</a></td>    
+          <td class="coloumnspacing" style="border:0">{{WishList.post.pub_date}}</td>
+          <td class="coloumnspacing" style="border:0"> {{WishList.post.price}}</td>
+          <td class="coloumnspacing" style="border:0">{{WishList.post.location}}</td>
+
+       
+          </tr>
+  {% endfor %} 
+</table>
+  <div class="modal-footer">
+    {% if list_of_wished_posts %}
+    <button class="btn" onClick="delete_all_wished_posts();">Empty the wish list</button>
+    {% else %}
+    <button class="btn" onClick="delete_all_wished_posts();" disabled>Empty the wish list</button>
+    {% endif %}
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
+  </div>
+</div>
+</div>
+
+  
+ 
+               <!--    {% if  list_of_wished_posts %}
+                  {% for WishList in list_of_wished_posts %}
+                 <label class="wishtitle"> <a href="/showpost?post={{WishList.post.id}}">{{WishList.post.title}}</a><br><br></label>
+                  {% endfor %}
+                  {% endif %} -->
                 </div>
                 <div class="interested" id="box1">
                   <h3>Interested in:</h3>
@@ -193,6 +261,40 @@ function edit_dob_preparation(){
     $('#savedob').show();
 
 }
+
+function delete_item_from_wishlist(post_id){
+$.ajax({
+url :"/removepostfromwishlist",
+type:"POST",
+data:{'post': post_id
+,
+},
+success:function(result){
+  alert("Post has been removed successfully");
+  location.reload();
+}
+
+});
+}
+
+function delete_all_wished_posts(){
+$.ajax({
+url :"/emptywishlist/",
+type:"POST",
+data:{
+},
+success:function(result){
+  alert("posts have been deleted successfully");
+  location.reload();
+}
+
+});
+}
+
+
+
+
+
 function edit_dob_save(){
   var dateofbirthsubmitted = $("#datepicker").val()
   $.ajax({
