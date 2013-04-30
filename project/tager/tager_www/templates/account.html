@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load staticfiles %}  
+{% block content %}
+<div>
+<h2>Account Type: </h2>
+{%if user.is_premium %}
+<label id="premiumvalue"> Premium</label> 
+<a href="#" onClick="change_faccount_preparation()">Change account type</a>
+        <p style="display:none" id="accountf">Account options:<br/>
+            <select id="typef">
+              <option value="Free">Free</option>
+            </select>
+        </p>
+        <button id="savefaccount" style="display:none" class="btn btn-success btn-small" onClick="change_faccount_save()" >Save</button>
+{% else %}
+<label id="freevalue"> Free</label>
+<a href="#" onClick="change_paccount_preparation()">Change account type</a>
+        <p style="display:none" id="account">Account options:<br/>
+           	<select id="typep">
+              <option value="Premium">Premium</option>
+            </select>
+         </p>
+        <button id="savepaccount" style="display:none" class="btn btn-success btn-small" onClick="change_paccount_save()" >Save</button>
+{% endif %}        
+</div>
+<script type="text/javascript">
+function change_faccount_preparation(){
+  $('#premiumvalue').hide();
+  $("#accountf").show();
+  $('#savefaccount').show();
+}
+function change_faccount_save(){
+  var type = $("#typef").val();
+  if(type == 'Premium'){
+    type = 'true';
+  }
+  else{
+    type = 'false';
+  }
+  $.ajax({
+    url: '/change_faccount/',
+    type: "POST",
+    data:{
+    'Type' : type,
+    },
+    success:function(result){
+        $('#premiumvalue').text($('#typef').val());
+        $('#premiumvalue').show();
+        $('#savefaccount').hide();
+        $('#accountf').hide();
+        alert("Your account type has been downgraded successfully changed ;)");
+      },
+    error:function(result){
+      alert("Sorry, failed to change you account type");
+    },
+  });
+}
+function change_paccount_preparation(){
+  $('#freevalue').hide();
+  $("#account").show();
+  $('#savepaccount').show();
+}
+function change_paccount_save(){
+  var type = $("#typep").val();
+  if(type == 'Free'){
+    type = false;
+  }
+  else{
+    type = true;
+  }
+  $.ajax({
+    url: '/change_paccount/',
+    type: "POST",
+    data:{
+    'Type' : type,
+    },
+    success:function(result){
+        $('#freevalue').text($('#typep').val());
+        $('#freevalue').show();
+        $('#savepaccount').hide();
+        $('#account').hide();
+        alert("Your account type has been Upgraded successfully changed ;)");
+      },
+    error:function(result){
+      alert("Sorry, failed to change you account type");
+    },
+  });
+}
+</script>
+{% endblock %}
