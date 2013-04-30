@@ -1,0 +1,5 @@
+{{ object.name }}
+{{ object.user.get_full_name }}
+{{ object.user_id }}
+{{ object.buyer }}
+{{ sqs.spelling_suggestion }}

@@ -1,0 +1,8 @@
+{{ object.user.get_full_name }}
+{{ object.title }}
+{{ object.description }}
+{{ object.sub_channel_name}}
+{{ object.user_id }}
+{{ object.buyer }}
+{{ object.channel_name }}
+{{ sqs.spelling_suggestion }}

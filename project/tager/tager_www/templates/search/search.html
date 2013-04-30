@@ -1,0 +1,55 @@
+<head>
+<meta charset="utf-8">
+<title>Tager Search Engine </title>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+</head>
+
+    <h2>Search</h2>
+
+    <form method="get" action=".">
+        
+        <table>
+            {{ form.as_table }}
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <label for="id_q">Search for : </label>
+                    <input id="autocomplete" name="q" type="text" >
+                    <input type="submit" value="Search">
+                     
+                </td>
+            </tr>
+        </table>
+        <script>
+
+
+$( "#autocomplete" ).autocomplete({
+source: [ "test", "post", "nadeem", "amr", "user", "bmw", "tharwat" ]
+});
+</script>
+
+        {% if query %}
+            <h3>Results</h3>
+
+            {% for result in page.object_list %}
+                <p>
+                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title}}</a>
+                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.name }}</a>
+                    {{ sqs.spelling_suggestion }}
+                </p>
+            {% empty %}
+                <p>No results found.</p>
+            {% endfor %}
+            
+            {% if page.has_previous or page.has_next %}
+                <div>
+                    {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+                    |
+                    {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+        {% endif %}
+         </form>
