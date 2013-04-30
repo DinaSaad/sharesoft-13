@@ -151,7 +151,8 @@ INSTALLED_APPS = (
     'tager_www',
     'fbregister',
     'captcha',
-  
+    'django_twilio',
+     
     
     
 )

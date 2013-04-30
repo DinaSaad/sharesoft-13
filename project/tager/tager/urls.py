@@ -70,8 +70,13 @@ urlpatterns = patterns('',
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
 
+    url(r'^send_phone/$', 'tager_www.views.sms'),
+    url(r'^send_sms/$', 'tager_www.views.sms_verify'),
+
+
 
     
+
 
 
 
