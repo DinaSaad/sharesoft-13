@@ -570,6 +570,14 @@ def public_number(request):
     user.save()
     return HttpResponse(" ")
 
+def public_work(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_number = request.POST['Work1']
+    user.phone_number = {{user.phone_number}}
+    user.save()
+    return HttpResponse(" ")
+
 def private_work(request):
     print"tessstttiinnggggg"
     user = request.user
