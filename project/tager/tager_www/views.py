@@ -637,11 +637,11 @@ def change_faccounttype(request):
 # taking a request of type post holding a value for the account type, it takes this value and saves it in the
 # users account_type value. the output of the method saves the new value for the account_type in the database.
 def change_paccounttype(request):
-    print"tesssffffffffffffffff"
+    print"tesssffffffff"
     user = request.user
     user.is_premium = request.POST['Type']
     user.save()
-    return render_to_response ('service.html',context_instance=RequestContext(request))
+    return HttpResponse (" ")
 
 def get_channels (request):
     channels = Channel.objects.all()
