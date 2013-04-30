@@ -600,6 +600,7 @@ def edit_name(request):
     #post_activity_content is to save the activity log content that will be shown to user
     #post_activity_url is to save the url the user will be directed to upon clicking the activity log
     #post_log_type is the type of the log type the user will choose in the activity log page
+    
     post_activity_content = "you edited your name to " + unicode(user.name) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
