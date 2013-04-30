@@ -37,6 +37,7 @@ from django.db.models import Q
 import urllib
 import tweepy
 
+
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
@@ -603,7 +604,7 @@ def twitter_auth(request):
     x = request.session.get('request_token.key')
     y = request.session.get('request_token.secret')
     auth.set_request_token(x, y)
-    verifier = request.REQUEST.get('oauth_verifier')
+    verifier = request.REQUEST.get('oauth_verifier')#read
     access = tweepy.OAuthHandler.get_access_token(auth,verifier)
     request.session['access_token.key'] = auth.access_token.key
     request.session['access_token.secret'] = auth.access_token.secret

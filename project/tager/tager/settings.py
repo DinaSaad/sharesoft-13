@@ -100,6 +100,9 @@ RECAPTCHA_PUBLIC_KEY = '6Ld8ct8SAAAAAJTUMgacSavqcnzqRVPT2M7Ht5i6'
 RECAPTCHA_PRIVATE_KEY = '6Ld8ct8SAAAAAH6kJ8dcBhqG438D9IwCcAP1whEM'
 RECAPTCHA_USE_SSL = True
 
+TWITTER_CONSUMER_KEY = 'YOUR-APP-ID'
+TWITTER_CONSUMER_SECRET = 'YOUR-APP-SECRET'
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -151,6 +154,7 @@ INSTALLED_APPS = (
     'tager_www',
     'fbregister',
     'captcha',
+    'tweepy'
   
     
     
