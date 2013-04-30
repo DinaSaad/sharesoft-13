@@ -3,19 +3,32 @@
 {% block content %}
 <div>
 	<h3> Name: {{ user.name}} </h3>
-	<h3> Birth date: {{ user.date_Of_birth }} <button id="hidebirth" class="btn btn-success btn-small" onClick="hide_birth()" >Set to private</button><button id="publicbirth" style="display:none" class="btn btn-success btn-small" onClick="change_faccount_save()" >Set to publice</button></h3>
+	<h3> Birth date: {{ user.date_Of_birth }} </h3>
+
+
 	<h3> Phone number: {{ user.phone_number}} 
+    {% if not user.private_number %}
     {% ifequal request.user user %}
     <button id="hidephone" class="btn btn-success btn-small" onClick="change_number_toprivate()" >Set to private</button>
     {% endifequal %}
+    {% else %}
     {% ifequal request.user user %}
-    <button id="publicphone" style="display:none" class="btn btn-success btn-small" onClick="change_number_topublic()" >Set to publice</button></h3>
+    <button id="publicphone"  class="btn btn-success btn-small" onClick="change_number_topublic()" >Set to publice</button></h3>
     {% endifequal %}
+    {% endif %}
+
+
+
 	<h3> Works at: {{ user.works_at}}
+    {% if not user.private_work %}
     {% ifequal request.user user %}
     <button id="hidework" class="btn btn-success btn-small" onClick="change_work_toprivate()" >Set to private</button>
     {% endifequal %}
+    {% else %}
+    {% ifequal request.user user %}
     <button id="publicwork" style="display:none" class="btn btn-success btn-small" onClick="change_work_topublice()" >Set to publice</button></h3>
+    {% endifequal %}
+    {% endif %}
 </div>
 <script type="text/javascript">	
 function change_number_toprivate(){
@@ -38,6 +51,7 @@ function change_number_toprivate(){
 }
 function change_number_topublic(){
   var number1 = 'true'
+  alert("jjsjjss");
   $.ajax({
     url: '/public_number/',
     type: "POST",
