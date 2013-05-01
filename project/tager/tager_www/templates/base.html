@@ -15,17 +15,22 @@
                       {% if all_unread_notifications %}
                         {% for notification in all_unread_notifications %}
                           <a href="../{{notification.url}}" style="white-space:normal; display:block; background-color:#08c border-bottom:solid thick">
-                          <li id="to_be_shaded" style="margin-right:20px; border-bottom:solid thin black">
+                          <li class="to_be_shaded" style="margin-right:20px; border-bottom:solid thin black;">
                             <span>
-                              <img src="{% static "img/post.png" %}" width="50" height="50"/>
+                                {% if notification.image_url %}
+                                    <img style="width: 50px; height:50px;" src="{{notification.image_url}}"/>
+                                    <span style="color:black; font-size:13px">{{notification.content}}</span>
+                                {% else %}
+                                    <img src="{% static "img/post.png" %}" width="50" height="50"/>
+                                    <span style="color:black; font-size:13px">{{notification.content}}</span>
+                                {% endif %}
                             </span>
-                            <span style="color:black; font-size:13px">{{notification.content}}</span>
                           </li>
                         </a>
                         {% endfor %}
-                        <li style="padding-left:100px;"><a style="color:black" href="../notifications">see all</a></li>
+                        <li class="to_be_shaded"style="padding-left:100px;"><a style="color:black" href="../notifications">see all</a></li>
                       {% else %}
-                        <li style="padding-left:20px;"><a style="color:black; display:block" href="../notifications">see all</a></li>
+                        <li class="to_be_shaded" style="padding-left:20px;"><a style="color:black; display:block" href="../notifications">see all</a></li>
                       {% endif %}
                       </ul>
                     </ul>
@@ -43,6 +48,14 @@
                       });
                     });
                   </script>
+                  <style type="text/css">
+                    #notifications_div:hover{
+                        cursor: pointer;
+                    }
+                    .to_be_shaded:hover{
+                        background-color: #c9dbf1 !important;
+                    }
+                  </style>
                 </div>
               </div>
 
