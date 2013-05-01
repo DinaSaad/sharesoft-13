@@ -414,8 +414,8 @@ def main(request):
         user_can_post = user.can_post()
     post_list = filter_home_posts()
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
-    # for i in post_list:
-    #     i.post_state()
+    for i in post_list:
+        i.post_state()
 
     return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
 
