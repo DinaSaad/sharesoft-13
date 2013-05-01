@@ -35,6 +35,12 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
+from django.utils.timezone import utc
+import datetime
+from datetime import datetime, timedelta
+from django.conf import settings
+from twilio.rest import TwilioRestClient
+
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -45,13 +51,6 @@ SCOPE_SEPARATOR = ' '
 
 
 
-#c1-abdelrahman it takes a request as an input.
-# it returns a list of all the wished posts by the user to the profile.html
-
-def view_posts_wished(request):
-    user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
-    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 def home(request):
     return render_to_response ('home.html',context_instance=RequestContext(request))
@@ -208,8 +207,20 @@ def add_post(request):
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id) 
-                p.post_Notification()   
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                #c2-mohamed
+                #the next line calls post_Notification() to send notification to all subscribed users
+                #to that post
+                p.post_Notification()
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                #c2-mohamed
+                #the next five lines are written to save a tuple in ActivityLog table
+                #to save it to make the user retrieve it when he logs into his activity log
+                post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
+                post_activity_url = "showpost?post=" + unicode(p.id)
+                post_log_type = "post"
+                # post_log_date = datetime.datetime.now()
+                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author) 
         return HttpResponseRedirect('/main')
     else:
 
@@ -269,13 +280,26 @@ def add_to_wish_list(request):
     can_wish = user.add_to_wish_list(post)
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity lo
+        post_object = Post.objects.get(id=post)
+        post_activity_content = "you added " + unicode(post_object.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post_object.id)
+        post_log_type = "wish"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse()
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
 #it returns the post, list_of_attributes and list_of values of the attributes.
+
 def view_post(request):
     user = request.user
+    print "i am form 1yyyyyy"
+    form1 = sms_verify(request)
+    print "after"
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
@@ -283,9 +307,16 @@ def view_post(request):
         post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
+    can_edit = False
+    if test_post.seller == user:
+        can_edit = True
+
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
+    list_of_attribute_values = Value.objects.filter(post = test_post).order_by('attribute')
+    print list_of_attribute_values.count()
+    list_of_att_number = Attribute.objects.filter(subchannel_id = subchannel1)
 
     #C1-Tharwat--- Calls the getInterestedIn method in order to render the list of interested buyers to the users
     #if the user is a guest it will render an empty list
@@ -294,7 +325,19 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-    dic = {'canwish':post_can_be_wished,'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+
+
+    dic = {
+    'no': list_of_att_number
+    , 'can_edit': can_edit
+    , 'canwish':post_can_be_wished
+    , 'post': test_post
+    , 'list_of_attribute_name': list_of_att_name
+    , 'list_of_attribute_values': list_of_attribute_values
+    , 'report_reasons': report_reasons
+    , 'list_of_interested_buyers': list_of_interested_buyers
+    , 'comments': Comment.objects.filter(post_id=post_id) }
+
     # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -343,6 +386,12 @@ def Buyer_identification(request):
             post = Post.objects.get(id=request.GET['post_id'])
             # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_buyer(post, new_buyer_num)
+            
+            if buyer_added == False :
+                form = BuyerIdentificationForm()
+                d = {'form':form}
+                return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
+            
             d = {'form':form}
             return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
             # return HttpResponseRedirect( "/" )
@@ -396,7 +445,7 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            pwd_valid = check_password(password, user.password)
+            pwd_valid = check_password(password, user.password)    
             if pwd_valid:    
                 return user
         except UserProfile.DoesNotExist:
@@ -432,7 +481,7 @@ def  get_user(self):
 #if the user submits the form empty , the method will render the form again to the user with a msg " this field is required"
 
 def UserRegistration(request):
-
+    
     if request.method == 'POST':
        
         form = RegistrationForm(request.POST) 
@@ -472,11 +521,12 @@ def UserRegistration(request):
 # the status and will be redirected to the login page. output of the method saves the new status in database 
 @login_required
 def update_status(request):
-    print 'testing this method'
     user = request.user
+    print user
     user.status = request.POST['status']
+    print request.POST['status']
     user.save()
-    return HttpResponse(" ")
+    return render(request, 'profile.html', {'user':user})
 
 # Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
 # name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
@@ -486,7 +536,22 @@ def update_status(request):
 def edit_name(request):
     user = request.user
     user.name = request.POST['user_name']
+    print"fffffffffffff"
     user.save()
+    #c2-mohamed
+    #the next lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    
+    post_activity_content = "you edited your name to " + unicode(user.name) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    print post_log_type
+    print post_activity_url
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user)
     return HttpResponse (" ")
 
 # Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
@@ -499,6 +564,19 @@ def edit_date_of_birth(request):
     user = request.user
     user.date_Of_birth = request.POST['dateofbirth']
     user.save()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    print post_activity_url
+    print post_log_type
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse (" ")
 
 # Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
@@ -511,7 +589,29 @@ def edit_work(request):
     user = request.user
     user.works_at = request.POST['userwork']
     user.save()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you edited your place of work to " + unicode(user.works_at) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse (" ")
+
+@login_required
+def edit_phone(request):
+    user = request.user
+    user.phone_number = request.POST['userphone']
+    user.save()
+    return HttpResponse (" ")  
+
+@login_required
+def view_private(request):
+    return render_to_response ('private.html', context_instance=RequestContext(request))
 
 @login_required
 def editing_pic(request):
@@ -528,6 +628,90 @@ def editing_pic(request):
     ctx = {'editing_form': editing_form}
     return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
+def return_account_type(request):
+     return render_to_response ('account.html',context_instance=RequestContext(request))
+
+# Heba - C2 change_faccounttype method - as a user i should be able to change my account type from premium to 
+# free. The it allows logged in users to be able to change the account type through
+# taking a request of type post holding a value for the account type, it takes this value and saves it in the
+# users account_type value. the output of the method saves the new value for the account_type in the database.
+def change_faccounttype(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    if request.POST['Type'] == 'false':
+        user.is_premium = False
+    else:
+        user.is_premium = True
+    user.save()
+    return HttpResponse(" ")
+
+# Heba -C2 private_number method. is a method that allows the users to hide his number through taking a request 
+# of type POST holding a value for private_number to be set to true and sets the phone_number of the user to a 
+# string that says it is hidden.
+def private_number(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_number = request.POST['Number']
+    user.phone_number2 = user.phone_number
+    user.phone_number = "The user has set this field to hidden"
+    user.save()
+    return HttpResponse(" ")
+
+# Heba -C2 public_number method. is a method that allows the users to show his number through taking a request 
+# of type POST holding a value for private_number to be set to false and sets the phone_number of the user to his
+# actual number is the database.
+def public_number(request):
+    print"puwwwwwwwwww"
+    user = request.user
+    print user.phone_number
+    user.private_number = request.POST['Number1']
+    print request.POST['Number1']
+    print user.private_number
+    user.private_number = False
+    print user.private_number
+    user.phone_number = user.phone_number2
+    user.save()
+    print user.private_number
+    return HttpResponse(" ")
+
+# Heba -C2 public_work method. is a method that allows the users to show his work through taking a request 
+# of type POST holding a value for private_work to be set to false and sets the works_at of the user to his
+# actual work is the database.
+def public_work(request):
+    print"puwwwwwwwwww"
+    user = request.user
+    user.private_work = request.POST['Work1']
+    print request.POST['Work1']
+    print user.private_work
+    user.private_work = False
+    print user.private_work
+    user.works_at = user.works_at2
+    user.save()
+    print user.private_work
+    return HttpResponse(" ")
+
+# Heba -C2 private_work method. is a method that allows the users to hide his works_at through taking a request 
+# of type POST holding a value for private_work to be set to true and sets the works_at of the user to a 
+# string that says it is hidden.
+def private_work(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_work = request.POST['Work']
+    user.works_at2 =user.works_at
+    user.works_at= "The user has set this field to hidden"
+    user.save()
+    return HttpResponse(" ")
+    
+# Heba - C2 change_paccounttype method - as a user i should be able to change my account type from free to 
+# premium. The it allows logged in users to be able to change the account type through
+# taking a request of type post holding a value for the account type, it takes this value and saves it in the
+# users account_type value. the output of the method saves the new value for the account_type in the database.
+def change_paccounttype(request):
+    print"tesssffffffff"
+    user = request.user
+    user.is_premium = request.POST['Type']
+    user.save()
+    return HttpResponse (" ")
 
 def get_channels (request):
     channels = Channel.objects.all()
@@ -589,12 +773,14 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        # print user
+        #c1-abdelrahman this line retrieves the wished posts by the user.
+        list_of_wished_posts = WishList.objects.filter(user = user)
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        list_of_wished_posts = WishList.objects.filter(user_id = "3")
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
+        interacting_list = user_profile.get_interacting_people()
+        # print interacting_list
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -974,6 +1160,27 @@ def facebook_login_done(request):
     else:
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
+
+#c1_hala this method called savingComment that takes two parameters request and post_id, the 
+#content variable takes from the request the content that the user types in, and userobject variable is a 
+#variable that the user as an object which rather than taking the user_id no takes the user as an object
+#and saves it in the Comment table as an object, and post variable brings the post from post table with id 
+#that matches the post_id that taken as a paramter, and comment variable saves in the comment table 
+#the content taken and the date that was retreived at that time using datetime.now()
+#and takes the user as an object, and takes the post id and saves it in the comment table.
+#comment table by that saves each post with its comment content, date of the comment, and saves 
+#the users owner of the comment next to tthe comment. and at last the method returns the method viewPost
+#which has the post and its past comments saved on it
+
+def SavingComment(request, post_id):
+    content = request.POST['content']
+    userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
+    post = Post.objects.get(pk=post_id)
+    post.comments_count +=1
+    comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
+    comment.save()
+    return HttpResponseRedirect("/showpost?post="+str(post_id))
+
 #Beshoy intrested method Takes a request 
 #then then check if the user is verified ,
 #then input the values in  table [IntrestedIn] and Increment Intrested Counter
@@ -987,8 +1194,250 @@ def intrested(request):
         intrest1.save()
         post_in.intersed_count=post_in.intersed_count+1
         post_in.save()
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity log
+        #post_activity_content is to save the activity log content that will be shown to user
+        #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+        #post_log_type is the type of the log type the user will choose in the activity log page
+        post_activity_content = "you added " + unicode(post_in.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post_in.id)
+        post_log_type = "profile"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
 
     return HttpResponse()
+#c2-mohamed
+#thismethod renders to Activity.html
+#it renders all activity log that belongs to that user
+def all_log(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(user = author)
+    print "all_log"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type post that belongs to that user
+def all_log_post(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="post", user = author)
+    print "all_log_post"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type interested that belongs to that user
+def all_log_interested(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
+    print "all_log_interested"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type wish that belongs to that user
+def all_log_wish(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
+    print "all_log_wish"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type profile that belongs to that user
+def all_log_profile(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
+    print "all_log_profile"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#mai c2 : sms verfication 
+# this methods taked in the number that u want to send the message to and the body 
+# it doesnt return anything, it just sends the msg 
+def send_sms(to_number,msg_body):
+
+    account_sid = "AC9ec4b58090b478bc49c58aa6f3644cc7"
+    auth_token  = "79ba8ebb0bf8377302f735f853cd7006"
+    client = TwilioRestClient(account_sid, auth_token)
+
+    message = client.sms.messages.create(body=msg_body,
+        to="+2"+str(to_number),
+        from_="+18587369892")
+    print message.sid
+
+     
+
+#mai c2 : sms verfication 
+#this method takes a request 
+# it creates a 5 charcter codde and saves this code to the user belong to the request 
+# it takes the phone from the field of pphone number in the templates and saves this phone 
+# then calls the mehtod that send the msg which takes thie phone number and the code that was generated 
+# returns an emtpy response 
+def sms(request):
+    
+    user = request.user
+    
+    
+    user.sms_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+    user.save()
+  
+    phone_no = request.POST['phone_number']
+    user.phone_number = phone_no
+    user.save()
+    
+    send_sms(phone_no ,user.sms_code)
+    return HttpResponse(" ")
+
+
+#mai : c2 : sms verifcation
+#this method takes a request and checks if its a post
+# it takes the code from the field in the template 
+# then gets the user with that code 
+# if the user id if the one who is doing the request 
+#then it returns an httprespons with true   
+
+def sms_verify(request):
+   
+    if request.method == 'POST':
+       
+        smscode = request.POST['sms_code']
+
+ 
+        if smscode is not None: 
+           
+            try:
+                user = UserProfile.objects.get(sms_code=smscode)
+                if user.id == request.user.id:
+                   
+                    return HttpResponse('true')
+                else:
+                    return HttpResponse('false')
+                
+            except:
+                return HttpResponse('false')
+            return HttpResponse('correct code')
+
+
+     
+
+#c1_abdelrahman this method takes request as an input.
+#it takes the post id and the user_id from the request.
+#it deletes the post from the WishList table.
+
+def remove_post_from_wishlist(request):
+    user = request.user
+    post = request.POST['post']
+    WishList.objects.get(user = user, post_id = post).delete()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
+    post_activity_url = "showpost?post=" + unicode(post_in.id)
+    post_log_type = "wish"
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    return HttpResponse()
+
+#c1_abdelrahman this method takes request as an input from the user. 
+#then it retrieves a list from the table with all the posts wished by this user and deletes all of them.  
+def empty_wish_list(request):
+    user = request.user
+    WishList.objects.filter(user=user).delete()
+    return HttpResponse()
+
+
+#c1_abdelrahman this method takes request as an input then it updates the attribute value by the value extracted from request.post.
+def edit_post_attribute(request):
+    user = request.user
+    post_id = request.POST['post']
+    attribute_id = request.POST['attribute']
+    value = request.POST['value']
+    current_value_instant = Value.objects.get(attribute = attribute_id ,post = post_id)
+    current_value_instant.value = value
+    current_value_instant.post.edit_date = datetime.now()
+    current_value_instant.post.save()
+    current_value_instant.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it returns the post and the list of the attributes of the subchannel that the post belongs to and the list of the values of the attributes that is saved in the Values table.
+#it checks whether the current of the user and then it renders to the html the list and whether the user can edit the post or not.
+def edit_post(request):
+    user = request.user
+    post_id = request.GET['post']
+    current_post = Post.objects.get(id = post_id)
+    subchannel = current_post.subchannel_id
+    list_of_attribute_name = Attribute.objects.filter(subchannel_id = subchannel)
+    list_of_attribute_values = Value.objects.filter(post = current_post).order_by('attribute')
+    list_of_attributes_numbers = Value.objects.filter(post = current_post).order_by('attribute')
+    return render_to_response('editPost.html', {'current_post': current_post
+    , 'list_of_attribute_name':list_of_attribute_name
+    , 'list_of_attribute_values':list_of_attribute_values
+    ,'list_of_attributes_numbers': list_of_attributes_numbers})
+#c1_abdelrahman this method takes request as an input then it extracts the new description from the POST then it save it in the post table. it returns blank httpresponse. 
+def edit_post_description(request):
+    user = request.user
+    new_description = request.POST['description']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.description = new_description
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new price from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_price(request):
+    user = request.user
+    new_price = request.POST['price']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.price = new_price
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new location from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_location(request):
+    user = request.user
+    new_location = request.POST['location']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.location = new_location
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new title from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_title(request):
+    user = request.user
+    new_title = request.POST['title']
+    post_id = request.POST['post']
+    print post_id
+    current_post = Post.objects.get(id = post_id)
+    current_post.title = new_title
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+
+
+
+
+
+#c1-abdelrahman it takes a request as an input.
+# it returns a list of all the wished posts by the user to the profile.html
+
+def view_posts_wished(request):
+    user = request.user
+    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 #c2-mohamed awad
 #this def returns unread notifications to base.html
