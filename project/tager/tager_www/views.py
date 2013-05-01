@@ -635,9 +635,19 @@ def get_channels (request):
             subchannels_list.append({'subchannel': subchannel})
         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
     post_list = Post.objects.all()   
+    states=[]
     
-    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
+    list_of_prices=[]
+    all_posts=Post.objects.all()
+    for post in all_posts:
+        if post.state not in states: 
+            states.append(post.state) 
+        list_of_prices.append(post.price)
+    print states
+    price_min=min(list_of_prices)
+    price_max =max(list_of_prices)
 
+    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list,  'states': states, 'mnimum_price':price_min, 'maximum_price': price_max } )
 
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
@@ -646,14 +656,59 @@ def get_channels (request):
 # the method returns the dictionairy of posts related to specific subchannels.
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
+    list_of_states = request.GET.getlist('status[]')
+    min_price= request.GET['min']
+    max_price= request.GET['max']
+    print min_price
+    print max_price
+    print list_of_states
     results_of_subchannels = []
+    print list_of_subchannelsID
     for li in list_of_subchannelsID:
-        results_of_subchannels.append(SubChannel.objects.filter(id = li))
+        if li is not None:
+            subchannel = SubChannel.objects.filter(id = li)
+            print subchannel
+            results_of_subchannels.append(SubChannel.objects.filter(id = li))
+            print li
+    print results_of_subchannels
+    list_of_posts=Post.objects.all();
+    list_of_prices=[]
+    print list_of_posts
+    for po in list_of_posts:
+        print po.title
+        print ""
+        print po.price
+        print "mnimu price is :"
+        print min_price
+        print "the maximum rice is "
+        print max_price
+        if 'min_price' < 'po.price' :
+            if 'po.price' < 'max_price':
+                print po.price
+                print "min price was"
+                print min_price
+                list_of_prices.append(po.price)
+
+    print list_of_prices
     post_list =[]
+    
     for sub in results_of_subchannels:
-        post_list.append(Post.objects.filter(subchannel = sub))
+        for state in list_of_states:
+            for pri in list_of_prices:
+
+                post_list.append(Post.objects.filter(subchannel = sub, state=state , price = pri ))
+                
+
+    
     return render(request, "filterPosts.html", {'post_list': post_list})
     
+
+# def postPrice(request):
+#     x=request.GET['price']
+#     list_of_prices=[]
+#     list_of_posts = Post.objects.price.all()
+#     print list_of_posts
+#     if x in 
 
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post

@@ -41,7 +41,8 @@ $(document).ajaxSend(function(event, xhr, settings) {
 <div id="posts_result" class="container">
     {% if post_list %}
     	{% for post in post_list %}
-    		<li>{{post}}</li> 
+    		<li>{{post}}</li>
+            <li>{{post.title}}</li>
     	{% endfor %}
     {% else %}
     	<h5> please select some subchannels to view </h5>
