@@ -1,19 +1,45 @@
 {% extends 'base.html' %}
-{% load staticfiles%}
+
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+
 {% block content %}
-<style type="text/css">
-.valuesdiv{
-  padding-left: 100px;
+
+<style> 
+.testdiv
+{
+/*padding:10px 40px; */
+background:#dddddd;
+width: :700px;
 }
-.mainbackground{
-  background-color:#DCDCDC; 
+.divcontent{
+  padding-left: 50px;
 }
-.btndivstyling{
-background-color:#DCDCDC;
-padding-right: 70px;
-padding-top: 50px;
-text-align: right;
+.maincontent{
+  padding-right: 50px;
+  padding-bottom: 10px;
 }
+.divpad{
+    padding-top: 7.5px;
+    margin-bottom: 10px;
+}
+.editicons{
+  padding-top: 12px;
+}
+.labelval {
+  width:1px;
+}
+.carouselpadding{
+  padding-top: 10px;
+}
+.labelspadding{
+  padding-left: 5px;
+}
+<<<<<<< HEAD
 </style>
 
 <div>
@@ -33,18 +59,106 @@ text-align: right;
         <p> Description: </p>
 
         <p> Price: </p>
+=======
+>>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
 
-        <p> State:  </p>
-        {% if list_of_att_name %}
+</style>
 
-          {% for Attribute in list_of_att_name %}
+{% if not can_edit %}
+<div class="row-fluid maincontent">
+  <div class="span1">
+    </div>
+<div class="testdiv span4">
 
-          <p>{{Attribute.name}}</p>
+    <div id="myCarousel" class="carousel slide carouselpadding">
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+    <li data-target="#myCarousel" data-slide-to="5"></li>
+    <li data-target="#myCarousel" data-slide-to="6"></li>
+  </ol>
+  <!-- Carousel items -->
+  <div class="carousel-inner">
+    {% if post.profile_picture %}
+    <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
+    {% endif %}
+    {% if post.picture1 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture2 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture3 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture4 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture5 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture6 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
+    {% endif %}
 
-        {% endfor %}
-        {% endif %}
+  </div>
+  <!-- Carousel nav -->
+  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+</div>
 
+       
+</div>    
+<div class="testdiv span6">
+  <div class="row-fluid labelspadding">
+    <div class="span4 ">
+      <div class="divpad">
+      <label>Title:</label>
+      </div>
+      <div class="divpad">
+      <label>Description:</label>
+      </div>
+      <div class="divpad">
+      <label>Price:</label>
+      </div>
+      <div class="divpad">
+      <label>Location:</label>
         </div>
+     {% for Attribute in list_of_attribute_name%}
+    <div class="divpad">
+    <label id="{{Attribute.id}}">{{Attribute.name}}</label>
+    </div>
+    {% endfor %} 
+    </div>
+    <div class="span8 divcontent">
+      <div class="divpad">
+      <label id="title1">{{post.title}}</label></label> 
+      <input id="title1value" style="display:none">
+    </div>
+        <div class="divpad">
+    <label id="description" class="labelval">{{post.description}}</label>
+    <textarea rows="7" colomns="4" id="descriptionvalue" style="display:none"></textarea>
+        </div>
+        <div class="divpad">
+    <label id="price">{{post.price}}</label>
+    <input id="pricevalue" style="display:none">
+    </div>
+    <div class="divpad">
+        <label id="location">{{post.location}}</label>
+        <input id="locationvalue" style="display:none">
+        </div>
+        {% for Value in list_of_attribute_values%}
+        <div class="divpad">
+          {% if Value.value %}
+      <label>{{Value.value}}</label> 
+        {% else %}
+        <label>None</label>
+        {% endif %}
+        </div>
+<<<<<<< HEAD
                                                                                                      
         <div class="span3 valuesdiv">
           <p>{{post.title}}</p>
@@ -52,48 +166,231 @@ text-align: right;
           <p>{{post.price}}</p>
           <p>{{post.state}}</p>
           {% if list_of_att_values %}
+=======
+>>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
 
-          {% for Value in list_of_att_values %}
+        {% endfor %} 
 
-          <p>{{Value.value}}</p>
 
-          {% endfor %}
-
-        {% endif %}  
-        
-        </div>
-      </div>
     </div>
+  {% endif %}
+
+  {% if can_edit %}
+  <div class="row-fluid maincontent">
+  <div class="span1">
+    <label></label>
+    </div>
+<div class="testdiv span4">
+  {% if not post.profile_picture %}
+<img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+  {% else %}
+  <div id="myCarousel" class="carousel slide carouselpadding">
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+    <li data-target="#myCarousel" data-slide-to="5"></li>
+  </ol>
+  <!-- Carousel items -->
+  <div class="carousel-inner">
+    {% if post.profile_picture %}
+    <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
+    {% endif %}
+    {% if post.picture1 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture2 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture3 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture4 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture5 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
+    {% endif %}
+    {% if post.picture6 %}
+    <div class="item"><img style="width: 400px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
+    {% endif %}
+
   </div>
+  <!-- Carousel nav -->
+  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+</div>
+{% endif %}
+</div>    
+<div class="testdiv span6">
+  <div class="row-fluid labelspadding">
+    <div class="span2">
+      <div class="divpad ">
+      <label>Title:</label>
+      </div>
+      <div class="divpad">
+      <label>Description:</label>
+      </div>
+      <div class="divpad">
+      <label>Price:</label>
+      </div>
+      <div class="divpad">
+      <label>Location:</label>
+        </div>
+  {% for Attribute in list_of_attribute_name%}
+    <div class="divpad">
+    <label>{{Attribute.name}}</label>
+    </div>
+    {% endfor %} 
+    </div>
+    <div class="span6 divcontent">
+      <div class="divpad">
+        <label id="title1">{{post.title}}</label></label> 
+        <input id="title1value" style="display:none">
+        <lbl id = "titleoutput" style="display:none"></lbl>
+
+      </div>
+      <div class="divpad">
+    <label id="description">{{post.description}}</label>
+    <textarea id="descriptionvalue" style="display:none"></textarea>
+    <lbl id = "descriptionoutput" style="display:none"></lbl>
+      </div>
+        <div class="divpad">
+    <label id="price">{{post.price}}</label>
+    <input id="pricevalue" style="display:none">
+    <lbl id = "priceoutput" style="display:none"></lbl>
+    </div>
+    <div class="divpad">
+        <label id="location">{{post.location}}</label>
+        <input id="locationvalue" style="display:none">
+        <lbl id = "locationoutput" style="display:none"></lbl>
+        </div>
+        {% for Value in list_of_attribute_values%}
+        <div class="divpad">
+          {% if Value.value %}
+      <label  id="value_{{Value.attribute.id}}">{{Value.value}}</label> 
+      <input id="attribute_value_{{Value.attribute.id}}" style="display:none">
+        {% else %}
+        <label id="value_{{Value.attribute.id}}">None</label>
+        <input id="attribute_value_{{Value.attribute.id}}" style="display:none">
+        {% endif %}
+        </div>
+
+        {% endfor %} 
+ 
+    </div>
+    <div class="span2" >
+
+  <label class="editicons"><i class="icon-edit" id="edit_title" onClick="update_title_preparation()"></i>
+ <i class="icon-ok " style="display:none" onClick="update_title({{post.id}})" id="titlesave"></i></label>
+
+   <label class="editicons" id="#edit_description_label"> <i class="icon-edit" id="edit_description" onClick="update_description_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_description({{post.id}})" id="descriptionsave"></i></label>
+<label class= "editicons">
+    <i class="icon-edit" id="edit_price" onClick="update_price_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_price({{post.id}})" id="pricesave"></i>
+    </label>
+    <label class="editicons">
+    <i class="icon-edit" id="edit_location" onClick="update_location_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_location({{post.id}})" id="locationsave"></i>
+    </label>
+    {% for Attribute in no %}
+     <label class="editicons"> 
+    <i class="icon-edit" id="edit_attribute_button_{{Attribute.id}}" onClick="update_attribute_preparation({{Attribute.id}})"></i>
+
+    <i class="icon-ok" style="display:none" id="save_attribute_button_{{Attribute.id}}" onClick="update_attribute({{Attribute.id}},{{post.id}})" ></i>
+   </label>
+    {% endfor %}
+ {% endif %} 
+  </div>
+  </div>
+</div>
+<div class="span1">
+  
+</div>
+</div>
+</div>
+</div>
 </div>
 
 
+<<<<<<< HEAD
+      
+=======
+<div class="row-fluid maincontent">
+  <div class="span2">
+
+  </div>
+  <div class ="span9">
+>>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
       
 
-
-				{% if add_buyer_button %}
-					<button class="btn btn-mini btn-danger" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
-				{% endif %}
-
     
     
-    			{% if view_rating %}
-    				<button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
-    			{% endif %}
-    			<div id="star"></div>
+          <div id="star"></div>
 
     
 
 				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
-				<button type="button" class="btn btn-info"> Interested in </button>
+				 <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info"><i class="icon-heart"></i> interested</a>
+
 				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 
 
+<<<<<<< HEAD
 				
 				
 
         <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
 
+=======
+				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+				<a href="http://twitter.com/home?status=Your%20message%20here:%20
+					http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+        
+        <a href="#myModal" role="button" class="btn btn-info " data-toggle="modal">Report </a>
+
+<!-- {% if user.is_admin %}
+<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
+<form action="/hidePost/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
+      <br/>
+      <input type="submit" value="Hide" class='btn'>
+  </form> 
+{% endif %} -->
+          {% if view_rating %}
+            <button class="btn btn-info" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
+          {% endif %}
+      {% if add_buyer_button %}
+          <button class="btn btn-info" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
+        {% endif %}
+        <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+        the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+        <a href="http://twitter.com/home?status=Your%20message%20here:%20
+          http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+
+
+        <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
+        the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
+        <a href="https://www.facebook.com/dialog/feed?
+            app_id=461240817281750&
+            link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+            name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+            caption=Reference%20Documentation&
+            description=Using%20Dialogs%20to%20interact%20with%20users.&
+            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+
+            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
+
+            <img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
+
+            onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
+>>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
 
         <!--twitter-->
         <a href="http://twitter.com/home?status={{post.title}}: {{post.description}}  http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/twitter-baloon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this"></a>
@@ -110,35 +407,117 @@ text-align: right;
 
             <img src="{% static "img/fb-baloon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"></a> 
         
-            
 
+           
 </div>
  	</div>
-
+<!-- Button to trigger modal -->
 
  
+<!-- Modal -->
+<div id="smsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">sms verifcation</h3>
+  </div>
+  <div class="modal-body">
+
+<div class="sms" id = "phonediv">
+        <p><input type="text" id ="phone" name="phone" placeholder = " enter your phone number"></p>
+        <p><button onClick="send_phone_num();" id = "phone_submit">Send</button></p>
+    </div>
+
+<div class="sms" id = "codediv">     
+    <p><input type="text" id ="sms" name="sms" placeholder = "enter sms verification code"></p>
+    <p><button onClick="send_sms_num();" id = "sms_submit">Send</button></p>
+    <div id="message"></div>
+</div>
+
+<script language="JavaScript">
+
+
+</script>
+
+  </div>
+ 
+</div>
+            
+</div>
+</div>
+  </div>
+
+     
+
+<script type="text/javascript">
+    function send_phone_num(){
+      $.ajax({
+        url: '/send_phone/',
+        type: "POST",
+        data: {
+          "phone_number" : $("#phone").val()
+        }, 
+        success: function(result) {
+          alert("An sms verfication has been sent . This might take a few mins");
+        },
+
+    });
+    }
+
+    function send_sms_num(){
+
+      $.ajax({
+        url: '/send_sms/',
+        type: "POST",
+        data: {
+          "sms_code" : $("#sms").val()
+        }, 
+        success: function(data) {
+          if(data == "true") {
+            $("#message").html("correct code")
+             $(function()
+              { $('#sms').css('border-color', '#CCC');
+            });
+          }
+          else {
+            $("#message").html("please enter the right code ")
+             $(function()
+              { $('#sms').css('border-color', 'red');
+            });
+
+          }
+        },
+
+    });
+    }
+
+</script>
+
+
+
+
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Report A Post</h3>
-    <p>
-    	Please provide us with your reason for reporting this post:
+    <label>
+      Please prolabelide us with your reason for reporting this post:
     </p>
   </div>
   <div class="modal-body">
-  		{% for reasons in report_reasons %}
-	<label class="R{{reasons.id}}">
-  		<input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
-  			{{reasons.reported_reason}}
-	</label>
-	{% endfor %}
+      {% for reasons in report_reasons %}
+  <label class="R{{reasons.id}}">
+      <input type="radio" name="optionsRadios{{post.id}}" id="optionsRadios{{post.id}}" value="{{reasons.reported_reason}}" checked>
+        {{reasons.reported_reason}}
+  </label>
+  {% endfor %}
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     <button class="btn btn-primary" id = "postID" onCLick ="reportPost({{post.id}});">Submit Report</button>
   </div>
 </div>
 </div>
+
 
 
 
@@ -149,23 +528,150 @@ text-align: right;
     
   </div>
   <div class="modal-body">
-  		{% for buyers in list_of_interested_buyers %}
-  			{{ buyers }}
-		{% endfor %}	
+      {% for buyers in list_of_interested_buyers %}
+        {{ buyers }}
+    {% endfor %}  
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
   </div>
 </div>
 </div>
+<<<<<<< HEAD
 </div>
+=======
 
+
+{% block script%}
 
     <script type="text/javascript">
+
+
+  $('#descriptionvalue').keyup(function(){
+  var data = $(this).val();
+  var pattern = /[a-z]|[A-Z]|\d+/;
+    if (data.length > 25 && data.match(pattern)) {
+       $('#descriptionoutput').css('color', 'Green'); 
+              $('#descriptionoutput').text("Ok");
+               $('#descriptionsave').css('display', 'block');
+              
+            }
+
+          else {
+            if(data.length < 1){
+              $('#descriptionoutput').css('color', 'Red');  
+              $('#descriptionoutput').text("Title can not be blank");
+              $("#descriptionsave").hide();
+            }
+            else
+            {
+            if(! data.match(pattern)){
+              $('#descriptionoutput').css('color', 'Red');  
+              $('#descriptionoutput').text("Title can not be only spaces");
+              $("#descriptionsave").hide();
+              }
+              else{
+                if( data.length < 25){
+               $('#descriptionoutput').css('color', 'Red');  
+              $('#descriptionoutput').text("Title can not be less than 25 characters");   
+                $('#descriptionsave').hide();
+                }
+              }  
+          }  
+        }
+
+});
+
+$('#pricevalue').keyup(function(){
+    var data = $(this).val();
+    var pattern = /^[1-9][0-9]*$/;
+    if (data.length > 1 && data.match(pattern)) {
+            
+              $('#priceoutput').css('display','block');
+              $('#priceoutput').css('color','Green');    
+              $('#priceoutput').text("Ok");
+              $('#pricesave').css('display', 'block');
+               
+            }
+          else {
+            if(data.length < 2 && data.match(pattern)){
+              $('#priceoutput').css('color','Red');
+              $('#priceoutput').text("Price must be 2 digits number");
+              $('#pricesave').hide();  
+            }
+            else{
+              if(data.length > 1 && !data.match(pattern)){
+                $('#priceoutput').css('color','Red');
+              $('#priceoutput').text("Price can not start with zero");
+              $('#pricesave').hide();
+              }
+              else{
+                if(data.length == 0){
+              $('#priceoutput').css('color','Red');
+              $('#priceoutput').text("Can not be blank");
+                }
+              }
+            }
+            }   
+});
+$('#locationvalue').keyup(function(){
+    var data = $(this).val();
+ var pattern = /[a-z]|[A-Z]|\d+/;
+    // var pattern = ([a-zA-Z0-9]+([\\s][a-zA-Z0-9]+)*);
+      if(data.length < 5 || !data.match(pattern)){
+        $('#locationsave').hide();
+        $("#locationoutput").css('color','red'); 
+        $("#locationoutput").text("Invalid");
+        $('#locationsave').hide();
+      }
+      else{
+       $("#locationoutput").css('color','Green'); 
+       $("#locationoutput").text("ok");
+       $('#locationsave').show(); 
+      }
+             
+});
+
+
+  $('#title1value').keyup(function(){
+    data = $(this).val();
+    var x = false;    
+    if( data == "     "){
+    $('#titleoutput').css('color','red');    
+    $('#titleoutput').css('display','block'); 
+    $('#titleoutput').text("The title can not be spaces");
+    }
+    else{
+    if( data.length < 5){    
+       $('#titleoutput').css('color','red'); 
+      $('#titleoutput').css('display','block');
+    $('#titleoutput').text("The title can not be shorter than 5 characters");
+    }
+    else{
+    if( data.length > 30){    
+       $('#titleoutput').css('color','red'); 
+      $('#titleoutput').css('display','block');
+    $('#titleoutput').text("The title can not be more than 30 characters");
+      $('#titlesave').css('display', 'none');
+    }
+    else{    
+       $('#titleoutput').css('color','Green'); 
+      $('#titleoutput').css('display','block');
+    $('#titleoutput').text("ok");
+      $('#titlesave').css('display', 'block');
+    }
+    }
+    }
+
+});
+>>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
+
     var eligible_to_add_to_the_wish_list = {{canwish}}
     $("#wishlisterror").hide();
     if(eligible_to_add_to_the_wish_list){
       $('#wishlist').removeAttr("disabled");
     }
+
     function add_to_list(){
       $.ajax({
     url: '/addtomylist',
@@ -182,10 +688,201 @@ text-align: right;
     }
 
 
+    $(document).ready(function(){
+        $("#star").css("visibility", "hidden");
+    });
+    $("#rateSeller").click(function(){
+        // window.location.replace("profile?user_id="+$(this).val());
+        $("#star").css("visibility", "visible");
+    });
+    $(document).ready(function(){
+        $('#star').raty({ 
+            score: $('#rating').val(),
+            click: function(score, evt) {
+            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
+            $.ajax({
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                         });
+
+
+        },
+      });
+    });
+
+function update_title_preparation() {
+    $("#edit_title").hide();
+    $('#title1').hide();
+    var title = $('#title1').text();
+    $('#title1value').val(title);
+    $('#title1value').css('display', 'block');
+  
+   
+}    
+function update_description_preparation(){    
+    $("#edit_description").hide();
+    $("#save_description").hide();
+    $('#description').hide();
+    $('#descriptionoutput').css('display', 'block'); 
+    var description = $('#description').text();
+    $('#descriptionvalue').val(description);
+    $('#descriptionvalue').css('display', 'block');
+    
+}    
+function update_location_preparation(){
+    $("#edit_location").hide();
+    $('#location').hide();
+    $('#locationoutput').css('color','red');
+    $('#locationoutput').css('display','block');
+    var location = $('#location').text();
+    $("#locationvalue").val (location);
+    $('#locationvalue').css('display', 'block');
+     $('#locationsave').css('display', 'block');
+}
+function update_price_preparation(){
+    $("#edit_price").hide();
+    $('#price').hide();
+    var price = $('#price').text();
+    $('#pricevalue').val(price);
+    $('#pricevalue').css('display', 'block');
+
+     $('#pricevalue').css('display', 'block');
+}
+function update_attribute_preparation(id){
+    var current_attribute_value = $('#value_'+id).text();
+    $('#value_'+id).hide();
+    $('#attribute_value_'+id).val(current_attribute_value);
+    $('#attribute_value_'+id).css('display', 'block');
+    $('#edit_attribute_button_'+id).css('display', 'none');
+    $('#save_attribute_button_'+id).css('display', 'block');
+}
+function update_attribute(attributeid, postid){
+    var value = $('#attribute_value_'+attributeid).val();
+    $.ajax({
+    url: "/editpostattribute/",
+    type: "POST",
+    data: {
+
+        "attribute": attributeid,
+        "post": postid,
+        "value": value,
+    }, 
+    success: function(result) {
+      $("#txtUserName").removeAttr("disabled");
+
+    alert("The value has been successfully updated");
+    $('#value_'+attributeid).text(value);
+    $('#attribute_value_'+attributeid).css('display', 'none');
+    $('#value_'+attributeid).show();
+    $('#attribute_value_'+attributeid).val(value);
+    $('#save_attribute_button_'+attributeid).css('display', 'none');
+    $('#edit_attribute_button_'+attributeid).css('display', 'block');    
+    },
+    });
+}
+
+
+    function update_title(id){
+    
+    var title = $('#title1value').val();
+    $.ajax({
+    url: "/editposttitle/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "title": title,
+    }, 
+    success: function(result) {
+    alert("Successfully updated")
+    $('#title1').text($('#title1value').val());
+    $('#title1').show();
+    $('#title1value').hide();
+    $('#titlesave').hide();
+    $('#edit_title').show();
+    $('#titleoutput').hide();
+    },
+    });
+}
+
+
+function update_description(id){
+   var description = $('#descriptionvalue').val();    
+    $.ajax({
+    url: "/editpostdescription/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "description": description,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#description').text($('#descriptionvalue').val());
+    $('#description').show();
+    $('#descriptionvalue').hide();
+    $('#descriptionsave').hide();
+    $('#edit_description').show();
+    $('#descriptionsave').css('display', 'none');
+    $('#descriptionoutput').css('display', 'none');
+    },
+
+    });
+}
+function update_price(id){
+   var price = $('#pricevalue').val();        
+    $.ajax({
+    url: "/editpostprice/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "price":price,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#price').text($('#pricevalue').val());
+    $('#price').show();
+    $('#pricevalue').hide();
+    $('#pricesave').hide();
+    $('#edit_price').show();
+    $('#priceoutput').css('display','none');
+    },
+
+    });
+}
+
+function update_location(id){
+   var location = $('#locationvalue').val();        
+    $.ajax({
+    url: "/editpostlocation/",
+    type: "POST",
+    data: {
+        "post" : id,
+        "location":location,
+    }, 
+    success: function(result) {
+
+    alert("Successfully updated")
+    $('#location').text($('#locationvalue').val());
+    $('#location').show();
+    $('#locationvalue').hide();
+    $('#locationsave').hide();
+    $('#edit_location').show();
+     $('#locationoutput').css('display', 'none');
+    },
+
+    });
+}
+
     </script>
-
     
 
     
 
-    {% endblock %}
+    
+
+
+{% endblock %}
+
+{% endblock %} 
