@@ -8,13 +8,14 @@
 
 	<h3> Phone number: {{ user.phone_number}} 
     {% if not user.private_number %}
-    {% ifequal request.user user %}
-    <button id="hidephone" class="btn btn-success btn-small" onClick="change_number_toprivate()" >Set to private</button>
-    {% endifequal %}
-    {% else %}
-    {% ifequal request.user user %}
-    <button id="publicphone"  class="btn btn-success btn-small" onClick="change_number_topublic()" >Set to publice</button></h3>
-    {% endifequal %}
+      {% ifequal request.user user %}
+      <button id="hidephone" class="btn btn-success btn-small" onClick="change_number_toprivate()" >Set to private</button>
+      {% endifequal %}
+    {% endif %}
+    {% if user.private_number %}
+      {% ifequal request.user user %}
+      <button id="publicphone" class="btn btn-success btn-small" onClick="change_number_topublic()" >Set to publice</button></h3>
+      {% endifequal %}
     {% endif %}
 
 
@@ -26,7 +27,7 @@
     {% endifequal %}
     {% else %}
     {% ifequal request.user user %}
-    <button id="publicwork" style="display:none" class="btn btn-success btn-small" onClick="change_work_topublice()" >Set to publice</button></h3>
+    <button id="publicwork"  class="btn btn-success btn-small" onClick="change_work_topublice()" >Set to publice</button></h3>
     {% endifequal %}
     {% endif %}
 </div>
@@ -51,7 +52,6 @@ function change_number_toprivate(){
 }
 function change_number_topublic(){
   var number1 = 'true'
-  alert("jjsjjss");
   $.ajax({
     url: '/public_number/',
     type: "POST",
@@ -59,9 +59,11 @@ function change_number_topublic(){
     'Number1' : number1,
     },
     success:function(result){
-        $('#hidephone').show();
+      alert("jjsjjss");
+        
         $('#publicphone').hide();
-        alert("this field has been set to private");
+        $('#hidephone').show();
+        alert("this field has been set to public");
       },
     error:function(result){
       alert("Sorry, failed to change you account type");
@@ -95,9 +97,9 @@ function change_work_topublice(){
     'Work1' : work1,
     },
     success:function(result){
-        $('#hidework').hide();
-        $('#publicwork').show();
-        alert("this field has been set to private");
+        $('#hidework').show();
+        $('#publicwork').hide();
+        alert("this field has been set to public");
       },
     error:function(result){
       alert("Sorry, failed to change you account type");
