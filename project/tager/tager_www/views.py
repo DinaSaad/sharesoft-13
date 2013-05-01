@@ -615,7 +615,13 @@ def editing_pic(request):
     ctx = {'editing_form': editing_form}
     return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
-
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# - this method creats variable channels , to store all channels available in the database, 
+# variable subchannels , to store all subchannels available in the database,
+#  channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
+# the method then return the channels_list only , as it holds , every attribute of subchannel
+# and every subchannel of a channel 
 def get_channels (request):
     channels = Channel.objects.all()
     channels_list = [] 
@@ -624,20 +630,17 @@ def get_channels (request):
         subchannels_list = []
         for subchannel in subchannels:
             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-            subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+            subchannels_list.append({'subchannel': subchannel})
+            # , 'attributes': attributes
+            # keep this commented , i'll use it later
+            channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
     post_list = Post.objects.all()   
-    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
-
+    return render(request, '/main', {'all_channels': channels_list ,'post_list': post_list} )
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# - this method creats variable channels , to store all channels available in the database, 
-# variable subchannels , to store all subchannels available in the database,
-#  channels_list is a list that holds dictionaries of channels and its subchannels.
-# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
-# the method then return the channels_list only , as it holds , every attribute of subchannel
-# and every subchannel of a channel 
-
+# subchannel_id is the id retrieved from the webpage 
+# its is matched with with the subchannel id in the post model , 
+# the method returns the dictionairy of posts related to specific subchannels.
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
     results_of_subchannels = []
@@ -648,10 +651,18 @@ def view_checked_subchannel_posts(request):
         post_list.append(Post.objects.filter(subchannel = sub))
     return render(request, "filterPosts.html", {'post_list': post_list})
     
-# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# subchannel_id is the id retrieved from the webpage 
-# its is matched with with the subchannel id in the post model , 
-# the method returns the dictionairy of posts related to specific subchannels.
+#Reem- As c3 I should prvide a vertical refinement bar ( Menu) , wlong with reviweing posts
+#list_of_subchannelsID is a list of the checked subchannels 
+#the subchannels objects (results_od_subchannels) related t those ID's are retrieved and then the posts related are returned(post_list) 
+def menuForSubchannels(request):
+    subchannel_id = request.GET["sub_ch_id"]
+    print subchannel_id
+    current_subchannel = SubChannel.objects.get(id =subchannel_id)
+    posts_of_subchannels = Post.objects.filter(subchannel_id= current_subchannel)
+    print posts_of_subchannels
+    return render(request, "filterPosts.html", {'post_list': posts_of_subchannels})
+
+
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
