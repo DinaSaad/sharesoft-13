@@ -58,7 +58,7 @@ def home(request):
 
 def return_channels(request):
     channels = Channel.objects.all()
-    return render_to_response ('subscriptions.html', {'channels': channels})
+    return render(request, 'subscriptions.html', {'channels': channels})
 
 #c2-mohamed awad
 #this def return subchannels to subscriptions.html for the user to choose a subchannel to subscribe to
@@ -71,7 +71,7 @@ def return_subchannels(request):
     current_channel = Channel.objects.get(id=s_id)
     subchannels = SubChannel.objects.filter(channel_id = current_channel)
     print {'subchannels': subchannels}
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels})
+    return render(request, 'subscriptions.html', {'subchannels': subchannels})
 
 #c2-mohamed awad
 #this def returns parameters to subscriptions.html for the user to choose a parameter to subscribe to
@@ -83,7 +83,7 @@ def return_parameters(request):
     s_id = SubChannel.objects.get(id = sc_id).channel_id
     subchannels = SubChannel.objects.filter(channel_id = s_id)
     parameters = Attribute.objects.filter(subchannel_id = sc_id)
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
+    return render (request, 'subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
 
 #c2-mohamed awad
 #this def return choices to subscriptions.html for the user to choose a choice to subscribe to
@@ -96,7 +96,7 @@ def return_choices(request):
     channels = Channel.objects.all()
     subchannels = SubChannel.objects.all()
     choices = AttributeChoice.objects.filter(attribute_id = p_id)
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
+    return render (request, 'subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
 
 #c2-mohamed awad
 #this def allows user to subscribe by channel only
@@ -111,7 +111,7 @@ def subscription_by_chann(request):
     for subscription in subscriptions:
         subscription.subscribe_Bychannel(user)
         break
-    return render_to_response('subscriptions.html')
+    return render(request, 'subscriptions.html')
 
 #c2-mohamed awad
 #this def allows user to subscribe by subchannel only
@@ -127,7 +127,7 @@ def subscription_by_subchann(request):
     for subscription in subscriptions:
         subscription.subscribe_Bysubchannel(user)
         break
-    return render_to_response('subscriptions.html')
+    return render(request, 'subscriptions.html')
 
 #c2-mohamed awad
 #this def allows user to subscribe by parameters
@@ -148,7 +148,7 @@ def subscribe_by_parameters(request):
     for subscription in subscriptions:
         subscription.subscribe_Byparameter(user)
         break
-    return render_to_response('subscriptions.html')
+    return render(request, 'subscriptions.html')
 
 #c2-mohamed awad
 #this def takes a user as a request and returns all his related notifications to notifications.html
@@ -157,7 +157,7 @@ def return_notification(request):
     user_in = request.user
     all_notifications = Notification.objects.filter(user = user_in)
     if all_notifications is not None:
-        return render_to_response ('notifications.html', {'all_notifications': all_notifications})
+        return render (request, 'notifications.html', {'all_notifications': all_notifications})
     else:
         pass
 
