@@ -44,7 +44,8 @@ LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be re
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
-
+consumer_key = 'qgiGaTPdiF2JukTUakXhKA'
+consumer_secret = 'JdcsJrJk39DBfdJFIbcyC8GMzehixuxbetZmctYDjOk'
 
 
 #c1-abdelrahman it takes a request as an input.
@@ -591,68 +592,58 @@ def report_the_post(request):
     user.report_the_post(reported_post, report_reason)
     return HttpResponse()
 
-
+#C3-Sara ismail
+#this view initiates the connection with twitter by sending the consumer_key and secret 
+#to twitter so that twitter would know we are requesting something from it and we need to
+#be authorized, and also we give twitter a callback_url, this is the url that we need it to
+#go to after it finishes the first step(which is the next view to continue), twitter then 
+#responds by sending the "allow app page" where the user authorizes our app, and when he/she
+#does so, it goes to the next view/page, which link is provided as the url returned
 def twitter_userlogin(request):
+    callback_url='http://127.0.0.1:8000/twitterImportFriends/'
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     url = tweepy.OAuthHandler.get_authorization_url(auth)
     request.session['request_token.key'] = auth.request_token.key
     request.session['request_token.secret'] = auth.request_token.secret
     return HttpResponseRedirect(url)
-    
-def twitter_auth(request):
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
-    x = request.session.get('request_token.key')
-    y = request.session.get('request_token.secret')
-    auth.set_request_token(x, y)
-    verifier = request.REQUEST.get('oauth_verifier')#read
-    access = tweepy.OAuthHandler.get_access_token(auth,verifier)
-    request.session['access_token.key'] = auth.access_token.key
-    request.session['access_token.secret'] = auth.access_token.secret
-    a = auth.access_token.key
-    b = auth.access_token.secret
-    auth.set_access_token(a,b)
-    userName = tweepy.OAuthHandler.get_username(auth)
-    try:
-        userprofile = UserProfile.objects.get(twitter_name=(userName))
-        userprofile.tw_tok_k = a
-        userprofile.tw_tok_s = b
-    except UserProfile.DoesNotExist:
-        api = tweepy.api.API(auth)
-        user = api.get_user()
-        print user
-    return HttpResponse("testing")
 
 #C3-Sara ismail
-#this view does the importing by doing a loop over the users followers after getting them
+#this view gets the request token from previos view, and exchanges it with the access token to 
+#enable us to connect to twitter with a certain givin user and get the info we need. also after getting the token
+#does the importing by doing a loop over the users followers after getting them
 #puts them in a list after checking that the comming username exists in the database(filter)
 #gets the contact id and the user id and inserts them into the friends table, and then
 #a message appears to the users that the importing is finished
 def twitterImport(request):
-    consumer_key="qgiGaTPdiF2JukTUakXhKA"
-    consumer_secret="JdcsJrJk39DBfdJFIbcyC8GMzehixuxbetZmctYDjOk"
-    access_token="1324517838-mHUW3Gm3Yf8BYBRwlPlj8e92o7eserhAnk93BqG"
-    access_token_secret="qeE5HBzNpiCV25PrIEum5sAQEYoQCWz4hlcEYLNOdic"
-    callback_url="http://127.0.0.1:8000/twitterImportFriends/"
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    request_key = request.session.get('request_token.key')
+    request_secret=request.session.get('request_token.secret')
+    auth.set_request_token(request_key,request_secret)
+    verifier = request.GET.get('oauth_verifier')
+    try:
+        auth.get_access_token(verifier)
+    except tweepy.TweepError:
+        print 'Error! Failed to get access token.'
+   
+    auth.set_access_token(auth.access_token.key,auth.access_token.secret)
     api = tweepy.API(auth)
-
+    
     user_id= request.user.id
-
+    no_of_imports=[]
     id_list = api.followers_ids()
     for id in id_list:
         username = api.get_user(id).name
         print username
-        l=UserProfile.objects.filter(twitter_screen_name = username)
+        l=UserProfile.objects.filter(twitter_name = username)
         print 'list'
         print l
         if len(l) >= 1:
             contact_id = l[0].id
             UserProfile_friends.objects.create(user_id, contact_id)
             UserProfile.save()
+
             print user_object.twitter_name
-    d={'importMsg':"done importing"}
-    
+    d={'importMsg':"importing is done!",'no_of_imports':""}
     return render_to_response('twitterImportFriends.html',d)
 
 

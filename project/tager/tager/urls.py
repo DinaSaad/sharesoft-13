@@ -68,6 +68,7 @@ urlpatterns = patterns('',
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
     url(r'^twitterImportFriends/$', 'tager_www.views.twitterImport'),
+    url(r'^twitter_userlogin/$', 'tager_www.views.twitter_userlogin')
 
     
 
@@ -81,8 +82,8 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
+    #url(r'^admin/', include(admin.site.urls)),
+    #url(r'^fbregister/$', 'fbregister.views.index'),
 
 	# url(r'^tager_www/', include('tager_www.urls')),
 
