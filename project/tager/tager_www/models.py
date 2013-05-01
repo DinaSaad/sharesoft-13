@@ -469,8 +469,6 @@ class Post(models.Model):
         all_values_array=[]
         values_array=[]
         all_values = Value.objects.filter(post = self.id)
-        print "look down 1"
-        print all_values
         for value in all_values:
             all_values_array.append(value)
             values_array.append(value.value)
@@ -479,8 +477,6 @@ class Post(models.Model):
             attribute  = value.attribute
             attributes_array.append(attribute.name)
         subchannel_of_post = self.subchannel
-        print "look down"
-        print subchannel_of_post
         channel_of_post = subchannel_of_post.channel
         users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
         users_subscribed_to_channel_array = []
@@ -496,20 +492,15 @@ class Post(models.Model):
         for z in attributes_array:
             value_in_array = values_array[i]
             attribute = Attribute.objects.get(name = attributes_array[r], subchannel = subchannel_of_post)
-            print "finished attribute-->" + unicode(attributes_array[r])
             r = r + 1
             try:
                 value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
             except:
                 pass
-            print "finished value-->" + unicode(value_in_array)
             users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
             i = i + 1
-            print "finished i OOOOOOOOOOOOOOOOOOOOOOO + "
             for h in users_subscribed_to_attribute:
                 all_users_subscribed_to_attributes.append(h.user)
-                print "in users_subscribed_to_attributes.append(h.user)"
-                # break
         for q in users_subscribed_to_channel_array:
             not_content = "You have new posts to see in " + unicode(channel_of_post.name)
             not_url = "showpost?post="+unicode(self.id)
@@ -539,7 +530,6 @@ class Post(models.Model):
                     except:
                         not1 = Notification(user = q, content = not_content, url=not_url)
                         not1.save()
-                        print "In last for loop"
 
 
     def get_buyer():

@@ -1222,8 +1222,6 @@ def intrested(request):
 def all_log(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(user = author)
-    print "all_log"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1233,8 +1231,6 @@ def all_log(request):
 def all_log_post(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="post", user = author)
-    print "all_log_post"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1244,8 +1240,6 @@ def all_log_post(request):
 def all_log_interested(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
-    print "all_log_interested"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1255,8 +1249,6 @@ def all_log_interested(request):
 def all_log_wish(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
-    print "all_log_wish"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1266,8 +1258,6 @@ def all_log_wish(request):
 def all_log_profile(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
-    print "all_log_profile"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
