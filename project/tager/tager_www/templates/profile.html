@@ -92,10 +92,6 @@
                     <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
                   </div>
 
-                <div class="facebookfriends" id="box1">
-                  <h3>FacebookFriends </h3> 
-
-                </div>
                 <div class="wishlist" id="box1">
                   <a class="btn btn-info" href="#myModal" role="button" data-toggle="modal"> View my wishlist </a>
                   <div id="myModal" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -184,11 +180,13 @@
           <br>
 
           <div class="thumbnail" >
-          <h4>Status<label id="status">{{user.status}}</label></h4>
+          <h4>Status: <label id="status">{{user.status}}</label></h4>
           <div class="editeInfo">
-           <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)" required> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
-
-            <button id="update_status" class="btn btn-small btn-primary primaryOnHove" onClick="update_status_tosave()"><i class="icon-white icon-pencil"></i></button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
+           <input type="text" name="status" id="statusvalue" style="display:none" class="span9" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
+           {% ifequal request.user user %}
+            <button id="update_status" class="btn btn-small btn-primary primaryOnHove" onClick="update_status_tosave()"><i class="icon-white icon-pencil"></i></button>
+            {% endifequal %}
+            <button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
         </div>
       <br>
@@ -197,7 +195,9 @@
           <h3>Information:</h3>
           <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
+            {% ifequal request.user user %}
             <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
+            {% endifequal %}
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
           </h5> 
           <h5>Email: {{ user.email}}</h5>
@@ -209,16 +209,18 @@
             </select>
           </p>
             <label id = "birthoutput" style="color:red"></label>
-           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            {% ifequal request.user user %}
+          <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
+          {% endifequal %}
+          <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5> 
           <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
+            {% ifequal request.user user %}
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
+            {% endifequal %}
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
-          </h5>
-          
-       
-          
+          </h5>         
         </div>
           <br>
 
@@ -299,7 +301,26 @@
 
 {% block script %}
 <script type="text/javascript">
-
+$("#target").click(function() {
+  alert("Handler for .click() called.");
+});
+$(document).ready(function() {
+$(function(){
+  $('#typevalue').keyup(function(){
+    var type1 = $(this).val();
+            if( type1 == "Free"){
+            $('Free').attr("disabled", "disabled");
+            $('#saveaccount').attr("disabled", true);
+            }
+          else {
+            if( type1 == "Premium"){
+            $('Premium').attr("disabled", "disabled");  
+            $('#saveaccount').attr("disabled", true);
+            }
+          }
+  });
+}); 
+});
 function update_status_tosave(){
   $("#update_status").fadeOut();
   $("#status").fadeOut();
@@ -310,7 +331,7 @@ function update_status_tosave(){
   $('#savestatus').fadeIn();
 }
 function statusupdates(){
-  var status = $("#status").val();
+  var status = $("#statusvalue").val();
   $.ajax({
     url: '/updatestatus/',
     type: "POST",
@@ -428,9 +449,6 @@ success:function(result){
 }
 
 
-
-
-
 function edit_dob_save(){
   var dateofbirthsubmitted = $("#datepicker").val()
   $.ajax({
@@ -484,7 +502,21 @@ $(function() {
       $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
     });
   });
-
+$(document).ready(function(){
+  $(function(){
+     $('#typevalue').keyup(function(){
+      var type1 = $(this).val();
+      if(type1 == 'Free'){
+        $('#free').attr("disabled", true);
+      }
+      else{
+        if(type1 == 'Premium'){
+        $('#premium').attr("disabled", true);
+      }
+    }
+  });
+});
+});
 $(document).ready(function(){
   $(function(){
     $('#namevalue').keyup(function(){
@@ -560,4 +592,3 @@ $(document).ready(function(){
 {% endblock %}
 
 {% endblock %}
-

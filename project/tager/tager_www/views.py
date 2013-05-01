@@ -303,7 +303,7 @@ def view_post(request):
     report_reasons = ReportReasons.objects.all()
 
     # dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
-     dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
+    dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
 
 
     # dic.update(d)
@@ -545,6 +545,33 @@ def editing_pic(request):
     ctx = {'editing_form': editing_form}
     return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
+def return_account_type(request):
+     return render_to_response ('account.html',context_instance=RequestContext(request))
+
+# Heba - C2 change_faccounttype method - as a user i should be able to change my account type from premium to 
+# free. The it allows logged in users to be able to change the account type through
+# taking a request of type post holding a value for the account type, it takes this value and saves it in the
+# users account_type value. the output of the method saves the new value for the account_type in the database.
+def change_faccounttype(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    if request.POST['Type'] == 'false':
+        user.is_premium = False
+    else:
+        user.is_premium = True
+    user.save()
+    return HttpResponse(" ")
+
+# Heba - C2 change_paccounttype method - as a user i should be able to change my account type from free to 
+# premium. The it allows logged in users to be able to change the account type through
+# taking a request of type post holding a value for the account type, it takes this value and saves it in the
+# users account_type value. the output of the method saves the new value for the account_type in the database.
+def change_paccounttype(request):
+    print"tesssffffffff"
+    user = request.user
+    user.is_premium = request.POST['Type']
+    user.save()
+    return HttpResponse (" ")
 
 def get_channels (request):
     channels = Channel.objects.all()
