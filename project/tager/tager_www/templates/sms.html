@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+    
+
+{% block content %}
+<form action="" method="post">
+{% csrf_token %}
+
+
+
+
+<div class="sms">
+        <p>{{form.phone_number}}</p>
+        <p><input type="submit" alt="sms" /></p>
+    </div>
+  
+   
+
+
+
+</form>
+{% endblock %}
+
