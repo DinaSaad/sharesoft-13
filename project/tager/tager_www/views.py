@@ -517,6 +517,7 @@ def edit_name(request):
 def edit_date_of_birth(request):
     user = request.user
     user.date_Of_birth = request.POST['dateofbirth']
+    print request.POST['dateofbirth']
     user.save()
     return HttpResponse (" ")
 
@@ -579,10 +580,11 @@ def change_faccounttype(request):
 # of type POST holding a value for private_number to be set to true and sets the phone_number of the user to a 
 # string that says it is hidden.
 def private_number(request):
-    print"tessstttiinnggggg"
+    print"ttttttttttttttttt"
     user = request.user
     user.private_number = request.POST['Number']
     user.phone_number2 = user.phone_number
+    user.phone_number3 = user.phone_number
     user.phone_number = "The user has set this field to hidden"
     user.save()
     return HttpResponse(" ")
@@ -591,12 +593,18 @@ def private_number(request):
 # of type POST holding a value for private_number to be set to false and sets the phone_number of the user to his
 # actual number is the database.
 def public_number(request):
+    print"ttttttttttttttttttttttt"
     user = request.user
     print user.phone_number
     user.private_number = request.POST['Number1']
+    print user.private_number
+    user.private_number = False
+    print user.private_number
     print request.POST['Number1']
+    print user.private_number
     user.phone_number = user.phone_number2
     user.save()
+    print user.private_number
     return HttpResponse(" ")
 
 # Heba -C2 public_work method. is a method that allows the users to show his work through taking a request 
@@ -606,6 +614,9 @@ def public_work(request):
     print"tessstttiinnggggg"
     user = request.user
     user.private_work = request.POST['Work1']
+    print user.private_work
+    user.private_work = False
+    print user.private_work
     user.works_at = user.works_at2
     user.save()
     return HttpResponse(" ")
@@ -614,14 +625,16 @@ def public_work(request):
 # of type POST holding a value for private_work to be set to true and sets the works_at of the user to a 
 # string that says it is hidden.
 def private_work(request):
-    print"tessstttiinnggggg"
+    print"wwwwwwwwwwwwwwwwwwwww"
     user = request.user
     user.private_work = request.POST['Work']
+    print request.POST['Work']
     user.works_at2 =user.works_at
     user.works_at= "The user has set this field to hidden"
     user.save()
+    print user.private_work
     return HttpResponse(" ")
-    
+
 # Heba - C2 change_paccounttype method - as a user i should be able to change my account type from free to 
 # premium. The it allows logged in users to be able to change the account type through
 # taking a request of type post holding a value for the account type, it takes this value and saves it in the

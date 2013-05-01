@@ -209,15 +209,18 @@
             </select>
           </p>
             <label id = "birthoutput" style="color:red"></label>
-           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
-          </h5>
-          <h5>Phone number: <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> <input type="text" id="phonevalue" class="span8" style="display:none" maxlength="150">
-            <label id = "phoneoutput" style="color:red"></label>
-            <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
-            <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
-            {% ifequal request.user user %}
+          {% ifequal request.user user %}
           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
           {% endifequal %}
+          <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+          </h5>
+
+          <h5>Phone number: <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> <input type="text" id="phonevalue" class="span8" style="display:none" maxlength="150">
+          <label id = "phoneoutput" style="color:red"></label>
+          {% ifequal request.user user %}
+          <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
+          {% endifequal %}
+          <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
           <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5> 
           <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
@@ -411,25 +414,6 @@ function edit_phone_save(){
         $('#phonevalue').hide();
         $('#savephone').hide();
         $('#editphone').show();
-        alert("Field updated successfully"); 
-      },
-  });
-}
-function hide_phone(){
-  var phone2 = "tlndf"
-  $.ajax({
-    url: "/hide_phone/",
-    type: "POST",
-    data:{
-    'userphone2' : phone2,
-    },
-      success:function(result){
-        $('#phonelabel').text($('#phonevalue').val());
-        $('#phonelabel').show();
-        $('#phonevalue').hide();
-        $('#savephone').hide();
-        $('#editphone').show();
-        $('#hidephone').hide();
         alert("Field updated successfully"); 
       },
   });
