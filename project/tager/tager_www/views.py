@@ -35,7 +35,9 @@ import re
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
-from twilio.rest import TwilioRestClient
+from django.utils.timezone import utc
+import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from twilio.rest import TwilioRestClient
 
@@ -209,7 +211,15 @@ def add_post(request):
         
         for k in request.POST:
             if k.startswith('option_'):
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)    
+                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                #c2-mohamed
+                #the next five lines are written to save a tuple in ActivityLog table
+                #to save it to make the user retrieve it when he logs into his activity log
+                post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
+                post_activity_url = "showpost?post=" + unicode(p.id)
+                post_log_type = "post"
+                # post_log_date = datetime.datetime.now()
+                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author) 
         return HttpResponseRedirect('/main')
     else:
 
@@ -269,6 +279,15 @@ def add_to_wish_list(request):
     can_wish = user.add_to_wish_list(post)
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity lo
+        post_object = Post.objects.get(id=post)
+        post_activity_content = "you added " + unicode(post_object.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post_object.id)
+        post_log_type = "wish"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse()
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
@@ -287,6 +306,9 @@ def view_post(request):
         post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
+    can_edit = False
+    if test_post.seller == user:
+        can_edit = True
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
@@ -506,6 +528,20 @@ def edit_name(request):
     user.name = request.POST['user_name']
     print"fffffffffffff"
     user.save()
+    #c2-mohamed
+    #the next lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    
+    post_activity_content = "you edited your name to " + unicode(user.name) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    print post_log_type
+    print post_activity_url
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user)
     return HttpResponse (" ")
 
 # Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
@@ -518,6 +554,19 @@ def edit_date_of_birth(request):
     user = request.user
     user.date_Of_birth = request.POST['dateofbirth']
     user.save()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    print post_activity_url
+    print post_log_type
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse (" ")
 
 # Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
@@ -530,6 +579,17 @@ def edit_work(request):
     user = request.user
     user.works_at = request.POST['userwork']
     user.save()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you edited your place of work to " + unicode(user.works_at) + "."
+    post_activity_url = "profile/?user_id=" + unicode(user.id)
+    post_log_type = "profile"
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse (" ")
 
 @login_required
@@ -1088,9 +1148,73 @@ def intrested(request):
         intrest1.save()
         post_in.intersed_count=post_in.intersed_count+1
         post_in.save()
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity log
+        #post_activity_content is to save the activity log content that will be shown to user
+        #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+        #post_log_type is the type of the log type the user will choose in the activity log page
+        post_activity_content = "you added " + unicode(post_in.title) + " to your wish list."
+        post_activity_url = "showpost?post=" + unicode(post_in.id)
+        post_log_type = "profile"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
 
     return HttpResponse()
+#c2-mohamed
+#thismethod renders to Activity.html
+#it renders all activity log that belongs to that user
+def all_log(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(user = author)
+    print "all_log"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type post that belongs to that user
+def all_log_post(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="post", user = author)
+    print "all_log_post"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type interested that belongs to that user
+def all_log_interested(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
+    print "all_log_interested"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type wish that belongs to that user
+def all_log_wish(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
+    print "all_log_wish"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type profile that belongs to that user
+def all_log_profile(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
+    print "all_log_profile"
+    print activities_log
+    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #mai c2 : sms verfication 
 # this methods taked in the number that u want to send the message to and the body 
@@ -1169,6 +1293,16 @@ def remove_post_from_wishlist(request):
     user = request.user
     post = request.POST['post']
     WishList.objects.get(user = user, post_id = post).delete()
+    #c2-mohamed
+    #the next five lines are written to save a tuple in ActivityLog table
+    #to save it to make the user retrieve it when he logs into his activity log
+    #post_activity_content is to save the activity log content that will be shown to user
+    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
+    #post_log_type is the type of the log type the user will choose in the activity log page
+    post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
+    post_activity_url = "showpost?post=" + unicode(post_in.id)
+    post_log_type = "wish"
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse()
 
 #c1_abdelrahman this method takes request as an input from the user. 
@@ -1179,8 +1313,83 @@ def empty_wish_list(request):
     return HttpResponse()
 
 
+#c1_abdelrahman this method takes request as an input then it updates the attribute value by the value extracted from request.post.
+def edit_post_attribute(request):
+    user = request.user
+    post_id = request.POST['post']
+    attribute_id = request.POST['attribute']
+    value = request.POST['value']
+    current_value_instant = Value.objects.get(attribute = attribute_id ,post = post_id)
+    current_value_instant.value = value
+    current_value_instant.post.edit_date = datetime.now()
+    current_value_instant.post.save()
+    current_value_instant.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it returns the post and the list of the attributes of the subchannel that the post belongs to and the list of the values of the attributes that is saved in the Values table.
+#it checks whether the current of the user and then it renders to the html the list and whether the user can edit the post or not.
+def edit_post(request):
+    user = request.user
+    post_id = request.GET['post']
+    current_post = Post.objects.get(id = post_id)
+    subchannel = current_post.subchannel_id
+    list_of_attribute_name = Attribute.objects.filter(subchannel_id = subchannel)
+    list_of_attribute_values = Value.objects.filter(post = current_post).order_by('attribute')
+    list_of_attributes_numbers = Value.objects.filter(post = current_post).order_by('attribute')
+    return render_to_response('editPost.html', {'current_post': current_post
+    , 'list_of_attribute_name':list_of_attribute_name
+    , 'list_of_attribute_values':list_of_attribute_values
+    ,'list_of_attributes_numbers': list_of_attributes_numbers})
+#c1_abdelrahman this method takes request as an input then it extracts the new description from the POST then it save it in the post table. it returns blank httpresponse. 
+def edit_post_description(request):
+    user = request.user
+    new_description = request.POST['description']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.description = new_description
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new price from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_price(request):
+    user = request.user
+    new_price = request.POST['price']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.price = new_price
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new location from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_location(request):
+    user = request.user
+    new_location = request.POST['location']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.location = new_location
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new title from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_title(request):
+    user = request.user
+    new_title = request.POST['title']
+    post_id = request.POST['post']
+    print post_id
+    current_post = Post.objects.get(id = post_id)
+    current_post.title = new_title
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
 
 
 
 
+
+#c1-abdelrahman it takes a request as an input.
+# it returns a list of all the wished posts by the user to the profile.html
+
+def view_posts_wished(request):
+    user = request.user
+    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
