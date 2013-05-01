@@ -140,23 +140,30 @@
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
                   <center><h4>Interested</h4></center>
                   </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-                  <br>
-                  <br>
-                  <br>
+                  {% if my_intrested_in %}
 
+                        {% for my_intrested_post in my_intrested_in %}    
+                          <div id="thumbnail" style="display:inline;" title="{{my_post.title}}">
+                              {% if my_intrested_post.profile_picture %} 
+                                <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                               {% else %}
+                                <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                              {% endif %}
+                          </div>  
+                        {% endfor %} 
+
+                    {% else %}
+                    <center>
+                    <strong>You are not intrested in any Post,<br> Click here to Browse some Posts <br></strong>
+                    <button id="update_status" class="btn btn-small btn-primary primaryOnHove" ONCLICK="window.location.href='/main'">Main</button>
+                    </center>
+                    {% endif %}  
+
+                  </div>
                 </div>
                 </div>
 
-              </div>
+              
 
               <div id="userDetails">         
                   <p>
@@ -170,27 +177,28 @@
       <div class="span7">
         <div class="ProfileInfo">
         <div class="status" id="box3" >
-          <br>
 
           <div class="thumbnail" >
-          <h4>Status<label id="status">{{user.status}}</label></h4>
+          <h4>Status<label id="status"> {{user.status}} </label></h4>
           <div class="editeInfo">
            <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)" required> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
 
             <button id="update_status" class="btn btn-small btn-primary primaryOnHove" onClick="update_status_tosave()"><i class="icon-white icon-pencil"></i></button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
         </div>
-      <br>
+        </div>
+        </div>
+  <div>
         <div class="information" id="box3">
           <div class="thumbnail" >
           <h3>Information:</h3>
-          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
+          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input value="{{user.name}}" type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
             <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
           </h5> 
           <h5>Email: {{ user.email}}</h5>
-          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
+          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input  type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
           <p style="display:none" id="formate">Format options:<br/>
             <select id="format">
               <option >Chose formate</option>
@@ -205,10 +213,8 @@
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>
-          
-       
-          
-        </div>
+                 
+     
           <br>
 
           </div>
@@ -234,25 +240,30 @@
             <div class="profileHeader" class="active" wotsearchprocessed="true">
             <center><h4>My Posts</h4></center>
             </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+    </center>
+{% if my_posts %}
 
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+      {% for my_post in my_posts %}    
+        <div id="thumbnail" style="display:inline;" title="{{my_post.title}}">
+            {% if my_post.profile_picture %} 
+              <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+             {% else %}
+              <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+            {% endif %}
+        </div>  
+      {% endfor %} 
 
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+  {% else %}
+  <center>
+  <strong>You have't added any post,<br> Click here to add a post <br></strong>
+  </center>
+  {% endif %}  
 
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+
             <br>
 
         </div>
-        </center>
+        
         </div>
 
 
