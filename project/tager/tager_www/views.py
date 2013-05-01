@@ -651,23 +651,33 @@ def private_number(request):
 # of type POST holding a value for private_number to be set to false and sets the phone_number of the user to his
 # actual number is the database.
 def public_number(request):
+    print"puwwwwwwwwww"
     user = request.user
     print user.phone_number
     user.private_number = request.POST['Number1']
     print request.POST['Number1']
+    print user.private_number
+    user.private_number = False
+    print user.private_number
     user.phone_number = user.phone_number2
     user.save()
+    print user.private_number
     return HttpResponse(" ")
 
 # Heba -C2 public_work method. is a method that allows the users to show his work through taking a request 
 # of type POST holding a value for private_work to be set to false and sets the works_at of the user to his
 # actual work is the database.
 def public_work(request):
-    print"tessstttiinnggggg"
+    print"puwwwwwwwwww"
     user = request.user
     user.private_work = request.POST['Work1']
+    print request.POST['Work1']
+    print user.private_work
+    user.private_work = False
+    print user.private_work
     user.works_at = user.works_at2
     user.save()
+    print user.private_work
     return HttpResponse(" ")
 
 # Heba -C2 private_work method. is a method that allows the users to hide his works_at through taking a request 

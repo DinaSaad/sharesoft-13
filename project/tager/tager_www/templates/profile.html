@@ -209,16 +209,17 @@
             </select>
           </p>
             <label id = "birthoutput" style="color:red"></label>
-           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            {% ifequal request.user user %}
+            <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
+            {% endifequal %}
+            <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5>
           <h5>Phone number: <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> <input type="text" id="phonevalue" class="span8" style="display:none" maxlength="150">
             <label id = "phoneoutput" style="color:red"></label>
-            <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
-            <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
             {% ifequal request.user user %}
-          <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
-          {% endifequal %}
-          <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
+            {% endifequal %}
+            <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
           </h5> 
           <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>

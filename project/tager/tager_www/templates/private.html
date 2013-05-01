@@ -2,11 +2,11 @@
 {% load staticfiles %}  
 {% block content %}
 <div>
-	<h3> Name: {{ user.name}} </h3>
-	<h3> Birth date: {{ user.date_Of_birth }} </h3>
+  <h3> Name: {{ user.name}} </h3>
+  <h3> Birth date: {{ user.date_Of_birth }} </h3>
 
 
-	<h3> Phone number: {{ user.phone_number}} 
+  <h3> Phone number: {{ user.phone_number}} 
     {% if not user.private_number %}
     {% ifequal request.user user %}
     <button id="hidephone" class="btn btn-success btn-small" onClick="change_number_toprivate()" >Set to private</button>
@@ -19,20 +19,20 @@
 
 
 
-	<h3> Works at: {{ user.works_at}}
+  <h3> Works at: {{ user.works_at}}
     {% if not user.private_work %}
     {% ifequal request.user user %}
     <button id="hidework" class="btn btn-success btn-small" onClick="change_work_toprivate()" >Set to private</button>
     {% endifequal %}
     {% else %}
     {% ifequal request.user user %}
-    <button id="publicwork" style="display:none" class="btn btn-success btn-small" onClick="change_work_topublice()" >Set to publice</button></h3>
+    <button id="publicwork"  class="btn btn-success btn-small" onClick="change_work_topublic()" >Set to publice</button></h3>
     {% endifequal %}
     {% endif %}
 </div>
-<script type="text/javascript">	
+<script type="text/javascript"> 
 function change_number_toprivate(){
-  var number = 'false'
+  var number = false
   $.ajax({
     url: '/private_number/',
     type: "POST",
@@ -50,8 +50,7 @@ function change_number_toprivate(){
   });
 }
 function change_number_topublic(){
-  var number1 = 'true'
-  alert("jjsjjss");
+  var number1 = true
   $.ajax({
     url: '/public_number/',
     type: "POST",
@@ -59,9 +58,9 @@ function change_number_topublic(){
     'Number1' : number1,
     },
     success:function(result){
-        $('#hidephone').show();
-        $('#publicphone').hide();
-        alert("this field has been set to private");
+       
+      $('#publicphone').hide();
+      alert("this field has been set to public");
       },
     error:function(result){
       alert("Sorry, failed to change you account type");
@@ -69,7 +68,7 @@ function change_number_topublic(){
   });
 }
 function change_work_toprivate(){
-  var work = 'false'
+  var work = false
   $.ajax({
     url: '/private_work/',
     type: "POST",
@@ -86,8 +85,8 @@ function change_work_toprivate(){
     },
   });
 }
-function change_work_topublice(){
-  var work1 = 'true'
+function change_work_topublic(){
+  var work1 = true
   $.ajax({
     url: '/public_work/',
     type: "POST",
@@ -95,9 +94,9 @@ function change_work_topublice(){
     'Work1' : work1,
     },
     success:function(result){
-        $('#hidework').hide();
-        $('#publicwork').show();
-        alert("this field has been set to private");
+        $('#hidework').show();
+        $('#publicwork').hide();
+        alert("this field has been set to public");
       },
     error:function(result){
       alert("Sorry, failed to change you account type");
