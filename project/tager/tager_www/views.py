@@ -726,8 +726,8 @@ def change_paccounttype(request):
 # variable subchannels , to store all subchannels available in the database,
 #  channels_list is a list that holds dictionaries of channels and its subchannels.
 # subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
-# the method then return the channels_list only , as it holds , every attribute of subchannel
-# and every subchannel of a channel 
+# the method then return the channels_list , as it holds every subchannel of a channel and the posts related to it 
+# it also returns the mnimum and maximum price available 
 def get_channels (request):
     channels = Channel.objects.all()
     channels_list = [] 
@@ -757,9 +757,10 @@ def get_channels (request):
 
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# subchannel_id is the id retrieved from the webpage 
-# its is matched with with the subchannel id in the post model , 
-# the method returns the dictionairy of posts related to specific subchannels.
+# the method GETS  a list of subchannel ID's , list of post states and a min price and a maximum price 
+#  list of ID's is used to get subchannels ( results_of_subchannels ) and hence it retrives posts in post_list
+# contributing in post lists , the list_of_states is matched with the post states and filtered 
+# also the mnimum and maximum price are considered in order to filter prices within them .
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
     list_of_states = request.GET.getlist('status[]')
