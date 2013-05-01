@@ -324,10 +324,10 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-
-
+    #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
     dic = {
-    'no': list_of_att_number
+    'admin': user.is_admin
+    ,'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -643,6 +643,15 @@ def change_faccounttype(request):
         user.is_premium = True
     user.save()
     return HttpResponse(" ")
+
+#c1 abdelrahman this is a function that takes a request and from the request it gets the post that need to be hidden.
+#then it hide it and return empty httpresponse.
+def hide_post(request):
+    post_id = request.POST['post']
+    current_post = Post.objects.get(pk = post_id)
+    current_post.is_hidden = True
+    current_post.save()
+    return HttpResponse()
 
 # Heba -C2 private_number method. is a method that allows the users to hide his number through taking a request 
 # of type POST holding a value for private_number to be set to true and sets the phone_number of the user to a 
