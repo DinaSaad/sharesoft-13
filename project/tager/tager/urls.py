@@ -83,6 +83,10 @@ urlpatterns = patterns('',
     url(r'^thankyou/$','tager_www.views.thankyou'),
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
+
+
+    url(r'^addComment/(?P<post_id>\d+)/$', 'tager_www.views.SavingComment', name="adingcomment"),
+
     url(r'^user_activity/$', 'tager_www.views.all_log'),
     url(r'^all_log/$', 'tager_www.views.all_log'),
     url(r'^all_log_post/$', 'tager_www.views.all_log_post'),
@@ -92,6 +96,7 @@ urlpatterns = patterns('',
     url(r'^all_log_wish/$', 'tager_www.views.all_log_wish'),
     url(r'^send_phone/$', 'tager_www.views.sms'),
     url(r'^send_sms/$', 'tager_www.views.sms_verify'),
+
 
     
 

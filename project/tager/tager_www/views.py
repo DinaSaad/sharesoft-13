@@ -309,6 +309,7 @@ def view_post(request):
     can_edit = False
     if test_post.seller == user:
         can_edit = True
+
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
@@ -324,9 +325,17 @@ def view_post(request):
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
 
-    # dic = {'post': test_post, 'list_of_att_name': list_of_att_name, 'list_of_att_values': list_of_att_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
-    dic = {'no': list_of_att_number,'can_edit': can_edit, 'canwish':post_can_be_wished,'post': test_post, 'list_of_attribute_name': list_of_att_name, 'list_of_attribute_values': list_of_attribute_values, 'report_reasons': report_reasons, 'list_of_interested_buyers': list_of_interested_buyers}
 
+    dic = {
+    'no': list_of_att_number
+    , 'can_edit': can_edit
+    , 'canwish':post_can_be_wished
+    , 'post': test_post
+    , 'list_of_attribute_name': list_of_att_name
+    , 'list_of_attribute_values': list_of_attribute_values
+    , 'report_reasons': report_reasons
+    , 'list_of_interested_buyers': list_of_interested_buyers
+    , 'comments': Comment.objects.filter(post_id=post_id) }
 
     # dic.update(d)
     if user.id is not None:
@@ -1144,6 +1153,27 @@ def facebook_login_done(request):
         return HttpResponseRedirect(next)
     else:
         return HttpResponseRedirect(LOGIN_REDIRECT_URL)
+
+
+#c1_hala this method called savingComment that takes two parameters request and post_id, the 
+#content variable takes from the request the content that the user types in, and userobject variable is a 
+#variable that the user as an object which rather than taking the user_id no takes the user as an object
+#and saves it in the Comment table as an object, and post variable brings the post from post table with id 
+#that matches the post_id that taken as a paramter, and comment variable saves in the comment table 
+#the content taken and the date that was retreived at that time using datetime.now()
+#and takes the user as an object, and takes the post id and saves it in the comment table.
+#comment table by that saves each post with its comment content, date of the comment, and saves 
+#the users owner of the comment next to tthe comment. and at last the method returns the method viewPost
+#which has the post and its past comments saved on it
+
+def SavingComment(request, post_id):
+    content = request.POST['content']
+    userobject= request.user #UserProfile.objects.get(user_id=Comment.user_id)
+    post = Post.objects.get(pk=post_id)
+    post.comments_count +=1
+    comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
+    comment.save()
+    return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 
 #then then check if the user is verified ,
