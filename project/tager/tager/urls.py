@@ -38,6 +38,8 @@ urlpatterns = patterns('',
     
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
+    url(r'^getContacts/$', 'tager_www.views.facebook_import_friends', name="facebook_import_friends"),
+    url(r'^getContacts/done$', 'tager_www.views.facebook_import_friends_done', name="facebook_import_friends_done"),
 
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
     url(r'^notifications/$', 'tager_www.views.return_notification'),

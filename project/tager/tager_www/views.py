@@ -877,20 +877,6 @@ def search(request):
 #     message = client.sms.messages.create(to="+201112285944",
 #                                          from_="+15555555555",
 
-def fb_login(request, result):
-        mail = result.email
-        password = result.password
-        authenticated_user = authenticate(mail=mail, password=password)
-        if authenticated_user is not None:
-            print authenticated_user.is_active
-            if authenticated_user.is_active:
-                django_login(request, authenticated_user)
-                return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
-            else:
-               return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
-        else:
-            return render_to_response ('home.html',context_instance=RequestContext(request))
-
 def facebook_login(request):
     if request.REQUEST.get("device"):
         device = request.REQUEST.get("device")
@@ -905,9 +891,6 @@ def facebook_login(request):
         if 'HTTP_REFERER' in request.META:
             request.session['next'] = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
-        
-
-
 
 def fb_authenticate(request):
     access_token = None
@@ -970,6 +953,93 @@ def facebook_login_done(request):
     else:
         return HttpResponseRedirect(REDIRECT_URL)
 
+# Ahmed C3: Facebook friends import
+# This method uses the Facebook app data (App ID and secret) to create a connection with Facebook
+# to authorize the app and redirect the user to us
+
+def facebook_import_friends(request):
+    if request.REQUEST.get("device"):
+        device = request.REQUEST.get("device")
+    else:
+        device = "user-agent"
+        params = {}
+        params["client_id"] = APP_ID
+        params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_import_friends_done"))
+        params['scope'] = SCOPE_SEPARATOR.join(FACEBOOK_PERMISSIONS)
+        params["device"] = device
+        url = "https://graph.facebook.com/oauth/authorize?" + urllib.urlencode(params)
+        if 'HTTP_REFERER' in request.META:
+            request.session['next'] = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+
+# Ahmed C3: Facebook friends import
+# This method uses the facebook app ID and secret to fetch the access token from facebook
+# Done that, the method requests user friends data from Facebook, checks the presence
+# of the friend in the table, creates a new user for each friend if the friend is being
+# imported for the first time, then returns a user instance
+
+def getContacts(request):
+    access_token = None
+    fb_user = None
+    uid = None
+    # assume logging in normal way
+    params = {}
+    params["client_id"] = APP_ID
+    params["client_secret"] = APP_SECRET
+    params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_import_friends_done"))
+    params["code"] = request.GET.get('code', '')
+    url = ("https://graph.facebook.com/oauth/access_token?" + urllib.urlencode(params))
+    from cgi import parse_qs
+    userdata = urllib.urlopen(url).read()
+    res_parse_qs = parse_qs(userdata)
+    # Could be a bot query
+    if not ('access_token') in res_parse_qs:
+        return None
+    access_token = res_parse_qs['access_token'][-1]
+    fields = "&fields=friends.fields(name,email,picture)"
+    url = "https://graph.facebook.com/me?access_token=" + access_token + fields
+    import simplejson as json
+    fb_data = json.loads(urllib.urlopen(url).read())
+    uid = fb_data['id']
+    # Get facebook friends array
+    if not fb_data:
+        return None
+    else:
+        # Add these friends to the current user's friends
+        userprofile = UserProfile.objects.get(facebook_uid=int(uid))
+        friends = fb_data["friends"]["data"]
+        for friend in friends:
+            uid = fb_data['id']
+            name = friend['name']
+            friend_uid = friend['id']
+            f_uid = str(friend_uid)
+            email = f_uid + "@facebook.com"
+            picture = friend["picture"]["data"]
+            pic_url = picture['url']
+            try:
+                friend_userprofile = UserProfile.objects.get(facebook_uid=int(friend_uid))
+                continue
+                return userprofile
+            except UserProfile.DoesNotExist:
+                friend_userprofile = UserProfile.objects.create(name = name, email=email,facebook_uid=friend_uid)
+                friend_userprofile.photo = pic_url
+                userprofile = UserProfile.objects.get(facebook_uid=uid)
+                friend_user_profile = UserProfile.objects.get(facebook_uid=friend_uid)
+                userprofile.friends.add(friend_user_profile)
+                userprofile.save()
+                continue
+                return userprofile
+        return userprofile
+
+# Ahmed C3: Facebook friends import
+# This method finalizes the friends import process, checks what is returned from the getContacts
+# method and redirects the user to the main page
+
+def facebook_import_friends_done(request):
+    result=getContacts(request)
+    print result
+    if isinstance(result, UserProfile):
+        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
 #Beshoy intrested method Takes a request 
 #then then check if the user is verified ,
