@@ -25,10 +25,7 @@ urlpatterns = patterns('',
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),  
     url(r'^intrested/$', 'tager_www.views.intrested'),   
     url(r'^intrested/$', 'tager_www.views.intrested'),  
-<<<<<<< HEAD
 
-=======
->>>>>>> master
     url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
     url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
@@ -43,12 +40,11 @@ urlpatterns = patterns('',
     url(r'^public_number/$', 'tager_www.views.public_number'),
     url(r'^public_work/$', 'tager_www.views.public_work'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
-<<<<<<< HEAD
-=======
+
     url(r'^account/$', 'tager_www.views.return_account_type'),
     url(r'^change_faccount/$', 'tager_www.views.change_faccounttype'),
     url(r'^change_paccount/$', 'tager_www.views.change_paccounttype'),
->>>>>>> master
+
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
