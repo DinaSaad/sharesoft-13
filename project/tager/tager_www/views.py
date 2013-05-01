@@ -306,6 +306,9 @@ def view_post(request):
         post_can_be_wished = user.add_to_wish_list(post_id)
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
+    can_edit = False
+    if test_post.seller == user:
+        can_edit = True
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
@@ -1250,8 +1253,83 @@ def empty_wish_list(request):
     return HttpResponse()
 
 
+#c1_abdelrahman this method takes request as an input then it updates the attribute value by the value extracted from request.post.
+def edit_post_attribute(request):
+    user = request.user
+    post_id = request.POST['post']
+    attribute_id = request.POST['attribute']
+    value = request.POST['value']
+    current_value_instant = Value.objects.get(attribute = attribute_id ,post = post_id)
+    current_value_instant.value = value
+    current_value_instant.post.edit_date = datetime.now()
+    current_value_instant.post.save()
+    current_value_instant.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it returns the post and the list of the attributes of the subchannel that the post belongs to and the list of the values of the attributes that is saved in the Values table.
+#it checks whether the current of the user and then it renders to the html the list and whether the user can edit the post or not.
+def edit_post(request):
+    user = request.user
+    post_id = request.GET['post']
+    current_post = Post.objects.get(id = post_id)
+    subchannel = current_post.subchannel_id
+    list_of_attribute_name = Attribute.objects.filter(subchannel_id = subchannel)
+    list_of_attribute_values = Value.objects.filter(post = current_post).order_by('attribute')
+    list_of_attributes_numbers = Value.objects.filter(post = current_post).order_by('attribute')
+    return render_to_response('editPost.html', {'current_post': current_post
+    , 'list_of_attribute_name':list_of_attribute_name
+    , 'list_of_attribute_values':list_of_attribute_values
+    ,'list_of_attributes_numbers': list_of_attributes_numbers})
+#c1_abdelrahman this method takes request as an input then it extracts the new description from the POST then it save it in the post table. it returns blank httpresponse. 
+def edit_post_description(request):
+    user = request.user
+    new_description = request.POST['description']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.description = new_description
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new price from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_price(request):
+    user = request.user
+    new_price = request.POST['price']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.price = new_price
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new location from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_location(request):
+    user = request.user
+    new_location = request.POST['location']
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.location = new_location
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
+#c1_abdelrahman this method takes request as an input then it extracts the new title from the POST then it save it in the post table. it returns blank httpresponse.
+def edit_post_title(request):
+    user = request.user
+    new_title = request.POST['title']
+    post_id = request.POST['post']
+    print post_id
+    current_post = Post.objects.get(id = post_id)
+    current_post.title = new_title
+    current_post.edit_date = datetime.now()
+    current_post.save()
+    return HttpResponse()
 
 
 
 
+
+#c1-abdelrahman it takes a request as an input.
+# it returns a list of all the wished posts by the user to the profile.html
+
+def view_posts_wished(request):
+    user = request.user
+    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
