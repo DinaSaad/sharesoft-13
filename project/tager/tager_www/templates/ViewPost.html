@@ -494,7 +494,7 @@ width: :700px;
       <div class ="commentName"  class="text-info" style="width:100%;">
       <small class="text-info"> {{ comment.date|timesince }}&nbsp;ago <i class="icon-time"></i></small>
       .
-      <a href="/showuser?user={{comment.user_id.id}} ">
+      <a href="profile/?user_id={{comment.user_id.id}} ">
      &nbsp;{{ comment.user_id.name }}&nbsp;<i class="icon-user"></i></a>
    </div>
     </p>
@@ -507,7 +507,7 @@ width: :700px;
     <div class="commentWrapper" class="span4">
     <p>
       <div class ="commentName" class="text-info" >
-      <a href="/showuser?user={{comment.user_id}} ">
+      <a href="profile/?user_id={{comment.user_id.id}} ">
      <i class="icon-user"></i>&nbsp;{{ comment.user_id.name }}&nbsp;</a>
      .<small class="text-info"><i class="icon-time"></i> {{ comment.date|timesince }}&nbsp;ago</small>
     </p></div>
