@@ -10,6 +10,7 @@ from datetime import timedelta
 
 
 
+
 from django.db.models import Sum , Avg 
 
 
@@ -396,6 +397,7 @@ class Post(models.Model):
         p.is_hidden = True
         p.save()
 
+
     #(C1-Tharwat)This method automatically determines the state of the post. Whether it is (New, Old, or Archived)
     #The method takes in one parameter which is the post itself
     #the method compares the date of which the post was published in and the current date
@@ -583,6 +585,7 @@ class Post(models.Model):
     def __unicode__(self):
         return self.title
 
+
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
 # as the user reports a post after choosing a reason pre-defined in the system, a record is inserted in the table
@@ -726,6 +729,21 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+
+
+class Comment(models.Model):
+    content=models.CharField(max_length="500")
+    date=models.DateTimeField()
+    is_Hidden=models.BooleanField(default=False)
+    post_id= models.ForeignKey(Post)
+    user_id=models.ForeignKey(UserProfile)
+   #c1_hala_comment i added def unicode to return the post state 
+   #to identify it while testing to make sure it is saved in d 
+    #i added comment tabel to save data taken from user to save in db 
+    #to easily retreive it from when needed in the post when comment is posted
+    def __unicode__(self):
+        return self.content
+
 #c1_abdelrahman this is the class that holds the users and the posts they added in the wish list.
 class WishList(models.Model):
     user = models.ForeignKey(UserProfile)
@@ -748,3 +766,4 @@ class ActivityLog(models.Model):
     # activity_date = models.DateField()
     def __unicode__(self):
         return unicode(self.activity_date) + unicode(self.content)
+

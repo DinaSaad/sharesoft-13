@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+
 {% block headers %}
 {% load staticfiles %}
     {% include 'jquery_raty_min_js.html' %}
@@ -442,9 +443,7 @@ width: :700px;
  
 </div>
             
-</div>
-</div>
-  </div>
+
 
      
 
@@ -541,9 +540,88 @@ width: :700px;
 =======
 
 
+
+
+<div class="commentsMain" style="margin-top:20px;">
+
+
+{% for comment in comments %}
+
+    {% if comment.user_id.id == post.seller.id %}
+    <div class="commentWrapper right" class="span4">
+    <p>
+      <div class="commentLeftHead">
+      <div class ="commentName"  class="text-info" style="width:100%;">
+      <small class="text-info"> {{ comment.date|timesince }}&nbsp;ago <i class="icon-time"></i></small>
+      .
+      <a href="/showuser?user={{comment.user_id.id}} ">
+     &nbsp;{{ comment.user_id.name }}&nbsp;<i class="icon-user"></i></a>
+   </div>
+    </p>
+    <p class="triangle-left" style="width:auto;">
+      {{ comment.content}}</p>
+    </div>
+    </div>
+    {% else %}
+
+    <div class="commentWrapper" class="span4">
+    <p>
+      <div class ="commentName" class="text-info" >
+      <a href="/showuser?user={{comment.user_id}} ">
+     <i class="icon-user"></i>&nbsp;{{ comment.user_id.name }}&nbsp;</a>
+     .<small class="text-info"><i class="icon-time"></i> {{ comment.date|timesince }}&nbsp;ago</small>
+    </p></div>
+    <p class="triangle-right">{{ comment.content}}</p>
+    </div>
+    
+
+    {% endif %}
+
+{% empty %}
+<center>
+ <div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong> There are currently no comments on this post !</strong> 
+  Be The first to add a comment
+</div>
+</center>
+
+{% endfor %}
+
+<div>
+  <center>
+
+  {% if user.is_authenticated %}
+
+<form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">
+  {% csrf_token %}
+    <input  id="comment_in"class="input-xxlarge" type="text" placeholder="Input your Comment" placeholder='Add your comment' name='content' rows="3" style="height: 50px;" required>
+      <div class="control-group error" style="display:none;" id="comment_spaces_error">
+      <div class="controls">
+        <span class="help-inline">The Comment Cant be Spaces or Empty</span>
+      </div>
+    </div>
+      <br/>
+      <input type="submit" value="Add" class='btn' id="save_comment" disabled>
+
+  </form>
+  {% else %}
+  <a href="/login/"><h4>Please login to add a Comment</h4> &nbsp;</a>
+
+  {% endif %}
+  </center>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
 {% block script%}
 
     <script type="text/javascript">
+
 
 
   $('#descriptionvalue').keyup(function(){
@@ -874,6 +952,20 @@ function update_location(id){
 
     });
 }
+
+  $('#comment_in').keyup(function(){
+    data = $(this).val();
+    var pattern = /[a-z]|[A-Z]|\d+/;
+    if(data.length < 1 || !data.match(pattern)){
+      $('#save_comment').attr("disabled", true);
+      $('#comment_spaces_error').fadeIn();
+    }
+    else{    
+      $('#save_comment').removeAttr("disabled");    
+      $('#comment_spaces_error').fadeOut();
+    }
+});
+
 
     </script>
     

@@ -84,8 +84,13 @@ urlpatterns = patterns('',
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
 
+
     url(r'^twitterImportFriends/$', 'tager_www.views.twitterImport'),
     url(r'^twitter_userlogin/$', 'tager_www.views.twitter_userlogin'),
+
+
+    url(r'^addComment/(?P<post_id>\d+)/$', 'tager_www.views.SavingComment', name="adingcomment"),
+
 
     url(r'^user_activity/$', 'tager_www.views.all_log'),
     url(r'^all_log/$', 'tager_www.views.all_log'),
