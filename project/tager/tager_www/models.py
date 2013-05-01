@@ -254,12 +254,35 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
+    #c2-mohamed
+    #this def sends notification
+    #to the user who owns the post that the other user has pushed interested on it
     def interested_Notification(self, post_in):
         user_in = self
-        post_owner = post_in.user_id
-        not_content = unicode(user_in.name) + "is interested in your post"
-        not1 = Notification(user = post_in.user_id, content = not_content)
-        not1.save()
+        post_owner = post_in.seller
+        not_content = unicode(user_in.name) + " is interested in your post"
+        not_url = "profile/?user_id=" + unicode(user_in.id)
+        try:
+            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
+            not1.save()
+        except:
+            not1 = Notification(user = user_in, content = not_content, url=not_url)
+            not1.save()
+
+    #c2-mohamed
+    #this def sends notification
+    #to the user who owns the post that the other user has commented on it
+    def comment_notification(self, post_in):
+        user_in = self
+        post_owner = post_in.seller
+        not_content = unicode(user_in.name) + " has commented on your post"
+        not_url = "profile/?user_id=" + unicode(user_in.id)
+        try:
+            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
+            not1.save()
+        except:
+            not1 = Notification(user = user_in, content = not_content, url=not_url)
+            not1.save()
 
 #C2-mahmoud ahmed- as a user i can rate sellers whom i bought from. the method takes the rate and the post
 #and the buyer as inputs and then it inserts these inputs into the rating table and save the record after
@@ -319,15 +342,6 @@ class UserProfile(AbstractBaseUser):
         print refined_interacting_people
 
         return interacting_people
-
-
-#c2-mohamed
-#this class holds all notifications to all users
-class Notification(models.Model):
-    user = models.ForeignKey(UserProfile)
-    content = models.CharField(max_length=100)
-    read = models.BooleanField(default=False)
-    url = models.CharField(max_length=50)
 
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
@@ -499,21 +513,33 @@ class Post(models.Model):
         for q in users_subscribed_to_channel_array:
             not_content = "You have new posts to see in " + unicode(channel_of_post.name)
             not_url = "showpost?post="+unicode(self.id)
-            not1 = Notification(user = q, content = not_content, url=not_url)
-            not1.save()
+            try:
+                not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                not1.save()
+            except:
+                not1 = Notification(user = q, content = not_content, url=not_url)
+                not1.save()
         for a in users_subscribed_to_subchannel_array:
             not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
             not_url = "showpost?post="+unicode(self.id)
-            not1 = Notification(user = a, content = not_content, url=not_url)
-            not1.save()
+            try:
+                not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                not1.save()
+            except:
+                not1 = Notification(user = q, content = not_content, url=not_url)
+                not1.save()
         for b in all_users_subscribed_to_attributes:
             if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
                 if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
                     not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
                     not_url = "showpost?post="+unicode(self.id)
-                    not1 = Notification(user = b, content = not_content, url=not_url)
-                    not1.save()
-                    print "In last for loop"
+                    try:
+                        not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                        not1.save()
+                    except:
+                        not1 = Notification(user = q, content = not_content, url=not_url)
+                        not1.save()
+                        print "In last for loop"
 
 
     def get_buyer():
@@ -592,6 +618,14 @@ class Post(models.Model):
     def __unicode__(self):
         return self.title
 
+#c2-mohamed
+#this class holds all notifications to all users
+class Notification(models.Model):
+    user = models.ForeignKey(UserProfile)
+    content = models.CharField(max_length=100)
+    read = models.BooleanField(default=False)
+    url = models.CharField(max_length=50)
+    image_url = models.CharField(max_length=50)
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
