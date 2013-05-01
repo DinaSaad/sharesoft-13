@@ -210,9 +210,16 @@
           </p>
             <label id = "birthoutput" style="color:red"></label>
             {% ifequal request.user user %}
-          <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
-          {% endifequal %}
-          <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
+            {% endifequal %}
+            <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+          </h5>
+          <h5>Phone number: <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> <input type="text" id="phonevalue" class="span8" style="display:none" maxlength="150">
+            <label id = "phoneoutput" style="color:red"></label>
+            {% ifequal request.user user %}
+            <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
+            {% endifequal %}
+            <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
           </h5> 
           <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
@@ -221,6 +228,7 @@
             {% endifequal %}
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
           </h5>         
+
         </div>
           <br>
 
@@ -381,6 +389,52 @@ $(document).ready(function(){
     });
   });
 });
+function edit_phone_preparation(){
+  $('#editphone').hide();
+  $('#phonelabel').hide();  
+  var phone = $('#phonelabel').text();
+  $("#phonevalue").val (phone);
+  $('#phonevalue').show();
+  $('#savephone').show();
+  $('#hidephone').show();
+}
+function edit_phone_save(){
+  var phone1 = $("#phonevalue").val()
+  $.ajax({
+    url: "/edit_phone/",
+    type: "POST",
+    data:{
+    'userphone' : phone1,
+    },
+      success:function(result){
+        $('#phonelabel').text($('#phonevalue').val());
+        $('#phonelabel').show();
+        $('#phonevalue').hide();
+        $('#savephone').hide();
+        $('#editphone').show();
+        alert("Field updated successfully"); 
+      },
+  });
+}
+function hide_phone(){
+  var phone2 = "tlndf"
+  $.ajax({
+    url: "/hide_phone/",
+    type: "POST",
+    data:{
+    'userphone2' : phone2,
+    },
+      success:function(result){
+        $('#phonelabel').text($('#phonevalue').val());
+        $('#phonelabel').show();
+        $('#phonevalue').hide();
+        $('#savephone').hide();
+        $('#editphone').show();
+        $('#hidephone').hide();
+        alert("Field updated successfully"); 
+      },
+  });
+}
 function edit_name_preparation(){
   $('#editname').fadeOut();
   $('#nameLabel').fadeOut();
@@ -447,8 +501,6 @@ success:function(result){
 
 });
 }
-
-
 function edit_dob_save(){
   var dateofbirthsubmitted = $("#datepicker").val()
   $.ajax({
@@ -470,6 +522,11 @@ function edit_dob_save(){
         alert("Failed please check the formate!!")
       }
   });
+}
+
+function edit_worksat_preparation(){
+  $('#editworksat').hide();
+  $('#worksatlabel').hide();  
 }function edit_worksat_preparation(){
   $('#editworksat').fadeOut();
   $('#worksatlabel').fadeOut();  
@@ -504,29 +561,18 @@ $(function() {
   });
 $(document).ready(function(){
   $(function(){
-     $('#typevalue').keyup(function(){
-      var type1 = $(this).val();
-      if(type1 == 'Free'){
-        $('#free').attr("disabled", true);
-      }
-      else{
-        if(type1 == 'Premium'){
-        $('#premium').attr("disabled", true);
-      }
-    }
-  });
-});
-});
-$(document).ready(function(){
-  $(function(){
     $('#namevalue').keyup(function(){
       var data = $(this).val();
       var pattern = /[a-z]|[A-Z]|\d+/;
-      if(data.length <=40 && data.match(pattern)){
+      if(data.length <=40 &&   data.length >0 &&data.match(pattern)){
         $('#savename').removeAttr("disabled");
         $('#nameoutput').text("");
         return true;
       }
+      if(data == ""){
+          $('#savename').attr("disabled", true);
+          $('#nameoutput').text("The name can not be empty");
+        }
       else{
         if(data == ''){
           $('#savename').attr("disabled", true);
@@ -541,7 +587,7 @@ $(document).ready(function(){
               $('#savename').removeAttr("disabled");    
               $('#titleoutput').text("");
             }
-        }
+          }
       }
       $('#savename').attr("disabled", true); 
     });

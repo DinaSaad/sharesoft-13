@@ -511,11 +511,12 @@ def UserRegistration(request):
 # the status and will be redirected to the login page. output of the method saves the new status in database 
 @login_required
 def update_status(request):
-    print 'testing this method'
     user = request.user
+    print user
     user.status = request.POST['status']
+    print request.POST['status']
     user.save()
-    return HttpResponse(" ")
+    return render(request, 'profile.html', {'user':user})
 
 # Heba - C2 edit_name method - the edit_name method  allows logged in users to edit their 
 # name. It takes in a request of type post holding name as a varibale in which the user can edit. The user can write a the name they want in the text field which will be
@@ -525,6 +526,7 @@ def update_status(request):
 def edit_name(request):
     user = request.user
     user.name = request.POST['user_name']
+    print"fffffffffffff"
     user.save()
     #c2-mohamed
     #the next lines are written to save a tuple in ActivityLog table
@@ -591,6 +593,17 @@ def edit_work(request):
     return HttpResponse (" ")
 
 @login_required
+def edit_phone(request):
+    user = request.user
+    user.phone_number = request.POST['userphone']
+    user.save()
+    return HttpResponse (" ")  
+
+@login_required
+def view_private(request):
+    return render_to_response ('private.html', context_instance=RequestContext(request))
+
+@login_required
 def editing_pic(request):
     if request.method == 'POST': #if the form has been submitted
         editing_form = EditPicForm(request.POST, request.FILES)#a form bound to the POST data
@@ -622,6 +635,63 @@ def change_faccounttype(request):
     user.save()
     return HttpResponse(" ")
 
+# Heba -C2 private_number method. is a method that allows the users to hide his number through taking a request 
+# of type POST holding a value for private_number to be set to true and sets the phone_number of the user to a 
+# string that says it is hidden.
+def private_number(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_number = request.POST['Number']
+    user.phone_number2 = user.phone_number
+    user.phone_number = "The user has set this field to hidden"
+    user.save()
+    return HttpResponse(" ")
+
+# Heba -C2 public_number method. is a method that allows the users to show his number through taking a request 
+# of type POST holding a value for private_number to be set to false and sets the phone_number of the user to his
+# actual number is the database.
+def public_number(request):
+    print"puwwwwwwwwww"
+    user = request.user
+    print user.phone_number
+    user.private_number = request.POST['Number1']
+    print request.POST['Number1']
+    print user.private_number
+    user.private_number = False
+    print user.private_number
+    user.phone_number = user.phone_number2
+    user.save()
+    print user.private_number
+    return HttpResponse(" ")
+
+# Heba -C2 public_work method. is a method that allows the users to show his work through taking a request 
+# of type POST holding a value for private_work to be set to false and sets the works_at of the user to his
+# actual work is the database.
+def public_work(request):
+    print"puwwwwwwwwww"
+    user = request.user
+    user.private_work = request.POST['Work1']
+    print request.POST['Work1']
+    print user.private_work
+    user.private_work = False
+    print user.private_work
+    user.works_at = user.works_at2
+    user.save()
+    print user.private_work
+    return HttpResponse(" ")
+
+# Heba -C2 private_work method. is a method that allows the users to hide his works_at through taking a request 
+# of type POST holding a value for private_work to be set to true and sets the works_at of the user to a 
+# string that says it is hidden.
+def private_work(request):
+    print"tessstttiinnggggg"
+    user = request.user
+    user.private_work = request.POST['Work']
+    user.works_at2 =user.works_at
+    user.works_at= "The user has set this field to hidden"
+    user.save()
+    return HttpResponse(" ")
+    
 # Heba - C2 change_paccounttype method - as a user i should be able to change my account type from free to 
 # premium. The it allows logged in users to be able to change the account type through
 # taking a request of type post holding a value for the account type, it takes this value and saves it in the
