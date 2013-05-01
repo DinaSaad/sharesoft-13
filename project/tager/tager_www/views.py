@@ -648,7 +648,7 @@ def change_faccounttype(request):
 #then it hide it and return empty httpresponse.
 def hide_post(request):
     post_id = request.POST['post']
-    current_post = Post.objects.get(pk = post_id)
+    current_post = Post.objects.get(id = post_id)
     current_post.is_hidden = True
     current_post.save()
     return HttpResponse()
@@ -1341,6 +1341,7 @@ def sms_verify(request):
 def remove_post_from_wishlist(request):
     user = request.user
     post = request.POST['post']
+    post_in = Post.objects.get(id=post)
     WishList.objects.get(user = user, post_id = post).delete()
     #c2-mohamed
     #the next five lines are written to save a tuple in ActivityLog table
