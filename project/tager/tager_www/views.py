@@ -590,7 +590,14 @@ def view_profile(request):
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link, 'list_of_wished_posts':list_of_wished_posts}
+        d = {'list_of_wished_posts': list_of_wished_posts
+        ,'user':user_profile
+        , "check_verified" : verfied 
+        # , "link" : link
+        , 'list_of_wished_posts':list_of_wished_posts
+        , 'my_posts': Post.objects.filter(seller=user_profile) 
+        , 'my_intrested_in':InterestedIn.objects.filter(user_id_buyer=user_profile),
+        }
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
