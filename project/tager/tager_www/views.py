@@ -1052,7 +1052,7 @@ def fb_authenticate(request):
     uid = fb_data['id']
     mail = fb_data['email']
     if not fb_data:
-        return Nonet(request, post_id)
+        return None
     try:
         userprofile = UserProfile.objects.get(facebook_uid=int(uid))
         userprofile.accesstoken = access_token
