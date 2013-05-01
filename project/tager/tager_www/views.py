@@ -171,7 +171,11 @@ def view_channels(request):
     list_of_channels = Channel.objects.all()    
     return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
 
-
+def view_subchannels(request):
+    sub_channel_id = request.GET['ch_id']
+    current_channel = Channel.objects.filter(pk=sub_channel_id)
+    list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
+    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
 #c1_abdelrahman the add_post function requires the user to be logged in.
 #the sub_channel_id is received from the previous view. it displays a form to the user. 
 #if the user filled the form correctly then the user will be redirected to the homepage. 
@@ -212,7 +216,8 @@ def add_post(request):
                 #the next line calls post_Notification() to send notification to all subscribed users
                 #to that post
                 p.post_Notification()
-                Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                #c2-mohamed
+                #the next try statement is to insert the value if new in AttributeChoice table
                 #c2-mohamed
                 #the next five lines are written to save a tuple in ActivityLog table
                 #to save it to make the user retrieve it when he logs into his activity log
@@ -1086,16 +1091,6 @@ def facebook_login(request):
         if 'HTTP_REFERER' in request.META:
             request.session['next'] = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
-        
-
-
-
-
-def view_subchannels(request):
-    s_id = request.GET['ch_id']
-    current_channel = Channel.objects.filter(pk=s_id)
-    list_of_subchannels = SubChannel.objects.filter(channel = current_channel)
-    return render(request, 'index.html', {'list_of_subchannels': list_of_subchannels})
 
 
 # def send_sms(request):
@@ -1179,6 +1174,11 @@ def SavingComment(request, post_id):
     post.comments_count +=1
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
+    #c2-mohamed
+    #the next three lines is to send notification to the post owner
+    user_to_send_not = post.seller
+    if request.user is not user_to_send_not:
+        user_to_send_not.comment_notification(post)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 
@@ -1345,6 +1345,7 @@ def remove_post_from_wishlist(request):
     #post_activity_content is to save the activity log content that will be shown to user
     #post_activity_url is to save the url the user will be directed to upon clicking the activity log
     #post_log_type is the type of the log type the user will choose in the activity log page
+    post_in = Post.objects.get(id=post)
     post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
     post_activity_url = "showpost?post=" + unicode(post_in.id)
     post_log_type = "wish"
