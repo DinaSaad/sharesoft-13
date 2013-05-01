@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
-    url(r'^main/$', 'tager_www.views.get_channels'),
+    url(r'^homepage/$', 'tager_www.views.get_channels'),
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
 
     url(r'^updatestatus/$', 'tager_www.views.update_status'),

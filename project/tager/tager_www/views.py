@@ -635,7 +635,7 @@ def get_channels (request):
             # keep this commented , i'll use it later
             channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
     post_list = Post.objects.all()   
-    return render(request, '/main', {'all_channels': channels_list ,'post_list': post_list} )
+    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # subchannel_id is the id retrieved from the webpage 
