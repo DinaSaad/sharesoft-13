@@ -11,12 +11,14 @@ admin.autodiscover()
 urlpatterns = patterns('',      
     # url(r'^logout/$', logout, {'next_page':'/login'}),  
     url(r'^profile/$', 'tager_www.views.view_profile'),
+
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
     url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
     url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
     url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
     url(r'^editpost/$', 'tager_www.views.edit_post'),
     url(r'^editpostattribute/$', 'tager_www.views.edit_post_attribute'),
+
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
     url(r'^logout/$', logout, {'next_page':'/'}),  
     url(r'^$', 'tager_www.views.home'),
@@ -25,13 +27,17 @@ urlpatterns = patterns('',
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),  
     url(r'^intrested/$', 'tager_www.views.intrested'),   
     url(r'^intrested/$', 'tager_www.views.intrested'),  
+    url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
     url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
     url(r'^edit_name/$', 'tager_www.views.edit_name'),
     url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
+    url(r'^account/$', 'tager_www.views.return_account_type'),
+    url(r'^change_faccount/$', 'tager_www.views.change_faccounttype'),
+    url(r'^change_paccount/$', 'tager_www.views.change_paccounttype'),
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
-    # url(r'^login/$', 'tager_www.views.view_login'),
+    url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
@@ -76,8 +82,13 @@ urlpatterns = patterns('',
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
 
+    url(r'^send_phone/$', 'tager_www.views.sms'),
+    url(r'^send_sms/$', 'tager_www.views.sms_verify'),
+
+
 
     
+
 
 
 
