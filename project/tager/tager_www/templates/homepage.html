@@ -41,6 +41,33 @@
               </div>
             </ul>
     </li>
+
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">status
+       <b class="caret"></b></a>
+      <ul class="dropdown-menu" id="menu1">
+        <div class="accordion-inner">
+          <p>
+            
+            <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
+              New
+          </p> 
+          <p>
+            
+            <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
+              Old
+          </p> 
+          <p>
+            
+            <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
+              Archived
+          </p>    
+        </div>
+
+
+      </ul>
+    </li>
+
     </ul>
   </div>
 </div>  
