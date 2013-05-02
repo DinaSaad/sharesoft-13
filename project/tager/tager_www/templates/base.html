@@ -8,16 +8,66 @@
               <ul class="nav pull-right">
               <li><a href="#" style="margin-top:3px;">Home</a></li>
               <li><a href="#contact" style="margin-top:3px;">Contact</a></li>
-              <li><a href="/notifications" style="margin-top:3px;">Notification</a></li>
-              <li><a href="advanced_search/channel/" style="margin-top:3px;">Advanced Search</a></li>
+              <div id="to_be_replaced" style="float:left; margin-left:5px; margin-top: 13px;">
+                <div id="notifications_div">
+                  <a id="notifications_dropdown" data-toggle="dropdown"><img src="/static/img/notifications-logoo.png" width="25" height="22"/></a>
+                  <ul  id="notifications" class="dropdown-menu"  style="margin-left:-50px; background-color:white" size="7">
+                    <ul id="notifications_menu" style="list-style:none;" width="200">
+                      {% if all_unread_notifications %}
+                        {% for notification in all_unread_notifications %}
+                          <a href="../{{notification.url}}" style="white-space:normal; display:block; background-color:#08c border-bottom:solid thick">
+                          <li class="to_be_shaded" style="margin-right:20px; border-bottom:solid thin black;">
+                            <span>
+                                {% if notification.image_url %}
+                                    <img style="width: 50px; height:50px;" src="{{notification.image_url}}"/>
+                                    <span style="color:black; font-size:13px">{{notification.content}}</span>
+                                {% else %}
+                                    <img src="{% static "img/post.png" %}" width="50" height="50"/>
+                                    <span style="color:black; font-size:13px">{{notification.content}}</span>
+                                {% endif %}
+                            </span>
+                          </li>
+                        </a>
+                        {% endfor %}
+                        <li class="to_be_shaded"style="padding-left:100px;"><a style="color:black" href="../notifications">see all</a></li>
+                      {% else %}
+                        <li class="to_be_shaded" style="padding-left:20px;"><a style="color:black; display:block" href="../notifications">see all</a></li>
+                      {% endif %}
+                      </ul>
+                    </ul>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                      
+                      $("#notifications_dropdown").click(function() {
+                        $.ajax({
+                          url: "/refresh_notifications/",
+                          type: "GET",
+                          success: function(req) {
+                            $('#notifications_menu').replaceWith($(req).find('#notifications_menu'));
+                          }
+                        });
+                      });
+                    });
+                  </script>
+                  <style type="text/css">
+                    #notifications_div:hover{
+                        cursor: pointer;
+                    }
+                    .to_be_shaded:hover{
+                        background-color: #c9dbf1 !important;
+                    }
+                  </style>
+                </div>
+              </div>
               <li>
                 <div>
-                  <form class="navbar-search pull-left" style="margin-top:13px">
+                  <form class="navbar-search pull-left" style="margin-left:130px; margin-top:13px;">
                     <input type="text" class="search-query" placeholder="Search">
                   </form>
                 </div>
               </li>
-              <li><a href="/profile?user_id={{user.id}}" style="margin-top:3px; margin-left:260px; float:right">{{request.user.name}}</a></li>
+              <li><a href="advanced_search/channel/" style="margin-top:3px;">Advanced Search</a></li>
+              <li><a href="/profile?user_id={{user.id}}" style="margin-top:3px; margin-left:230px; float:right">{{request.user.name}}</a></li>
 
               <li class="dropdown">
 
