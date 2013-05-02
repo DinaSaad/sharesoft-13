@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
-{% load staticfiles%}
+
+
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %}
+
 {% block content %}
 
 <style> 
@@ -287,15 +295,22 @@ width: :700px;
 
     
     
-          {% if view_rating %}
-            <button class="btn btn-mini btn-primary" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
-          {% endif %}
           <div id="star"></div>
 
     
 
-        <a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
-        <button type="button" class="btn btn-info"> Interested in </button>
+				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
+				 <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info"><i class="icon-heart"></i> interested</a>
+
+				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
+
+
+				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+				<a href="http://twitter.com/home?status=Your%20message%20here:%20
+					http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+        
         <a href="#myModal" role="button" class="btn btn-info " data-toggle="modal">Report </a>
 
 <!-- {% if user.is_admin %}
@@ -305,6 +320,9 @@ width: :700px;
       <input type="submit" value="Hide" class='btn'>
   </form> 
 {% endif %} -->
+          {% if view_rating %}
+            <button class="btn btn-info" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
+          {% endif %}
       {% if add_buyer_button %}
           <button class="btn btn-info" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
         {% endif %}
@@ -312,6 +330,7 @@ width: :700px;
         the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
         <a href="http://twitter.com/home?status=Your%20message%20here:%20
           http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
 
 
         <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
@@ -332,13 +351,92 @@ width: :700px;
 
         <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
         
-            
-</div>
-</div>
-  </div>
 
+           
+</div>
+ 	</div>
+<!-- Button to trigger modal -->
 
  
+<!-- Modal -->
+<div id="smsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">sms verifcation</h3>
+  </div>
+  <div class="modal-body">
+
+<div class="sms" id = "phonediv">
+        <p><input type="text" id ="phone" name="phone" placeholder = " enter your phone number"></p>
+        <p><button onClick="send_phone_num();" id = "phone_submit">Send</button></p>
+    </div>
+
+<div class="sms" id = "codediv">     
+    <p><input type="text" id ="sms" name="sms" placeholder = "enter sms verification code"></p>
+    <p><button onClick="send_sms_num();" id = "sms_submit">Send</button></p>
+    <div id="message"></div>
+</div>
+
+<script language="JavaScript">
+
+
+</script>
+
+  </div>
+ 
+</div>
+            
+
+
+     
+
+<script type="text/javascript">
+    function send_phone_num(){
+      $.ajax({
+        url: '/send_phone/',
+        type: "POST",
+        data: {
+          "phone_number" : $("#phone").val()
+        }, 
+        success: function(result) {
+          alert("An sms verfication has been sent . This might take a few mins");
+        },
+
+    });
+    }
+
+    function send_sms_num(){
+
+      $.ajax({
+        url: '/send_sms/',
+        type: "POST",
+        data: {
+          "sms_code" : $("#sms").val()
+        }, 
+        success: function(data) {
+          if(data == "true") {
+            $("#message").html("correct code")
+             $(function()
+              { $('#sms').css('border-color', '#CCC');
+            });
+          }
+          else {
+            $("#message").html("please enter the right code ")
+             $(function()
+              { $('#sms').css('border-color', 'red');
+            });
+
+          }
+        },
+
+    });
+    }
+
+</script>
+
+
+
+
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
@@ -364,6 +462,7 @@ width: :700px;
 
 
 
+
 <div id="myModal2" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -383,59 +482,85 @@ width: :700px;
 
 
 
+<div class="commentsMain" style="margin-top:20px;">
+
+
+{% for comment in comments %}
+
+    {% if comment.user_id.id == post.seller.id %}
+    <div class="commentWrapper right" class="span4">
+    <p>
+      <div class="commentLeftHead">
+      <div class ="commentName"  class="text-info" style="width:100%;">
+      <small class="text-info"> {{ comment.date|timesince }}&nbsp;ago <i class="icon-time"></i></small>
+      .
+      <a href="/showuser?user={{comment.user_id.id}} ">
+     &nbsp;{{ comment.user_id.name }}&nbsp;<i class="icon-user"></i></a>
+   </div>
+    </p>
+    <p class="triangle-left" style="width:auto;">
+      {{ comment.content}}</p>
+    </div>
+    </div>
+    {% else %}
+
+    <div class="commentWrapper" class="span4">
+    <p>
+      <div class ="commentName" class="text-info" >
+      <a href="/showuser?user={{comment.user_id}} ">
+     <i class="icon-user"></i>&nbsp;{{ comment.user_id.name }}&nbsp;</a>
+     .<small class="text-info"><i class="icon-time"></i> {{ comment.date|timesince }}&nbsp;ago</small>
+    </p></div>
+    <p class="triangle-right">{{ comment.content}}</p>
+    </div>
+    
+
+    {% endif %}
+
+{% empty %}
+<center>
+ <div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong> There are currently no comments on this post !</strong> 
+  Be The first to add a comment
+</div>
+</center>
+
+{% endfor %}
+
+<div>
+  <center>
+
+  {% if user.is_authenticated %}
+
+<form action="/addComment/{{ post.id }}/" method="post" accept-charset="utf-8">
+  {% csrf_token %}
+    <input  id="comment_in"class="input-xxlarge" type="text" placeholder="Input your Comment" placeholder='Add your comment' name='content' rows="3" style="height: 50px;" required>
+      <div class="control-group error" style="display:none;" id="comment_spaces_error">
+      <div class="controls">
+        <span class="help-inline">The Comment Cant be Spaces or Empty</span>
+      </div>
+    </div>
+      <br/>
+      <input type="submit" value="Add" class='btn' id="save_comment" disabled>
+
+  </form>
+  {% else %}
+  <a href="/login/"><h4>Please login to add a Comment</h4> &nbsp;</a>
+
+  {% endif %}
+  </center>
+</div>
 </div>
 
 
 
-
-
-
-
-
 </div>
 </div>
-</div>
+
 {% block script%}
 
     <script type="text/javascript">
-
- $(document).ready(function(){
-    
-
-    $("#star").css("visibility", "hidden");
-    });
-    $("#rateSeller").click(function(){
-        // window.location.replace("profile?user_id="+$(this).val());
-        $("#star").css("visibility", "visible");
-    });
-    $(document).ready(function(){
-        $('#star').raty({ 
-            score: $('#rating').val(),
-            click: function(score, evt) {
-            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
-            $.ajax({
-                type: 'GET',
-             url: '/rateUser/',
-                data: { post_id: '{{post.id}}', post_owner: '{{post.user.id}}', rating: score },
-                         });
-
-        },
-
-    });
-});
-//       $('#locationvalue').keyup(function(){
-//   var data = $(this).val();
-//   var pattern = /[a-z]|[A-Z]|\d+/;
-//     if (data.length < 5){
-//       $('#locationsave').hide();
-//       $('locationoutput').text("Too short")
-//     }
-//     else{
-//       $('#locationsave').show();
-//     }
-
-
-// });
 
 
 
@@ -557,6 +682,7 @@ $('#locationvalue').keyup(function(){
 
 });
 
+
     var eligible_to_add_to_the_wish_list = {{canwish}}
     $("#wishlisterror").hide();
     if(eligible_to_add_to_the_wish_list){
@@ -577,6 +703,30 @@ $('#locationvalue').keyup(function(){
 
     });
     }
+
+
+    $(document).ready(function(){
+        $("#star").css("visibility", "hidden");
+    });
+    $("#rateSeller").click(function(){
+        // window.location.replace("profile?user_id="+$(this).val());
+        $("#star").css("visibility", "visible");
+    });
+    $(document).ready(function(){
+        $('#star').raty({ 
+            score: $('#rating').val(),
+            click: function(score, evt) {
+            //alert('ID: ' + $(this).attr('id') + "\nscore: " + score + "\nevent: " + evt);
+            $.ajax({
+                type: 'GET',
+                url: '/rateUser/',
+                data: { post_id: '{{post.id}}', post_owner: '{{post.seller.id}}', rating: score },
+                         });
+
+
+        },
+      });
+    });
 
 function update_title_preparation() {
     $("#edit_title").hide();
@@ -667,6 +817,7 @@ function update_attribute(attributeid, postid){
     $('#title1value').hide();
     $('#titlesave').hide();
     $('#edit_title').show();
+    $('#titleoutput').hide();
     },
     });
 }
@@ -741,12 +892,22 @@ function update_location(id){
     });
 }
 
-
-
-
+  $('#comment_in').keyup(function(){
+    data = $(this).val();
+    var pattern = /[a-z]|[A-Z]|\d+/;
+    if(data.length < 1 || !data.match(pattern)){
+      $('#save_comment').attr("disabled", true);
+      $('#comment_spaces_error').fadeIn();
+    }
+    else{    
+      $('#save_comment').removeAttr("disabled");    
+      $('#comment_spaces_error').fadeOut();
+    }
+});
 
 
     </script>
+    
 
     
 

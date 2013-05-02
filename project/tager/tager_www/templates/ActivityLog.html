@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block content%}
+{% load staticfiles %}
+	<div id="ActivityGlobalContainer">
+		<div id="activity_content">
+			<div id="activity_content_column">
+				<div id="activity_right_col">
+
+				</div>
+				<div id="activity_content_area">
+					<div id="activity_selection">
+						<div style="font-family: tahoma,verdana; font-size:25px; line-height:1.5; border-bottom:thin;">Activity Log</div>
+						<div id="activity_selections">
+							<ul id="activity_ul" style="list-style:none">
+								<li id="all_li"class="activity_item" value="all" onClick="activity_all()">All <span>
+									<img id="all" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								
+								<li id="post_li" class="activity_item" value="your posts" onClick="activity_post()">Your Posts <span>
+									<img id="post" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								<li id="wish_li" class="activity_item" value="wish list" onClick="activity_wishlist()">Wish list <span>
+									<img id="wish" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								<li id="interested_li" class="activity_item" value="interested in" onClick="activity_interested()">Interested in <span>
+									<img id="interested" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+								<li id="profile_li" class="activity_item" value="profile" onClick="activity_profile()">Profile <span>
+									<img id="profile" src="{% static "img/loading.gif" %}" />
+								</span>	</li>
+							</ul>
+						</div>
+					</div>
+					<div id="activities_area">
+						{% if activities_log %}
+							{% for log in activities_log %}
+								<a href="../{{log.url}}">
+									<div id="activity_item_2" value="{{log.url}}" onclick="redirecting(value)" class="shadow" style="width:100%; height:auto;">
+										<span style="margin-left: 10px;">{{log.content}}</span>
+										<span style="float:right; margin-left:50px;">{{log.activity_date}}</span>
+										<br>
+										<hr>
+									</div>
+								</a>
+							{% endfor %}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>	
+	</div>
+	<style type="text/css">
+    	#ActivityGlobalContainer {
+    		clear: both;
+    		padding-right: 205px;
+    		width: 981px;
+    		margin: 0 auto;
+    		position: relative;
+    		zoom: 1;
+    		line-height: 1.28;
+    		text-align: left;
+    		direction: ltr;
+    		height: 100%;
+		}
+		#content {
+			min-height: 100px;
+			margin: 0;
+			outline: none;
+			padding: 0;
+			width: auto;
+			height: auto;
+		}
+		#activity_right_col{
+			margin-right: -5px;
+			width: 122px;
+			margin-top: 0px;
+			float: right;
+			padding-right: 0px;
+			word-wrap: break-word;
+			height: auto;
+		}
+		#activity_content_area{
+			position: relative;
+			width: 851px !important;
+			float: left;
+			margin-right: 0px;
+			height: auto;
+		}
+		#activity_selection{
+			margin: auto;
+			width: 173px;
+			z-index: 2;
+			float: left;
+			position: fixed !important;
+			display: block;
+			height: auto;
+			/*background-color: #BCD2EE;*/
+		}
+		#activity_selections{
+			width: 161px;
+			height: 375px;
+			direction: ltr;
+			overflow: hidden;
+			position: relative;
+			margin-right: 5px;
+			margin-top: 10px;
+			display: block;
+			font-size: 11px;
+			height: auto;
+		}
+		#activity_ul{
+			font-size: 14px;
+			line-height: 1.28;
+		}
+		.activity_item{
+			margin-bottom: 15px;
+			padding-right: 20px;
+			margin-left: -10px;
+			width: 100%;
+			display: list-item;
+			color: #333;
+			height: 100%;
+			list-style: none;
+		}
+		#activities_area{
+			min-height: 682px;
+			width: 687px;
+			float: right;
+			display: block;
+			margin-top: 45px;
+		}
+		#all{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#post{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#wish{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#interested{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		#profile{
+			margin-bottom: 100px;
+			padding-right: 20px;
+			margin-left: -10px;
+			display: none;
+			float:right;
+		}
+		.activity_image {
+			width: 20px;
+			margin-left: 40%;
+		}
+		li.activity_item:hover {
+			background-color: #c9dbf1 !important;
+		}
+    </style>
+    <script type="text/javascript">
+    	$(document).ajaxSend(function(event, xhr, settings) {
+    		function getCookie(name) {
+        		var cookieValue = null;
+        		if (document.cookie && document.cookie != '') {
+            		var cookies = document.cookie.split(';');
+            		for (var i = 0; i < cookies.length; i++) {
+                		var cookie = jQuery.trim(cookies[i]);
+                		// Does this cookie string begin with the name we want?
+                		if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    		cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    		break;
+                		}
+            		}
+        		}
+        		return cookieValue;
+    		}
+    		function sameOrigin(url) {
+        		// url could be relative or scheme relative or absolute
+        		var host = document.location.host; // host + port
+        		var protocol = document.location.protocol;
+        		var sr_origin = '//' + host;
+        		var origin = protocol + sr_origin;
+       	 		// Allow absolute or scheme relative URLs to same origin
+        		return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            		(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            		// or any other URL that isn't scheme relative or absolute i.e relative.
+            		!(/^(\/\/|http:|https:).*/.test(url));
+    		}
+    		function safeMethod(method) {
+        		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    		}
+
+    		if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        		xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    		}
+		});    
+    	$(document).ready(function(){
+    		$('li.activity_item:hover').css('background-color', '#BCD2EE');
+    		$('#footer').css('display', 'none');
+			$('.activity_item').mouseover(function() {
+  				$('.activity_item').css('cursor', 'pointer');
+  				/*$('.activity_item').css('background-color', '#BCD2EE');*/
+  				/*$('.activity_item').css('box-shadow', '5px 5px 5px #BCD2EE');*/
+
+			});
+			$('.activity_item').mouseleave(function() {
+  				/*$('.activity_item').css('box-shadow', 'none');*/
+  				/*$('.activity_item').css('background-color', 'inherit');*/
+			});
+		});
+		function activity_all(){
+  			$('#all').css('display','block');
+  			$('#all_li').css('background-color','#BCD2EE');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','inherit');
+  			
+  			$.ajax({
+                url: "/all_log/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#all').css('display','none');
+                }
+            });
+  		}
+  		function activity_post(){
+  			$('#post').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','#BCD2EE');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','inherit');
+  			
+  			$.ajax({
+                url: "/all_log_post/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#post').css('display','none');
+                }
+            });
+  		}
+  		function activity_wishlist(){
+  			$('#wish').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','#BCD2EE');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','inherit');
+  			
+  			$.ajax({
+                url: "/all_log_wish/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#wish').css('display','none');
+                }
+            });
+  		}
+  		function activity_interested(){
+  			$('#interested').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','#BCD2EE');
+  			$('#profile_li').css('background-color','inherit');
+  			
+  			$.ajax({
+                url: "/all_log_interested/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#interested').css('display','none');
+                }
+            });
+  		}
+  		function activity_profile(){
+  			$('#profile').css('display','block');
+  			$('#all_li').css('background-color','inherit');
+  			$('#post_li').css('background-color','inherit');
+  			$('#wish_li').css('background-color','inherit');
+  			$('#interested_li').css('background-color','inherit');
+  			$('#profile_li').css('background-color','#BCD2EE');
+  			
+  			$.ajax({
+                url: "/all_log_profile/",
+                type: "POST",
+                success: function(req) {
+                    $('#activities_area').replaceWith($(req).find('#activities_area'));
+                    $('#profile').css('display','none');
+                }
+            });
+  		}
+    </script>
+{% endblock %}
