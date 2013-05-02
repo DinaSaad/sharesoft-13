@@ -272,16 +272,16 @@ class UserProfile(AbstractBaseUser):
     #c2-mohamed
     #this def sends notification
     #to the user who owns the post that the other user has commented on it
-    def comment_notification(self, post_in):
+    def comment_notification(self, post_in, content):
         user_in = self
         post_owner = post_in.seller
-        not_content = unicode(user_in.name) + " has commented on your post"
+        not_content = content
         not_url = "showpost?post=" + unicode(post_in.id)
         try:
-            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
+            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.datetime.now)
             not1.save()
         except:
-            not1 = Notification(user = user_in, content = not_content, url=not_url)
+            not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.datetime.now())
             not1.save()
 
 #C2-mahmoud ahmed- as a user i can rate sellers whom i bought from. the method takes the rate and the post
@@ -617,6 +617,8 @@ class Notification(models.Model):
     url = models.CharField(max_length=50)
     image_url = models.CharField(max_length=50)
     not_date = models.DateTimeField(default=datetime.datetime.now())
+    def __unicode__(self):
+        return unicode(self.user.name) + "   " + unicode(self.content)
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post

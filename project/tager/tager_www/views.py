@@ -155,9 +155,10 @@ def subscribe_by_parameters(request):
 #from Notification table
 def return_notification(request):
     user_in = request.user
-    all_notifications = Notification.objects.filter(user = user_in)
+    all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').reverse()
+    print "testing reverse"
+    print all_notifications
     if all_notifications is not None:
-        sorted(all_notifications, key=lambda all_notifications: all_notifications.not_date, reverse=True)
         return render_to_response ('notifications.html', {'all_notifications': all_notifications})
     else:
         pass
@@ -1206,16 +1207,18 @@ def SavingComment(request, post_id):
             continue
         else:
             all_commentors_array.append(commentor.user_id)
-            print "here i am ya a5o"
-            print all_commentors_array
     for commentor_to_send in all_commentors_array:
         if request.user is not commentor_to_send:
-            commentor_to_send.comment_notification(post)
             if post.seller is commentor_to_send:
                 sent_to_owner = True
-                print "in seller comment changing flaag"
+                not_content = unicode(userobject.name) + " commented on your post"
+                post_seller.comment_notification(post, not_content)
+            else:
+                not_content = unicode(userobject.name) + " commented on a post you commented on"
+                commentor_to_send.comment_notification(post, not_content)
     if sent_to_owner is False:
-        post_seller.comment_notification(post)
+        not_content = unicode(userobject.name) + " commented on your post"
+        post_seller.comment_notification(post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 
@@ -1472,7 +1475,7 @@ def view_posts_wished(request):
 #this def returns unread notifications to base.html
 def unread_notifications(request):
     user_in = request.user
-    all_unread_notifications = Notification.objects.filter(user = user_in, read = False)
+    all_unread_notifications = Notification.objects.filter(user = user_in, read = False).order_by('not_date').reverse()
     print all_unread_notifications
     if all_unread_notifications:
         print "after if"
@@ -1481,16 +1484,17 @@ def unread_notifications(request):
             notification.read = True
             notification.save()
             print "saved notification"
-            sorted(all_unread_notifications, key=lambda all_notifications: all_unread_notifications.not_date, reverse=True)
-            return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
+        all_unread_notifications.order_by('not_date')
+        all_unread_notifications.reverse()
+        return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
     else:
-        all_notifications = Notification.objects.filter(user = user_in)
+        all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').order_by('not_date').reverse()
+        all_notifications.reverse()
         all_unread_notifications = []
         not_counter = 0
         for notification in all_notifications:
             all_unread_notifications.append(notification)
+            not_counter = not_counter + 1
             if not_counter == 5:
                 break
-            else:
-                not_counter = not_counter + 1
         return render_to_response ('base.html',{'all_unread_notifications': all_unread_notifications})
