@@ -3,20 +3,20 @@
   <title></title>
 
 {% load staticfiles %}
-    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
-    <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
-    <script type="text/javascript" src="{% static "js/subscriptions.js" %}" ></script>
-    <script type="text/javascript" src="{% static "js/custom.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/advancedsearch.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
-    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet">
-    <link href="{% static "css/font-awesome.css" %}" rel="stylesheet">
-      <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
-  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
- 
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}" ></script>
+        <script type="text/javascript" src="{% static "js/subscriptions.js" %}" ></script>
+        <script type="text/javascript" src="{% static "js/custom.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/advancedsearch.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/jquery.masonry.min.js" %}"></script>
+        <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+        <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" media="screen">
+        <link href="{% static "css/font-awesome.css" %}" rel="stylesheet">
+        <link href="{% static "css/zocial.css" %}" rel="stylesheet">
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+        
 
 
     {% block headers %}
@@ -50,7 +50,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Tager.com</a>
+          <a class="brand" href="#" style="margin-top:3px;">Tager.com</a>
           {% block nav %}
 
           {% endblock %}
