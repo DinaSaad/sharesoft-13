@@ -778,34 +778,42 @@ def view_checked_subchannel_posts(request):
             results_of_subchannels.append(SubChannel.objects.filter(id = li))
             print li
     print results_of_subchannels
-    list_of_posts=Post.objects.all();
-    list_of_prices=[]
-    print list_of_posts
-    for po in list_of_posts:
-        print po.title
-        print ""
-        print po.price
-        print "mnimu price is :"
-        print min_price
-        print "the maximum rice is "
-        print max_price
-        if 'min_price' < 'po.price' :
-            if 'po.price' < 'max_price':
-                print po.price
-                print "min price was"
-                print min_price
-                list_of_prices.append(po.price)
-
-    print list_of_prices
+    # list_of_posts=Post.objects.all();
+    # list_of_prices=[]
+    # print list_of_posts
+    # for po in list_of_posts:
+    #     print po.title
+    #     print ""
+    #     print po.price
+    #     print "mnimu price is :"
+    #     print min_price
+    #     print "the maximum price is "
+    #     print max_price
+    #     print "end of max price"
+    #     if min_price < po.price < max_price:
+    #         # if 'po.price' < 'max_price':
+    #         print po.price
+    #         print "min price was"
+    #         print min_price
+    #         list_of_prices.append(po.price)
+    # all_post=Post.objects.all() # get all posts and save them in a list all_post
+    all_post=[]
+    all_post=Post.objects.exclude(price__lt=min_price) #remove from list of all posts any price less than the min_price
+    all_post_exclude= list(all_post)
+    all_post_exclude.append(Post.objects.exclude(price__gt=max_price)) #remove from list of all posts any price more than the max_price
+    print all_post
     post_list =[]
     
     for sub in results_of_subchannels:
         for state in list_of_states:
-            for pri in list_of_prices:
+            # for pri in list_of_prices:
 
-                post_list.append(Post.objects.filter(subchannel = sub, state=state , price = pri ))
+            post_list.append(Post.objects.filter(subchannel = sub, state=state  ))
                 
+    # result = all_post_exclude.intersection(post_list)
+    # print result
 
+    result= [filter(set(all_post_exclude).__contains__, sublist) for sublist in post_list]
     
     return render(request, "filterPosts.html", {'post_list': post_list})
     
