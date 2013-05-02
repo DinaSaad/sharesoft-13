@@ -794,7 +794,17 @@ def view_profile(request):
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
         interacting_list = user_profile.get_interacting_people()
         # print interacting_list
-        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
+        #c2-mohamed
+        #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
+        activity_logs_to_render_array = []
+        activity_logs_to_render_list = ActivityLog.objects.filter(user = user)
+        activity_log_counter = 0
+        for activity in activity_logs_to_render_list:
+            activity_log_counter = activity_log_counter + 1
+            activity_logs_to_render_array.append(activity)
+            if activity_log_counter is 2:
+                break
+        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
