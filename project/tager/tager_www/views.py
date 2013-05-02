@@ -82,8 +82,8 @@ def return_parameters(request):
     sc_id = request.GET['sch_id']
     channels = Channel.objects.all()
     s_id = SubChannel.objects.get(id = sc_id).channel_id
-    subchannels = SubChannel.objects.filter(channel_id = s_id)
-    parameters = Attribute.objects.filter(subchannel_id = sc_id)
+    subchannels = SubChannel.objects.filter(channel = s_id)
+    parameters = Attribute.objects.filter(subchannel = sc_id)
     return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
 
 #c2-mohamed awad
@@ -93,7 +93,7 @@ def return_parameters(request):
 def return_choices(request):
     p_id = request.GET['p_id']
     subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
-    parameters = Attribute.objects.filter(subchannel_id = subchannel_of_parameter)
+    parameters = Attribute.objects.filter(subchannel = subchannel_of_parameter)
     channels = Channel.objects.all()
     subchannels = SubChannel.objects.all()
     choices = AttributeChoice.objects.filter(attribute_id = p_id)
@@ -156,7 +156,7 @@ def subscribe_by_parameters(request):
 #from Notification table
 def return_notification(request):
     user_in = request.user
-    all_notifications = Notification.objects.filter(user = user_in)
+    all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').reverse()
     if all_notifications is not None:
         return render_to_response ('notifications.html', {'all_notifications': all_notifications})
     else:
@@ -213,6 +213,12 @@ def add_post(request):
         for k in request.POST:
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
+                #c2-mohamed
+                #the next line calls post_Notification() to send notification to all subscribed users
+                #to that post
+                p.post_Notification()
+                #c2-mohamed
+                #the next try statement is to insert the value if new in AttributeChoice table
                 #c2-mohamed
                 #the next five lines are written to save a tuple in ActivityLog table
                 #to save it to make the user retrieve it when he logs into his activity log
@@ -446,7 +452,7 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)    
-            if pwd_valid:    
+            if pwd_valid:   
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -548,8 +554,6 @@ def edit_name(request):
     post_activity_content = "you edited your name to " + unicode(user.name) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
-    print post_log_type
-    print post_activity_url
     # post_log_date = datetime.datetime.now()
     log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user)
     return HttpResponse (" ")
@@ -573,8 +577,6 @@ def edit_date_of_birth(request):
     post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
-    print post_activity_url
-    print post_log_type
     # post_log_date = datetime.datetime.now()
     log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse (" ")
@@ -783,7 +785,6 @@ def view_profile(request):
     try: 
         user = request.user
 
-        
         if user.is_anonymous():
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
             interacting_list = user_profile.get_interacting_people()
@@ -791,8 +792,7 @@ def view_profile(request):
             link = "http://127.0.0.1:8000/register"
 
             d = {'user':user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
-            
-        
+                    
 
         if user.is_authenticated():
             #c1-abdelrahman this line retrieves the wished posts by the user.
@@ -801,7 +801,19 @@ def view_profile(request):
             link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
             interacting_list = user_profile.get_interacting_people()
-            d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
+            # print interacting_list
+            #c2-mohamed
+            #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
+            activity_logs_to_render_array = []
+            activity_logs_to_render_list = ActivityLog.objects.filter(user = user)
+            activity_log_counter = 0
+            for activity in activity_logs_to_render_list:
+                activity_log_counter = activity_log_counter + 1
+                activity_logs_to_render_array.append(activity)
+                if activity_log_counter is 2:
+                    break
+            d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list,'activity_logs_to_render_array': activity_logs_to_render_array}
+
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -1107,11 +1119,6 @@ def facebook_login(request):
         if 'HTTP_REFERER' in request.META:
             request.session['next'] = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
-        
-
-
-
-
 
 
 # def send_sms(request):
@@ -1195,6 +1202,29 @@ def SavingComment(request, post_id):
     post.comments_count +=1
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
+    #c2-mohamed
+    #the next lines is to send notification to the post owner
+    post_seller = post.seller
+    all_commentors_array = []
+    all_commentors_lists = Comment.objects.filter(post_id=post).exclude(user_id=request.user)
+    sent_to_owner = False
+    for commentor in all_commentors_lists:
+        if commentor.user_id in all_commentors_array:
+            continue
+        else:
+            all_commentors_array.append(commentor.user_id)
+    for commentor_to_send in all_commentors_array:
+        if request.user is not commentor_to_send:
+            if post.seller is commentor_to_send:
+                sent_to_owner = True
+                not_content = unicode(userobject.name) + " commented on your post"
+                post_seller.comment_notification(post, not_content)
+            else:
+                not_content = unicode(userobject.name) + " commented on a post you commented on"
+                commentor_to_send.comment_notification(post, not_content)
+    if sent_to_owner is False:
+        not_content = unicode(userobject.name) + " commented on your post"
+        post_seller.comment_notification(post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 
@@ -1229,8 +1259,6 @@ def intrested(request):
 def all_log(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(user = author)
-    print "all_log"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1240,8 +1268,6 @@ def all_log(request):
 def all_log_post(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="post", user = author)
-    print "all_log_post"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1251,8 +1277,6 @@ def all_log_post(request):
 def all_log_interested(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
-    print "all_log_interested"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1262,8 +1286,6 @@ def all_log_interested(request):
 def all_log_wish(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
-    print "all_log_wish"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1273,8 +1295,6 @@ def all_log_wish(request):
 def all_log_profile(request):
     author = request.user
     activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
-    print "all_log_profile"
-    print activities_log
     sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
@@ -1362,6 +1382,7 @@ def remove_post_from_wishlist(request):
     #post_activity_content is to save the activity log content that will be shown to user
     #post_activity_url is to save the url the user will be directed to upon clicking the activity log
     #post_log_type is the type of the log type the user will choose in the activity log page
+    post_in = Post.objects.get(id=post)
     post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
     post_activity_url = "showpost?post=" + unicode(post_in.id)
     post_log_type = "wish"
@@ -1456,3 +1477,28 @@ def view_posts_wished(request):
     list_of_wished_posts = WishList.objects.filter(user_id = "3")
     return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
+#c2-mohamed awad
+#this def returns unread notifications to base.html
+def unread_notifications(request):
+    user_in = request.user
+    all_unread_notifications = Notification.objects.filter(user = user_in, read = False).order_by('not_date').reverse()
+    if all_unread_notifications:
+        print "after if"
+        for notification in all_unread_notifications:
+            print "after for"
+            notification.read = True
+            notification.save()
+        all_unread_notifications.order_by('not_date')
+        all_unread_notifications.reverse()
+        return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
+    else:
+        all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').order_by('not_date').reverse()
+        all_notifications.reverse()
+        all_unread_notifications = []
+        not_counter = 0
+        for notification in all_notifications:
+            all_unread_notifications.append(notification)
+            not_counter = not_counter + 1
+            if not_counter == 5:
+                break
+        return render_to_response ('base.html',{'all_unread_notifications': all_unread_notifications})
