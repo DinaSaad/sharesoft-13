@@ -616,6 +616,7 @@ class Notification(models.Model):
     read = models.BooleanField(default=False)
     url = models.CharField(max_length=50)
     image_url = models.CharField(max_length=50)
+    not_date = models.DateTimeField(default=datetime.datetime.now())
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post

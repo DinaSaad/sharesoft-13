@@ -157,6 +157,7 @@ def return_notification(request):
     user_in = request.user
     all_notifications = Notification.objects.filter(user = user_in)
     if all_notifications is not None:
+        sorted(all_notifications, key=lambda all_notifications: all_notifications.not_date, reverse=True)
         return render_to_response ('notifications.html', {'all_notifications': all_notifications})
     else:
         pass
@@ -1195,20 +1196,20 @@ def SavingComment(request, post_id):
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
     #c2-mohamed
-    #the next three lines is to send notification to the post owner
+    #the next lines is to send notification to the post owner
     post_seller = post.seller
     all_commentors_array = []
     all_commentors_lists = Comment.objects.filter(post_id=post)
     sent_to_owner = False
     for commentor in all_commentors_lists:
-        all_commentors_array.append(coomentor.user_id)
+        all_commentors_array.append(commentor.user_id)
     for commentor_to_send in all_commentors_array:
         if request.user is not commentor_to_send:
-            comentor_to_send.comment_notification(post)
+            commentor_to_send.comment_notification(post)
             if post.seller is commentor_to_send:
                 sent_to_owner = True
     if sent_to_owner is False:
-        comentor_to_send.comment_notification(post)
+        post_seller.comment_notification(post)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 
@@ -1474,6 +1475,7 @@ def unread_notifications(request):
             notification.read = True
             notification.save()
             print "saved notification"
+            sorted(all_unread_notifications, key=lambda all_notifications: all_unread_notifications.not_date, reverse=True)
             return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
     else:
         all_notifications = Notification.objects.filter(user = user_in)
