@@ -156,8 +156,6 @@ def subscribe_by_parameters(request):
 def return_notification(request):
     user_in = request.user
     all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').reverse()
-    print "testing reverse"
-    print all_notifications
     if all_notifications is not None:
         return render_to_response ('notifications.html', {'all_notifications': all_notifications})
     else:
@@ -555,8 +553,6 @@ def edit_name(request):
     post_activity_content = "you edited your name to " + unicode(user.name) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
-    print post_log_type
-    print post_activity_url
     # post_log_date = datetime.datetime.now()
     log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user)
     return HttpResponse (" ")
@@ -580,8 +576,6 @@ def edit_date_of_birth(request):
     post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
-    print post_activity_url
-    print post_log_type
     # post_log_date = datetime.datetime.now()
     log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
     return HttpResponse (" ")
@@ -1476,14 +1470,12 @@ def view_posts_wished(request):
 def unread_notifications(request):
     user_in = request.user
     all_unread_notifications = Notification.objects.filter(user = user_in, read = False).order_by('not_date').reverse()
-    print all_unread_notifications
     if all_unread_notifications:
         print "after if"
         for notification in all_unread_notifications:
             print "after for"
             notification.read = True
             notification.save()
-            print "saved notification"
         all_unread_notifications.order_by('not_date')
         all_unread_notifications.reverse()
         return render_to_response ('base.html', {'all_unread_notifications': all_unread_notifications})
