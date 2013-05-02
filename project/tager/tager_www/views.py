@@ -1181,9 +1181,9 @@ def facebook_login_done(request):
         if 'next' in request.session:
             next = request.session['next']
             del request.session['next']
-            return HttpResponseRedirect(REDIRECT_URL)
+            return HttpResponseRedirect("/profile?user_id="+str(result.id))
         else:
-            return HttpResponseRedirect(REDIRECT_URL)
+            return HttpResponseRedirect("/profile?user_id="+str(result.id))
 
 
 
