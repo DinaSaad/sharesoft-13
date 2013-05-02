@@ -327,8 +327,8 @@ def view_post(request):
     report_reasons = ReportReasons.objects.all()
     #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
     dic = {
-    'admin': user.is_admin
-    ,'no': list_of_att_number
+    # 'admin': user.is_admin
+    'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
