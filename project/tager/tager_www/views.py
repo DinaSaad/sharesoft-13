@@ -445,9 +445,9 @@ class CustomAuthentication:
     def authenticate(self, mail, password):
         try:
             user = UserProfile.objects.get(email=mail)
-            pwd_valid = check_password(password, user.password)    
-            if pwd_valid:   
-            # if user.password == password: 
+            # pwd_valid = check_password(password, user.password)    
+            # if pwd_valid:   
+            if user.password == password: 
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -783,23 +783,25 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        interacting_list = user_profile.get_interacting_people()
-        d = {'user':user_profile,"interacting_list": interacting_list}
+
         
-        # print "1"
-        # if request.user.is_authenticated()== True:
-        #     print "authenticated yes"
-        # # print user.is_authenticated
-        # if request.user.is_anonymous() == True:
-        #     print "anonymous yes"
-        # # print user.is_anonymous
+        if user.is_anonymous():
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            annynmous_verfied = True
+            link = "http://127.0.0.1:8000/register"
+
+            d = {'user':user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
+            
+        
 
         if user.is_authenticated():
             #c1-abdelrahman this line retrieves the wished posts by the user.
             list_of_wished_posts = WishList.objects.filter(user = user)
             verfied = user.is_verfied
             link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
             d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
     except: 
         err_msg = 'This user doesn\'t exist'
