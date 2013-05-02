@@ -1199,15 +1199,21 @@ def SavingComment(request, post_id):
     #the next lines is to send notification to the post owner
     post_seller = post.seller
     all_commentors_array = []
-    all_commentors_lists = Comment.objects.filter(post_id=post)
+    all_commentors_lists = Comment.objects.filter(post_id=post).exclude(user_id=request.user)
     sent_to_owner = False
     for commentor in all_commentors_lists:
-        all_commentors_array.append(commentor.user_id)
+        if commentor.user_id in all_commentors_array:
+            continue
+        else:
+            all_commentors_array.append(commentor.user_id)
+            print "here i am ya a5o"
+            print all_commentors_array
     for commentor_to_send in all_commentors_array:
         if request.user is not commentor_to_send:
             commentor_to_send.comment_notification(post)
             if post.seller is commentor_to_send:
                 sent_to_owner = True
+                print "in seller comment changing flaag"
     if sent_to_owner is False:
         post_seller.comment_notification(post)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
