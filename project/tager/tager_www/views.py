@@ -787,6 +787,7 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
+        user_owner = request.GET['user_id']
         #c1-abdelrahman this line retrieves the wished posts by the user.
         list_of_wished_posts = WishList.objects.filter(user = user)
         verfied = user.is_verfied
@@ -797,7 +798,7 @@ def view_profile(request):
         #c2-mohamed
         #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
         activity_logs_to_render_array = []
-        activity_logs_to_render_list = ActivityLog.objects.filter(user = user)
+        activity_logs_to_render_list = ActivityLog.objects.filter(user = user_owner)
         activity_log_counter = 0
         for activity in activity_logs_to_render_list:
             activity_log_counter = activity_log_counter + 1
@@ -1195,9 +1196,19 @@ def SavingComment(request, post_id):
     comment.save()
     #c2-mohamed
     #the next three lines is to send notification to the post owner
-    user_to_send_not = post.seller
-    if request.user is not user_to_send_not:
-        user_to_send_not.comment_notification(post)
+    post_seller = post.seller
+    all_commentors_array = []
+    all_commentors_lists = Comment.objects.filter(post_id=post)
+    sent_to_owner = False
+    for commentor in all_commentors_lists:
+        all_commentors_array.append(coomentor.user_id)
+    for commentor_to_send in all_commentors_array:
+        if request.user is not commentor_to_send:
+            comentor_to_send.comment_notification(post)
+            if post.seller is commentor_to_send:
+                sent_to_owner = True
+    if sent_to_owner = False:
+        comentor_to_send.comment_notification(post)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 

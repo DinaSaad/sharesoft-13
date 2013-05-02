@@ -261,7 +261,7 @@ class UserProfile(AbstractBaseUser):
         user_in = self
         post_owner = post_in.seller
         not_content = unicode(user_in.name) + " is interested in your post"
-        not_url = "profile/?user_id=" + unicode(user_in.id)
+        not_url = "showpost?post=" + unicode(post_in.id)
         try:
             not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
             not1.save()
@@ -276,7 +276,7 @@ class UserProfile(AbstractBaseUser):
         user_in = self
         post_owner = post_in.seller
         not_content = unicode(user_in.name) + " has commented on your post"
-        not_url = "profile/?user_id=" + unicode(user_in.id)
+        not_url = "showpost?post=" + unicode(post_in.id)
         try:
             not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
             not1.save()
