@@ -1070,6 +1070,10 @@ def search(request):
 #     message = client.sms.messages.create(to="+201112285944",
 #                                          from_="+15555555555",
 
+# Ahmed C3: Facebook login
+# This method uses the passes the facebook request through the site's login to set the user to state 
+# logged in
+
 def fb_login(request, result):
     mail = result.email
     num = result.facebook_uid
