@@ -1207,7 +1207,7 @@ def SavingComment(request, post_id):
             comentor_to_send.comment_notification(post)
             if post.seller is commentor_to_send:
                 sent_to_owner = True
-    if sent_to_owner = False:
+    if sent_to_owner is False:
         comentor_to_send.comment_notification(post)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
