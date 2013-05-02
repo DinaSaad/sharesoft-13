@@ -1068,20 +1068,11 @@ def fb_login(request, result):
     string = "FB" + numb + "password"
     st = str(string)
     password = st
-    print 1082
-    print password
     user = UserProfile.objects.get(email=mail)
-    print "in"
     authenticated_user = authenticate(mail=mail, password=password)
-    print authenticated_user
-    print "in1"
     if authenticated_user is not None:
-        print "auth"
-        print authenticated_user.is_active
         if authenticated_user.is_active:
-            print "act"
             django_login(request, authenticated_user)
-            print "user logged in"
             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
@@ -1161,11 +1152,7 @@ def fb_authenticate(request):
         userprofile.facebook_uid = fb_data['id']
         string = "FB" + fb_data['id'] + "password"
         st = str(string)
-        print st
-        print 1175
         userprofile.set_password(st)
-        print userprofile.password
-        print 1178
         userprofile.photo = pic_url
         userprofile.save()
         return userprofile
@@ -1176,7 +1163,6 @@ def fb_authenticate(request):
 
 def facebook_login_done(request):
     result=fb_authenticate(request)
-    print result
     fb_login(request, result)
     if isinstance(result, UserProfile):
         if 'next' in request.session:
