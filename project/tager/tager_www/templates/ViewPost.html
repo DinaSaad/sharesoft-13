@@ -40,7 +40,7 @@ width: :700px;
 .labelspadding{
   padding-left: 5px;
 }
-<<<<<<< HEAD
+
 </style>
 
 <div>
@@ -60,11 +60,14 @@ width: :700px;
         <p> Description: </p>
 
         <p> Price: </p>
-=======
->>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
+
 
 </style>
-
+  {% if post.is_hidden %}
+     <h2 align="center">Sorry the post has been removed by the admin </h2>
+  {% endif %}
+{% if not post.is_hidden %}
 {% if not can_edit %}
 <div class="row-fluid maincontent">
   <div class="span1">
@@ -159,7 +162,7 @@ width: :700px;
         <label>None</label>
         {% endif %}
         </div>
-<<<<<<< HEAD
+
                                                                                                      
         <div class="span3 valuesdiv">
           <p>{{post.title}}</p>
@@ -167,8 +170,8 @@ width: :700px;
           <p>{{post.price}}</p>
           <p>{{post.state}}</p>
           {% if list_of_att_values %}
-=======
->>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
+
 
         {% endfor %} 
 
@@ -317,15 +320,19 @@ width: :700px;
 </div>
 
 
-<<<<<<< HEAD
+
+
       
-=======
+
+
+{% if not admin %}
+
 <div class="row-fluid maincontent">
   <div class="span2">
 
   </div>
   <div class ="span9">
->>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
 
       
 
@@ -341,13 +348,13 @@ width: :700px;
 				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 
 
-<<<<<<< HEAD
+
 				
 				
 
         <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
 
-=======
+
 				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
 				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
 				<a href="http://twitter.com/home?status=Your%20message%20here:%20
@@ -391,7 +398,7 @@ width: :700px;
             <img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
 
             onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
->>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
 
         <!--twitter-->
         <a href="http://twitter.com/home?status={{post.title}}: {{post.description}}  http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/twitter-baloon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this"></a>
@@ -438,8 +445,13 @@ width: :700px;
 
 
 </script>
+{% endif %}
 
-  </div>
+{% if admin%}
+<h5>The number of this post reports is: {{post.no_of_reports}}</h5>
+<button onClick="hidepost({{post.id}});" class="btn btn-danger btn-large"> Remove post </button>
+{% endif %}
+</div>
  
 </div>
             
@@ -535,9 +547,9 @@ width: :700px;
   </div>
 </div>
 </div>
-<<<<<<< HEAD
+
 </div>
-=======
+
 
 
 
@@ -614,13 +626,26 @@ width: :700px;
 </div>
 
 
-
+{% endif %}
 </div>
 </div>
 
 {% block script%}
 
     <script type="text/javascript">
+    function hidepost(postid){
+  $.ajax({
+    url: '/deletepost/',
+    type: 'POST',
+    data: {
+      "post":postid,
+    },
+    success: function(result){
+      alert("Post has been hidden sucessfully");
+       location.reload();
+    },
+  });
+}
 
 
 
@@ -741,7 +766,7 @@ $('#locationvalue').keyup(function(){
     }
 
 });
->>>>>>> 15bc421c4d9983203f436c4daa47b7bccb8118c4
+
 
 
     var eligible_to_add_to_the_wish_list = {{canwish}}

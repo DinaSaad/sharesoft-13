@@ -99,8 +99,8 @@ class UserProfile(AbstractBaseUser):
      )
     gender = models.CharField(max_length=1, choices=gender_choices , null=True)
     
-    friends = models.ManyToManyField ("self")
-    
+    friends = models.ManyToManyField('self')
+
     objects = MyUserManager()  
     
     USERNAME_FIELD = 'email'   
@@ -322,6 +322,10 @@ class UserProfile(AbstractBaseUser):
         print refined_interacting_people
 
         return interacting_people
+
+# class Friendship(models.Model):
+#     user1 = models.ForeignKey(UserProfile)
+#     user2 = models.ForeignKey(UserProfile)
 
 
 #c2-mohamed

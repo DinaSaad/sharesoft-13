@@ -327,10 +327,10 @@ def view_post(request):
         list_of_interested_buyers = user.get_interested_in(post_id)
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
-
-
+    #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
     dic = {
-    'no': list_of_att_number
+    'admin': user.is_admin
+    ,'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -653,6 +653,15 @@ def change_faccounttype(request):
     user.save()
     return HttpResponse(" ")
 
+#c1 abdelrahman this is a function that takes a request and from the request it gets the post that need to be hidden.
+#then it hide it and return empty httpresponse.
+def hide_post(request):
+    post_id = request.POST['post']
+    current_post = Post.objects.get(id = post_id)
+    current_post.is_hidden = True
+    current_post.save()
+    return HttpResponse()
+
 # Heba -C2 private_number method. is a method that allows the users to hide his number through taking a request 
 # of type POST holding a value for private_number to be set to true and sets the phone_number of the user to a 
 # string that says it is hidden.
@@ -814,8 +823,12 @@ def twitterImport(request):
     api = tweepy.API(auth)
     
     user_id= request.user.id
+    request.user.twitter_name = api.me().screen_name
+    request.user.save()
     no_of_imports=[]
     id_list = api.followers_ids()
+    print 'friends old:'
+    print request.user.friends.all()
     for id in id_list:
         username = api.get_user(id).name
         print username
@@ -823,11 +836,15 @@ def twitterImport(request):
         print 'list'
         print l
         if len(l) >= 1:
-            contact_id = l[0].id
-            UserProfile_friends.objects.create(user_id, contact_id)
-            UserProfile.save()
-            no_of_imports.append(username)
-            print user_object.twitter_name
+            for friend in l:
+                contact_id = l[0].id
+                # UserProfile_friends.objects.create(user_id,user_id,contact_id)
+                request.user.friends.add(friend)
+
+                no_of_imports.append(username)
+    print 'friends new:'
+    print request.user.friends.all()
+
     d={'importMsg':"number of contacts imported: ",'no_of_imports':len(no_of_imports)}
     return render_to_response('twitterImportFriends.html',d)
 
@@ -1395,6 +1412,7 @@ def sms_verify(request):
 def remove_post_from_wishlist(request):
     user = request.user
     post = request.POST['post']
+    post_in = Post.objects.get(id=post)
     WishList.objects.get(user = user, post_id = post).delete()
     #c2-mohamed
     #the next five lines are written to save a tuple in ActivityLog table
