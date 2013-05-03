@@ -2,13 +2,19 @@
 
 
 {% block content %}
+
     <div class="login-wrapper">
-
-
     <div class="well-white bottom20px" style="width:300px; margin:0 auto;">
         <div class="page-header">
-            <h1>Log in</h1>
+            <center><h1>Log in</h1></center>
         </div>
+        {% if LoginError %}
+            <center><div class="alert alert-error">
+                <!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+                <strong>Oh Snap !</strong> wrong e-mail or password.
+        </div></center>
+        {% endif %}
+<center>
         <div class="padding20px form">
             <form form action="/logged/" method="POST" id="form" class="kissmetrics-login">
                 {% csrf_token %}
@@ -37,6 +43,7 @@
         </div>
     </div>
 </div>
+</center>
         </div>
 
         {% block script %}
