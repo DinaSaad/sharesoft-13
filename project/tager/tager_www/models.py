@@ -90,6 +90,7 @@ class UserProfile(AbstractBaseUser):
     sms_code = models.CharField(max_length=5 , null=True)
     status = models.CharField(max_length=400 , null=True) 
     rating = models.FloatField(default=0.0)
+    phone_is_verified=models.BooleanField(default=False)    
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
