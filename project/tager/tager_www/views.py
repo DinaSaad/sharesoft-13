@@ -432,7 +432,7 @@ def main(request):
         for subchannel in subchannels:
             subchannels_list.append({'subchannel': subchannel})
 
-            channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # - this method creats variable channels , to store all channels available in the database, 
 # variable subchannels , to store all subchannels available in the database,
@@ -742,42 +742,6 @@ def change_paccounttype(request):
     user.save()
     return HttpResponse (" ")
 
-# def get_channels (request):
-#     channels = Channel.objects.all()
-#     channels_list = [] 
-#     for channel in channels:
-#         subchannels = SubChannel.objects.filter(channel_id=channel.id)
-#         subchannels_list = []
-#         for subchannel in subchannels:
-#             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-#             subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-#         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-#     post_list = Post.objects.all()   
-#     return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
-
-
-
-# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# - this method creats variable channels , to store all channels available in the database, 
-# variable subchannels , to store all subchannels available in the database,
-#  channels_list is a list that holds dictionaries of channels and its subchannels.
-# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
-# the method then return the channels_list only , as it holds , every attribute of subchannel
-# and every subchannel of a channel 
-# def get_channels (request):
-#     channels = Channel.objects.all()
-#     channels_list = [] 
-#     for channel in channels:
-#         subchannels = SubChannel.objects.filter(channel_id=channel.id)
-#         subchannels_list = []
-#         for subchannel in subchannels:
-#             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-#             subchannels_list.append({'subchannel': subchannel})
-#             # , 'attributes': attributes
-#             # keep this commented , i'll use it later
-#             channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-#     post_list = Post.objects.all()   
-#     return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # subchannel_id is the id retrieved from the webpage 

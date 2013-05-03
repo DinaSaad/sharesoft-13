@@ -22,20 +22,3 @@ function posts_render(ids)
 
     	}
 
-function channel_render(ids)
-{
-	
-   			$.ajax(
-   			{
-			    type: "GET",
-			    url: "/channel_posts/",
-			    data: {"ch_id" : ids},
-
-			    success: function(req)
-		       {
-		       	
-		       	// Enabled=false;
-		         $('#posts_result').html(req);
-		       }
-    		});
-}
