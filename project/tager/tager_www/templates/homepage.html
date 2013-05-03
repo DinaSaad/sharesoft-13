@@ -1,58 +1,52 @@
 {% extends "base.html" %}
+{% load staticfiles%}
+
+{% block headers %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/filtering.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/leftMenu.css" %}" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="{% static "js/refiningMenu.js" %}"></script>
+{% endblock %}
 {% block content %}
 
-
+<div class="container-fluid">
 <div class="row-fluid">
-  <div class="span6">
-  </div>
-  <div class="span6"> 
-
-    <ul class="nav nav-pills">
-    <li class="dropdown">
-      <a href="#" data-toggle="dropdown" class="dropdown-toggle">Channels
-       <b class="caret"></b></a>
-      <ul class="dropdown-menu" id="menu1">
-        
-        <div class="accordion" id="accordion2" style="background: #eee;">
-                {% for i in all_channels %}
-                  <div class="accordion-group">
-                    <div class="accordion-heading" >
-                      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#channel{{i.channel.id}} " id=" ChannelBar" value="{{i.Channel.id}}">
-                        {{i.channel.name}}
-                      </a>
-                    </div>
-                    <div id="channel{{i.channel.id}}" class="accordion-body collapse in">
-                      <div class="accordion-inner">
-                        {% for subchannel in i.subchannels_list %} 
-                        <div id="channel{{i.subchannel.id}}" class="accordion-body collapse in" >
-                          <div class="accordion-inner">
-                            <p>
-                              
-                              <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
-                                {{subchannel.subchannel.name}} 
-                            </p>    
-                          </div>
-                        </div>
-                        {% endfor %}
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
+  <div class="span2">
+      <!--Sidebar content-->
+      <div id='cssmenu'>
+        <ul>
+          {% for i in all_channels %}
+        <li class='active has-sub' onClick="channel_render({{i.channel.id}})"><a href='#'><span> <strong>{{i.channel.name}}</strong></span></a>
+            <ul>
+              {% for subchannel in i.subchannels_list %} 
+              <li class='has-sub' onClick="posts_render({{subchannel.subchannel.id}})"><a href='#'><span>{{subchannel.subchannel.name}}</span></a>
+              </li>
+              {% endfor %}
             </ul>
-    </li>
-    </ul>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div> 
+    <div class="span10">
+      <!--Body content-->
+      <div id="posts_result" >
+ 
+</div>
+
+      
   </div>
 </div>  
+</div>
     <!-- Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
       this is a collapse method from bootstrap that helps in previing the channels and -->
 
-<div id="posts_result" class="container">
+<!-- <div id="posts_result" class="container">
     {% for post in post_list %}
       <li id="post_id2"> {{post.title}}</li>
     {% endfor %}
 </div>
-
+ -->
 
 <script type="text/javascript">
 
