@@ -252,8 +252,66 @@ class  intersted(unittest.TestCase):
         response = self.client.post('/send_sms/',{'sms_code': "12r"}) # handeled in my code if the user enters a wrong code
 
 
+
         
-        
+
+class  AccountsType(unittest.TestCase):
+
+   def setUp(self):
+        self.factory = RequestFactory()
+        self.client = Client()
+        self.user = UserProfile(email="heba@gmail.com", name="Happy",password = "123", is_premium = True)
+        self.user.save()
+        self.user = UserProfile(email="ahmad@gmail.com", name="Ahmad",password = "123", is_premium = False)
+        self.user.save()
+
+    def test_user_change_to_freeaccount(self):
+        premiunuser = UserProfile.objects.get(id=1)
+        self.assertEqual(self.premiunuser.name, 'Happy')
+        self.assertEqual(self.premiunuser.is_premium, True)
+
+        premiunuser.is_premium = False
+        premiunuser.save()
+        self.assertEqual(self.premiunuser.change_faccount(),False)
+        self.assertEqual(self.premiunuser.is_premium, False)
+
+     def test_user_change_to_preeaccount(self):
+        freeuser = UserProfile.objects.get(id=2)
+        self.assertEqual(self.premiunuser.name, 'Ahmad')
+        self.assertEqual(self.premiunuser.is_premium, False)
+
+        freeuser.is_premium = True
+        freeuser.save()
+        self.assertEqual(self.freeuser.change_paccount(),True)
+        self.assertEqual(self.freeuser.is_premium, True)
    
-      
+class  PrivateSettings(unittest.TestCase):
+
+   def setUp(self):
+        self.factory = RequestFactory()
+        self.client = Client()
+        self.user = UserProfile(email="heba@gmail.com", name="Happy",password = "123", is_premium = True)
+        self.user.save()
+        self.user = UserProfile(email="ahmad@gmail.com", name="Ahmad",password = "123", is_premium = False)
+        self.user.save()
+
+    def test_user_privatenumber(self):
+        user6 = UserProfile.objects.get(id=1)
+        self.assertEqual(self.user6.name, 'Happy')
+        self.assertEqual(self.user6.private_number, False)
+
+        user6.private_number = True
+        user6.save()
+        self.assertEqual(self.user6.private_number(),True)
+        self.assertEqual(self.user6.private_number, True)
+
+     def test_user_private1-work(self):
+        user7 = UserProfile.objects.get(id=2)
+        self.assertEqual(self.user7.name, 'Ahmad')
+        self.assertEqual(self.user7.private_work, False)
+
+        user7.private_work = True
+        user7.save()
+        self.assertEqual(self.user7.priavte_work(),True)
+        self.assertEqual(self.user7.private_work, True)
 
