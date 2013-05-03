@@ -218,6 +218,11 @@ def add_post(request):
                 p.post_Notification()
                 #c2-mohamed
                 #the next try statement is to insert the value if new in AttributeChoice table
+                try:
+                    attribute_needed = Attribute.objects.get(pk=k[7:])
+                    AttributeChoice.objects.create(attribute_id = attribute_needed, value = request.POST[k])
+                except:
+                    pass
                 #c2-mohamed
                 #the next five lines are written to save a tuple in ActivityLog table
                 #to save it to make the user retrieve it when he logs into his activity log
