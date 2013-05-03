@@ -470,3 +470,44 @@ class TestSubchannelRelatedPosts(unittest.TestCase):
         check_posts = menuForSubchannels(1)
         self.assertEqual(check_posts, 'P1,P2,P3')
 
+class Subscription(unittest.TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.factory = RequestFactory()
+        
+
+    def test_view_my_feed(self):
+        self.user = UserProfile.objects.create_user(email="tharwat@gmail.com", name="amr",password = "123")
+        self.channel = Channel.objects.create(name="cars1", description="greate deals in cars")
+        self.subchannel = SubChannel.objects.create(name="4x4", channel= self.channel)
+        self.post1 = Post.objects.create(title="test1",
+            description="1", price="1200",location="cairo", seller=self.user , subchannel = self.subchannel)
+        
+
+
+        self.post2 = Post.objects.create(title="test2",
+            description="1", price="1200",location="cairo", seller=self.user , subchannel = self.subchannel)
+        
+
+
+
+        self.post3 = Post.objects.create(title="test3",
+            description="1", price="1200",location="cairo", seller=self.user , subchannel = self.subchannel)    
+        
+
+        self.channelsubscription = UserChannelSubscription.objects.create(channel = self.channel, user = self.user)
+        # self.subchannelsubscription = UserChannelSubscription.objects.create(parent_channel= self.channel, sub_channel = self.subchannel, user = self.user)
+        # self.parametersubscription = UserChannelSubscription.objects.create(channel = self.channel, user = self.user)
+#         # print self.subscription
+#         # self.subscription.save()
+#         user = self.client.login(email='tharwat@gmail.com', password='123')
+        response = self.client.post('/viewMyFeed/')
+#         print response
+        self.assertEqual(response.status_code, 200)
+#         # self.subscription.subscribe_Bychannel(self.user)
+#         # self.subscription.subscribe_Bysubchannel(self.user)
+#         # self.subscription.subscribe_Byparameter(self.user)
+#         self.assertEqual(UserChannelSubscription.objects.all().count(), 1)
+#         self.assertEqual(UserSubchannelSubscription.objects.all().count(), 1)
+#         self.assertEqual(UserParameterSubscription.objects.all().count(), 1)
