@@ -54,7 +54,8 @@ SCOPE_SEPARATOR = ' '
 
 
 def home(request):
-    return render_to_response ('home.html',context_instance=RequestContext(request))
+    title = "welcome to tager"
+    return render_to_response ('home.html',{'title':title},context_instance=RequestContext(request))
 
 
 def return_channels(request):
@@ -163,7 +164,8 @@ def return_notification(request):
         pass
 
 def view_login(request):
-    return render_to_response ('login.html',context_instance=RequestContext(request))
+    title = "please login below"
+    return render_to_response ('login.html',{'title':title},context_instance=RequestContext(request))
 
 
 
@@ -248,8 +250,12 @@ def add_post(request):
 
 
 def login(request):
-    mail = request.POST['email']
-    password = request.POST['password']
+    try:
+        mail = request.POST['email']
+        password = request.POST['password']
+    except:
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
     # print "in"
     authenticated_user = authenticate(mail=mail, password=password)
     # print "in1"
@@ -264,7 +270,9 @@ def login(request):
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+        # return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
 
@@ -303,9 +311,7 @@ def add_to_wish_list(request):
 
 def view_post(request):
     user = request.user
-    # print "i am form 1yyyyyy"
     form1 = sms_verify(request)
-    # print "after"
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
@@ -313,12 +319,17 @@ def view_post(request):
     if user.is_authenticated():
         post_can_be_wished = user.add_to_wish_list(post_id)
         is_intrested_inpost=InterestedIn.objects.filter(user_id_buyer = user, post = post).exists()
+        title = user.name 
+    else:
+        title = "welcome guest"
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     can_edit = False
     if test_post.seller == user:
         can_edit = True
-
+    admin = False
+    if user.is_authenticated():
+        admin = user.is_admin
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
@@ -339,8 +350,9 @@ def view_post(request):
     print user
     print post
     dic = {
+    'admin': admin
+    ,'no': list_of_att_number
     # 'admin': user.is_admin
-    'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -349,7 +361,11 @@ def view_post(request):
     , 'report_reasons': report_reasons
     , 'list_of_interested_buyers': list_of_interested_buyers
     , 'comments': Comment.objects.filter(post_id=post_id)
+<<<<<<< HEAD
     , 'user_is_intrested': is_intrested_inpost }
+=======
+    , 'title':title }
+>>>>>>> master
 
     # dic.update(d)
     if user.id is not None:
@@ -423,6 +439,7 @@ filtes to the posts then sort them according to quality index AND  render the li
 def main(request):
     user = request.user
     user_can_post = False
+    title = "Homepage"
     #c1_abdelrahman check whether the user can post or not.
     if user.is_authenticated():
         user_can_post = user.can_post()
@@ -431,7 +448,26 @@ def main(request):
     for i in post_list:
         i.post_state()
 
-    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
+
+    channels = Channel.objects.all()
+    channels_list = [] 
+    for channel in channels:
+        subchannels = SubChannel.objects.filter(channel_id=channel.id)
+        subchannels_list = []
+        for subchannel in subchannels:
+            subchannels_list.append({'subchannel': subchannel})
+
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# - this method creats variable channels , to store all channels available in the database, 
+# variable subchannels , to store all subchannels available in the database,
+#  channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
+# the method then return the channels_list only , as it holds every subchannel of a channel 
+
+    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list ,'title':title, 'canpost': user_can_post },context_instance=RequestContext(request))  
+
+
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -459,7 +495,8 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)    
-            if pwd_valid:   
+            if pwd_valid:
+            # if user.password == password:   
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -637,6 +674,7 @@ def editing_pic(request):
     ctx = {'editing_form': editing_form}
     return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
+
 def return_account_type(request):
      return render_to_response ('account.html',context_instance=RequestContext(request))
 
@@ -731,28 +769,11 @@ def change_paccounttype(request):
     user.save()
     return HttpResponse (" ")
 
-def get_channels (request):
-    channels = Channel.objects.all()
-    channels_list = [] 
-    for channel in channels:
-        subchannels = SubChannel.objects.filter(channel_id=channel.id)
-        subchannels_list = []
-        for subchannel in subchannels:
-            # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-            subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-    post_list = Post.objects.all()   
-    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
-
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# - this method creats variable channels , to store all channels available in the database, 
-# variable subchannels , to store all subchannels available in the database,
-#  channels_list is a list that holds dictionaries of channels and its subchannels.
-# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
-# the method then return the channels_list only , as it holds , every attribute of subchannel
-# and every subchannel of a channel 
-
+# subchannel_id is the id retrieved from the webpage 
+# its is matched with with the subchannel id in the post model , 
+# the method returns the dictionairy of posts related to specific subchannels.
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
     results_of_subchannels = []
@@ -763,10 +784,18 @@ def view_checked_subchannel_posts(request):
         post_list.append(Post.objects.filter(subchannel = sub))
     return render(request, "filterPosts.html", {'post_list': post_list})
     
-# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# subchannel_id is the id retrieved from the webpage 
-# its is matched with with the subchannel id in the post model , 
-# the method returns the dictionairy of posts related to specific subchannels.
+#Reem- As c3 I should prvide a vertical refinement bar ( Menu) , wlong with reviweing posts
+#list_of_subchannelsID is a list of the checked subchannels 
+#the subchannels objects (results_od_subchannels) related t those ID's are retrieved and then the posts related are returned(post_list) 
+def menuForSubchannels(request):
+    subchannel_id = request.GET["sub_ch_id"]
+    print subchannel_id
+    current_subchannel = SubChannel.objects.get(id =subchannel_id)
+    posts_of_subchannels = Post.objects.filter(subchannel_id= current_subchannel)
+    print posts_of_subchannels
+    return render(request, "filterPosts.html", {'post_list': posts_of_subchannels})
+
+
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
@@ -792,13 +821,15 @@ def view_profile(request):
     try: 
         user = request.user
 
+
         if user.is_anonymous():
+            title = "welcome guest"
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
             interacting_list = user_profile.get_interacting_people()
             annynmous_verfied = True
             link = "http://127.0.0.1:8000/register"
 
-            d = {'user':user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
+            d = {"title":title , "user":user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
                     
 
         if user.is_authenticated():
@@ -808,6 +839,7 @@ def view_profile(request):
             link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
             interacting_list = user_profile.get_interacting_people()
+            title = user_profile.name +"'s profile"
             # print interacting_list
             #c2-mohamed
             #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
@@ -819,7 +851,16 @@ def view_profile(request):
                 activity_logs_to_render_array.append(activity)
                 if activity_log_counter is 2:
                     break
-            d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list,'activity_logs_to_render_array': activity_logs_to_render_array}
+            d = {'list_of_wished_posts': list_of_wished_posts
+            , "title":title
+            , 'user':user_profile
+            , "check_verified" : verfied 
+            , "link" : link
+            , "interacting_list": interacting_list
+            , 'activity_logs_to_render_array': activity_logs_to_render_array
+            , 'my_posts': Post.objects.filter(seller=user_profile) 
+            , 'my_intrested_in':InterestedIn.objects.filter(user_id_buyer=user_profile)}
+
 
     except: 
         err_msg = 'This user doesn\'t exist'
@@ -831,7 +872,8 @@ def view_profile(request):
 
 #mai c2 L registeration thank you , it justs renders the html thank u 
 def thankyou(request):
-    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
+    title = "Thank you for registering"
+    return render_to_response ('thankyou.html',{"title":title},context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
@@ -1477,7 +1519,7 @@ def edit_post_title(request):
 
 def view_posts_wished(request):
     user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    list_of_wished_posts = WishList.objects.filter(user_id = user)
     return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 #c2-mohamed awad
