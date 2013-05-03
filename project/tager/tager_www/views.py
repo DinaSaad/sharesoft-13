@@ -809,17 +809,24 @@ def view_checked_subchannel_posts(request):
     all_post_exclude.append(Post.objects.exclude(price__gt=max_price)) #remove from list of all posts any price more than the max_price
     print all_post
     print 'all posts are ...............................................'
-    post_list =[]
+    post_list_refined =[]
     
     for sub in results_of_subchannels:
         for state in list_of_states:
             # for pri in list_of_prices:
 
-            post_list.append(Post.objects.filter(subchannel = sub , state=state ))
+            post_list_refined.append(Post.objects.filter(subchannel = sub , state=state ))
             
             print 'list of posts to be returned'
-            print post_list
+            print post_list_refined
                 
+
+    post_list = [val for sub1 in post_list_refined for val in sub1]
+#      lofl = [[180.0, 1, 2, 3], [173.8], [164.2], [156.5], [147.2], [138.2]]
+# >>> l = [val for subl in lofl for val in subl]
+# >>> l
+    # print 'result'
+    # print result
     # post_list = [v for k, v in post_list_refined.items()]  
     # # post_list = sum(post_list_refined, [])
     # print 'after list of lists '
@@ -827,7 +834,7 @@ def view_checked_subchannel_posts(request):
     # result = all_post_exclude.intersection(post_list)
     # print result
 
-    result= [filter(set(all_post_exclude).__contains__, sublist) for sublist in post_list]
+    # result= [filter(set(all_post_exclude).__contains__, sublist) for sublist in post_list]
     
     return render(request, "filterPosts.html", {'post_list': post_list})
     
