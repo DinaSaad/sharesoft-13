@@ -16,17 +16,7 @@ from views import *
 from django.shortcuts import RequestContext
 
 
-# # class viewingPostsRelatedToSubchannel(TestCase):
-	
-# #     def setUp(self):
-# #         self.channel = Channel.objects.create(name="cars", description="greate deals in cars")
-# #         self.subchannel = SubChannel(name="4x4", channel= self.channel)
-
-# #     def test_models(self):
-# #         self.assertEqual(self.channel.name, "cars")
-# #         self.assertEqual(self.subchannel.channel_id_id, 1)
-
-	
+# x
 
 
 
@@ -49,74 +39,92 @@ from django.shortcuts import RequestContext
 # #         self.assertEqual(self.interestedin.objects.count(), 1)
 
 
-class UserProfileTest(TestCase):
+# class UserProfileTest(TestCase):
 
-    def setUp(self):
+#     def setUp(self):
 
-        self.user1 = UserProfile.objects.create_user(email="mai@gmail.com", name="mai", password="123")
-        self.user1.save()
-        self.user2 = UserProfile.objects.create_user(email="ayia@gmail.com", name="ayia", password="123",status="testing")
-        self.user2.save()
-        self.user3 = UserProfile.objects.create_superuser(email="mahmoud@gmail.com", name="mahmoud", password="123")
-        self.user3.save()
+#         self.user1 = UserProfile.objects.create_user(email="mai@gmail.com", name="mai", password="123")
+#         self.user1.save()
+#         self.user2 = UserProfile.objects.create_user(email="ayia@gmail.com", name="ayia", password="123",status="testing")
+#         self.user2.save()
+#         self.user3 = UserProfile.objects.create_superuser(email="mahmoud@gmail.com", name="mahmoud", password="123")
+#         self.user3.save()
 
-    def test_UserProfile(self):
-        self.assertEqual(self.user1.email , "mai@gmail.com")
-        self.assertEqual(self.user2.email , "ayia@gmail.com")
+#     def test_UserProfile(self):
+#         self.assertEqual(self.user1.email , "mai@gmail.com")
+#         self.assertEqual(self.user2.email , "ayia@gmail.com")
        
-        profile1 = UserProfile.objects.get(pk=1)
-        self.assertEquals(profile1.name,'mai')
-        self.assertEquals(profile1.is_active,True)
+#         profile1 = UserProfile.objects.get(pk=1)
+#         self.assertEquals(profile1.name,'mai')
+#         self.assertEquals(profile1.is_active,True)
 
         
-        profile2 = UserProfile.objects.get(pk=3)
-        self.assertFalse(profile2.status ,"testing")
+#         profile2 = UserProfile.objects.get(pk=3)
+#         # self.assertFalse(profile2.status ,"testing")
     
-        profile3 = UserProfile.objects.get(pk=3)
-        self.assertEquals(profile3.is_admin,True)
+#         profile3 = UserProfile.objects.get(pk=3)
+#         # self.assertEquals(profile3.is_admin,True)
 
-        profile3.name = "mahmoud1"
-        profile3.save()
-        UserProfile.objects.get(pk=3)
-        self.assertEquals(profile3.name,"mahmoud1")
+#         profile3.name = "mahmoud1"
+#         profile3.save()
+#         UserProfile.objects.get(pk=3)
+#         self.assertEquals(profile3.name,"mahmoud1")
 
 
-# # class UserActionsTest(unittest.TestCase):
-# #     def setUp(self):
-# #         self.user1 = UserProfile(name="mahmoud", email="mahmoud@me.com",password="me",phone_number="9876543210")
-# #         self.user1.save()
-# #         self.user2 = UserProfile(name="mai", email="mai@me.com", password="me",phone_number="0123456789")
-# #         self.user2.save()
-# #         self.channel = Channel(name="cars",description="about cars")
-# #         self.channel.save()
-# #         self.subchannel = Subchannel(name="SUV", channel_id= channel)
-# #         self.subchannel.save()
-# #         self.post1 = Post(title="jeep",user= user1,sub_channel= subchannel,buyer= user2)
-# #         self.post1.save()
-# #         self.post2 = Post(title="navigator",user= user1 ,sub_channel=subchannel)
-# #         self.post2.save()
+# class UserActionsTest(unittest.TestCase):
+#     def setUp(self):
+#         self.user1 = UserProfile(name="mahmoud", email="mahmoud@me.com",password="me",phone_number="111")
+#         self.user1.save()
+#         self.user2 = UserProfile(name="mai", email="mai@me.com", password="me",phone_number="222")
+#         self.user2.save()
+#         self.user3 = UserProfile(name="beshoy", email="beshoy@me.com", password="me",phone_number="333")
+#         self.user3.save()
+#         self.user4 = UserProfile(name="abdo", email="abdo@me.com", password="me",phone_number="444")
+#         self.user4.save()
+#         self.channel = Channel(name="cars",description="about cars")
+#         self.channel.save()
+#         self.subchannel = Subchannel(name="SUV", channel_id= channel)
+#         self.subchannel.save()
+#         self.post1 = Post(title="jeep",user= user1,sub_channel= subchannel,buyer= user2)
+#         self.post1.save()
+#         self.post2 = Post(title="navigator",user= user1 ,sub_channel=subchannel,buyer= user3)
+#         self.post2.save()
+#         self.post3 = Post(title="ram",user= user1 ,sub_channel=subchannel,buyer= user4)
+#         self.post2.save()
+#         self.post4 = Post(title="ram truck",user= user2 ,sub_channel=subchannel,buyer= user1)
+#         self.post2.save()
 
-# #     def user_created(self):
-# #         self.assertEqual(self.user1.id, '1')
-# #         self.assertEqual(self.user2.id, '2')
+#     def user_created(self):
+
+#         self.assertEqual(self.user1.id, '1')
+#         self.assertEqual(self.user2.id, '2')
         
-# #         # post,phone_numpost,phone_num
+#         # post,phone_numpost,phone_num
 
-# #     def add_buyers(self):
-# #         self.assertEqual(user1.add_buyers(post1,"0123456789"), False)
-# #         self.assertEqual(user1.add_buyers(post2,"0123456789"), True)
-# #         self.assertEqual(user1.add_buyers(post1,"9876543210"), False)
+#     def add_buyers(self):
+#         self.assertEqual(user1.add_buyers(post1,"111"), False)
+#         self.assertEqual(user1.add_buyers(post2,"111"), True)
+#         self.assertEqual(user1.add_buyers(post1,"222"), False)
     
     
-# #     def user_canRate_without_BuyerID(self):
-# #         self.assertTrue(user2.canRate(self.post1),True)
-# #         self.assertTrue(user1.canRate(self.post1),False)
+#     def user_canRate_without_BuyerID(self):
+#         self.assertTrue(user2.canRate(self.post1),True)
+#         self.assertTrue(user1.canRate(self.post1),False)
+
+
+#     def user_get_interested_buyers(self):
+#         self.assertEqual(user1.get_interacting_people(),[user2,user3,user4])
+#         self.assertEqual(user2.get_interacting_people(),[user1])
+#         self.assertEqual(user3.get_interacting_people(),[user1])
+#         self.assertEqual(user4.get_interacting_people(),[user1])
+
+
 
 
 # class Postrelatedtests(unittest.TestCase):
 #     def setUp(self):
         
-#         self.user = UserProfile.objects.create(name="Abdelrahman", email="abdelrahman.maged@gmail.com")
+#         self.user = UserProfile.objects.create(name="mai", email="abdelrahman.maged@gmail.com")
 #         self.channel = Channel.objects.create(name="cars", description="greate deals in cars")
 #         self.subchannel = SubChannel.objects.create(name="4x4", channel= self.channel)
 
@@ -167,6 +175,7 @@ class UserProfileTest(TestCase):
 
      
 class  intersted(unittest.TestCase):
+
     def setUp(self):
         self.client = Client()
         self.user = UserProfile.objects.create_user(email="mai@gmail.com", name="mai",password = "123")
@@ -176,10 +185,14 @@ class  intersted(unittest.TestCase):
         self.post1 = Post.objects.create(title="test",
             description="1", price="12",location="cairo", seller=self.user , subchannel = self.subchannel)
 
+        self.post2 = Post.objects.create(title="test",
+            description="1", price="12",location="cairo", seller=self.user , subchannel = self.subchannel)
+        self.factory = RequestFactory()
+ 
+
     def test_sms(self):
         
-        user = self.client.login(email='mai@gmail.com', password='123')
-        
+        user = self.client.login(email='mai@gmail.com', password='123')        
         self.assertEqual(self.user.sms_code, None)  #no code saved yet
         
         response = self.client.post('/send_phone/',{'phone_number': '01112285911'})
@@ -190,8 +203,131 @@ class  intersted(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.post('/send_sms/',{'sms_code': "12r"}) # handeled in my code if the user enters a wrong code
 
+class  Postrelatedtests(unittest.TestCase):
 
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.client = Client()
         
+        # self.adminuser = UserProfile.objects.create_user(email="abdelrahmanmaged@gmail.com", name="abdelrahman",password = "123")
+        
+        
+    def test_user_can_post(self):
+        self.channel = Channel.objects.create(name="Automotive", description="test channel")
+        self.subchannel = SubChannel.objects.create(name="Bus", channel= self.channel)
+        self.testuser = UserProfile.objects.create_user(email="abdelrahman@gmail.com", name="abdelrahman",password = "123")
+        self.assertEqual(self.testuser.can_post(),False)
+        self.testuser.is_verfied = True
+        self.testuser.save()
+        self.assertEqual(self.testuser.can_post(),True)
+        self.post1 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.testuser , subchannel = self.subchannel)
+        self.post2 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.testuser , 
+             subchannel = self.subchannel)
+        self.assertEqual(self.testuser.can_post(),True)
+        self.post3 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.testuser , 
+             subchannel = self.subchannel)
+        self.assertEqual(self.testuser.can_post(),False)
+        self.testuser.is_premium = True
+        self.testuser.save()
+        self.assertEqual(self.testuser.can_post(),True)
+        self.assertEqual(self.testuser.add_to_wish_list(self.post1),"true")
+        WishList.objects.create(user = self.testuser, post = self.post1)
+        self.assertEqual(self.testuser.add_to_wish_list(self.post1),"false")
+        self.assertEqual(self.testuser.add_to_wish_list(self.post2),"true")
+
+    def test_admin_can_hide_post(self):
+        self.adminuser = UserProfile.objects.create_user(email="adminabdelrahman@gmail.com", name="abdelrahman",password = "123")
+        self.channel = Channel.objects.create(name="Automotive2", description="test channel")
+        self.subchannel = SubChannel.objects.create(name="Bus2", channel= self.channel)
+        self.adminuser.is_admin = True
+        self.adminuser.save()
+        user = self.client.login(email='adminabdelrahman@gmail.com', password='123')
+        
+        self.post3 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.adminuser , 
+             subchannel = self.subchannel)
+        response = self.client.post('/deletepost/',{'post': self.post3.id})
+        self.testpostresult = Post.objects.get(id=self.post3.id)
+        self.assertTrue(self.testpostresult.is_hidden)
+        self.assertEqual(response.status_code,200)
+    
+    def test_post_author_can_edit_post(self):
+        self.adminuser = UserProfile.objects.create_user(email="editabdelrahman@gmail.com", name="abdelrahman",password = "123")
+        self.channel = Channel.objects.create(name="Automotive3", description="test channel")
+        self.subchannel = SubChannel.objects.create(name="Bus3", channel= self.channel)
+        self.post3 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.adminuser , 
+             subchannel = self.subchannel)
+        self.testattribute = Attribute.objects.create(name="colour", subchannel = self.subchannel, weight="1")
+        self.value = Value.objects.create(attribute = self.testattribute,post= self.post3, value="467")
+        user = self.client.login(email='editabdelrahman@gmail.com', password='123')
+        response = self.client.post('/editposttitle/',{'post':1, 'title':"hello"})
+        self.resultpost = Post.objects.get(id=1)
+        self.assertEqual(self.resultpost.title,"hello")
+        self.assertEqual(response.status_code,200)
+        response = self.client.post('/editpostdescription/',{'post':1, 'description':"testdescription"})
+        self.resultpost = Post.objects.get(id=1)
+        self.assertEqual(self.resultpost.description,"testdescription")
+        self.assertEqual(response.status_code,200)
+        response = self.client.post('/editpostprice/',{'post':1, 'price':"12345"})
+        self.resultpost = Post.objects.get(id=1)
+        self.assertEqual(self.resultpost.price,12345)
+        self.assertEqual(response.status_code,200)
+        response = self.client.post('/editpostlocation/',{'post':1, 'location':"testlocation"})
+        self.resultpost = Post.objects.get(id=1)
+        self.assertEqual(self.resultpost.location,"testlocation")
+        self.assertEqual(response.status_code,200)
+        
+        response = self.client.post('/editpostattribute/',{'post':self.post3.id, 'attribute':self.testattribute.id, 'value':"testing"})
+        self.resultvalue = Value.objects.get(id=1)
+        self.assertEqual(self.resultvalue.value,"testing")
+        self.assertEqual(response.status_code,200)
+
+    def test_user_can_add_and_delete_posts_to_from_wishlist(self):
+        self.wishuser = UserProfile.objects.create_user(email="wishabdelrahman@gmail.com", name="abdelrahman",password = "123")
+        self.channel = Channel.objects.create(name="Automotive4", description="test channel")
+        self.subchannel = SubChannel.objects.create(name="Bus4", channel= self.channel)
+        self.post3 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.wishuser , 
+             subchannel = self.subchannel)
+        self.post4 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.wishuser , 
+             subchannel = self.subchannel)
+        self.post5 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.wishuser , 
+             subchannel = self.subchannel)
+        self.post6 = Post.objects.create(title="test",
+             description="1", price="12",location="cairo", seller=self.wishuser , 
+             subchannel = self.subchannel)
+        user = self.client.login(email='wishabdelrahman@gmail.com', password='123')
+        count = WishList.objects.all().count()
+        self.assertEqual(count,0)
+        response = self.client.post('/addtomylist',{'post':self.post3.id})
+        self.assertEqual(response.status_code,200)
+        count = WishList.objects.all().count()
+        self.assertEqual(count,1)
+
+        response = self.client.post('/removepostfromwishlist',{'post':self.post3.id})
+        self.assertEqual(response.status_code,200)
+        count = WishList.objects.all().count()
+        self.assertEqual(count,0)
+        response = self.client.post('/addtomylist',{'post':self.post4.id})
+        count = WishList.objects.all().count()
+        self.assertEqual(count,1)
+        response = self.client.post('/addtomylist',{'post':self.post5.id})
+        count = WishList.objects.all().count()
+        self.assertEqual(count,2)
+        response = self.client.post('/addtomylist',{'post':self.post6.id})
+        count = WishList.objects.all().count()
+        self.assertEqual(count,3)
+        response = self.client.post('/emptywishlist/')
+        self.assertEqual(response.status_code,200)
+        count = WishList.objects.all().count()
+        self.assertEqual(count,0)
         
    
       
+
