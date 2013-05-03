@@ -252,25 +252,29 @@ def add_post(request):
 
 
 def login(request):
-    mail = request.POST['email']
-    password = request.POST['password']
-    # print "in"
+    try:
+        mail = request.POST['email']
+        password = request.POST['password']
+    except:
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+    
     authenticated_user = authenticate(mail=mail, password=password)
-    # print "in1"
+    
     if authenticated_user is not None:
-        # print "auth"
+    
         print authenticated_user.is_active
         if authenticated_user.is_active:
-            # print "act"
+    
             django_login(request, authenticated_user)
-            # print "user logged in"
+    
             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
-       #return redirect("/login/")# Return an 'invalid login' error message.
-
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+    
 
 def check_Rate_Identify_buyer(request):
     post = Post.objects.get(pk= request.GET['post'])
@@ -362,7 +366,6 @@ def view_post(request):
     , 'user_is_intrested': is_intrested_inpost 
     , 'title':title }
 
-    # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
         dic.update(d)   
@@ -380,14 +383,11 @@ def view_post(request):
 #
 
 def User_Ratings(request):
-    # print request
     rater = request.user
     post_owner = UserProfile.objects.get(id=request.GET['post_owner'])
     post = Post.objects.get(id=request.GET['post_id'])
     rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
-    # d = {"user_rating":user_rating, 'post_owner':post_owner}
-    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
     return HttpResponseRedirect("/")
     
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
@@ -408,7 +408,6 @@ def Buyer_identification(request):
         if form.is_valid():
             new_buyer_num = request.POST['buyer_phone_num']
             post = Post.objects.get(id=request.GET['post_id'])
-            # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_buyer(post, new_buyer_num)
             
             if buyer_added == False :
@@ -418,7 +417,6 @@ def Buyer_identification(request):
             
             d = {'form':form}
             return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
-            # return HttpResponseRedirect( "/" )
         else :
             d = {'form':form}
             return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
@@ -588,7 +586,6 @@ class CustomAuthentication:
                 return user
         except UserProfile.DoesNotExist:
             return None
-
 
     def get_user(self, user_id):
         try:
@@ -964,7 +961,9 @@ def view_profile(request):
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
             interacting_list = user_profile.get_interacting_people()
             title = user_profile.name +"'s profile"
-            # print interacting_list
+            if user.id == user_profile.id:
+                can_manage_wish_list = True
+        
             #c2-mohamed
             #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
             activity_logs_to_render_array = []
@@ -976,7 +975,8 @@ def view_profile(request):
                 if activity_log_counter is 2:
                     break
 
-            d = {'list_of_wished_posts': list_of_wished_posts
+            d = {'caneditwishlist': can_manage_wish_list
+            ,'list_of_wished_posts': list_of_wished_posts
             , "title":title
             , 'user':user_profile
             , "check_verified" : verfied 
