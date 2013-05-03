@@ -91,19 +91,19 @@ $('#attributes_show').click(function(){
 });
 $(document).ready(function(){
 $('#advanced_render_channels').click(function(){
-  window.location.replace("/advanced_search_channel_show?ad_ch_id="+$('#ad_Channel_dropdown').val())
+  window.location.replace("../advanced_search_channel_show/?ad_ch_id="+$('#ad_Channel_dropdown').val())
 // $('#advanced_render_subchannels').hide();
 });
 });
 $(document).ready(function(){
 $('#advanced_render_subchannels').click(function(){
-  window.location.replace("/advanced_subchannel_show?ad_sub_ch_id="+$('#ad_subChannel_dropdown').val())
+  window.location.replace("../advanced_subchannel_show?ad_sub_ch_id="+$('#ad_subChannel_dropdown').val())
 });
 });
  $(function() {
     $( "#dialog" ).dialog();
     $('#dialog').click(function(){
-  window.location.replace("/advanced_search_channel")
+  window.location.replace("../advanced_search_channel")
 // $('#advanced_render_subchannels').hide();
 });
   });
