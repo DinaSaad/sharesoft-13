@@ -1,10 +1,6 @@
 // var Enabled=true;
 function posts_render(ids)
-    	{
-    		// if (Enabled == true)
-    		// {
-
-    		
+    	{    		
    			$.ajax(
    			{
 			    type: "GET",
@@ -13,12 +9,9 @@ function posts_render(ids)
 
 			    success: function(req)
 		       {
-		       	
 		         $('#posts_result').html(req);
 
 		       }
     		});
-   		// }
-
     	}
 

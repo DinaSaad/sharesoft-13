@@ -41,14 +41,26 @@
             </div>
         </div>
         {% block verification %}
-        {% if user.is_authenticated %}
-        {% if check_verified == False %}
-        <div class="alert">
+
+          {% if check_ann_verified == True %}
+
+            <div class="alert">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}
-        </div>
-        {% endif %}
-        {% endif %}
+            <strong>Warning!</strong> please register, in order to use the site nomarly, here is a registeration {{ link|urlize }}
+            </div> 
+
+          {% endif %}
+    
+
+        
+            {% if check_verified == False %}
+                <div class="alert">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}
+                </div>
+            {% endif %}
+        
+
         {% endblock %}
         <!-- Start main websiteBody Div -->
         <div class="container-fluid" style="padding-top: 1px;">
