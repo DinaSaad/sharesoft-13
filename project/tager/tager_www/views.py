@@ -26,6 +26,7 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+from django.contrib.auth.models import AnonymousUser
 
 
 
@@ -53,7 +54,8 @@ SCOPE_SEPARATOR = ' '
 
 
 def home(request):
-    return render_to_response ('home.html',context_instance=RequestContext(request))
+    title = "welcome to tager"
+    return render_to_response ('home.html',{'title':title},context_instance=RequestContext(request))
 
 
 def return_channels(request):
@@ -162,7 +164,8 @@ def return_notification(request):
         pass
 
 def view_login(request):
-    return render_to_response ('login.html',context_instance=RequestContext(request))
+    title = "please login below"
+    return render_to_response ('login.html',{'title':title},context_instance=RequestContext(request))
 
 
 
@@ -247,8 +250,12 @@ def add_post(request):
 
 
 def login(request):
-    mail = request.POST['email']
-    password = request.POST['password']
+    try:
+        mail = request.POST['email']
+        password = request.POST['password']
+    except:
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
     # print "in"
     authenticated_user = authenticate(mail=mail, password=password)
     # print "in1"
@@ -263,7 +270,9 @@ def login(request):
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+        # return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
 
@@ -302,14 +311,15 @@ def add_to_wish_list(request):
 
 def view_post(request):
     user = request.user
-    print "i am form 1yyyyyy"
     form1 = sms_verify(request)
-    print "after"
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
     if user.is_authenticated():
         post_can_be_wished = user.add_to_wish_list(post_id)
+        title = user.name 
+    else:
+        title = "welcome guest"
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     can_edit = False
@@ -332,8 +342,8 @@ def view_post(request):
     report_reasons = ReportReasons.objects.all()
     #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
     dic = {
-    'admin': user.is_admin
-    ,'no': list_of_att_number
+    # 'admin': user.is_admin
+    'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -341,7 +351,8 @@ def view_post(request):
     , 'list_of_attribute_values': list_of_attribute_values
     , 'report_reasons': report_reasons
     , 'list_of_interested_buyers': list_of_interested_buyers
-    , 'comments': Comment.objects.filter(post_id=post_id) }
+    , 'comments': Comment.objects.filter(post_id=post_id)
+    , 'title':title }
 
     # dic.update(d)
     if user.id is not None:
@@ -415,6 +426,7 @@ filtes to the posts then sort them according to quality index AND  render the li
 def main(request):
     user = request.user
     user_can_post = False
+    title = "Homepage"
     #c1_abdelrahman check whether the user can post or not.
     if user.is_authenticated():
         user_can_post = user.can_post()
@@ -440,7 +452,8 @@ def main(request):
 # subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
 # the method then return the channels_list only , as it holds every subchannel of a channel 
 
-    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list },context_instance=RequestContext(request))  
+    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list ,'title':title, 'canpost': user_can_post },context_instance=RequestContext(request))  
+
 
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
@@ -469,7 +482,8 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)    
-            if pwd_valid:    
+            if pwd_valid:
+            # if user.password == password:   
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -793,25 +807,48 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-        user_owner = request.GET['user_id']
-        #c1-abdelrahman this line retrieves the wished posts by the user.
-        list_of_wished_posts = WishList.objects.filter(user = user)
-        verfied = user.is_verfied
-        link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        interacting_list = user_profile.get_interacting_people()
-        # print interacting_list
-        #c2-mohamed
-        #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
-        activity_logs_to_render_array = []
-        activity_logs_to_render_list = ActivityLog.objects.filter(user = user_owner)
-        activity_log_counter = 0
-        for activity in activity_logs_to_render_list:
-            activity_log_counter = activity_log_counter + 1
-            activity_logs_to_render_array.append(activity)
-            if activity_log_counter is 2:
-                break
-        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
+
+
+        if user.is_anonymous():
+            title = "welcome guest"
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            annynmous_verfied = True
+            link = "http://127.0.0.1:8000/register"
+
+            d = {"title":title , "user":user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
+                    
+
+        if user.is_authenticated():
+            #c1-abdelrahman this line retrieves the wished posts by the user.
+            list_of_wished_posts = WishList.objects.filter(user = user)
+            verfied = user.is_verfied
+            link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            title = user_profile.name +"'s profile"
+            # print interacting_list
+            #c2-mohamed
+            #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
+            activity_logs_to_render_array = []
+            activity_logs_to_render_list = ActivityLog.objects.filter(user = user)
+            activity_log_counter = 0
+            for activity in activity_logs_to_render_list:
+                activity_log_counter = activity_log_counter + 1
+                activity_logs_to_render_array.append(activity)
+                if activity_log_counter is 2:
+                    break
+            d = {'list_of_wished_posts': list_of_wished_posts
+            , "title":title
+            , 'user':user_profile
+            , "check_verified" : verfied 
+            , "link" : link
+            , "interacting_list": interacting_list
+            , 'activity_logs_to_render_array': activity_logs_to_render_array
+            , 'my_posts': Post.objects.filter(seller=user_profile) 
+            , 'my_intrested_in':InterestedIn.objects.filter(user_id_buyer=user_profile)}
+
+
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -822,7 +859,8 @@ def view_profile(request):
 
 #mai c2 L registeration thank you , it justs renders the html thank u 
 def thankyou(request):
-    return render_to_response ('thankyou.html',context_instance=RequestContext(request))
+    title = "Thank you for registering"
+    return render_to_response ('thankyou.html',{"title":title},context_instance=RequestContext(request))
 
 #mai c2 : registration
 # this method takes a request and checks if the request is a post 
