@@ -40,6 +40,7 @@ import datetime
 from datetime import datetime, timedelta
 from django.conf import settings
 from twilio.rest import TwilioRestClient
+import tweepy
 
 
 APP_ID = '461240817281750'   # From facebook app's settings
@@ -48,7 +49,8 @@ LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be re
 FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
-
+CONSUMER_TOKEN  = 'Wt0rrb3N5kTHQVZRsHnVA'
+CONSUMER_SECRET = 'h9H5VpWEtAVFmVHe6SsWBdFnCXBxzDDS1xOeoFH9kxA'
 
 
 
@@ -263,8 +265,21 @@ def login(request):
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
+        return render()
        #return redirect("/login/")# Return an 'invalid login' error message.
+def twitter_login(request, mail , password):
+    authenticated_user = twitter_authenticate(mail=mail, password=password)
+    user = UserProfile.objects.get(email = mail)
+    if authenticated_user is not None:
+        print authenticated_user.is_active
+        if authenticated_user.is_active:
+            django_login(request, authenticated_user)
+            return user
+        else:
+           return HttpResponse ("sorry your account is disabled") 
+    else:
+        message = "sorry there is an error when getting the access token"
+        return render("home.html" ,{'message':message})
 
 
 def check_Rate_Identify_buyer(request):
@@ -453,6 +468,7 @@ class CustomAuthentication:
             pwd_valid = check_password(password, user.password)    
             if pwd_valid:    
                 return user
+            
         except UserProfile.DoesNotExist:
             return None
 
@@ -462,7 +478,14 @@ class CustomAuthentication:
             return UserProfile.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
-
+    
+    def twitter_authenticate(self, mail, password):
+        try:
+            user = UserProfile.objects.get(email=mail)
+            if user.password == password:
+                return user
+        except UserProfile.DoesNotExist:
+            return None
 
 
 
@@ -1490,3 +1513,60 @@ def unread_notifications(request):
             if not_counter == 5:
                 break
         return render_to_response ('base.html',{'all_unread_notifications': all_unread_notifications})
+        #mohamed tarek c3 
+         #this method takes as input request and runs the first authentication 
+         #and redirects to the next method 
+def twitter_get_auth_token(request):
+    try:
+        callback_url = 'http://127.0.0.1:8000/twitter_register/'
+        auth = tweepy.OAuthHandler(CONSUMER_TOKEN, CONSUMER_SECRET,callback_url)
+    except tweepy.TweepError:
+        message = "sorry there is an error when getting the access token"
+        return render(request , "profile.html" ,{'message':message})
+    url = tweepy.OAuthHandler.get_authorization_url(auth)
+    request.session["request_token.key"] = auth.request_token.key
+    request.session["request_token.secret"]= auth.request_token.secret
+    return HttpResponseRedirect(url , '/')
+def twitter_registration(request):
+    print "entered twitter_registration"
+    try:
+        auth = tweepy.OAuthHandler(CONSUMER_TOKEN, CONSUMER_SECRET)
+    except tweepy.TweepError:
+        message = "sorry there is an error when getting the access token"
+        return render(request , "profile.html" ,{'message':message})
+    request_key = request.session.get('request_token.key')
+    request_secret=request.session.get('request_token.secret')
+    auth.set_request_token(request_key,request_secret)
+    verifier = request.GET.get('oauth_verifier')
+    try:
+        auth.get_access_token(verifier)
+    except tweepy.TweepError:
+        message = "sorry there is an error when getting the access token"
+        return render(request , "profile.html" ,{'message':message})
+    api = tweepy.API(auth)
+    twitter_user = api.me()
+    print twitter_user
+    uid = twitter_user.id
+    name= twitter_user.name
+    email = twitter_user.screen_name+"@gmail.com"
+    if UserProfile.objects.get(email = email):
+        temp_user = UserProfile.objects.get(twitter_uid = uid)
+        user_id = temp_user.twitter_uid
+        mail = temp_user.email
+        password = temp_user.password
+        user = twitter_login(request ,mail , password)
+        return HttpResponseRedirect("/profile?user_id="+str(user.id))
+    else:
+        userprofile = UserProfile.objects.create(email = email)
+        userprofile.name = name
+        userprofile.twitter_uid = uid
+        userprofile.email = email
+        UserProfile.is_verfied = True
+        userprofile.password = UserProfile.objects.make_random_password()
+        userprofile.save()
+        temp_user = UserProfile.objects.get(twitter_uid = uid)
+        user_id = temp_user.twitter_uid
+        password = temp_user.password
+        mail = temp_user.email
+        user = twitter_login(request, mail , password)
+        return HttpResponseRedirect("/profile?user_id="+str(user.id))

@@ -72,6 +72,7 @@ class UserProfile(AbstractBaseUser):
     name = models.CharField(max_length=40)     
     email = models.EmailField(max_length=254, unique=True)
     facebook_uid = models.IntegerField(unique=True, null=True)
+    twitter_uid = models.IntegerField(unique=True, null=True)
     accesstoken = models.CharField(max_length=50 , null=True , unique=True)
     date_Of_birth = models.DateField(null=True, blank=True)
     phone_number = models.CharField(max_length=20 , null=True)
