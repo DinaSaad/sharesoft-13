@@ -250,8 +250,12 @@ def add_post(request):
 
 
 def login(request):
-    mail = request.POST['email']
-    password = request.POST['password']
+    try:
+        mail = request.POST['email']
+        password = request.POST['password']
+    except:
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
     # print "in"
     authenticated_user = authenticate(mail=mail, password=password)
     # print "in1"
