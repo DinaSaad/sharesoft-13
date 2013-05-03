@@ -24,7 +24,7 @@ urlpatterns = patterns('',
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),  
     url(r'^intrested/$', 'tager_www.views.intrested'),   
-    url(r'^intrested/$', 'tager_www.views.intrested'),  
+    # url(r'^intrested/$', 'tager_www.views.intrested'),  
 
     url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),

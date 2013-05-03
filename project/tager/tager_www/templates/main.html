@@ -80,12 +80,15 @@
     <span class="priceValue">{{post.price }} EGP</span>
 
     {% if post.state == "New" %}
-      <span class="label label-success StateLabel">New</span>  
-      {% elif post.state == "Sold" %}
-      <span class="label label-success StateLabel">Sold</span> 
-      {% endif %}
-<a href="/showpost?post={{post.id}}"><h4>&nbsp;{{post.title}}</h4></a>
-
+    <div class="ribbon">
+    <a> New </a>
+    </div>
+    {% elif post.state == "Sold" %}
+    <div class="ribbon">
+    <a> Sold </a>
+    </div>
+    {% endif %}
+<a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4></a>
 <p class="stats colorless sysPinOnlyFriendsNeedRemove" style="padding-right:5px;padding-left:5px;">
   <span class="IntrestedCount" title="Likes"><em><i class="icon-bullhorn"></i></em>&nbsp;&nbsp;{{post.intersed_count}}</span> &nbsp;
     <span class="CommentsCount" title="Comments"> <em><i class="icon-comments-alt"></i></em>&nbsp;&nbsp;{{post.comments_count}}</span>&nbsp;&nbsp;&nbsp;
