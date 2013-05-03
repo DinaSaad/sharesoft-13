@@ -426,28 +426,40 @@ def Buyer_identification(request):
 def viewMyFeed(request):
     user_id = request.user.id
     subscribed_posts = filter_subscribed_to_posts(user_id)
-
-    return render_to_response('myfeed.html', {'subscribed_posts', subscribed_posts})
+    return render(request, 'myfeed.html', {'subscribed_posts' : subscribed_posts})
 
 # C1_Tharwat - A helper method that will be used viewMyFeed method 
 # this method will do the filtering process for the user depending on his subscriptions and will return a list of posts
 def filter_subscribed_to_posts(user_id):
     all_channels_subscribed = UserChannelSubscription.objects.filter(user = user_id)
+    print "all channels subscribed"
+    print all_channels_subscribed
     sub_channels_subscribed = UserSubchannelSubscription.objects.filter(user = user_id)
+    print "subchannels subscribed"
+    print sub_channels_subscribed
     parameters_subscribed = UserParameterSubscription.objects.filter(user = user_id)
+    print "parameters subscribed"
+    print parameters_subscribed
     all_channels_subscribed_posts = []
     all_subchannels_subscribed_posts = []
     all_parameter_subscribed_posts = []
     all_posts = Post.objects.all()
     for channel in all_channels_subscribed:
+        print "in first for"
         for post2 in all_posts:
-            if post.subchannel.channel is channel:
+            print "in second for"
+            print post2
+            if post2.subchannel.channel is channel:
                     all_channels_subscribed_posts.append(post)
+                    print "in third for"
+                    print all_channels_subscribed_posts
     # for postsubchannel in all_posts:
     for subchannel in sub_channels_subscribed:
         for postsubchannel2 in all_posts:
             if postsubchannel.subchannel is subchannel:
                 all_subchannels_subscribed_posts.append(post)
+                print "in fourth for"
+                print all_subchannels_subscribed_posts
     # for postparameter in all_posts:
     for parameter in parameters_subscribed:
         for post3 in all_posts:
@@ -476,11 +488,9 @@ def filter_subscribed_to_posts(user_id):
     for post7 in all_parameter_subscribed_posts:
         if post7 not in final_list:
             final_list.append(post7)
-
-    final_list = (Post.objects.exclude(is_hidden=True)
-        .exclude(expired=True)
-        .exclude(is_sold=True)
-        .order_by('-quality_index'))
+    print 'aaa'
+    print final_list
+    print 'bbbb'
     return final_list
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
