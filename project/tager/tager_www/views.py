@@ -756,33 +756,6 @@ def change_paccounttype(request):
     return HttpResponse (" ")
 
 
-# def get_channels (request):
-#     channels = Channel.objects.all()
-#     channels_list = [] 
-#     for channel in channels:
-#         subchannels = SubChannel.objects.filter(channel_id=channel.id)
-#         subchannels_list = []
-#         for subchannel in subchannels:
-#             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-#             # , 'attributes': attributes
-#             # keep commented will be used later
-#             subchannels_list.append({'subchannel': subchannel})
-#         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-#     post_list = Post.objects.all()   
-#     states=[]
-    
-#     list_of_prices=[]
-#     all_posts=Post.objects.all()
-#     for post in all_posts:
-#         if post.state not in states: 
-#             states.append(post.state) 
-#         list_of_prices.append(post.price)
-#     print states
-#     price_min=min(list_of_prices)
-#     price_max =max(list_of_prices)
-
-#     return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list,  'states': states, 'mnimum_price':price_min, 'maximum_price': price_max } )
-
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # the method GETS  a list of subchannel ID's , list of post states and a min price and a maximum price 
@@ -803,8 +776,12 @@ def view_checked_subchannel_posts(request):
     for li in list_of_subchannelsID:
         if li is not None:
             subchannel = SubChannel.objects.filter(id = li)
+            print 'filtering'
             print subchannel
-            results_of_subchannels.append(SubChannel.objects.filter(id = li))
+            subchannel = SubChannel.objects.get(id = li)
+            print 'get'
+            print subchannel
+            results_of_subchannels.append(SubChannel.objects.get(id = li))
             print li
     print results_of_subchannels
     # list_of_posts=Post.objects.all();
@@ -838,8 +815,15 @@ def view_checked_subchannel_posts(request):
         for state in list_of_states:
             # for pri in list_of_prices:
 
-            post_list.append(Post.objects.filter(subchannel = sub, state=state  ))
+            post_list.append(Post.objects.filter(subchannel = sub , state=state ))
+            
+            print 'list of posts to be returned'
+            print post_list
                 
+    # post_list = [v for k, v in post_list_refined.items()]  
+    # # post_list = sum(post_list_refined, [])
+    # print 'after list of lists '
+    # print post_list
     # result = all_post_exclude.intersection(post_list)
     # print result
 
