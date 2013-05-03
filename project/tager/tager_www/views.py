@@ -225,7 +225,7 @@ def add_post(request):
                 post_activity_url = "showpost?post=" + unicode(p.id)
                 post_log_type = "post"
                 # post_log_date = datetime.datetime.now()
-                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author) 
+                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author, activity_date = datetime.now())
         return HttpResponseRedirect('/main')
     else:
 
@@ -293,7 +293,7 @@ def add_to_wish_list(request):
         post_activity_url = "showpost?post=" + unicode(post_object.id)
         post_log_type = "wish"
         # post_log_date = datetime.datetime.now()
-        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse()
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
@@ -554,7 +554,7 @@ def edit_name(request):
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
     # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
 # Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
@@ -577,7 +577,7 @@ def edit_date_of_birth(request):
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
     # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
 # Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
@@ -600,7 +600,7 @@ def edit_work(request):
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
     # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
 @login_required
@@ -1249,7 +1249,7 @@ def intrested(request):
         post_activity_url = "showpost?post=" + unicode(post_in.id)
         post_log_type = "profile"
         # post_log_date = datetime.datetime.now()
-        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
 
     return HttpResponse()
 #c2-mohamed
@@ -1257,8 +1257,7 @@ def intrested(request):
 #it renders all activity log that belongs to that user
 def all_log(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(user = author)
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1266,8 +1265,7 @@ def all_log(request):
 #it renders all activity log of type post that belongs to that user
 def all_log_post(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="post", user = author)
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="post", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1275,8 +1273,7 @@ def all_log_post(request):
 #it renders all activity log of type interested that belongs to that user
 def all_log_interested(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="interested", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1284,8 +1281,7 @@ def all_log_interested(request):
 #it renders all activity log of type wish that belongs to that user
 def all_log_wish(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="wish", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1293,8 +1289,7 @@ def all_log_wish(request):
 #it renders all activity log of type profile that belongs to that user
 def all_log_profile(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="profile", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #mai c2 : sms verfication 
@@ -1385,7 +1380,7 @@ def remove_post_from_wishlist(request):
     post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
     post_activity_url = "showpost?post=" + unicode(post_in.id)
     post_log_type = "wish"
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse()
 
 #c1_abdelrahman this method takes request as an input from the user. 
@@ -1501,3 +1496,4 @@ def unread_notifications(request):
             if not_counter == 5:
                 break
         return render (request, 'base.html',{'all_unread_notifications': all_unread_notifications})
+
