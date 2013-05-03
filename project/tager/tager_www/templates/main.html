@@ -51,10 +51,14 @@ style="
     <span class="priceValue">{{post.price }} EGP</span>
     Posted By: <a href="../profile/?user_id={{post.seller.id}}">{{post.seller.name}}</a> 
     {% if post.state == "New" %}
-      <span class="label label-success StateLabel">New</span>  
-      {% elif post.state == "Sold" %}
-      <span class="label label-success StateLabel">Sold</span> 
-      {% endif %}
+    <div class="ribbon">
+    <a> New </a>
+    </div>
+    {% elif post.state == "Sold" %}
+    <div class="ribbon">
+    <a> Sold </a>
+    </div>
+    {% endif %}
 <a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4></a>
 
 <p class="stats colorless sysPinOnlyFriendsNeedRemove" style="padding-right:5px;padding-left:5px;">

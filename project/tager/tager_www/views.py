@@ -303,14 +303,16 @@ def add_to_wish_list(request):
 
 def view_post(request):
     user = request.user
-    print "i am form 1yyyyyy"
+    # print "i am form 1yyyyyy"
     form1 = sms_verify(request)
-    print "after"
+    # print "after"
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
+    is_intrested_inpost = False
     if user.is_authenticated():
         post_can_be_wished = user.add_to_wish_list(post_id)
+        is_intrested_inpost=InterestedIn.objects.filter(user_id_buyer = user, post = post).exist()
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     can_edit = False
@@ -332,6 +334,10 @@ def view_post(request):
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
     #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
+    print "is_intrested"
+    # print InterestedIn.objects.filter(user_id_buyer = user, post = post).exists() 
+    print user
+    print post
     dic = {
     # 'admin': user.is_admin
     'no': list_of_att_number
@@ -342,7 +348,8 @@ def view_post(request):
     , 'list_of_attribute_values': list_of_attribute_values
     , 'report_reasons': report_reasons
     , 'list_of_interested_buyers': list_of_interested_buyers
-    , 'comments': Comment.objects.filter(post_id=post_id) }
+    , 'comments': Comment.objects.filter(post_id=post_id)
+    , 'user_is_intrested': is_intrested_inpost }
 
     # dic.update(d)
     if user.id is not None:
@@ -1234,23 +1241,18 @@ def SavingComment(request, post_id):
 def intrested(request):
     print "intrested views"
     post_in=request.POST["post_in"]
+    post=Post.objects.get(pk=post_in)
     user=request.user
-    if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
-        intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post_in.seller,post=post_in)
-        intrest1.save()
-        post_in.intersed_count=post_in.intersed_count+1
-        post_in.save()
-        #c2-mohamed
-        #the next five lines are written to save a tuple in ActivityLog table
-        #to save it to make the user retrieve it when he logs into his activity log
-        #post_activity_content is to save the activity log content that will be shown to user
-        #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-        #post_log_type is the type of the log type the user will choose in the activity log page
-        post_activity_content = "you added " + unicode(post_in.title) + " to your wish list."
-        post_activity_url = "showpost?post=" + unicode(post_in.id)
-        post_log_type = "profile"
-        # post_log_date = datetime.datetime.now()
-        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    print post.seller
+    intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post.seller,post=post)
+    intrest1.save()
+    post.intersed_count=post_in.intersed_count+1
+    post.save()
+    post_activity_content = "you added " + unicode(post.title) + " to your wish list."
+    post_activity_url = "showpost?post=" + unicode(post.id)
+    post_log_type = "profile"
+    # post_log_date = datetime.datetime.now()
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
 
     return HttpResponse()
 #c2-mohamed
@@ -1355,7 +1357,8 @@ def sms_verify(request):
             try:
                 user = UserProfile.objects.get(sms_code=smscode)
                 if user.id == request.user.id:
-                   
+                    user.phone_is_verified=True
+                    user.save()
                     return HttpResponse('true')
                 else:
                     return HttpResponse('false')
