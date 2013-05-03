@@ -389,3 +389,12 @@ class TestSubchannelRelatedPosts(unittest.TestCase):
         self.assertEqual(P4.subchannel, 'Sub2')
         check_posts = menuForSubchannels(1)
         self.assertEqual(check_posts, 'P1,P2,P3')
+        list_of_subchannelIDs = [Sub1.id]
+        list_of_states = [ 'New', 'old']
+        view_posts = view_checked_subchannel_posts(list_of_states, list_of_subchannelIDs)
+        self.assertEqual(view_posts, 'P1,P3') 
+        list_of_subchannelIDs2 = [Sub1.id, Sub2.id]
+        list_of_states2 = [ 'New', 'archived']
+        view_posts2 = view_checked_subchannel_posts(list_of_states, list_of_subchannelIDs)
+        self.assertEqual(view_posts2, 'P1,P2,P4,P5') 
+
