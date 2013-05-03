@@ -515,10 +515,10 @@ class Post(models.Model):
             not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
             not_url = "showpost?post="+unicode(self.id)
             try:
-                not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                not1 = Notification(user = a, content = not_content, url=not_url, image_url = self.profile_picture.url)
                 not1.save()
             except:
-                not1 = Notification(user = q, content = not_content, url=not_url)
+                not1 = Notification(user = a, content = not_content, url=not_url)
                 not1.save()
         for b in all_users_subscribed_to_attributes:
             if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
@@ -526,10 +526,10 @@ class Post(models.Model):
                     not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
                     not_url = "showpost?post="+unicode(self.id)
                     try:
-                        not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                        not1 = Notification(user = b, content = not_content, url=not_url, image_url = self.profile_picture.url)
                         not1.save()
                     except:
-                        not1 = Notification(user = q, content = not_content, url=not_url)
+                        not1 = Notification(user = b, content = not_content, url=not_url)
                         not1.save()
 
 

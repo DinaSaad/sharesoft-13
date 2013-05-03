@@ -1,8 +1,12 @@
 {% extends "base.html"%}
 {% load staticfiles %}
 {% block content%} 
-
-<div align="left">
+<style type="text/css">
+.pform{
+    margin-left: 450px;
+}
+</style>
+<div align="center">
     {% if list_of_channels %}
     <h3>Channel</h3>
     <select id="Channel_dropdown">
@@ -15,7 +19,7 @@
     {% endif %}
     </div>
 
-<div align="left">
+<div align="center">
 {% if list_of_subchannels %}
     <h3>The available sub channels are:</h3>
     <select id="subChannel_dropdown">   
@@ -52,18 +56,27 @@
             * <input id="id_price" name="price" type="text">
             <lbl id = "priceoutput" style="color:red"></lbl> 
         </div>
-        
+        <div>
         <label for="id_location">Location:</label>
-        <input id="id_location" name="location" type="text"> *
+        * <input id="id_location" name="location" type="text"> 
         
         </div>
 
+<!-- 
+<div class="control-group">
+    <label class="control-label" for="inputEmail">Email</label>
+    <div class="controls">
+      <input type="text" id="inputEmail" placeholder="Email">
+    </div>
+  </div>
 
+         -->
         <div>
-            <label for="id_picture">Picture:</label>
+        <label for="id_picture">Picture:</label>
             <input id="id_picture" name="picture" type="file">
             <button type="button" id="add1" class="btn btn-success btn-small">+</button>
         </div>
+        
         
         <div id="picture1"> 
             <label for="id_picture1">Picture:</label>
@@ -100,10 +113,10 @@
             <input name='option_{{Attribute.id}}' type="text">
             <lbl style="color:Green">Optional</lbl>
         {% endfor %}
-
-        <br>
-        <br>
+        <div style="padding-left:100px;">
         <input type="submit" class="btn btn-success btn-medium" value="Submit" id="SubmitAction" >
+        </div>
+</div>
     </form>
 </div>
 {% endif %}

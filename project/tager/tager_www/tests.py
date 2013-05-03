@@ -205,6 +205,7 @@ class  intersted(unittest.TestCase):
         response = self.client.post('/send_sms/',{'sms_code': "12r"}) # handeled in my code if the user enters a wrong code
 
 
+
 class  Postrelatedtests(unittest.TestCase):
 
     def setUp(self):
@@ -519,3 +520,18 @@ class ActivityLog(object):
         self.assertEqual(response.status_code, 200)
         response = self.client.post('/all_log_profile/')  
         self.assertEqual(response.status_code, 200)
+
+class intrested_in(unittest.TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = UserProfile.objects.create_user(email="mai@gmail.com", name="mai",password = "123")
+        self.channel = Channel.objects.create(name="cars", description="greate deals in cars")
+        self.subchannel = SubChannel.objects.create(name="4x4", channel= self.channel)
+        self.post2 = Post.objects.create(title="test",
+            description="1", price="12",location="cairo", seller=self.user , subchannel = self.subchannel)
+        self.factory = RequestFactory()
+    
+    def interestedin(self):     
+        self.assertEqual(InterestedIn.objects.filter(user_id_buyer = user, post = post).exists(),False)
+        response = self.client.post('/intrested/',{'post_id': post.id})
+        self.assertEqual(InterestedIn.objects.filter(user_id_buyer = user, post = post).exists(),True)
