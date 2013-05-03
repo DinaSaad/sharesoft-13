@@ -765,66 +765,21 @@ def change_paccounttype(request):
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
     list_of_states = request.GET.getlist('status[]')
-    min_price= request.GET['min']
-    max_price= request.GET['max']
-    print 'min price is '
-    print min_price
-    print max_price
-    print list_of_states
+    # min_price= request.GET['min']
+    # max_price= request.GET['max']
+    
     results_of_subchannels = []
-    print list_of_subchannelsID
     for li in list_of_subchannelsID:
         if li is not None:
-            subchannel = SubChannel.objects.filter(id = li)
-            print 'filtering'
-            print subchannel
-            subchannel = SubChannel.objects.get(id = li)
-            print 'get'
-            print subchannel
             results_of_subchannels.append(SubChannel.objects.get(id = li))
-            print li
     print results_of_subchannels
-    # list_of_posts=Post.objects.all();
-    # list_of_prices=[]
-    # print list_of_posts
-    # for po in list_of_posts:
-    #     print po.title
-    #     print ""
-    #     print po.price
-    #     print "mnimu price is :"
-    #     print min_price
-    #     print "the maximum price is "
-    #     print max_price
-    #     print "end of max price"
-    #     if min_price < po.price < max_price:
-    #         # if 'po.price' < 'max_price':
-    #         print po.price
-    #         print "min price was"
-    #         print min_price
-    #         list_of_prices.append(po.price)
-    # all_post=Post.objects.all() # get all posts and save them in a list all_post
-    all_post=[]
-    all_post=Post.objects.exclude(price__lt=min_price) #remove from list of all posts any price less than the min_price
-    all_post_exclude= list(all_post)
-    all_post_exclude.append(Post.objects.exclude(price__gt=max_price)) #remove from list of all posts any price more than the max_price
-    print all_post
-    print 'all posts are ...............................................'
+   
     post_list_refined =[]
     
     for sub in results_of_subchannels:
         for state in list_of_states:
-            # for pri in list_of_prices:
-
             post_list_refined.append(Post.objects.filter(subchannel = sub , state=state ))
-            
-            print 'list of posts to be returned'
-            print post_list_refined
-                
-
     post_list = [val for sub1 in post_list_refined for val in sub1]
-
-
-    # post_list= [filter(set(all_post_exclude).__contains__, sublist) for sublist in result]
     print post_list
     return render(request, "filterPosts.html", {'post_list': post_list})
     
