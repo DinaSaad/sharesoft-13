@@ -1,13 +1,14 @@
-{% extends "MainBase.html" %}
+{% extends "base2.html" %}
 {% load staticfiles %}
 {% block nav %}
-{% load staticfiles %}
-<div class="nav-collapse collapse"  style="font-size:18">
-    <ul class="nav">
-    <ul class="nav pull-right">
-          
-              
-                <div id="to_be_replaced" style="float:left; margin-top: 10px;">
+
+{% if request.user.is_authenticated %}
+ <div class="nav-collapse collapse">
+            <ul class="nav">
+              <ul class="nav pull-right">
+              <li><a href="/main" style="margin-top:3px; font-size:16;">Home</a></li>
+              <!-- <li><a href="#contact" style="margin-top:3px;">Contact</a></li> -->
+              <div id="to_be_replaced" style="float:left; margin-left:5px; margin-top: 13px;">
                 <div id="notifications_div">
                   <a id="notifications_dropdown" data-toggle="dropdown"><img src="/static/img/notifications-logoo.png" width="25" height="22"/></a>
                   <ul  id="notifications" class="dropdown-menu"  style="margin-left:-50px; background-color:white" size="7">
@@ -58,33 +59,63 @@
                   </style>
                 </div>
               </div>
+              <li>
+                <div>
+                  <form class="navbar-search pull-left" style="margin-left:180px; margin-top:13px;" action="/search/" method="get">
+                    <input type="text" class="search-query" placeholder="Search">
+                  </form>
+                </div>
+              </li>
+              <li><a href="../advanced_search/channel" style="margin-top:3px; font-size:16;">Advanced Search</a></li>
+              <li><a href="/profile?user_id={{request.user.id}}" style="margin-top:3px; margin-left:210px; float:right; font-size:16;">{{request.user.name}}</a></li>
 
+              <li class="dropdown">
 
-          </li>
-        <li>
-            <div style="float:right;margin-left: 240;font-size:30; color:#2795F5">
-                <form class="navbar-search pull-left" style="margin-top:10px" action="/search/" method="get" >
-                    <input  type="text" class="search-query" style="text-align:center;font-size:15" placeholder="I'm Looking for ..."id="id_q" name="q">
-                </form>
-            </div>
-        </li>
-        <li><a style="font-size:16;color:#2795F5" href="../advanced_search/channel">Advanced Search</a></li>
-        <li ><a  style="margin-left: 200px;font-size:16;color:#2795F5" href="../profile?user_id={{request.user.id}}" >{{request.user.name}}</a></li>
-        <li class="dropdown" style = "float:right">
-            <div>
-                <a style="margin-top:5px;font-size:16;color:#2795F5" href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/static/img/settings-icon.png" width="30" height="30" style="
-                    margin-top: 5;
-                    "></a>
-                <ul class="dropdown-menu" style = "font-size:16">
-                    <li><a href="/subscribe">Subscribe</a></li>
-                    <li><a href="#" id="editing">Manage and Edit profile</a></li>
-                    <li><a href="/private" id="editing">Private settings</a></li>
-                    <li><a href="/account">Account settings</a></li>
-                    <li class="divider"></li>
-                    <li><a href="../logout/">Logout</a></li>
+         
+
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="float:inline"><img src="/static/img/settings-icon.png" width="25" height="25"></a>
+                <ul class="dropdown-menu">
+                  <li><a href="/subscribe">Subscribe</a></li>
+                  <li><a href="#" id="editing">Manage and edit profile</a></li>
+                  <!-- <li><a href="#">Another action</a></li> -->
+                  <!-- <li><a href="#">Something else here</a></li> -->
+                  <li class="divider"></li>
+                  <li><a href="/logout/">Logout</a></li>
+                  
+
                 </ul>
-            </div>
-        </li>
-    </ul>
-</div>
+              </li>
+
+              </ul>
+            </ul>
+          </div>
+        {% else %}
+
+        <div class="nav-collapse collapse">
+            <ul class="nav">
+              <ul class="nav pull-right">
+              <li><a href="/main" style="margin-top:3px; font-size:16;">Home</a></li>
+              
+              <li>
+                <div>
+                  <form class="navbar-search pull-left" style="margin-top:13px; margin-left:260px; " action="/search/" method="get">
+                    <input type="text" class="search-query" placeholder="Search">
+                  </form>
+                </div>
+              </li>
+              <li><a href="../advanced_search/channel/" style="margin-top:3px;font-size:16;">Advanced Search</a></li>
+              <li><a href="/login/" style="margin-top:3px; margin-left:260px; float:right font-size:16;">login</a></li>
+
+              
+
+
+              </ul>
+            </ul>
+          </div>
+
+        {% endif %}
+
 {% endblock %}
+
+
+ 
