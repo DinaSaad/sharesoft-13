@@ -1179,6 +1179,7 @@ def fb_authenticate(request):
         string = "FB" + fb_data['id'] + "password"
         st = str(string)
         userprofile.set_password(st)
+        userprofile.is_verfied = True
         userprofile.photo = pic_url
         userprofile.save()
         return userprofile
