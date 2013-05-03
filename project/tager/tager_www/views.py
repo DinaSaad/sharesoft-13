@@ -312,7 +312,7 @@ def view_post(request):
     is_intrested_inpost = False
     if user.is_authenticated():
         post_can_be_wished = user.add_to_wish_list(post_id)
-        is_intrested_inpost=InterestedIn.objects.filter(user_id_buyer = user, post = post).exist()
+        is_intrested_inpost=InterestedIn.objects.filter(user_id_buyer = user, post = post).exists()
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     can_edit = False
@@ -1246,7 +1246,7 @@ def intrested(request):
     print post.seller
     intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post.seller,post=post)
     intrest1.save()
-    post.intersed_count=post_in.intersed_count+1
+    post.intersed_count=post.intersed_count+1
     post.save()
     post_activity_content = "you added " + unicode(post.title) + " to your wish list."
     post_activity_url = "showpost?post=" + unicode(post.id)
