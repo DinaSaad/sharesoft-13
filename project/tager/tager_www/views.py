@@ -409,6 +409,68 @@ def Buyer_identification(request):
         d = {'form':form}
     return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
+# C1_Tharwat - this method will takes in a request as a parameter and acceses the user id from it. it then filters the posts
+# according to whether the user is subscribed to them through the channel, subchannel, or a certain parameters(s).
+# it then returns to the myfeed.html the list of posts to the user
+def viewMyFeed(request):
+    user_id = request.user.id
+    subscribed_posts = filter_subscribed_to_posts(user_id)
+
+    return render_to_response('myfeed.html', {'subscribed_posts', subscribed_posts})
+
+# C1_Tharwat - A helper method that will be used viewMyFeed method 
+# this method will do the filtering process for the user depending on his subscriptions and will return a list of posts
+def filter_subscribed_to_posts(user_id):
+    all_channels_subscribed = UserChannelSubscription.objects.filter(user = user_id)
+    sub_channels_subscribed = UserSubchannelSubscription.objects.filter(user = user_id)
+    parameters_subscribed = UserParameterSubscription.objects.filter(user = user_id)
+    all_channels_subscribed_posts = []
+    all_subchannels_subscribed_posts = []
+    all_parameter_subscribed_posts = []
+    all_posts = Post.objects.all()
+    for channel in all_channels_subscribed:
+        for post2 in all_posts:
+            if post.subchannel.channel is channel:
+                    all_channels_subscribed_posts.append(post)
+    # for postsubchannel in all_posts:
+    for subchannel in sub_channels_subscribed:
+        for postsubchannel2 in all_posts:
+            if postsubchannel.subchannel is subchannel:
+                all_subchannels_subscribed_posts.append(post)
+    # for postparameter in all_posts:
+    for parameter in parameters_subscribed:
+        for post3 in all_posts:
+            all_attributes_in_subchannel = Value.objects.filter(attribute_subchannel = post3.subchannel, value = parameter.choice.value)
+            for attribute_in_subchannel in all_attributes_in_subchannel:
+                post_to_add = attribute_in_subchannel.post
+                all_parameter_subscribed_posts.append(post_to_add)
+                for post in all_subchannels_subscribed_posts:
+                    all_values_with_same_post = Value.objects.filter(post = post)
+                    for value in all_values_with_same_post:
+                        if attribute_in_subchannel.attribute is value.attribute:
+                            all_subchannels_subscribed_posts.remove(post)
+                for post4 in all_channels_subscribed_posts:
+                    all_values_with_same_post = Value.objects.filter(post = post4)
+                    for value in all_values_with_same_post:
+                        if attribute_in_subchannel.attribute is value.attribute:
+                            all_subchannels_subscribed_posts.remove(post4)
+    
+    final_list = []
+    
+    for post5 in all_channels_subscribed_posts:
+        final_list.append(post5)
+    for post6 in all_subchannels_subscribed_posts:
+        if post6 not in final_list:
+            final_list.append(post6)
+    for post7 in all_parameter_subscribed_posts:
+        if post7 not in final_list:
+            final_list.append(post7)
+
+    final_list = (Post.objects.exclude(is_hidden=True)
+        .exclude(expired=True)
+        .exclude(is_sold=True)
+        .order_by('-quality_index'))
+    return final_list
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''

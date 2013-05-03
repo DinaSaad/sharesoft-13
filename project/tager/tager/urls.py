@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
     url(r'^editpost/$', 'tager_www.views.edit_post'),
     url(r'^editpostattribute/$', 'tager_www.views.edit_post_attribute'),
+    url(r'^viewMyFeed/$', 'tager_www.views.viewMyFeed'),
 
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
     url(r'^logout/$', logout, {'next_page':'/'}),  
