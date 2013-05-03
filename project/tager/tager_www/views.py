@@ -449,16 +449,28 @@ def main(request):
         subchannels_list = []
         for subchannel in subchannels:
             subchannels_list.append({'subchannel': subchannel})
-
         channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    post_list = Post.objects.all()   
+    states=[]
+    
+    list_of_prices=[]
+    all_posts=Post.objects.all()
+    for post in all_posts:
+        if post.state not in states: 
+            states.append(post.state) 
+        list_of_prices.append(post.price)
+    print states
+    price_min=min(list_of_prices)
+    price_max =max(list_of_prices)
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # - this method creats variable channels , to store all channels available in the database, 
 # variable subchannels , to store all subchannels available in the database,
 #  channels_list is a list that holds dictionaries of channels and its subchannels.
 # subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
-# the method then return the channels_list only , as it holds every subchannel of a channel 
+# the method then return the channels_list , as it holds every subchannel of a channel and the posts related to it 
+# it also returns the mnimum and maximum price available 
+    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list ,'title':title, 'canpost': user_can_post , 'states': states},context_instance=RequestContext(request))  
 
-    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list ,'title':title, 'canpost': user_can_post },context_instance=RequestContext(request))  
 
 
 
@@ -666,6 +678,7 @@ def editing_pic(request):
     return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
 
 
+
 def return_account_type(request):
      return render_to_response ('account.html',context_instance=RequestContext(request))
 
@@ -761,23 +774,33 @@ def change_paccounttype(request):
     return HttpResponse (" ")
 
 
+
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# subchannel_id is the id retrieved from the webpage 
-# its is matched with with the subchannel id in the post model , 
-# the method returns the dictionairy of posts related to specific subchannels.
+# the method GETS  a list of subchannel ID's , list of post states and a min price and a maximum price 
+#  list of ID's is used to get subchannels ( results_of_subchannels ) and hence it retrives posts in post_list
+# contributing in post lists , the list_of_states is matched with the post states and filtered 
+# also the mnimum and maximum price are considered in order to filter prices within them .
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
+    list_of_states = request.GET.getlist('status[]')
     results_of_subchannels = []
     for li in list_of_subchannelsID:
-        results_of_subchannels.append(SubChannel.objects.filter(id = li))
-    post_list =[]
+        if li is not None:
+            results_of_subchannels.append(SubChannel.objects.get(id = li))
+   
+    post_list_refined =[]
+    
     for sub in results_of_subchannels:
-        post_list.append(Post.objects.filter(subchannel = sub))
+        for state in list_of_states:
+            post_list_refined.append(Post.objects.filter(subchannel = sub , state=state ))
+    post_list = [val for sub1 in post_list_refined for val in sub1]
+    print post_list
     return render(request, "filterPosts.html", {'post_list': post_list})
     
+
 #Reem- As c3 I should prvide a vertical refinement bar ( Menu) , wlong with reviweing posts
-#list_of_subchannelsID is a list of the checked subchannels 
-#the subchannels objects (results_od_subchannels) related t those ID's are retrieved and then the posts related are returned(post_list) 
+# subchannel_id is the subchannel checked  
+#the subchannel object (results_of_subchannels) related to the ID are retrieved and then the posts related are returned(post_list) 
 def menuForSubchannels(request):
     subchannel_id = request.GET["sub_ch_id"]
     print subchannel_id
@@ -785,6 +808,7 @@ def menuForSubchannels(request):
     posts_of_subchannels = Post.objects.filter(subchannel_id= current_subchannel)
     print posts_of_subchannels
     return render(request, "filterPosts.html", {'post_list': posts_of_subchannels})
+
 
 
 
@@ -811,7 +835,6 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
-       
         if user.is_anonymous():
             title = "welcome guest"
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
