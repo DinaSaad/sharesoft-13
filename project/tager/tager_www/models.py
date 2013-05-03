@@ -1,12 +1,16 @@
-
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser
 from django.utils.timezone import utc
 import datetime
-from datetime import datetime, timedelta
-import datetime
-EXPIRATION_DAYS = 10
+from datetime import timedelta
+
+
+
+
+
+
 from django.db.models import Sum , Avg 
 
 
@@ -71,14 +75,21 @@ class UserProfile(AbstractBaseUser):
     accesstoken = models.CharField(max_length=50 , null=True , unique=True)
     date_Of_birth = models.DateField(null=True, blank=True)
     phone_number = models.CharField(max_length=20 , null=True)
+    phone_number2 = models.CharField(max_length=20 , null=True)
     is_admin = models.BooleanField(default=False)           
     is_verfied = models.BooleanField(default=False)
     is_premium = models.BooleanField(default=False)
+    private_birth = models.BooleanField(default=False)
+    private_number = models.BooleanField(default=False)
+    private_work = models.BooleanField(default=False)
+    works_at = models.CharField(max_length=100, null=True)
+    works_at2 = models.CharField(max_length=100, null=True)
+    photo = models.ImageField(upload_to='img',blank=True)
     photo = models.ImageField(upload_to='img',blank=True,default="mpf.png")
     activation_key = models.CharField(max_length=40 , null=True)
-    # created = models.DateTimeField(auto_now_add=True)
+    sms_code = models.CharField(max_length=5 , null=True)
     status = models.CharField(max_length=400 , null=True) 
-    # rating = models.FloatField(default=0.0)
+    rating = models.FloatField(default=0.0)
     gender_choices = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -113,8 +124,8 @@ class UserProfile(AbstractBaseUser):
         return self.name
  
     def __unicode__(self):
-        return self.email + str(self.is_verfied) + str(self.activation_key)
-
+        return self.email
+        # return self.email + str(self.is_verfied) + str(self.activation_key)
      # this methods taked in a permission and the objects and returns true or false regarding wherther the objec entered has permission or not (user)
     def has_perm(self, perm, obj=None):
         
@@ -158,8 +169,11 @@ class UserProfile(AbstractBaseUser):
     def add_buyer(self,post,phone_num):
         p = post        
         if p.seller_id == self.id:
-            post_buyer = UserProfile.objects.get(phone_number = phone_num)
-            #post_buyer_id = post_buyer.id
+            try:
+                post_buyer = UserProfile.objects.get(phone_number = phone_num)
+            except UserProfile.DoesNotExist:
+                return False
+             #post_buyer_id = post_buyer.id
             p.buyer = post_buyer
             p.is_sold = True
             p.save()
@@ -240,12 +254,40 @@ class UserProfile(AbstractBaseUser):
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
 
+    #c2-mohamed
+    #this def sends notification
+    #to the user who owns the post that the other user has pushed interested on it
     def interested_Notification(self, post_in):
         user_in = self
-        post_owner = post_in.user_id
-        not_content = unicode(user_in.name) + "is interested in your post"
-        not1 = Notification(user = post_in.user_id, content = not_content)
-        not1.save()
+        post_owner = post_in.seller
+        not_content = unicode(user_in.name) + " is interested in your post"
+        not_url = "showpost?post=" + unicode(post_in.id)
+        try:
+            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
+            not1.save()
+        except:
+            not1 = Notification(user = user_in, content = not_content, url=not_url)
+            not1.save()
+
+    #c2-mohamed
+    #this def sends notification
+    #to the user who owns the post that the other user has commented on it
+    def comment_notification(self, post_in, content):
+        user_in = self
+        post_owner = post_in.seller
+        not_content = content
+        not_url = "showpost?post=" + unicode(post_in.id)
+        try:
+            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.datetime.now)
+            not1.save()
+        except:
+            not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.datetime.now())
+            not1.save()
+
+#C2-mahmoud ahmed- as a user i can rate sellers whom i bought from. the method takes the rate and the post
+#and the buyer as inputs and then it inserts these inputs into the rating table and save the record after
+#that the post_owner rating is calculated and the average is brought and saved instead of the old rating.
+#and then the average rating is returned.
 
     def calculate_rating(self,rate,post,buyer): #self is the post_owner
         owner_id = self.id
@@ -263,11 +305,43 @@ class UserProfile(AbstractBaseUser):
         self.save() 
         return user_rating
 
-#c2-mohamed
-#this class holds all notifications to all users
-class Notification(models.Model):
-    user = models.ForeignKey(UserProfile)
-    content = models.CharField(max_length=100)
+#c2-mahmoud ahmed-as a user i should be able to see the people i interacted with through buying 
+#and selling activities - what get_interacting_people does is that it first gets the posts where
+#the current user is found as the buyer of a post in the Posts table then it loops the list that is 
+#returned from the filter and it gets the ids of the sellers which the user bought the post from
+#and then get them as objects and add them to the list. and then the same procedure is repeated 
+#for the posts where he was the post owner and the post is sold so it gets the buyers and then add
+#them to the interacting peoples list. and at the end it returns the list. duplicate records was handeled
+
+    def get_interacting_people(self):
+        interacting_people = []
+        refined_interacting_people = []
+        
+        posts_bought = Post.objects.filter(buyer_id = self.id)
+        for post in posts_bought:
+            seller_identifciation = post.seller.id
+            seller_obj = UserProfile.objects.get(id=seller_identifciation)
+            if seller_obj not in interacting_people:
+                interacting_people.append(seller_obj)
+                
+        
+        post_sold_to = Post.objects.filter(seller_id = self.id, is_sold = True)
+        
+        for post in post_sold_to:
+            buyer_identification = post.buyer.id
+            buyer_obj = UserProfile.objects.get(id=buyer_identification)
+            if buyer_obj not in interacting_people:
+                interacting_people.append(buyer_obj)
+                    
+
+        # for p in interacting_people:
+        #     if new not in refined_interacting_people:
+        #         refined_interacting_people.append(p)
+        
+        print interacting_people
+        print refined_interacting_people
+
+        return interacting_people
 
 #this is Channel class where all channel records and information are kept
 #name is the name of the channel
@@ -308,8 +382,8 @@ class Post(models.Model):
     quality_index = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     description = models.CharField(max_length=500, null=True)
     price = models.IntegerField(null=True)
-    edit_date = models.DateField(default = datetime.datetime.now())
-    pub_date = models.DateField(default = datetime.datetime.now())
+    edit_date = models.DateField(null=True)
+    pub_date = models.DateField(null=True)
     comments_count = models.IntegerField(default=0)
     intersed_count = models.IntegerField(default=0)
     profile_picture = models.ImageField(upload_to='media', blank=True)
@@ -325,6 +399,64 @@ class Post(models.Model):
     location = models.CharField(max_length = "100")
 
 
+    
+    #C1-Tharwat) returns to total number of reports on the current post
+    def reportCount(self):
+        return self.no_of_reports
+
+    #C1-Tharwat) this method allows the admin to manually delete (Hide) a post
+    def adminDeleteReportedPost(post):
+        p = Post.objects.get(pk = post.id)
+        p.is_hidden = True
+        p.save()
+
+
+    #(C1-Tharwat)This method automatically determines the state of the post. Whether it is (New, Old, or Archived)
+    #The method takes in one parameter which is the post itself
+    #the method compares the date of which the post was published in and the current date
+    #It then uses an algorithim to determine the difference in number of days between the current date and the published date
+    #Based on the amount returned, if the amount is less than 30 days, the state = "NEW", if between 30 and 60, the state = "OLD", if greater than 60, the state = "ARCHIVED"
+    def postState(self):
+        current_time = datetime.datetime.now()
+        p = Post.objects.get(id = self.id)
+        #used if the current year is greater than the year of the published post
+        if current_time.year > self.pub_date.year:
+            #this is in case for exmaple the published month of the post is December and the current month is January
+            #Although the years are diff yet the diff in days may not be greater than 30
+            #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
+            if current_time.month == 1 and self.pub_date.month ==12 and (current_time.day + (31 - self.pub_Date.day)) > 30:
+                p.state = 'Old'
+                p.save()
+            #this is in case for exmaple the published month of the post is November and the current month is January
+            #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
+            #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
+            elif current_time.month == 1 and self.pub_date.month ==11 and (current_time.day + (31 - self.pub_Date.day)) < 60:
+                p.state = 'Old'
+                p.save()
+            else:
+                p.state = 'Archived'
+                p.save()
+        #Used when the current year and Published year of the post are the same
+        if current_time.year == self.pub_date.year:
+
+            day_diff_diff_month = current_time.day + (31 - self.pub_date.day)
+            day_diff_same_month = current_time.day - self.pub_date.day
+            month_diff = current_time.month - self.pub_date.month
+            
+            if month_diff >= 1:
+                month_diff = month_diff - 1
+                total_diff = (month_diff*31) + day_diff_diff_month
+            else:
+                total_diff = day_diff_same_month
+              
+            if total_diff > 30 and total_diff < 60:
+                p.state = 'Old'
+                p.save()
+            if total_diff > 60:
+                p.state = 'Archived'
+                p.save()
+
+
     #c2-mohamed awad
     #this method saves notification in Notification table using content and user id
     #first i find all users interested and subscribed to this post whether by channel, subchannel or parameter subscription
@@ -333,18 +465,19 @@ class Post(models.Model):
     #then we find all users subscribed to all attributes and values of the post and we add it to all_users_subscribed to attributes
     #then we record all notifications in Notification table
     def post_Notification(self):
+        print self
         all_values_array=[]
         values_array=[]
-        all_values = Value.objects.filter(Post_id = self)
+        all_values = Value.objects.filter(post = self.id)
         for value in all_values:
             all_values_array.append(value)
             values_array.append(value.value)
         attributes_array = []
         for value in all_values_array:
-            attribute  = value.attribute_id
+            attribute  = value.attribute
             attributes_array.append(attribute.name)
-        subchannel_of_post = self.sub_channel_id
-        channel_of_post = subchannel_of_post.channel_id
+        subchannel_of_post = self.subchannel
+        channel_of_post = subchannel_of_post.channel
         users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
         users_subscribed_to_channel_array = []
         for i in users_subscribed_to_channel:
@@ -358,36 +491,45 @@ class Post(models.Model):
         r = 0
         for z in attributes_array:
             value_in_array = values_array[i]
-            attribute = Attribute.objects.get(name = attributes_array[r], subchannel_id = subchannel_of_post)
-            print "finished attribute-->" + unicode(attributes_array[r])
+            attribute = Attribute.objects.get(name = attributes_array[r], subchannel = subchannel_of_post)
             r = r + 1
             try:
                 value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
             except:
                 pass
-            print "finished value-->" + unicode(value_in_array)
             users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
             i = i + 1
-            print "finished i OOOOOOOOOOOOOOOOOOOOOOO + "
             for h in users_subscribed_to_attribute:
                 all_users_subscribed_to_attributes.append(h.user)
-                print "in users_subscribed_to_attributes.append(h.user)"
-                # break
         for q in users_subscribed_to_channel_array:
             not_content = "You have new posts to see in " + unicode(channel_of_post.name)
-            not1 = Notification(user = q, content = not_content)
-            not1.save()
+            not_url = "showpost?post="+unicode(self.id)
+            try:
+                not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                not1.save()
+            except:
+                not1 = Notification(user = q, content = not_content, url=not_url)
+                not1.save()
         for a in users_subscribed_to_subchannel_array:
             not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
-            not1 = Notification(user = a, content = not_content)
-            not1.save()
+            not_url = "showpost?post="+unicode(self.id)
+            try:
+                not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                not1.save()
+            except:
+                not1 = Notification(user = q, content = not_content, url=not_url)
+                not1.save()
         for b in all_users_subscribed_to_attributes:
             if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
                 if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
-                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
-                    not1 = Notification(user = b, content = not_content)
-                    not1.save()
-                    print "In last for loop"
+                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
+                    not_url = "showpost?post="+unicode(self.id)
+                    try:
+                        not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                        not1.save()
+                    except:
+                        not1 = Notification(user = q, content = not_content, url=not_url)
+                        not1.save()
 
 
     def get_buyer():
@@ -425,13 +567,17 @@ class Post(models.Model):
             #this is in case for exmaple the published month of the post is December and the current month is January
             #Although the years are diff yet the diff in days may not be greater than 30
             #Ex: published date: 2012, 12, 28 ----- current date: 2013, 1, 10
+
             if current_time.month == 1 and self.pub_date.month ==12 and (current_time.day + (31 - self.pub_date.day)) > 30:
+
                 post.state = 'Old'
                 post.save()
             #this is in case for exmaple the published month of the post is November and the current month is January
             #Although the years are diff yet the diff in days may not be greater than 30 and less than 60
             #Ex: published date: 2012, 11, 1 ----- current date: 2013, 1, 28
+
             elif current_time.month == 1 and self.pub_date.month ==11 and (current_time.day + (31 - self.pub_date.day)) < 60:
+
                 post.state = 'Old'
                 post.save()
             else:
@@ -443,7 +589,9 @@ class Post(models.Model):
             day_diff_diff_month = current_time.day + (31 - self.pub_date.day)
             day_diff_same_month = current_time.day - self.pub_date.day
             month_diff = current_time.month - self.pub_date.month
+
             
+
             if month_diff >= 1:
                 month_diff = month_diff - 1
                 total_diff = (month_diff*31) + day_diff_diff_month
@@ -459,6 +607,18 @@ class Post(models.Model):
     
     def __unicode__(self):
         return self.title
+
+#c2-mohamed
+#this class holds all notifications to all users
+class Notification(models.Model):
+    user = models.ForeignKey(UserProfile)
+    content = models.CharField(max_length=100)
+    read = models.BooleanField(default=False)
+    url = models.CharField(max_length=50)
+    image_url = models.CharField(max_length=50)
+    not_date = models.DateTimeField(default=datetime.datetime.now())
+    def __unicode__(self):
+        return unicode(self.user.name) + "   " + unicode(self.content)
 
 # This model defines the table of reports
 # this table contains 3 attributes, the related post ID, the type of report chosen by the user, and the user reporting the post
@@ -603,9 +763,41 @@ class UserParameterSubscription(models.Model):
         unique_together = ("user", "parent_channel", "sub_channel", "parameter", "choice")
     def __unicode__(self):
         return unicode(self.user)
+
+
+class Comment(models.Model):
+    content=models.CharField(max_length="500")
+    date=models.DateTimeField()
+    is_Hidden=models.BooleanField(default=False)
+    post_id= models.ForeignKey(Post)
+    user_id=models.ForeignKey(UserProfile)
+   #c1_hala_comment i added def unicode to return the post state 
+   #to identify it while testing to make sure it is saved in d 
+    #i added comment tabel to save data taken from user to save in db 
+    #to easily retreive it from when needed in the post when comment is posted
+    def __unicode__(self):
+        return self.content
+
 #c1_abdelrahman this is the class that holds the users and the posts they added in the wish list.
 class WishList(models.Model):
     user = models.ForeignKey(UserProfile)
     post = models.ForeignKey(Post)
     class Meta:
         unique_together = ("post","user")
+
+#c2-mohamed awad
+#this class holds all records regarding the activity log of users
+#it contains the content that will be shown to user
+#the user that the content will be shown to
+#the url the user will be directed to upon clicking
+#the log_type whether it is commenting, posting, subscribing..etc.
+class ActivityLog(models.Model):
+    content = models.CharField(max_length = 100)
+    user = models.ForeignKey(UserProfile)
+    url = models.CharField(max_length = 100)
+    log_type = models.CharField(max_length = 10)
+    activity_date = models.DateField(default = datetime.datetime.now())
+    # activity_date = models.DateField()
+    def __unicode__(self):
+        return unicode(self.activity_date) + unicode(self.content)
+

@@ -10,7 +10,7 @@
 {% endblock %}
 {% block content %}
 {% if canpost %}
-<button>addPost</button>
+<button class="btn btn-info" onClick="addpost();">addPost</button>
 {% endif %}
 <div>
   {{channel.name}}<br>
@@ -166,6 +166,10 @@ $container.imagesLoaded(function(){
        $('#intrested_btn'+ id).addClass('btn btn-info disabled');
     }
 });
+}
+
+function addpost(){
+  window.location.replace('/viewchannels');
 }
 </script>
 

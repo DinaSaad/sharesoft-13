@@ -1,13 +1,66 @@
 {% extends "MainBase.html" %}
 {% load staticfiles %}
 {% block nav %}
-
-
+{% load staticfiles %}
 <div class="nav-collapse collapse"  style="font-size:18">
     <ul class="nav">
     <ul class="nav pull-right">
-        <li><a  href="../notifications"><img src="/static/img/notifications-logoo.png" width="25" height="22"
-                    ></a></li>
+          
+              
+                <div id="to_be_replaced" style="float:left; margin-top: 10px;">
+                <div id="notifications_div">
+                  <a id="notifications_dropdown" data-toggle="dropdown"><img src="/static/img/notifications-logoo.png" width="25" height="22"/></a>
+                  <ul  id="notifications" class="dropdown-menu"  style="margin-left:-50px; background-color:white" size="7">
+                    <ul id="notifications_menu" style="list-style:none;" width="200">
+                      {% if all_unread_notifications %}
+                        {% for notification in all_unread_notifications %}
+                          <a href="../{{notification.url}}" style="white-space:normal; display:block; background-color:#08c border-bottom:solid thick">
+                          <li class="to_be_shaded" style="margin-right:20px; border-bottom:solid thin black;">
+                            <span>
+                                {% if notification.image_url %}
+                                    <img style="width: 50px; height:50px;" src="{{notification.image_url}}"/>
+                                    <span style="color:black; font-size:13px">{{notification.content}}</span>
+                                {% else %}
+                                    <img src="{% static "img/post.png" %}" width="50" height="50"/>
+                                    <span style="color:black; font-size:13px">{{notification.content}}</span>
+                                {% endif %}
+                            </span>
+                          </li>
+                        </a>
+                        {% endfor %}
+                        <li class="to_be_shaded"style="padding-left:100px;"><a style="color:black" href="../notifications">see all</a></li>
+                      {% else %}
+                        <li class="to_be_shaded" style="padding-left:20px;"><a style="color:black; display:block" href="../notifications">see all</a></li>
+                      {% endif %}
+                      </ul>
+                    </ul>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                      
+                      $("#notifications_dropdown").click(function() {
+                        $.ajax({
+                          url: "/refresh_notifications/",
+                          type: "GET",
+                          success: function(req) {
+                            $('#notifications_menu').replaceWith($(req).find('#notifications_menu'));
+                          }
+                        });
+                      });
+                    });
+                  </script>
+                  <style type="text/css">
+                    #notifications_div:hover{
+                        cursor: pointer;
+                    }
+                    .to_be_shaded:hover{
+                        background-color: #c9dbf1 !important;
+                    }
+                  </style>
+                </div>
+              </div>
+
+
+          </li>
         <li>
             <div style="float:right;margin-left: 240;font-size:30; color:#2795F5">
                 <form class="navbar-search pull-left" style="margin-top:10px" action="/search/" method="get" >
@@ -16,7 +69,7 @@
             </div>
         </li>
         <li><a style="font-size:16;color:#2795F5" href="../advanced_search/channel">Advanced Search</a></li>
-        <li ><a  style="margin-left: 200px;font-size:16;color:#2795F5" href="../profile?user_id={{user.id}}" >{{user.name}}</a></li>
+        <li ><a  style="margin-left: 200px;font-size:16;color:#2795F5" href="../profile?user_id={{request.user.id}}" >{{request.user.name}}</a></li>
         <li class="dropdown" style = "float:right">
             <div>
                 <a style="margin-top:5px;font-size:16;color:#2795F5" href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/static/img/settings-icon.png" width="30" height="30" style="
@@ -25,6 +78,8 @@
                 <ul class="dropdown-menu" style = "font-size:16">
                     <li><a href="/subscribe">Subscribe</a></li>
                     <li><a href="#" id="editing">Manage and Edit profile</a></li>
+                    <li><a href="/private" id="editing">Private settings</a></li>
+                    <li><a href="/account">Account settings</a></li>
                     <li class="divider"></li>
                     <li><a href="../logout/">Logout</a></li>
                 </ul>

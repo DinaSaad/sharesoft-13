@@ -1,5 +1,10 @@
 {% extends "base.html" %}
-{% load staticfiles %}  
+{% block headers %}
+{% load staticfiles %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/application.css" %}" rel="stylesheet" media="screen">
+    
+{% endblock %} 
 {% block content %}
 <style type="text/css">
 .wishtitle{
@@ -33,11 +38,13 @@
                 <div id="box1">
 
                   <a href="/edit_pic/">Change Profile Picture?</a>
+
                      <div class="thumbnail" >  
                   <img src="{% static "img/mpf.png" %}" alt="picture">
                     <h4>{{user.name}}</h4>
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
-                   <center> <h4>Stars Goes Here</h4>  </center>
+                   <center> <div id="star"></div></center>
+                   <input type="hidden" name="rating" id= "rating" value="{{user.rating}}"> 
                   </div>
                     </div>
                 </div>
@@ -70,6 +77,7 @@
                   <br>
                   <br>
                   </div>
+
                 </div>
 <br>
 
@@ -84,10 +92,6 @@
                     <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
                   </div>
 
-                <div class="facebookfriends" id="box1">
-                  <h3>FacebookFriends </h3> 
-
-                </div>
                 <div class="wishlist" id="box1">
                   <a class="btn btn-info" href="#myModal" role="button" data-toggle="modal"> View my wishlist </a>
                   <div id="myModal" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -176,11 +180,13 @@
           <br>
 
           <div class="thumbnail" >
-          <h4>Status<label id="status">{{user.status}}</label></h4>
+          <h4>Status: <label id="status">{{user.status}}</label></h4>
           <div class="editeInfo">
-           <input type="text" name="status" id="statusvalue" style="display:none" class="span7" placeholder="Want to share something with your friends? =)" required> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
-
-            <button id="update_status" class="btn btn-small btn-primary primaryOnHove" onClick="update_status_tosave()"><i class="icon-white icon-pencil"></i></button><button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
+           <input type="text" name="status" id="statusvalue" style="display:none" class="span9" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
+           {% ifequal request.user user %}
+            <button id="update_status" class="btn btn-small btn-primary primaryOnHove" onClick="update_status_tosave()"><i class="icon-white icon-pencil"></i></button>
+            {% endifequal %}
+            <button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
         </div>
       <br>
@@ -189,7 +195,9 @@
           <h3>Information:</h3>
           <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
+            {% ifequal request.user user %}
             <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
+            {% endifequal %}
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
           </h5> 
           <h5>Email: {{ user.email}}</h5>
@@ -201,35 +209,52 @@
             </select>
           </p>
             <label id = "birthoutput" style="color:red"></label>
-           <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button> <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            {% ifequal request.user user %}
+            <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
+            {% endifequal %}
+            <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+          </h5>
+          <h5>Phone number: <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> <input type="text" id="phonevalue" class="span8" style="display:none" maxlength="150">
+            <label id = "phoneoutput" style="color:red"></label>
+            {% ifequal request.user user %}
+            <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
+            {% endifequal %}
+            <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
           </h5> 
           <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
+            {% ifequal request.user user %}
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
+            {% endifequal %}
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
-          </h5>
-          
-       
-          
+          </h5>         
+
         </div>
           <br>
 
           </div>
           </div>
         </div>
-        <div class="activitylog" id="box3">
-          <center>
-          <div class="thumbnail" >
-            <div class="profileHeader" class="active" wotsearchprocessed="true">
-            <center><h4>Activity log</h4></center>
-            </div>
-
-            <br>
-            <h3>Activity 1</h3>
-           <h3> Activity 2</h3>
-        </div>
-        </center>
-        </div>
+          <div class="activitylog" id="box3">
+            <center>
+              <div class="thumbnail" >
+                <div class="profileHeader" class="active" wotsearchprocessed="true">
+                <a href="../user_activity">  
+                  <center><h4>Activity log</h4></center>
+                </a>
+                </div>  
+                  {% if activity_logs_to_render_array %}
+                  {% for activity in activity_logs_to_render_array %}
+                  <div>
+                  <br>
+                  <a href="../{{activity.url}}">
+                  <h3>{{activity.content}}</h3>
+                  </a>
+                  </div>
+                  {% endfor %}
+                {% endif %}
+            </center>
+          </div>
 
         <div class="activitylog" id="box3">
           <center>
@@ -258,13 +283,59 @@
         </center>
         </div>
 
+        <div class="activitylog" id="box3">
+          <center>
+          <div class="thumbnail" >
+            <div class="profileHeader" class="active" wotsearchprocessed="true">
+            <center><h4>Interacted with</h4></center>
+            </div>
+                    <div style = "width: 500px;">
+                      {% for person in interacting_list %}
+           <!-- <div style="display:inline;">  -->
+                      <div class="thumbnail" style="width: 80px;display: inline-block;">
+                      <a href="/profile/?user_id={{person.id}}"><img src="{{person.photo}}" alt="picture"></a>
+                <!-- <a href="/profile/?user_id={{person.id}}">{{person.photo}}</a> --> 
+                    </div>
+            <!-- </div> -->
+                      {% endfor %} 
+     </div>
+            <br>
+
+        </div>
+        </center>
+        </div>
+
 
         
         
       </div>
+
     </div>
+        
   </div>
+
+{% block script %}
 <script type="text/javascript">
+$("#target").click(function() {
+  alert("Handler for .click() called.");
+});
+$(document).ready(function() {
+$(function(){
+  $('#typevalue').keyup(function(){
+    var type1 = $(this).val();
+            if( type1 == "Free"){
+            $('Free').attr("disabled", "disabled");
+            $('#saveaccount').attr("disabled", true);
+            }
+          else {
+            if( type1 == "Premium"){
+            $('Premium').attr("disabled", "disabled");  
+            $('#saveaccount').attr("disabled", true);
+            }
+          }
+  });
+}); 
+});
 function update_status_tosave(){
   $("#update_status").fadeOut();
   $("#status").fadeOut();
@@ -275,7 +346,7 @@ function update_status_tosave(){
   $('#savestatus').fadeIn();
 }
 function statusupdates(){
-  var status = $("#status").val();
+  var status = $("#statusvalue").val();
   $.ajax({
     url: '/updatestatus/',
     type: "POST",
@@ -325,6 +396,52 @@ $(document).ready(function(){
     });
   });
 });
+function edit_phone_preparation(){
+  $('#editphone').hide();
+  $('#phonelabel').hide();  
+  var phone = $('#phonelabel').text();
+  $("#phonevalue").val (phone);
+  $('#phonevalue').show();
+  $('#savephone').show();
+  $('#hidephone').show();
+}
+function edit_phone_save(){
+  var phone1 = $("#phonevalue").val()
+  $.ajax({
+    url: "/edit_phone/",
+    type: "POST",
+    data:{
+    'userphone' : phone1,
+    },
+      success:function(result){
+        $('#phonelabel').text($('#phonevalue').val());
+        $('#phonelabel').show();
+        $('#phonevalue').hide();
+        $('#savephone').hide();
+        $('#editphone').show();
+        alert("Field updated successfully"); 
+      },
+  });
+}
+function hide_phone(){
+  var phone2 = "tlndf"
+  $.ajax({
+    url: "/hide_phone/",
+    type: "POST",
+    data:{
+    'userphone2' : phone2,
+    },
+      success:function(result){
+        $('#phonelabel').text($('#phonevalue').val());
+        $('#phonelabel').show();
+        $('#phonevalue').hide();
+        $('#savephone').hide();
+        $('#editphone').show();
+        $('#hidephone').hide();
+        alert("Field updated successfully"); 
+      },
+  });
+}
 function edit_name_preparation(){
   $('#editname').fadeOut();
   $('#nameLabel').fadeOut();
@@ -391,11 +508,6 @@ success:function(result){
 
 });
 }
-
-
-
-
-
 function edit_dob_save(){
   var dateofbirthsubmitted = $("#datepicker").val()
   $.ajax({
@@ -417,6 +529,11 @@ function edit_dob_save(){
         alert("Failed please check the formate!!")
       }
   });
+}
+
+function edit_worksat_preparation(){
+  $('#editworksat').hide();
+  $('#worksatlabel').hide();  
 }function edit_worksat_preparation(){
   $('#editworksat').fadeOut();
   $('#worksatlabel').fadeOut();  
@@ -449,17 +566,20 @@ $(function() {
       $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
     });
   });
-
 $(document).ready(function(){
   $(function(){
     $('#namevalue').keyup(function(){
       var data = $(this).val();
       var pattern = /[a-z]|[A-Z]|\d+/;
-      if(data.length <=40 && data.match(pattern)){
+      if(data.length <=40 &&   data.length >0 &&data.match(pattern)){
         $('#savename').removeAttr("disabled");
         $('#nameoutput').text("");
         return true;
       }
+      if(data == ""){
+          $('#savename').attr("disabled", true);
+          $('#nameoutput').text("The name can not be empty");
+        }
       else{
         if(data == ''){
           $('#savename').attr("disabled", true);
@@ -474,7 +594,7 @@ $(document).ready(function(){
               $('#savename').removeAttr("disabled");    
               $('#titleoutput').text("");
             }
-        }
+          }
       }
       $('#savename').attr("disabled", true); 
     });
@@ -512,5 +632,16 @@ $(document).ready(function(){
   });
 });
 
+$(document).ready(function(){
+      $('#star').raty({ 
+      score: $('#rating').val(),
+      readOnly : true,
+    });
+
+  })
+	
+
 </script>
+{% endblock %}
+
 {% endblock %}
