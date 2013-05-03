@@ -1,0 +1,27 @@
+.priceRangeInfo{
+    position: relative;
+    height: 30px;
+    margin-top: 60px;
+}
+.priceRangeInfo label{
+    position: absolute;
+    top: -30px;
+    left: 10px;
+}                            /* moves label field */
+.priceRangeInfo #buying_slider_min{
+    top: -40px;
+    position: absolute;
+    left: 100px;
+}       /* moves first input field */ 
+.priceRangeInfo #buying_slider_max{
+    top: -40px;
+    position: absolute;
+    left: 170px;
+}      /* move second input field */ 
+.priceRangeInfo div.ui-slider{
+    position: absolute;
+}                   /* move both sliders - adressing 1st slider with CSS is hard */ 
+.priceRangeInfo div:last-child{
+    position: absolute;
+    left: 0px;
+}

@@ -370,4 +370,22 @@ class  Postrelatedtests(unittest.TestCase):
         
    
       
+class TestSubchannelRelatedPosts(unittest.TestCase):
+    def initiateSubchannelsAndPosts(self):
+        U1 = UserProfile(name="test user 1",email="test123@test.com",password="123",is_verfied = True,activation_key = True);U1.save();
+        self.Ch1 = Channel.objects.create(name="channel 1 ",description="ch1 descrip");Ch1.save();
 
+        self.Sub1 = SubChannel.objects.create(name="first sub to channel 1",channel_id=(Ch1.id));Sub1.save();
+        self.Sub2 = SubChannel.objects.create(name="secnd sub to channel 1",channel_id=(Ch1.id));Sub2.save();
+
+        self.P1= Post.objects.create(state="New",expired=False,title="Title of post 1",is_hidden=False,quality_index=67,price=100,is_sold=False,subchannel=Sub1,seller=U1,no_of_reports=0,pub_date=datetime.now(), location="cairo");P1.save();
+        self.P2= Post.objects.create(state="archived",expired=False,title="Title of post 2",is_hidden=False,quality_index=80,price=100,is_sold=False,subchannel=Sub1,seller=U1,no_of_reports=0,pub_date=datetime.now(), location="sharm");P2.save();
+        self.P3= Post.objects.create(state="old",expired=False,title="Title of post 3",is_hidden=False,quality_index=60,price=100,is_sold=False,subchannel=Sub1,seller=U1,no_of_reports=0,pub_date=datetime.now(), location="alex");P3.save();
+        self.P4= Post.objects.create(state="New",expired=False,title="Title of post 4",is_hidden=False,quality_index=90,price=100,is_sold=False,subchannel=Sub2,seller=U1,no_of_reports=0,pub_date=datetime.now(), location="alex");P4.save();
+        self.P5= Post.objects.create(state="archived",expired=False,title="Title of post 5",is_hidden=False,quality_index=100,price=100,is_sold=True,subchannel=Sub2,seller=U1,no_of_reports=0,pub_date=datetime.now(), location="giza");P5.save();
+        self.P6= Post.objects.create(state="old",expired=False,title="Title of post 6",is_hidden=True,quality_index=100,price=100,is_sold=False,subchannel=Sub2,seller=U1,no_of_reports=0,pub_date=datetime.now(), location="cairo");P6.save();
+
+        self.assertEqual(P3.subchannel, 'Sub1')
+        self.assertEqual(P4.subchannel, 'Sub2')
+        check_posts = menuForSubchannels(1)
+        self.assertEqual(check_posts, 'P1,P2,P3')

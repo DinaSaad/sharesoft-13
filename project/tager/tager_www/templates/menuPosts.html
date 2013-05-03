@@ -1,0 +1,10 @@
+<div id="posts_result" class="container">
+    {% if posts_of_subchannels %}
+    	{% for post in posts_of_subchannels %}
+    		<li>{{post.name}}</li> 
+    		<li> {{post}}</li>
+    	{% endfor %}
+    {% else %}
+    	<h5> this subchannel doesnot have posts :| </h5>
+    {% endif %}  
+</div>
