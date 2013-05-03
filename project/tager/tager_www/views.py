@@ -449,21 +449,31 @@ def filter_subscribed_to_posts(user_id):
         for post2 in all_posts:
             print "in second for"
             print post2
-            if post2.subchannel.channel is channel:
-                    all_channels_subscribed_posts.append(post)
-                    print "in third for"
-                    print all_channels_subscribed_posts
+            print "here i am"
+            print post2.subchannel.channel
+            print "xxxxxxxxxxxxxxxxxx"
+            print channel.channel
+            print post2.subchannel.channel is channel.channel
+            if post2.subchannel.channel == channel.channel:
+                all_channels_subscribed_posts.append(post2)
+                print "in third for"
+                print all_channels_subscribed_posts
     # for postsubchannel in all_posts:
     for subchannel in sub_channels_subscribed:
         for postsubchannel2 in all_posts:
-            if postsubchannel.subchannel is subchannel:
-                all_subchannels_subscribed_posts.append(post)
+            if postsubchannel2.subchannel == subchannel.sub_channel:
+                all_subchannels_subscribed_posts.append(postsubchannel2)
                 print "in fourth for"
                 print all_subchannels_subscribed_posts
     # for postparameter in all_posts:
     for parameter in parameters_subscribed:
         for post3 in all_posts:
-            all_attributes_in_subchannel = Value.objects.filter(attribute_subchannel = post3.subchannel, value = parameter.choice.value)
+            all_attributes_in_subchannel = Value.objects.filter(value = parameter.choice.value)
+            for chh in all_attributes_in_subchannel:
+                if chh.attribute.subchannel == post3.subchannel:
+                    continue
+                else:
+                    chh.delete()
             for attribute_in_subchannel in all_attributes_in_subchannel:
                 post_to_add = attribute_in_subchannel.post
                 all_parameter_subscribed_posts.append(post_to_add)
