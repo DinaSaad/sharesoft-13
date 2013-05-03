@@ -11,10 +11,13 @@
 {% block content %}
 
 <style> 
+.btnin{
+  margin-top: 15px;
+}
 .testdiv
 {
 /*padding:10px 40px; */
-background:#dddddd;
+background:#B5B5B5;
 width: :700px;
 }
 .divcontent{
@@ -29,7 +32,7 @@ width: :700px;
     margin-bottom: 10px;
 }
 .editicons{
-  padding-top: 12px;
+  padding-top: 15px;
 }
 .labelval {
   width:1px;
@@ -40,7 +43,9 @@ width: :700px;
 .labelspadding{
   padding-left: 5px;
 }
-
+.surrounding{
+  border: 2px solid black;
+}
 </style>
   {% if post.is_hidden %}
      <h2 align="center">Sorry the post has been removed by the admin </h2>
@@ -49,8 +54,35 @@ width: :700px;
 {% if not can_edit %}
 <div class="row-fluid maincontent">
   <div class="span1">
+         <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
+        the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
+        
+
+                        <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+        the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+
+        {% if request.user.is_authenticated %}
+        <button class="btn btn-info mini" id="wishlist" onClick="add_to_list()" disabled>Add to wishList</button>
+        {% endif %}
+        
+        
+        <a href="https://www.facebook.com/dialog/feed?
+            app_id=461240817281750&
+            link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+            name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+            caption=Reference%20Documentation&
+            description=Using%20Dialogs%20to%20interact%20with%20users.&
+            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
+            onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a><a href="http://twitter.com/home?status=Your%20message%20here:%20
+          http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+
+
+
+
     </div>
-<div class="testdiv span4">
+<div class="testdiv span4 item ">
 
     <div id="myCarousel" class="carousel slide carouselpadding">
   <ol class="carousel-indicators">
@@ -65,19 +97,19 @@ width: :700px;
   <!-- Carousel items -->
   <div class="carousel-inner">
     {% if post.profile_picture %}
-    <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
+    <div class="active item" style="width:100%;"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
     {% endif %}
     {% if post.picture1 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture2 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture3 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture4 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture5 %}
     <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
@@ -94,7 +126,7 @@ width: :700px;
 
        
 </div>    
-<div class="testdiv span6">
+<div class="testdiv span6 item">
   <div class="row-fluid labelspadding">
     <div class="span4 ">
       <div class="divpad">
@@ -301,63 +333,29 @@ width: :700px;
           <div id="star"></div>
 
     
+    {% if request.user.is_authenticated %}
 
-				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
-				 <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info"><i class="icon-heart"></i> interested</a>
+        <a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
+         <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info"><i class="icon-heart"></i> interested</a>
 
-				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
+        <a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
 
-
-				<!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
-				the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
-				<a href="http://twitter.com/home?status=Your%20message%20here:%20
-					http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
-
-        
-        <a href="#myModal" role="button" class="btn btn-info " data-toggle="modal">Report </a>
-
-<!-- {% if user.is_admin %}
-<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
-<form action="/hidePost/{{ post.id }}/" method="post" accept-charset="utf-8">{% csrf_token %}
-      <br/>
-      <input type="submit" value="Hide" class='btn'>
-  </form> 
-{% endif %} -->
-          {% if view_rating %}
-            <button class="btn btn-info" id="rateSeller" value="{{post.seller.id}}" type="button">Rate Seller</button>
-          {% endif %}
-      {% if add_buyer_button %}
-          <button class="btn btn-info" id="addBuyer" value="{{post.id}}" type="button">Add Buyer</button>
         {% endif %}
-        <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
-        the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
-        <a href="http://twitter.com/home?status=Your%20message%20here:%20
-          http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
 
 
 
-        <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
-        the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
-        <a href="https://www.facebook.com/dialog/feed?
-            app_id=461240817281750&
-            link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
-            name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
-            caption=Reference%20Documentation&
-            description=Using%20Dialogs%20to%20interact%20with%20users.&
-            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+        {% if request.user.is_authenticated %}
 
-            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
-
-            <img src="{% static "img/facebook-icon.png" %}" width="30px" height="30px" alt="share with facebook" title="share this with facebook"
-
-            onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
-
-        <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
+          <a href="#myModal" role="button" class="btn btn-info " data-toggle="modal">Report</a>
         
+          {% endif %}
+
+   
+
 
            
 </div>
- 	</div>
+  </div>
 <!-- Button to trigger modal -->
 
  

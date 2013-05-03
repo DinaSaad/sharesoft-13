@@ -172,24 +172,24 @@ def view_channels(request):
     return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
 
 def view_subchannels(request):
+    user = request.user
     sub_channel_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
-    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
+    return render(request, 'addPost.html', {'user':user,'list_of_subchannels': list_of_subchannels})
 #c1_abdelrahman the add_post function requires the user to be logged in.
 #the sub_channel_id is received from the previous view. it displays a form to the user. 
 #if the user filled the form correctly then the user will be redirected to the homepage. 
 # if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
+    author = request.user
     sub_channel_id = request.GET['sub_ch_id']
-    # location = request.GET['location_id']
     current_sub_channel = SubChannel.objects.get(id = sub_channel_id)
     list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
 
     form = PostForm(request.POST,request.FILES)
     if form.is_valid():
-        author = request.user
         subchannel1  = SubChannel.objects.get(pk=sub_channel_id)
         p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
             ,description = form.cleaned_data['description'] 
@@ -226,14 +226,14 @@ def add_post(request):
                 post_log_type = "post"
                 # post_log_date = datetime.datetime.now()
                 log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author) 
-        return HttpResponseRedirect('/main')
+        return HttpResponseRedirect('/showpost?post='+str(p.id))
     else:
 
         form = PostForm()
         initial={'subject': 'I love your site!'}
     
 
-    return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+    return render(request,'addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
 
 
 
@@ -332,8 +332,8 @@ def view_post(request):
     report_reasons = ReportReasons.objects.all()
     #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
     dic = {
-    'admin': user.is_admin
-    ,'no': list_of_att_number
+    # 'admin': user.is_admin
+    'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -785,11 +785,17 @@ def view_profile(request):
         user = request.user
         user_owner = request.GET['user_id']
         #c1-abdelrahman this line retrieves the wished posts by the user.
-        list_of_wished_posts = WishList.objects.filter(user = user)
+        list_of_wished_posts = WishList.objects.filter(user_id = user_owner)
         verfied = user.is_verfied
         link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
         user_profile = UserProfile.objects.get(id=request.GET['user_id'])
         interacting_list = user_profile.get_interacting_people()
+        can_manage_wish_list = False
+        # print user.id
+        # print user_profile.id
+        if user.id == user_profile.id:
+            can_manage_wish_list = True
+        print can_manage_wish_list
         # print interacting_list
         #c2-mohamed
         #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
@@ -801,7 +807,7 @@ def view_profile(request):
             activity_logs_to_render_array.append(activity)
             if activity_log_counter is 2:
                 break
-        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
+        d = {'caneditwishlist': can_manage_wish_list,'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
