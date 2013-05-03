@@ -270,7 +270,9 @@ def login(request):
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+        # return render_to_response ('home.html',context_instance=RequestContext(request))
        #return redirect("/login/")# Return an 'invalid login' error message.
 
 
