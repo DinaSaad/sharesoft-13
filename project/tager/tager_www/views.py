@@ -26,6 +26,7 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+from django.contrib.auth.models import AnonymousUser
 
 
 
@@ -451,7 +452,7 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
             pwd_valid = check_password(password, user.password)    
-            if pwd_valid:    
+            if pwd_valid:   
                 return user
         except UserProfile.DoesNotExist:
             return None
@@ -808,6 +809,34 @@ def view_profile(request):
             if activity_log_counter is 2:
                 break
         d = {'caneditwishlist': can_manage_wish_list,'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
+        if user.is_anony
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            annynmous_verfied = True
+            link = "http://127.0.0.1:8000/register"
+
+            d = {'user':user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
+                    
+
+        if user.is_authenticated():
+            #c1-abdelrahman this line retrieves the wished posts by the user.
+            list_of_wished_posts = WishList.objects.filter(user = user)
+            verfied = user.is_verfied
+            link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            # print interacting_list
+            #c2-mohamed
+            #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
+            activity_logs_to_render_array = []
+            activity_logs_to_render_list = ActivityLog.objects.filter(user = user)
+            activity_log_counter = 0
+            for activity in activity_logs_to_render_list:
+                activity_log_counter = activity_log_counter + 1
+                activity_logs_to_render_array.append(activity)
+                if activity_log_counter is 2:
+                    break
+            d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list,'activity_logs_to_render_array': activity_logs_to_render_array}
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
