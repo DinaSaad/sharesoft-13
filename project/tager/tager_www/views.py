@@ -358,7 +358,7 @@ def view_post(request):
     , 'list_of_attribute_values': list_of_attribute_values
     , 'report_reasons': report_reasons
     , 'list_of_interested_buyers': list_of_interested_buyers
-    , 'comments': Comment.objects.filter(post_id=post_id) }
+    , 'comments': Comment.objects.filter(post_id=post_id)
     , 'user_is_intrested': is_intrested_inpost 
     , 'title':title }
 
@@ -434,6 +434,7 @@ filtes to the posts then sort them according to quality index AND  render the li
 def main(request):
     user = request.user
     user_can_post = False
+    title = "Homepage"
     #c1_abdelrahman check whether the user can post or not.
     if user.is_authenticated():
         user_can_post = user.can_post()
@@ -441,6 +442,7 @@ def main(request):
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
         i.post_state()
+
 
     channels = Channel.objects.all()
     channels_list = [] 
