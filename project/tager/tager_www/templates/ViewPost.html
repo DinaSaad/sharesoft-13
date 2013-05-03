@@ -11,11 +11,17 @@
 {% block content %}
 
 <style> 
+.btnin{
+  margin-top: 15px;
+}
 .testdiv
 {
 /*padding:10px 40px; */
-background:#dddddd;
+
 width: :700px;
+}
+.test{
+  background:#B5B5B5;
 }
 .divcontent{
   padding-left: 50px;
@@ -29,7 +35,7 @@ width: :700px;
     margin-bottom: 10px;
 }
 .editicons{
-  padding-top: 12px;
+  padding-top: 15px;
 }
 .labelval {
   width:1px;
@@ -40,8 +46,13 @@ width: :700px;
 .labelspadding{
   padding-left: 5px;
 }
-
-</style>
+.surrounding{
+  border: 2px solid black;
+}
+.social{
+padding-left:1080px;
+}
+</style> 
   {% if post.is_hidden %}
      <h2 align="center">Sorry the post has been removed by the admin </h2>
   {% endif %}
@@ -49,8 +60,24 @@ width: :700px;
 {% if not can_edit %}
 <div class="row-fluid maincontent">
   <div class="span1">
+         <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
+        the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
+        
+
+                        <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
+        the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
+
+    
+        
+        
+        
+
+
+
+
+
     </div>
-<div class="testdiv span4">
+<div class="test span4 item ">
 
     <div id="myCarousel" class="carousel slide carouselpadding">
   <ol class="carousel-indicators">
@@ -65,25 +92,25 @@ width: :700px;
   <!-- Carousel items -->
   <div class="carousel-inner">
     {% if post.profile_picture %}
-    <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
+    <div class="active item" style="width:100%; margin:0px;"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
     {% endif %}
     {% if post.picture1 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 100%; margin:0px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture2 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 100%; margin:0px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture3 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 100%; margin:0px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture4 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    <div class="item" style="width:100%;"><img style="width: 100%; margin:0px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture5 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%; margin:0px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture6 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%; margin:0px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
     {% endif %}
 
   </div>
@@ -94,7 +121,7 @@ width: :700px;
 
        
 </div>    
-<div class="testdiv span6">
+<div class="testdiv span6 item">
   <div class="row-fluid labelspadding">
     <div class="span4 ">
       <div class="divpad">
@@ -148,7 +175,7 @@ width: :700px;
   {% endif %}
 
   {% if can_edit %}
-  <div class="row-fluid maincontent">
+  <div class="row-fluid maincontent item" style="width:100%">
   <div class="span1">
     <label></label>
     </div>
@@ -171,22 +198,22 @@ width: :700px;
     <div class="active item"><img  src="{{post.profile_picture.url}}" alt="profile pic" /></div>
     {% endif %}
     {% if post.picture1 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%;" src="{{post.picture1.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture2 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%;" src="{{post.picture2.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture3 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%;" src="{{post.picture3.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture4 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%;" src="{{post.picture4.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture5 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%;" src="{{post.picture5.url}}" alt="profile pic" /> </div>
     {% endif %}
     {% if post.picture6 %}
-    <div class="item"><img style="width: 400px;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
+    <div class="item"><img style="width: 100%;" src="{{post.picture6.url}}" alt="profile pic" /> </div>
     {% endif %}
 
   </div>
@@ -202,9 +229,7 @@ width: :700px;
       <div class="divpad ">
       <label>Title:</label>
       </div>
-      <div class="divpad">
-      <label>Description:</label>
-      </div>
+
       <div class="divpad">
       <label>Price:</label>
       </div>
@@ -215,20 +240,19 @@ width: :700px;
     <div class="divpad">
     <label>{{Attribute.name}}</label>
     </div>
-    {% endfor %} 
+    {% endfor %}
+      <div class="divpad">
+      <label>Description:</label>
+      </div> 
     </div>
-    <div class="span6 divcontent">
+    <div class="span7 divcontent">
       <div class="divpad">
         <label id="title1">{{post.title}}</label></label> 
         <input id="title1value" style="display:none">
         <lbl id = "titleoutput" style="display:none"></lbl>
 
       </div>
-      <div class="divpad">
-    <label id="description">{{post.description}}</label>
-    <textarea id="descriptionvalue" style="display:none"></textarea>
-    <lbl id = "descriptionoutput" style="display:none"></lbl>
-      </div>
+     
         <div class="divpad">
     <label id="price">{{post.price}}</label>
     <input id="pricevalue" style="display:none">
@@ -249,17 +273,21 @@ width: :700px;
         <input id="attribute_value_{{Value.attribute.id}}" style="display:none">
         {% endif %}
         </div>
-
+         
         {% endfor %} 
+        <div class="divpad">
+           <div style="overflow:auto; max-width=50px;" id="description" >`{{post.description}}</div>
+    <textarea id="descriptionvalue" style="display:none"></textarea>
+    <lbl id = "descriptionoutput" style="display:none"></lbl>
+      </div>
  
     </div>
-    <div class="span2" >
+    <div class="span1" style="padding-left: 0px;">
 
   <label class="editicons"><i class="icon-edit" id="edit_title" onClick="update_title_preparation()"></i>
  <i class="icon-ok " style="display:none" onClick="update_title({{post.id}})" id="titlesave"></i></label>
 
-   <label class="editicons" id="#edit_description_label"> <i class="icon-edit" id="edit_description" onClick="update_description_preparation()"></i>
-    <i class="icon-ok" style="display:none" onClick="update_description({{post.id}})" id="descriptionsave"></i></label>
+
 <label class= "editicons">
     <i class="icon-edit" id="edit_price" onClick="update_price_preparation()"></i>
     <i class="icon-ok" style="display:none" onClick="update_price({{post.id}})" id="pricesave"></i>
@@ -275,18 +303,42 @@ width: :700px;
     <i class="icon-ok" style="display:none" id="save_attribute_button_{{Attribute.id}}" onClick="update_attribute({{Attribute.id}},{{post.id}})" ></i>
    </label>
     {% endfor %}
+       <label class="editicons" id="#edit_description_label"> <i class="icon-edit" id="edit_description" onClick="update_description_preparation()"></i>
+    <i class="icon-ok" style="display:none" onClick="update_description({{post.id}})" id="descriptionsave"></i></label>
  {% endif %} 
+
   </div>
-  </div>
-</div>
+            <a href="#myModal" role="button"  data-toggle="modal">Report</a>
+
 <div class="span1">
   
 </div>
 </div>
 </div>
 </div>
-</div>
 
+</div>
+<div class = "social" >
+
+ <a href="https://www.facebook.com/dialog/feed?
+            app_id=461240817281750&
+            link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+            name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
+            caption=Reference%20Documentation&
+            description=Using%20Dialogs%20to%20interact%20with%20users.&
+            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
+            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
+            onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a><a href="http://twitter.com/home?status=Your%20message%20here:%20
+          http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+
+          
+           <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info"><i class="icon-heart"></i> interested</a>
+            <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
+
+ <!-- {% if request.user.is_authenticated %} -->
+        
+        <!-- {% endif %}   -->
+  </div>
 {% if not admin %}
 <div class="row-fluid maincontent">
   <div class="span2">
@@ -299,69 +351,35 @@ width: :700px;
     
     
           <div id="star"></div>
-
+<!-- 
     
     {% if request.user.is_authenticated %}
 
-				<a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
+        <a class="btn btn-info" href="#myModal2" id ="get_interested_in{{post.id}}" role="button" data-toggle="modal"> Show Interested In</a>
+    {% endif %}
+ -->
 
-                {% if request.user.phone_is_verified %}
-                {% if user_is_intrested%}
-                <button class="btn btn-info" onclick="interested({{post.id}})" id="intrested_btn2" disabled>interested</button>
-                {% else %}
-                <button class="btn btn-info" onclick="interested({{post.id}})" id="intrested_btn3">interested</button>
-
-                {% endif %}
-
-
-                {% else %}
-                 <a href="#smsModal" role="button" data-toggle="modal" class="btn btn-info">
-                  <i class="icon-heart">
-                 </i> interested not veri</a>
-                {% endif %}
-
-				<a href="#myModal" role="button" class="btn btn-danger " data-toggle="modal"><i class="icon-warning-sign"></i> </a>
-
-        {% endif %}
-
-
-				
+    <!--     
         {% if request.user.is_authenticated %}
 
-          <a href="#myModal" role="button" class="btn btn-info " data-toggle="modal">Report</a>
+          <a href="#myModal" role="button"  data-toggle="modal">Report</a>
         
-          {% endif %}
+          {% endif %} -->
 
     <!-- C3-sara ismail: this piece of code shares a post through twitter on the users account.in the <a href=""> tag, the first part gets user account on twitter,and then the middle part (starting from Your%20message%20here:), thats when the user types something he wants to say. and the last part is the link to be shared. and then it is specified that when the user clicks the link it will open in a new page (target=_blank).
         the sharing link is in a twitter image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. -->
-        <a href="http://twitter.com/home?status=Your%20message%20here:%20
-          http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this" onmouseover="{% static "img/light-Twitter-icon.png" %}" onmouseout="{% static "img/Twitter-icon.png" %}"></a>
+       
 
-
-
-        <!-- C3-sara ismail: this piece of code shares a post through facebook. in the <a href=""> tag, it takes the app id of our site (app created on fb for us) and the app domain to connect it to the post (via tager), it's all done through our app on fb
-        the sharing link is in a facebook image, so the user clicks on the image, and that part starts from the <img src=""> tag, specifyig width, height, and a tooltip. the last part in the img tag does the following: when the user hovers on the img, it changes to a lighter color, by replacing the current img with another one and when the mouse is out, it returns the older img again. couldnt do the link part!-->
-        <a href="https://www.facebook.com/dialog/feed?
-            app_id=461240817281750&
-            link=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
-            name=http://127.0.0.1:8000/showpost/?post_id={{post.id}}&
-            caption=Reference%20Documentation&
-            description=Using%20Dialogs%20to%20interact%20with%20users.&
-            redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
-
-            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"
-
-            
-            onmouseover="{% static "img/light-facebook-icon.png" %}" onmouseout="{% static "img/facebook-icon.png" %}"></a>
-
-        {% if request.user.is_authenticated %}
-        <button class="btn btn-info" id="wishlist" onClick="add_to_list()" disabled>Add to my wishList</button>
-        {% endif %}
+       
         
+          {% endif %}
 
+  
            
+
+    
 </div>
- 	</div>
+  </div>
 <!-- Button to trigger modal -->
 
  
@@ -565,8 +583,6 @@ width: :700px;
 </div>
 </div>
 
-
-{% endif %}
 </div>
 </div>
 
@@ -929,22 +945,7 @@ function update_location(id){
       $('#comment_spaces_error').fadeOut();
     }
 });
-    function interested(id) {
-    // alert(id);
-    $.ajax({
-    url: "/intrested/",
-    type: "POST",
-    data: {
-        "post_in" : id,
-    }, 
-    success: function(result) {
-       $('#intrested_btn').removeClass('btn btn-info');
-       $('#intrested_btn3').addClass('btn btn-info disabled');
-       $('#intrested_btn3').attr("disabled", true);
 
-    }
-});
-}
 
     </script>
     
@@ -952,8 +953,6 @@ function update_location(id){
     
 
     
-
-
 {% endblock %}
 
 {% endblock %} 
