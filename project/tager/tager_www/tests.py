@@ -471,6 +471,57 @@ class TestSubchannelRelatedPosts(unittest.TestCase):
         check_posts = menuForSubchannels(1)
         self.assertEqual(check_posts, 'P1,P2,P3')
 
+class ActivityLog(object):
+    def setUp(self):
+        self.client = Client()
+        user1=UserProfile(name='Mohamed',email='1@3.com',password='123');user1.save()
+        user2=UserProfile(name='Amr',email='2@3.com',password='123');user2.save()
+        channel1=Channel(name='cars',description='jkj');channel1.save()
+        subchannel1=SubChannel(name='sport cars',channel=channel1);subchannel1.save()
+        subchannel2=SubChannel(name='SUV',channel=channel1);subchannel2.save()
+        attribute1=Attribute(name='color',subchannel=subchannel1,weight=1);attribute1.save()
+        attribute2=Attribute(name='color',subchannel=subchannel2,weight=1);attribute2.save()
+        choice1=AttributeChoice(attribute_id=attribute1, value='red');choice1.save()
+        choice2=AttributeChoice(attribute_id=attribute2, value='red');choice2.save()
+        subscription1=Subscription(channel=channel1,sub_channel=subchannel1,parameter=attribute1,choice=choice1);subscription1.save()
+        subscription2=Subscription(channel=channel1,sub_channel=subchannel1);subscription2.save()
+        subscription3=Subscription(channel=channel1);subscription3.save()
+        subscription4=Subscription(channel=channel1,sub_channel=subchannel2,parameter=attribute2,choice=choice2);subscription4.save()
+        subscription5=Subscription(channel=channel1,sub_channel=subchannel2);subscription5.save()
+        channel2=Channel(name='Anaimals',description='jkj');channel2.save()
+        subchannel3=SubChannel(name='Cats',channel=channel2);subchannel3.save()
+        subchannel4=SubChannel(name='Dogs',channel=channel2);subchannel4.save()
+        attribute3=Attribute(name='age',subchannel=subchannel3,weight=1);attribute3.save()
+        attribute4=Attribute(name='age',subchannel=subchannel4,weight=1);attribute4.save()
+        choice3=AttributeChoice(attribute_id=attribute3, value='2');choice3.save()
+        choice4=AttributeChoice(attribute_id=attribute4, value='2');choice4.save()
+        subscription6=Subscription(channel=channel2,sub_channel=subchannel3,parameter=attribute3,choice=choice3);subscription6.save()
+        subscription7=Subscription(channel=channel2,sub_channel=subchannel3);subscription7.save()
+        subscription8=Subscription(channel=channel2);subscription8.save()
+        subscription9=Subscription(channel=channel2,sub_channel=subchannel4,parameter=attribute4,choice=choice4);subscription9.save()
+        subscription10=Subscription(channel=channel2,sub_channel=subchannel4);subscription10.save()
+        P1= Post(state="New",expired=False,title="Title of post 1",is_hidden=False,quality_index=67,price=100,is_sold=False,subchannel=subchannel1,seller=user1,no_of_reports=0,pub_date=datetime.dtaetime.datetime.now());P1.save();
+        P2= Post(state="New",expired=False,title="Title of post 2",is_hidden=False,quality_index=80,price=100,is_sold=False,subchannel=subchannel1,seller=user1,no_of_reports=0,pub_date=datetime.datetime.now());P2.save();
+        P3= Post(state="New",expired=False,title="Title of post 3",is_hidden=False,quality_index=60,price=100,is_sold=False,subchannel=subchannel2,seller=user1,no_of_reports=0,pub_date=datetime.datetime.now());P3.save();
+        P4= Post(state="New",expired=False,title="Title of post 4",is_hidden=False,quality_index=90,price=100,is_sold=False,subchannel=subchannel2,seller=user1,no_of_reports=0,pub_date=datetime.datetime.now());P4.save();
+        P5= Post(state="New",expired=False,title="Title of post 5",is_hidden=False,quality_index=100,price=100,is_sold=True,subchannel=subchannel3,seller=user1,no_of_reports=0,pub_date=datetime.datetime.now());P5.save();
+        P6= Post(state="New",expired=False,title="Title of post 6",is_hidden=True,quality_index=100,price=100,is_sold=False,subchannel=subchannel3,seller=user2,no_of_reports=0,pub_date=datetime.datetime.now());P6.save();
+        P7= Post(state="New",expired=True,title="Title of post 7",is_hidden=False,quality_index=100,price=100,is_sold=False,subchannel=subchannel4,seller=user2,no_of_reports=0,pub_date=datetime.datetime.now());P7.save();
+
+
+    def test_activity(self):       
+        user = self.client.login(email='mai@gmail.com', password='123')
+        response = self.client.post('/all_log/')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/all_log_post/')  
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/all_log_wish/') # handeled in my code if the user enters a wrong code
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/all_log_interested/')  
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/all_log_profile/')  
+        self.assertEqual(response.status_code, 200)
+
 class intrested_in(unittest.TestCase):
     def setUp(self):
         self.client = Client()
