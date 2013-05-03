@@ -785,6 +785,7 @@ def view_profile(request):
     try: 
         user = request.user
 
+
         if user.is_anonymous():
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
             interacting_list = user_profile.get_interacting_people()
@@ -812,7 +813,15 @@ def view_profile(request):
                 activity_logs_to_render_array.append(activity)
                 if activity_log_counter is 2:
                     break
-            d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list,'activity_logs_to_render_array': activity_logs_to_render_array}
+            d = {'list_of_wished_posts': list_of_wished_posts
+            , 'user':user_profile
+            , "check_verified" : verfied 
+            , "link" : link
+            , "interacting_list": interacting_list
+            , 'activity_logs_to_render_array': activity_logs_to_render_array
+            , 'my_posts': Post.objects.filter(seller=user_profile) 
+            , 'my_intrested_in':InterestedIn.objects.filter(user_id_buyer=user_profile)}
+
 
     except: 
         err_msg = 'This user doesn\'t exist'
