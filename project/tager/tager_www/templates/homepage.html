@@ -4,14 +4,15 @@
 {% block headers %}
     {% include 'jquery_raty_min_js.html' %}
     <link href="{% static "css/filtering.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/leftMenu.css" %}" rel="stylesheet" media="screen">
     <link href="{% static "css/priceSlide.css" %}" rel="stylesheet" media="screen">
-    <!-- // <script type="text/javascript" src="{% static "js/filteringBar.js" %}"></script> -->
-   
+    <script type="text/javascript" src="{% static "js/refiningMenu.js" %}"></script>
 {% endblock %}
 {% block content %}
 
-
+<div class="container-fluid">
 <div class="row-fluid">
+<<<<<<< HEAD
   <div class="span6">
     <div class="priceRangeInfo">
       <label for="buying_slider_min">Price</label>
@@ -76,17 +77,44 @@
     </li>
 
     </ul>
+=======
+  <div class="span2">
+      <!--Sidebar content-->
+      <div id='cssmenu'>
+        <ul>
+          {% for i in all_channels %}
+        <li class='active has-sub' onClick="channel_render({{i.channel.id}})"><a href='#'><span> <strong>{{i.channel.name}}</strong></span></a>
+            <ul>
+              {% for subchannel in i.subchannels_list %} 
+              <li class='has-sub' onClick="posts_render({{subchannel.subchannel.id}})"><a href='#'><span>{{subchannel.subchannel.name}}</span></a>
+              </li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div> 
+    <div class="span10">
+      <!--Body content-->
+      <div id="posts_result" >
+ 
+</div>
+
+      
+>>>>>>> C3_reem_sprint2_sideBar
   </div>
 </div>  
+</div>
     <!-- Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
       this is a collapse method from bootstrap that helps in previing the channels and -->
 
-<div id="posts_result" class="container">
+<!-- <div id="posts_result" class="container">
     {% for post in post_list %}
       <li id="post_id2"> {{post.title}}</li>
     {% endfor %}
 </div>
-
+ -->
 
  <script type="text/javascript">
 

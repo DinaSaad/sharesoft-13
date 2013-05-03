@@ -42,7 +42,10 @@ width: :700px;
 }
 
 </style>
-
+  {% if post.is_hidden %}
+     <h2 align="center">Sorry the post has been removed by the admin </h2>
+  {% endif %}
+{% if not post.is_hidden %}
 {% if not can_edit %}
 <div class="row-fluid maincontent">
   <div class="span1">
@@ -284,7 +287,7 @@ width: :700px;
 </div>
 </div>
 
-
+{% if not admin %}
 <div class="row-fluid maincontent">
   <div class="span2">
 
@@ -381,8 +384,13 @@ width: :700px;
 
 
 </script>
+{% endif %}
 
-  </div>
+{% if admin%}
+<h5>The number of this post reports is: {{post.no_of_reports}}</h5>
+<button onClick="hidepost({{post.id}});" class="btn btn-danger btn-large"> Remove post </button>
+{% endif %}
+</div>
  
 </div>
             
@@ -482,7 +490,7 @@ width: :700px;
 
 
 
-<div class="commentsMain" style="margin-top:20px;">
+<div class="commentsMain" style="margin:20px;">
 
 
 {% for comment in comments %}
@@ -494,7 +502,7 @@ width: :700px;
       <div class ="commentName"  class="text-info" style="width:100%;">
       <small class="text-info"> {{ comment.date|timesince }}&nbsp;ago <i class="icon-time"></i></small>
       .
-      <a href="/showuser?user={{comment.user_id.id}} ">
+      <a href="profile/?user_id={{comment.user_id.id}} ">
      &nbsp;{{ comment.user_id.name }}&nbsp;<i class="icon-user"></i></a>
    </div>
     </p>
@@ -507,7 +515,7 @@ width: :700px;
     <div class="commentWrapper" class="span4">
     <p>
       <div class ="commentName" class="text-info" >
-      <a href="/showuser?user={{comment.user_id}} ">
+      <a href="profile/?user_id={{comment.user_id.id}} ">
      <i class="icon-user"></i>&nbsp;{{ comment.user_id.name }}&nbsp;</a>
      .<small class="text-info"><i class="icon-time"></i> {{ comment.date|timesince }}&nbsp;ago</small>
     </p></div>
@@ -554,13 +562,26 @@ width: :700px;
 </div>
 
 
-
+{% endif %}
 </div>
 </div>
 
 {% block script%}
 
     <script type="text/javascript">
+    function hidepost(postid){
+  $.ajax({
+    url: '/deletepost/',
+    type: 'POST',
+    data: {
+      "post":postid,
+    },
+    success: function(result){
+      alert("Post has been hidden sucessfully");
+       location.reload();
+    },
+  });
+}
 
 
 

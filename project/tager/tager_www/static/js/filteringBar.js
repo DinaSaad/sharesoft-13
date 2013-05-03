@@ -92,7 +92,11 @@ $('#buying_slider_min').change(function() {
 
           var status_list = new Array();        
         $('.statusChange:checked').each(function() {
+
             var tmp = $('#status').val();
+
+            var tmp = $('#status_list').val();
+
             status_list.push(tmp);
             // alert(status_list.length)
 ;        });
