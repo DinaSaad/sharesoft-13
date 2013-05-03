@@ -325,7 +325,9 @@ def view_post(request):
     can_edit = False
     if test_post.seller == user:
         can_edit = True
-
+    admin = False
+    if user.is_authenticated():
+        admin = user.is_admin
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
@@ -342,8 +344,9 @@ def view_post(request):
     report_reasons = ReportReasons.objects.all()
     #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
     dic = {
+    'admin': admin
+    ,'no': list_of_att_number
     # 'admin': user.is_admin
-    'no': list_of_att_number
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -1510,7 +1513,7 @@ def edit_post_title(request):
 
 def view_posts_wished(request):
     user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    list_of_wished_posts = WishList.objects.filter(user_id = user)
     return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
 
 #c2-mohamed awad
