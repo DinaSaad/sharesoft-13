@@ -508,6 +508,7 @@ class ActivityLog(object):
         P6= Post(state="New",expired=False,title="Title of post 6",is_hidden=True,quality_index=100,price=100,is_sold=False,subchannel=subchannel3,seller=user2,no_of_reports=0,pub_date=datetime.datetime.now());P6.save();
         P7= Post(state="New",expired=True,title="Title of post 7",is_hidden=False,quality_index=100,price=100,is_sold=False,subchannel=subchannel4,seller=user2,no_of_reports=0,pub_date=datetime.datetime.now());P7.save();
 
+
     def test_activity(self):       
         user = self.client.login(email='mai@gmail.com', password='123')
         response = self.client.post('/all_log/')
