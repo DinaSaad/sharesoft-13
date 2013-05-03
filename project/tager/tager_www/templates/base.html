@@ -6,7 +6,7 @@
  <div class="nav-collapse collapse">
             <ul class="nav">
               <ul class="nav pull-right">
-              <li><a href="#" style="margin-top:3px;">Home</a></li>
+              <li><a href="/main" style="margin-top:3px;">Home</a></li>
               <li><a href="#contact" style="margin-top:3px;">Contact</a></li>
               <div id="to_be_replaced" style="float:left; margin-left:5px; margin-top: 13px;">
                 <div id="notifications_div">
@@ -61,12 +61,12 @@
               </div>
               <li>
                 <div>
-                  <form class="navbar-search pull-left" style="margin-left:130px; margin-top:13px;">
+                  <form class="navbar-search pull-left" style="margin-left:130px; margin-top:13px;" action="/search/" method="get">
                     <input type="text" class="search-query" placeholder="Search">
                   </form>
                 </div>
               </li>
-              <li><a href="advanced_search/channel/" style="margin-top:3px;">Advanced Search</a></li>
+              <li><a href="../advanced_search/channel" style="margin-top:3px;">Advanced Search</a></li>
               <li><a href="/profile?user_id={{user.id}}" style="margin-top:3px; margin-left:210px; float:right">{{request.user.name}}</a></li>
 
               <li class="dropdown">
@@ -94,16 +94,16 @@
         <div class="nav-collapse collapse">
             <ul class="nav">
               <ul class="nav pull-right">
-              <li><a href="#" style="margin-top:3px;">Home</a></li>
+              <li><a href="/main" style="margin-top:3px;">Home</a></li>
               
               <li>
                 <div>
-                  <form class="navbar-search pull-left" style="margin-top:13px; margin-left:260px">
+                  <form class="navbar-search pull-left" style="margin-top:13px; margin-left:260px" action="/search/" method="get">
                     <input type="text" class="search-query" placeholder="Search">
                   </form>
                 </div>
               </li>
-              <li><a href="advanced_search/channel/" style="margin-top:3px;">Advanced Search</a></li>
+              <li><a href="../advanced_search/channel/" style="margin-top:3px;">Advanced Search</a></li>
               <li><a href="/login/" style="margin-top:3px; margin-left:260px; float:right">login</a></li>
 
               
