@@ -361,11 +361,9 @@ def view_post(request):
     , 'report_reasons': report_reasons
     , 'list_of_interested_buyers': list_of_interested_buyers
     , 'comments': Comment.objects.filter(post_id=post_id)
-<<<<<<< HEAD
-    , 'user_is_intrested': is_intrested_inpost }
-=======
+    , 'user_is_intrested': is_intrested_inpost 
     , 'title':title }
->>>>>>> master
+    #
 
     # dic.update(d)
     if user.id is not None:
