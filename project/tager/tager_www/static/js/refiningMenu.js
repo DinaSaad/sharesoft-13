@@ -4,7 +4,7 @@ function posts_render(ids)
     		// if (Enabled == true)
     		// {
 
-    		alert(ids);
+    		
    			$.ajax(
    			{
 			    type: "GET",
@@ -13,7 +13,7 @@ function posts_render(ids)
 
 			    success: function(req)
 		       {
-		       	alert("d5al gowa el ajax for menu");
+		       	
 		         $('#posts_result').html(req);
 
 		       }
@@ -24,7 +24,7 @@ function posts_render(ids)
 
 function channel_render(ids)
 {
-	alert(ids);
+	
    			$.ajax(
    			{
 			    type: "GET",
@@ -33,7 +33,7 @@ function channel_render(ids)
 
 			    success: function(req)
 		       {
-		       	alert("d5al gowa el ajax for menu channel");
+		       	
 		       	// Enabled=false;
 		         $('#posts_result').html(req);
 		       }

@@ -456,7 +456,17 @@ def main(request):
     # for i in post_list:
     #     i.post_state()
 
-    return render_to_response('main.html',{'post_list': post_list},context_instance=RequestContext(request))  
+    channels = Channel.objects.all()
+    channels_list = [] 
+    for channel in channels:
+        subchannels = SubChannel.objects.filter(channel_id=channel.id)
+        subchannels_list = []
+        for subchannel in subchannels:
+            subchannels_list.append({'subchannel': subchannel})
+
+            channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+
+    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list },context_instance=RequestContext(request))  
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -622,20 +632,20 @@ def editing_pic(request):
 # subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
 # the method then return the channels_list only , as it holds , every attribute of subchannel
 # and every subchannel of a channel 
-def get_channels (request):
-    channels = Channel.objects.all()
-    channels_list = [] 
-    for channel in channels:
-        subchannels = SubChannel.objects.filter(channel_id=channel.id)
-        subchannels_list = []
-        for subchannel in subchannels:
-            # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-            subchannels_list.append({'subchannel': subchannel})
-            # , 'attributes': attributes
-            # keep this commented , i'll use it later
-            channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-    post_list = Post.objects.all()   
-    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
+# def get_channels (request):
+#     channels = Channel.objects.all()
+#     channels_list = [] 
+#     for channel in channels:
+#         subchannels = SubChannel.objects.filter(channel_id=channel.id)
+#         subchannels_list = []
+#         for subchannel in subchannels:
+#             # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
+#             subchannels_list.append({'subchannel': subchannel})
+#             # , 'attributes': attributes
+#             # keep this commented , i'll use it later
+#             channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+#     post_list = Post.objects.all()   
+#     return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # subchannel_id is the id retrieved from the webpage 
