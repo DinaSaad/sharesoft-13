@@ -455,7 +455,6 @@ from django.shortcuts import RequestContext
 
 class  AccountsType(unittest.TestCase):
 
-# class UserProfileTest(TestCase):
 
     def setUp(self):
 
@@ -464,23 +463,21 @@ class  AccountsType(unittest.TestCase):
         self.user2 = UserProfile.objects.create_user(email="ahmad@gmail.com", name="ayia", password="123",is_premium = True)
         self.user2.save()
 
-    def test_changingToPremium(self):
+    def test_changingAccountType(self):
         self.assertEqual(self.user1.email , "riham@gmail.com")
+        self.assertEqual(self.user2.email , "ahmad@gmail.com")
 
         heba = UserProfile.objects.get(pk=1)
+        ahmad = UserProfile.objects.get(pk=2)
         heba.is_premium = True
+        ahmad.is_premium = False
         heba.save()
+        ahmad.save()
         UserProfile.objects.get(pk=1)
+        UserProfile.objects.get(pk=2)
         self.assertEqual(heba.is_premium, True)
+        self.assertEqual(ahmad.is_premium, False)
 
-    # def test_changingToFree(self):
-    #     self.assertEqual(self.user2.email , "ahmad@gmail.com")
-
-    #     ahmad = UserProfile.objects.get(pk=2)
-    #     ahmad.is_premium = False
-    #     ahmad.save()
-    #     UserProfile.objects.get(pk=2)
-    #     self.assertEqual(ahmad.is_premium, False)
 
    
 # class  PrivateSettings(unittest.TestCase):
