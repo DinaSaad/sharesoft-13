@@ -43,6 +43,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
 <div >
     <center>
     {% if post_list %}
+
         {% for post in post_list %}
   <div class="item masonry-brick" ><div class="thumbnail" >
 
@@ -92,6 +93,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
 
 
         {% endfor %}
+
     {% else %}
         <h5> please select some subchannels to view </h5>
     {% endif %}  

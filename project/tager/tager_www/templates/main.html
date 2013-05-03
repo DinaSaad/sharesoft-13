@@ -57,10 +57,64 @@ style="
     <div class="span10">
       <!--Body content-->
       <div class="span6">
+       
       </div> 
       <div class="span6"> 
 
-        filtering/refinement bar goes here 
+        <ul class="nav nav-pills">
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">Channels
+       <b class="caret"></b></a>
+      <ul class="dropdown-menu" id="menu1">
+        
+        <div class="accordion" id="accordion2" style="background: #eee;">
+                {% for i in all_channels %}
+                  <div class="accordion-group">
+                    <div class="accordion-heading" >
+                      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#channel{{i.channel.id}} " id=" ChannelBar" value="{{i.Channel.id}}">
+                        {{i.channel.name}}
+                      </a>
+                    </div>
+                    <div id="channel{{i.channel.id}}" class="accordion-body collapse in">
+                      <div class="accordion-inner">
+                        {% for subchannel in i.subchannels_list %} 
+                        <div id="channel{{i.subchannel.id}}" class="accordion-body collapse in" >
+                          <div class="accordion-inner">
+                            <p>
+                              
+                              <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
+                                {{subchannel.subchannel.name}} 
+                            </p>    
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">status
+       <b class="caret"></b></a>
+      <ul class="dropdown-menu" id="menu1">
+        <div class="accordion-inner">
+          {% for state in states %}
+          <p>
+            
+            <input type="checkbox"  checked="checked" value="{{state}}"  id ="status" class="statusChange"> 
+
+              {{state}}
+          </p> 
+          {% endfor %}
+          
+        </div>
+      </ul>
+    </li>
+
+    </ul>
       </div>
 <div  class="clearfix masonry" id="posts_result" >
 
@@ -181,6 +235,163 @@ $(function()
     });
     });
 });
+</script>
+
+<script type="text/javascript">
+
+$(function() 
+{
+ var refine_list
+ var status_list
+ var min_price
+ var max_price
+   $('.refiningSubchannels').on('change', function() 
+    {
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+        min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+        
+   $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price},
+       
+       // , min_price, max_price 
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+
+    });
+  
+   $('.statusChange').on('change', function() 
+    {
+     var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+         min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+
+   $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price },
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+    });
+
+$('#buying_slider_min').change(function() {
+    
+    var min = parseInt($('#buying_slider_min').val());
+    var max = parseInt($('#buying_slider_max').val());
+    
+    if (min > max) {
+        $(this).val(max);
+        // $(this).slider('refresh');
+    }
+
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+        min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+        
+
+        $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price },
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+});
+$('#buying_slider_max').change(function() {
+    var min = parseInt($('#buying_slider_min').val());
+    var max = parseInt($(this).val());
+
+    if (min > max) {
+        $(this).val(min);
+        // $(this).slider('refresh');
+    }
+    // alert(max);
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+        
+$.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price },
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+});
+});
+
 </script>
 <!-- a script that handels the ajax intrested button (currenty not working)  -->
 
