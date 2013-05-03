@@ -652,10 +652,14 @@ class Attribute(models.Model):
     name = models.CharField(max_length=64)
     subchannel = models.ForeignKey(SubChannel)
     weight = models.FloatField()
+    def __unicode__(self):
+        return self.name
 #this table contains all attributes (attribute_id) refrencing class attribute with all their posiible values(value)
 class AttributeChoice(models.Model):
     attribute_id = models.ForeignKey(Attribute)
     value = models.CharField(max_length=64)
+    def __unicode__(self):
+        return self.value
 
 class Value(models.Model):
     attribute = models.ForeignKey(Attribute)
