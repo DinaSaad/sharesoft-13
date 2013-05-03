@@ -52,9 +52,16 @@
           </button>
           <a class="brand" href="#" style="margin-top:3px;">Tager.com</a>
           {% block nav %}
-
+              <!-- {% block endNav%} -->
+              <div class="nav-collapse collapse">
+                <ul class="nav">
+                  <ul class="nav pull-right">
+                    <li><a href="/main" style="margin-left:840px;">Annynmous user</a></li>
+                  </ul>
+                </ul>
+               </div>
+              <!-- {% endblock %} -->
           {% endblock %}
-            
           
         </div>
       </div>
@@ -66,7 +73,7 @@
 
             <div class="alert">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Warning!</strong> please register, in order to use the site nomarly, here is a registeration {{ link|urlize }}
+            <center><strong>Warning!</strong> please register, in order to use the site nomarly, here is a registeration {{ link|urlize }}</center>
             </div> 
 
     {% endif %}
@@ -76,7 +83,7 @@
     {% if check_verified == False %}
                 <div class="alert">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}
+                    <center><strong>Warning!</strong> please verify your email , in order to use the site nomarly ,{{ link|urlize }}</center>
                 </div>
     {% endif %}
     
