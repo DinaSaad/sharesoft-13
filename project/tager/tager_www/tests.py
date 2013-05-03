@@ -71,52 +71,52 @@ from django.shortcuts import RequestContext
 #         self.assertEquals(profile3.name,"mahmoud1")
 
 
-# class UserActionsTest(unittest.TestCase):
-#     def setUp(self):
-#         self.user1 = UserProfile(name="mahmoud", email="mahmoud@me.com",password="me",phone_number="111")
-#         self.user1.save()
-#         self.user2 = UserProfile(name="mai", email="mai@me.com", password="me",phone_number="222")
-#         self.user2.save()
-#         self.user3 = UserProfile(name="beshoy", email="beshoy@me.com", password="me",phone_number="333")
-#         self.user3.save()
-#         self.user4 = UserProfile(name="abdo", email="abdo@me.com", password="me",phone_number="444")
-#         self.user4.save()
-#         self.channel = Channel(name="cars",description="about cars")
-#         self.channel.save()
-#         self.subchannel = Subchannel(name="SUV", channel_id= channel)
-#         self.subchannel.save()
-#         self.post1 = Post(title="jeep",user= user1,sub_channel= subchannel,buyer= user2)
-#         self.post1.save()
-#         self.post2 = Post(title="navigator",user= user1 ,sub_channel=subchannel,buyer= user3)
-#         self.post2.save()
-#         self.post3 = Post(title="ram",user= user1 ,sub_channel=subchannel,buyer= user4)
-#         self.post2.save()
-#         self.post4 = Post(title="ram truck",user= user2 ,sub_channel=subchannel,buyer= user1)
-#         self.post2.save()
+class UserActionsTest(unittest.TestCase):
+    def setUp(self):
+        self.user1 = UserProfile(name="mahmoud", email="mahmoud@me.com",password="me",phone_number="111")
+        self.user1.save()
+        self.user2 = UserProfile(name="mai", email="mai@me.com", password="me",phone_number="222")
+        self.user2.save()
+        self.user3 = UserProfile(name="beshoy", email="beshoy@me.com", password="me",phone_number="333")
+        self.user3.save()
+        self.user4 = UserProfile(name="abdo", email="abdo@me.com", password="me",phone_number="444")
+        self.user4.save()
+        self.channel = Channel(name="cars",description="about cars")
+        self.channel.save()
+        self.subchannel = Subchannel(name="SUV", channel_id= channel)
+        self.subchannel.save()
+        self.post1 = Post(title="jeep",user= user1,sub_channel= subchannel,buyer= user2)
+        self.post1.save()
+        self.post2 = Post(title="navigator",user= user1 ,sub_channel=subchannel,buyer= user3)
+        self.post2.save()
+        self.post3 = Post(title="ram",user= user1 ,sub_channel=subchannel,buyer= user4)
+        self.post2.save()
+        self.post4 = Post(title="ram truck",user= user2 ,sub_channel=subchannel,buyer= user1)
+        self.post2.save()
 
-#     def user_created(self):
+    def user_created(self):
 
-#         self.assertEqual(self.user1.id, '1')
-#         self.assertEqual(self.user2.id, '2')
+        self.assertEqual(self.user1.id, '1')
+        self.assertEqual(self.user2.id, '2')
         
-#         # post,phone_numpost,phone_num
+        # post,phone_numpost,phone_num
 
-#     def add_buyers(self):
-#         self.assertEqual(user1.add_buyers(post1,"111"), False)
-#         self.assertEqual(user1.add_buyers(post2,"111"), True)
-#         self.assertEqual(user1.add_buyers(post1,"222"), False)
+    def add_buyers(self):
+        self.assertEqual(user1.add_buyers(post1,"111"), False)
+        self.assertEqual(user1.add_buyers(post2,"111"), True)
+        self.assertEqual(user1.add_buyers(post1,"222"), False)
     
     
-#     def user_canRate_without_BuyerID(self):
-#         self.assertTrue(user2.canRate(self.post1),True)
-#         self.assertTrue(user1.canRate(self.post1),False)
+    def user_canRate_without_BuyerID(self):
+        self.assertTrue(user2.canRate(self.post1),True)
+        self.assertTrue(user1.canRate(self.post1),False)
 
 
-#     def user_get_interested_buyers(self):
-#         self.assertEqual(user1.get_interacting_people(),[user2,user3,user4])
-#         self.assertEqual(user2.get_interacting_people(),[user1])
-#         self.assertEqual(user3.get_interacting_people(),[user1])
-#         self.assertEqual(user4.get_interacting_people(),[user1])
+    def user_get_interested_buyers(self):
+        self.assertEqual(user1.get_interacting_people(),[user2,user3,user4])
+        self.assertEqual(user2.get_interacting_people(),[user1])
+        self.assertEqual(user3.get_interacting_people(),[user1])
+        self.assertEqual(user4.get_interacting_people(),[user1])
 
 
 
