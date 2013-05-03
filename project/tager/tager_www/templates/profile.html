@@ -247,19 +247,26 @@
           </div>
           </div>
         </div>
-        <div class="activitylog" id="box3">
-          <center>
-          <div class="thumbnail" >
-            <div class="profileHeader" class="active" wotsearchprocessed="true">
-            <center><h4>Activity log</h4></center>
-            </div>
-
-            <br>
-            <h3>Activity 1</h3>
-           <h3> Activity 2</h3>
-        </div>
-        </center>
-        </div>
+          <div class="activitylog" id="box3">
+            <center>
+              <div class="thumbnail" >
+                <div class="profileHeader" class="active" wotsearchprocessed="true">
+                <a href="../user_activity">  
+                  <center><h4>Activity log</h4></center>
+                </a>
+                </div>  
+                  {% if activity_logs_to_render_array %}
+                  {% for activity in activity_logs_to_render_array %}
+                  <div>
+                  <br>
+                  <a href="../{{activity.url}}">
+                  <h3>{{activity.content}}</h3>
+                  </a>
+                  </div>
+                  {% endfor %}
+                {% endif %}
+            </center>
+          </div>
 
         <div class="activitylog" id="box3">
           <center>
@@ -267,6 +274,9 @@
             <div class="profileHeader" class="active" wotsearchprocessed="true">
             <center><h4>My Posts</h4></center>
             </div>
+          </div>
+          
+
     </center>
 {% if my_posts %}
 
@@ -291,8 +301,6 @@
 
         </div>
         
-        </div>
-
         <div class="activitylog" id="box3">
           <center>
           <div class="thumbnail" >
@@ -308,12 +316,16 @@
                     </div>
             <!-- </div> -->
                       {% endfor %} 
-     </div>
+           </div>
             <br>
 
         </div>
         </center>
         </div>
+        
+        </div>
+</div>
+
 
 
         

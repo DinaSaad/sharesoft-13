@@ -76,13 +76,10 @@ urlpatterns = patterns('',
     url(r'^viewchannels$', 'tager_www.views.view_channels', name='index'),
     url(r'^addpost$', 'tager_www.views.add_post', name='post_create'),
     url(r'^showpost$', 'tager_www.views.view_post', name='view post'),
-    url(r'^viewsubchannels/$', 'tager_www.views.view_subchannels', name='index'),
-    url(r'^viewchannels/$', 'tager_www.views.view_channels', name='index'),
-    url(r'^addpost/$', 'tager_www.views.add_post', name='post_create'),
-    url(r'^showpost/$', 'tager_www.views.view_post', name='view post'),
     url(r'^thankyou/$','tager_www.views.thankyou'),
     url(r'^search/$', 'tager_www.views.search', name='search'),
     url(r'^search_results/$', 'tager_www.views.search'),
+    url(r'^addComment/(?P<post_id>\d+)/$', 'tager_www.views.SavingComment', name="adingcomment"),
     url(r'^user_activity/$', 'tager_www.views.all_log'),
     url(r'^all_log/$', 'tager_www.views.all_log'),
     url(r'^all_log_post/$', 'tager_www.views.all_log_post'),
@@ -92,11 +89,8 @@ urlpatterns = patterns('',
     url(r'^all_log_wish/$', 'tager_www.views.all_log_wish'),
     url(r'^send_phone/$', 'tager_www.views.sms'),
     url(r'^send_sms/$', 'tager_www.views.sms_verify'),
-
-    
-
-
-
+    url(r'^refresh_notifications/$', 'tager_www.views.unread_notifications'),
+    url(r'^deletepost/$', 'tager_www.views.hide_post'),
 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
