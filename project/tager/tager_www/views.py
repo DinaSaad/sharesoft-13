@@ -786,14 +786,10 @@ def change_paccounttype(request):
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
     list_of_states = request.GET.getlist('status[]')
-    # min_price= request.GET['min']
-    # max_price= request.GET['max']
-    
     results_of_subchannels = []
     for li in list_of_subchannelsID:
         if li is not None:
             results_of_subchannels.append(SubChannel.objects.get(id = li))
-    print results_of_subchannels
    
     post_list_refined =[]
     
@@ -867,7 +863,7 @@ def view_profile(request):
             if activity_log_counter is 2:
                 break
         d = {'caneditwishlist': can_manage_wish_list,'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
-        if user.is_anony
+        # if user.is_anony
         if user.is_anonymous():
             title = "welcome guest"
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])
