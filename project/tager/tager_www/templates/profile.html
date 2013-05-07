@@ -86,55 +86,57 @@
 
                 <div class="wishlist" class="item" id="box1">
                   <div class="thumbnail" >
-
+                   
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
-                   <center> <h4>Wish List</h4>  </center>
+                   <center> <a  href="#myModal" role="button" data-toggle="modal"><h4>Wish List</h4></a></center>
                   </div>
-
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-
-                <div class="wishlist" id="box1">
-                  <a class="btn btn-info" href="#myModal" role="button" data-toggle="modal"> View my wishlist </a>
                   <div id="myModal" class="modal hide " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Posts in your wish list</h3>
-    <p>
-      These are your wished posts
-    </p>
+
   </div>
-  <div class="modal-body">
+    <div class="modal-body">
+  {% if list_of_wished_posts %}
+    <p>
+      <strong>These are your wished posts</strong>
+    </p>
     <table align="center" border="0" cellpadding="10">
 <tr class="tablebackground">
-<th class="coloumnspacing" align="left"></th>
+
+
+
+{% if caneditwishlist %}<th class="coloumnspacing" align="left"></th>{% endif %}
 <th class="coloumnspacing" align="left">Product</th>
 <th class="coloumnspacing" align="left">Date</th>
 <th class="coloumnspacing" align="left">Price</th>
 <th class="coloumnspacing" align="left">Location</th>
+{% else %}
+<strong>Your Wish List is Empty</strong>
+ {% endif %}
 
 <tr align="left">
    
-      {% for WishList in list_of_wished_posts %}
-        
+      {% for WishList in list_of_wished_posts %}     
           <tr class="rowseperator">
+            {% if caneditwishlist %}
             <td class="coloumnspacing" style="border:0"><i onClick="delete_item_from_wishlist({{WishList.post.id}});" class="icon-remove"></i></td>
+            {% endif %}
           <td  class="coloumnspacing" style="border:0"> <a href="http://127.0.0.1:8000/showpost?post={{WishList.post.id}}">{{WishList.post.title}}</a></td>    
           <td class="coloumnspacing" style="border:0">{{WishList.post.pub_date}}</td>
           <td class="coloumnspacing" style="border:0"> {{WishList.post.price}}</td>
           <td class="coloumnspacing" style="border:0">{{WishList.post.location}}</td>
-
-       
           </tr>
   {% endfor %} 
 </table>
 </div>
   <div class="modal-footer">
+    {% if caneditwishlist %}
     {% if list_of_wished_posts %}
     <button class="btn" onClick="delete_all_wished_posts();">Empty the wish list</button>
     {% else %}
     <button class="btn" onClick="delete_all_wished_posts();" disabled>Empty the wish list</button>
+    {% endif %}
     {% endif %}
     <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
   </div>
@@ -142,31 +144,43 @@
 </div>
 
   
+              
                 </div>
-                </div>
+
+
+
+
+ 
 <br>
                 <div class="interested" class="item" id="box1">
                   <div class="thumbnail" >
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
                   <center><h4>Interested</h4></center>
                   </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
-                  <br>
-                  <br>
-                  <br>
+                  {% if my_intrested_in %}
 
+                        {% for my_intrested_post in my_intrested_in %}    
+                          <div id="thumbnail" style="display:inline;" title="{{my_post.title}}">
+                              {% if my_intrested_post.profile_picture %} 
+                                <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                               {% else %}
+                                <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+                              {% endif %}
+                          </div>  
+                        {% endfor %} 
+
+                    {% else %}
+                    <center>
+                    <strong>You are not intrested in any Post,<br> Click here to Browse some Posts <br></strong>
+                    <button id="update_status" class="btn btn-small btn-primary primaryOnHove" ONCLICK="window.location.href='/main'">Main</button>
+                    </center>
+                    {% endif %}  
+
+                  </div>
                 </div>
                 </div>
 
-              </div>
+              
 
               <div id="userDetails">         
                   <p>
@@ -180,10 +194,11 @@
       <div class="span7">
         <div class="ProfileInfo">
         <div class="status" id="box3" >
-          <br>
 
           <div class="thumbnail" >
-          <h4>Status: <label id="status">{{user.status}}</label></h4>
+
+          <h4>Status<label id="status"> {{user.status}} </label></h4>
+
           <div class="editeInfo">
            <input type="text" name="status" id="statusvalue" style="display:none" class="span9" placeholder="Want to share something with your friends? =)"> <label id="statusoutput" style="display:none" class="statusvalidation">*Can not be blank</label>
            {% ifequal request.user user %}
@@ -192,11 +207,13 @@
             <button id="savestatus" style="display:none" class="btn btn-small btn-success" onClick="statusupdates()">Save</button>   
         </div>
         </div>
-      <br>
+        </div>
+        </div>
+  <div>
         <div class="information" id="box3">
           <div class="thumbnail" >
           <h3>Information:</h3>
-          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
+          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input value="{{user.name}}" type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
             <label id = "nameoutput" style="color:red"></label>
             {% ifequal request.user user %}
             <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
@@ -204,7 +221,7 @@
             <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
           </h5> 
           <h5>Email: {{ user.email}}</h5>
-          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
+          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input  type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
           <p style="display:none" id="formate">Format options:<br/>
             <select id="format">
               <option >Chose formate</option>
@@ -230,27 +247,36 @@
             <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
             {% endifequal %}
             <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
-          </h5>         
 
-        </div>
+          </h5>
+                 
+     
+
           <br>
 
           </div>
           </div>
         </div>
-        <div class="activitylog" id="box3">
-          <center>
-          <div class="thumbnail" >
-            <div class="profileHeader" class="active" wotsearchprocessed="true">
-            <center><h4>Activity log</h4></center>
-            </div>
-
-            <br>
-            <h3>Activity 1</h3>
-           <h3> Activity 2</h3>
-        </div>
-        </center>
-        </div>
+          <div class="activitylog" id="box3">
+            <center>
+              <div class="thumbnail" >
+                <div class="profileHeader" class="active" wotsearchprocessed="true">
+                <a href="../user_activity">  
+                  <center><h4>Activity log</h4></center>
+                </a>
+                </div>  
+                  {% if activity_logs_to_render_array %}
+                  {% for activity in activity_logs_to_render_array %}
+                  <div>
+                  <br>
+                  <a href="../{{activity.url}}">
+                  <h3>{{activity.content}}</h3>
+                  </a>
+                  </div>
+                  {% endfor %}
+                {% endif %}
+            </center>
+          </div>
 
         <div class="activitylog" id="box3">
           <center>
@@ -258,27 +284,33 @@
             <div class="profileHeader" class="active" wotsearchprocessed="true">
             <center><h4>My Posts</h4></center>
             </div>
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+          </div>
+          
 
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+    </center>
+{% if my_posts %}
 
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+      {% for my_post in my_posts %}    
+        <div id="thumbnail" style="display:inline;" title="{{my_post.title}}">
+            {% if my_post.profile_picture %} 
+              <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+             {% else %}
+              <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
+            {% endif %}
+        </div>  
+      {% endfor %} 
 
-                    <div id="thumbnail" style="display:inline;">
-                    <img src="{% static "img/post.png" %}" alt="picture" style="width: 75px;margin: 5px;">
-                  </div>
+  {% else %}
+  <center>
+  <strong>You have't added any post,<br> Click here to add a post <br></strong>
+  </center>
+  {% endif %}  
+
+
             <br>
 
         </div>
-        </center>
-        </div>
-
+        
         <div class="activitylog" id="box3">
           <center>
           <div class="thumbnail" >
@@ -294,12 +326,16 @@
                     </div>
             <!-- </div> -->
                       {% endfor %} 
-     </div>
+           </div>
             <br>
 
         </div>
         </center>
         </div>
+        
+        </div>
+</div>
+
 
 
         

@@ -2,7 +2,12 @@
 
 {% load staticfiles %}
 
-
+{% block headers %}
+    {% include 'jquery_raty_min_js.html' %}
+    <link href="{% static "css/filtering.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/leftMenu.css" %}" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="{% static "js/refiningMenu.js" %}"></script>
+{% endblock %}
 {% block content %}
 {% if canpost %}
 <button class="btn btn-info" onClick="addpost();">addPost</button>
@@ -18,10 +23,92 @@
 {{ret_subchannel.name}}
 </div>
 
+<div class="container-fluid">
+<div class="row-fluid">
+  <div class="span2">
+      <!--Sidebar content-->
+      <br>
+      <br>
+      <br>
+      <br>
+      <div id='cssmenu'>
+        <ul>
+          {% for i in all_channels %}
+          <li class='active has-sub' onClick="channel_render({{i.channel.id}})"><a href='#'><span>{{i.channel.name}}</span></a>
+            <ul>
+              {% for subchannel in i.subchannels_list %} 
+              <li class='has-sub' onClick="posts_render({{subchannel.subchannel.id}})"><a href='#'><span>{{subchannel.subchannel.name}}</span></a>
+              </li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div> 
+    <div class="span10">
+      <!--Body content-->
+      <div class="span6">
+       
+      </div> 
+      <div class="span6"> 
 
-<div  class="clearfix masonry" 
-style="
-">
+        <ul class="nav nav-pills">
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">Channels
+       <b class="caret"></b></a>
+      <ul class="dropdown-menu" id="menu1">
+        
+        <div class="accordion" id="accordion2" style="background: #eee;">
+                {% for i in all_channels %}
+                  <div class="accordion-group">
+                    <div class="accordion-heading" >
+                      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#channel{{i.channel.id}} " id=" ChannelBar" value="{{i.Channel.id}}">
+                        {{i.channel.name}}
+                      </a>
+                    </div>
+                    <div id="channel{{i.channel.id}}" class="accordion-body collapse in">
+                      <div class="accordion-inner">
+                        {% for subchannel in i.subchannels_list %} 
+                        <div id="channel{{i.subchannel.id}}" class="accordion-body collapse in" >
+                          <div class="accordion-inner">
+                            <p>
+                              
+                              <input type="checkbox" onChange="posts({{subchannel.subchannel.id}});" value="{{subchannel.subchannel.id}}" checked="checked" id ="subchannel_id" class="refiningSubchannels">  
+                                {{subchannel.subchannel.name}} 
+                            </p>    
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">status
+       <b class="caret"></b></a>
+      <ul class="dropdown-menu" id="menu1">
+        <div class="accordion-inner">
+          {% for state in states %}
+          <p>
+            
+            <input type="checkbox"  checked="checked" value="{{state}}"  id ="status" class="statusChange"> 
+
+              {{state}}
+          </p> 
+          {% endfor %}
+          
+        </div>
+      </ul>
+    </li>
+
+    </ul>
+      </div>
+<div  class="clearfix masonry" id="posts_result" >
 
 
 
@@ -29,13 +116,18 @@ style="
 
 
 
-  <div class="item masonry-brick" ><div class="thumbnail" >
+  <div class="item masonry-brick" >
+    <div class="thumbnail" >
 
+      <a href="/showpost?post={{post.id}}">
    {% if post.picture %} 
       <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% else %}
        <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% endif %}
+        </a>
+<!--       <div class="repinLikeWrapper">
+
 
       <div class="repinLikeWrapper">
 
@@ -46,7 +138,7 @@ style="
         <em></em><span class="buttonText"><em><i class="icon-external-link"></i></em></span></button>
 
         <!--twitter sharing`-->
-        <a href="http://twitter.com/home?status={{post.title}}: {{post.description}}  http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/twitter-baloon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this"></a>
+        <a href="http://twitter.com/home?status={{post.title}}: {{post.description}}  http://127.0.0.1:8000/showpost/?post_id={{post.id}}" target="_blank"><img src="{% static "img/Twitter-icon.png" %}" width="35px" height="35px" alt="tweet this" title="tweet this"></a>
             
         <!--facebook sharing-->
         <!--picture={{post.picture1}}-->
@@ -59,20 +151,26 @@ style="
             picture=http://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Stick_Figure.svg/170px-Stick_Figure.svg.png&
             redirect_uri=https://peaceful-lake-7793.herokuapp.com" target="_blank">
 
-            <img src="{% static "img/fb-baloon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"></a>    
+            <img src="{% static "img/facebook-icon.png" %}" width="35px" height="35px" alt="share with facebook" title="share this with facebook"></a>    
 
       </div>
+
+      </div> -->
+
       
 
     <span class="priceValue">{{post.price }} EGP</span>
-    Posted By: <a href="../profile/?user_id={{post.seller.id}}">{{post.seller.name}}</a> 
-    {% if post.state == "New" %}
-      <span class="label label-success StateLabel">New</span>  
-      {% elif post.state == "Sold" %}
-      <span class="label label-success StateLabel">Sold</span> 
-      {% endif %}
-<a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4></a>
 
+    {% if post.state == "New" %}
+    <div class="ribbon">
+    <a> New </a>
+    </div>
+    {% elif post.state == "Sold" %}
+    <div class="ribbon">
+    <a> Sold </a>
+    </div>
+    {% endif %}
+<a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4></a>
 <p class="stats colorless sysPinOnlyFriendsNeedRemove" style="padding-right:5px;padding-left:5px;">
   <span class="IntrestedCount" title="Likes"><em><i class="icon-bullhorn"></i></em>&nbsp;&nbsp;{{post.intersed_count}}</span> &nbsp;
     <span class="CommentsCount" title="Comments"> <em><i class="icon-comments-alt"></i></em>&nbsp;&nbsp;{{post.comments_count}}</span>&nbsp;&nbsp;&nbsp;
@@ -80,13 +178,16 @@ style="
  </p> 
        <p>
       <small class="text-info"><i class="icon-time"></i> {{ post.pub_date|timesince }}&nbsp;ago</small><br>
-      <a href="/showuser?user={{post.user_id}} ">
-     <small class="text-info"><i class="icon-user"></i>&nbsp;{{post.get_seller_name}}&nbsp;</small></a>
+
     </p>
 </div>  
-
-
-
+    &nbsp;<a href="/profile/?user_id={{post.seller.id}}"><span class="text-info"><i class="icon-user"></i>&nbsp;<strong>{{post.seller.name}}</strong>&nbsp;</span></a>
+    <br>
+<center>
+        <button type="button" onClick="interested({{post.id}});" class=" btn-inverse btn ShowModalButton Button primary Module primaryOnHover btn repinSmall" id="intrested_btn{{post.id}}" >Intrested</button>
+        
+        <button data-text-unlike="Unlike" data-text-like="Like" type="button" class="btn btn-inverse Button Module likeSmall hasText btn" onclick="location.href='/showpost?post={{post.id}} '">More Details</button>
+</center>
 
 </div>
 
@@ -128,8 +229,194 @@ function addpost(){
 }
 </script>
 
+
+<script type="text/javascript">
+
+$(function() 
+{
+ var refine_list
+   $('.refiningSubchannels').on('change', function() 
+    {
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+        });
+   $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list },
+       success: function(req)
+       {
+         $('#posts_result').html(req);
+       }
+    });
+    });
+});
+</script>
+
+<script type="text/javascript">
+
+$(function() 
+{
+ var refine_list
+ var status_list
+ var min_price
+ var max_price
+   $('.refiningSubchannels').on('change', function() 
+    {
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+        min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+        
+   $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price},
+       
+       // , min_price, max_price 
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+
+    });
+  
+   $('.statusChange').on('change', function() 
+    {
+     var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+         min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+
+   $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price },
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+    });
+
+$('#buying_slider_min').change(function() {
+    
+    var min = parseInt($('#buying_slider_min').val());
+    var max = parseInt($('#buying_slider_max').val());
+    
+    if (min > max) {
+        $(this).val(max);
+        // $(this).slider('refresh');
+    }
+
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+        min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+        
+
+        $.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price },
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+});
+$('#buying_slider_max').change(function() {
+    var min = parseInt($('#buying_slider_min').val());
+    var max = parseInt($(this).val());
+
+    if (min > max) {
+        $(this).val(min);
+        // $(this).slider('refresh');
+    }
+    // alert(max);
+    var refine_list = new Array();        
+        $('.refiningSubchannels:checked').each(function() {
+            var tmp = $(this).val();
+            refine_list.push(tmp);
+            // alert(refine_list.length)
+;        });
+
+          var status_list = new Array();        
+        $('.statusChange:checked').each(function() {
+            var tmp = $(this).val();
+            status_list.push(tmp);
+            // alert(status_list.length)
+;        });
+
+min_price= parseInt($('#buying_slider_min').val());
+        max_price= parseInt($('#buying_slider_max').val());
+        
+$.ajax
+    ({
+       type: "GET",
+       url: "/viewingPosts/",
+       data: {  "list": refine_list, "status": status_list , "min":min_price , "max":max_price },
+       success: function(req)
+       {
+        // alert("success");
+         $('#posts_result').html(req);
+       }
+    });
+});
+});
+
+</script>
 <!-- a script that handels the ajax intrested button (currenty not working)  -->
 
+</div>
+</div>
+</div>
 </div>
 
 

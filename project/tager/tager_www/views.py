@@ -26,6 +26,7 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
+from django.contrib.auth.models import AnonymousUser
 
 
 
@@ -61,7 +62,7 @@ def home(request):
 
 def return_channels(request):
     channels = Channel.objects.all()
-    return render_to_response ('subscriptions.html', {'channels': channels})
+    return render(request, 'subscriptions.html', {'channels': channels})
 
 #c2-mohamed awad
 #this def return subchannels to subscriptions.html for the user to choose a subchannel to subscribe to
@@ -74,7 +75,7 @@ def return_subchannels(request):
     current_channel = Channel.objects.get(id=s_id)
     subchannels = SubChannel.objects.filter(channel_id = current_channel)
     print {'subchannels': subchannels}
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels})
+    return render(request, 'subscriptions.html', {'subchannels': subchannels})
 
 #c2-mohamed awad
 #this def returns parameters to subscriptions.html for the user to choose a parameter to subscribe to
@@ -86,8 +87,7 @@ def return_parameters(request):
     s_id = SubChannel.objects.get(id = sc_id).channel_id
     subchannels = SubChannel.objects.filter(channel_id = s_id)
     parameters = Attribute.objects.filter(subchannel_id = sc_id)
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
-
+    return render (request, 'subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters})
 #c2-mohamed awad
 #this def return choices to subscriptions.html for the user to choose a choice to subscribe to
 #it takes a request containing the parameter id the user has choosen in subscriptions.html and returns all choices
@@ -95,11 +95,11 @@ def return_parameters(request):
 def return_choices(request):
     p_id = request.GET['p_id']
     subchannel_of_parameter = Attribute.objects.get(id = p_id).subchannel_id
-    parameters = Attribute.objects.filter(subchannel_id = subchannel_of_parameter)
+    parameters = Attribute.objects.filter(subchannel = subchannel_of_parameter)
     channels = Channel.objects.all()
     subchannels = SubChannel.objects.all()
     choices = AttributeChoice.objects.filter(attribute_id = p_id)
-    return render_to_response ('subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
+    return render (request, 'subscriptions.html', {'subchannels': subchannels, 'channels': channels, 'parameters': parameters, 'choices': choices})
 
 #c2-mohamed awad
 #this def allows user to subscribe by channel only
@@ -114,7 +114,7 @@ def subscription_by_chann(request):
     for subscription in subscriptions:
         subscription.subscribe_Bychannel(user)
         break
-    return render_to_response('subscriptions.html')
+    return render(request, 'subscriptions.html')
 
 #c2-mohamed awad
 #this def allows user to subscribe by subchannel only
@@ -130,7 +130,7 @@ def subscription_by_subchann(request):
     for subscription in subscriptions:
         subscription.subscribe_Bysubchannel(user)
         break
-    return render_to_response('subscriptions.html')
+    return render(request, 'subscriptions.html')
 
 #c2-mohamed awad
 #this def allows user to subscribe by parameters
@@ -151,16 +151,16 @@ def subscribe_by_parameters(request):
     for subscription in subscriptions:
         subscription.subscribe_Byparameter(user)
         break
-    return render_to_response('subscriptions.html')
+    return render(request, 'subscriptions.html')
 
 #c2-mohamed awad
 #this def takes a user as a request and returns all his related notifications to notifications.html
 #from Notification table
 def return_notification(request):
     user_in = request.user
-    all_notifications = Notification.objects.filter(user = user_in)
+    all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').reverse()
     if all_notifications is not None:
-        return render_to_response ('notifications.html', {'all_notifications': all_notifications})
+        return render (request, 'notifications.html', {'all_notifications': all_notifications})
     else:
         pass
 
@@ -175,24 +175,24 @@ def view_channels(request):
     return render(request, 'addPost.html', {'list_of_channels': list_of_channels})
 
 def view_subchannels(request):
+    user = request.user
     sub_channel_id = request.GET['ch_id']
     current_channel = Channel.objects.filter(pk=sub_channel_id)
     list_of_subchannels = SubChannel.objects.filter(channel_id = current_channel)
-    return render(request, 'addPost.html', {'list_of_subchannels': list_of_subchannels})
+    return render(request, 'addPost.html', {'user':user,'list_of_subchannels': list_of_subchannels})
 #c1_abdelrahman the add_post function requires the user to be logged in.
 #the sub_channel_id is received from the previous view. it displays a form to the user. 
 #if the user filled the form correctly then the user will be redirected to the homepage. 
 # if the form is not valid the form will be reloaded.
 @login_required
 def add_post(request):
+    author = request.user
     sub_channel_id = request.GET['sub_ch_id']
-    # location = request.GET['location_id']
     current_sub_channel = SubChannel.objects.get(id = sub_channel_id)
     list_of_attributes = Attribute.objects.filter(subchannel_id=current_sub_channel)
 
     form = PostForm(request.POST,request.FILES)
     if form.is_valid():
-        author = request.user
         subchannel1  = SubChannel.objects.get(pk=sub_channel_id)
         p = Post.objects.create(quality_index = "0", title = form.cleaned_data['title']
             ,description = form.cleaned_data['description'] 
@@ -216,13 +216,24 @@ def add_post(request):
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
                 #c2-mohamed
+                #the next line calls post_Notification() to send notification to all subscribed users
+                #to that post
+                p.post_Notification()
+                #c2-mohamed
+                #the next try statement is to insert the value if new in AttributeChoice table
+                try:
+                    attribute_needed = Attribute.objects.get(pk=k[7:])
+                    AttributeChoice.objects.create(attribute_id = attribute_needed, value = request.POST[k])
+                except:
+                    pass
+                #c2-mohamed
                 #the next five lines are written to save a tuple in ActivityLog table
                 #to save it to make the user retrieve it when he logs into his activity log
                 post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
                 post_activity_url = "showpost?post=" + unicode(p.id)
                 post_log_type = "post"
                 # post_log_date = datetime.datetime.now()
-                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author) 
+                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author, activity_date = datetime.now())
         return HttpResponseRedirect('/main')
     else:
 
@@ -230,7 +241,7 @@ def add_post(request):
         initial={'subject': 'I love your site!'}
     
 
-    return render_to_response('addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+    return render(request,'addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
 
 
 
@@ -244,25 +255,29 @@ def add_post(request):
 
 
 def login(request):
-    mail = request.POST['email']
-    password = request.POST['password']
-    # print "in"
+    try:
+        mail = request.POST['email']
+        password = request.POST['password']
+    except:
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+    
     authenticated_user = authenticate(mail=mail, password=password)
-    # print "in1"
+    
     if authenticated_user is not None:
-        # print "auth"
+    
         print authenticated_user.is_active
         if authenticated_user.is_active:
-            # print "act"
+    
             django_login(request, authenticated_user)
-            # print "user logged in"
+    
             return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
-        return render_to_response ('home.html',context_instance=RequestContext(request))
-       #return redirect("/login/")# Return an 'invalid login' error message.
-
+        LoginError = True
+        return render_to_response ('login.html',{"LoginError":LoginError},context_instance=RequestContext(request))
+    
 
 def check_Rate_Identify_buyer(request):
     post = Post.objects.get(pk= request.GET['post'])
@@ -290,7 +305,7 @@ def add_to_wish_list(request):
         post_activity_url = "showpost?post=" + unicode(post_object.id)
         post_log_type = "wish"
         # post_log_date = datetime.datetime.now()
-        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse()
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
@@ -305,14 +320,21 @@ def view_post(request):
     post_id = request.GET['post']
     post = Post.objects.get(id=post_id)
     post_can_be_wished = False
+    is_intrested_inpost = False
     if user.is_authenticated():
         post_can_be_wished = user.add_to_wish_list(post_id)
+        is_intrested_inpost=InterestedIn.objects.filter(user_id_buyer = user, post = post).exists()
+        title = user.name 
+    else:
+        title = "welcome guest"
     test_post = Post.objects.get(id = post_id)
     test_post.post_state
     can_edit = False
     if test_post.seller == user:
         can_edit = True
-
+    admin = False
+    if user.is_authenticated():
+        admin = user.is_admin
     subchannel1 = test_post.subchannel_id
     list_of_att_name = Attribute.objects.filter(subchannel_id = subchannel1)
     list_of_att_values = Value.objects.filter(post = test_post).order_by('attribute')
@@ -328,9 +350,14 @@ def view_post(request):
     #C1-Tharwat--- Calls all the report reasons from the models to show to the user when he wishes to report a post!!!
     report_reasons = ReportReasons.objects.all()
     #c1 abdelrahman returning boolean to the html to know whether the user is admin or not.
+    print "is_intrested"
+    # print InterestedIn.objects.filter(user_id_buyer = user, post = post).exists() 
+    print user
+    print post
     dic = {
-    'admin': user.is_admin
+    'admin': admin
     ,'no': list_of_att_number
+    # 'admin': user.is_admin
     , 'can_edit': can_edit
     , 'canwish':post_can_be_wished
     , 'post': test_post
@@ -338,9 +365,10 @@ def view_post(request):
     , 'list_of_attribute_values': list_of_attribute_values
     , 'report_reasons': report_reasons
     , 'list_of_interested_buyers': list_of_interested_buyers
-    , 'comments': Comment.objects.filter(post_id=post_id) }
+    , 'comments': Comment.objects.filter(post_id=post_id)
+    , 'user_is_intrested': is_intrested_inpost 
+    , 'title':title }
 
-    # dic.update(d)
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
         dic.update(d)   
@@ -358,14 +386,11 @@ def view_post(request):
 #
 
 def User_Ratings(request):
-    # print request
     rater = request.user
     post_owner = UserProfile.objects.get(id=request.GET['post_owner'])
     post = Post.objects.get(id=request.GET['post_id'])
     rating = request.GET['rating']
     user_rating = post_owner.calculate_rating(rating, post, rater)
-    # d = {"user_rating":user_rating, 'post_owner':post_owner}
-    # return render_to_response( "profile.html", d,context_instance = RequestContext( request ))
     return HttpResponseRedirect("/")
     
 #C2-mahmoud ahmed- As the post owner i can identify whom i sold my product to- what this function take 
@@ -386,7 +411,6 @@ def Buyer_identification(request):
         if form.is_valid():
             new_buyer_num = request.POST['buyer_phone_num']
             post = Post.objects.get(id=request.GET['post_id'])
-            # new_buyer_num = form.GetBuyerNum()
             buyer_added = user.add_buyer(post, new_buyer_num)
             
             if buyer_added == False :
@@ -396,7 +420,6 @@ def Buyer_identification(request):
             
             d = {'form':form}
             return render_to_response( "ViewPost.html", d, context_instance = RequestContext( request ))
-            # return HttpResponseRedirect( "/" )
         else :
             d = {'form':form}
             return render_to_response( "add_buyer.html", d, context_instance = RequestContext( request ))
@@ -412,6 +435,7 @@ filtes to the posts then sort them according to quality index AND  render the li
 def main(request):
     user = request.user
     user_can_post = False
+    title = "Homepage"
     #c1_abdelrahman check whether the user can post or not.
     if user.is_authenticated():
         user_can_post = user.can_post()
@@ -420,7 +444,38 @@ def main(request):
     for i in post_list:
         i.post_state()
 
-    return render_to_response('main.html',{'canpost': user_can_post,'post_list': post_list},context_instance=RequestContext(request))  
+
+    channels = Channel.objects.all()
+    channels_list = [] 
+    for channel in channels:
+        subchannels = SubChannel.objects.filter(channel_id=channel.id)
+        subchannels_list = []
+        for subchannel in subchannels:
+            subchannels_list.append({'subchannel': subchannel})
+        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
+    post_list = Post.objects.all()   
+    states=[]
+    
+    list_of_prices=[]
+    all_posts=Post.objects.all()
+    for post in all_posts:
+        if post.state not in states: 
+            states.append(post.state) 
+        list_of_prices.append(post.price)
+    print states
+    price_min=min(list_of_prices)
+    price_max =max(list_of_prices)
+# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
+# - this method creats variable channels , to store all channels available in the database, 
+# variable subchannels , to store all subchannels available in the database,
+#  channels_list is a list that holds dictionaries of channels and its subchannels.
+# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
+# the method then return the channels_list , as it holds every subchannel of a channel and the posts related to it 
+# it also returns the mnimum and maximum price available 
+    return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list ,'title':title, 'canpost': user_can_post , 'states': states},context_instance=RequestContext(request))  
+
+
+
 
 '''Beshoy - C1 Calculate Quality filter home post this method takes no arguments  , and then perform some filtes on the all posts 
  execlude (sold , expired , hidden and quality index <50)Posts then sort them according to quality index AND  return a list of a filtered ordered posts'''
@@ -448,6 +503,7 @@ class CustomAuthentication:
         try:
             user = UserProfile.objects.get(email=mail)
 
+
             pwd_valid = check_password(password, user.password)
 
             if pwd_valid:
@@ -455,10 +511,13 @@ class CustomAuthentication:
                 pwd_valid = check_password(password, user.password)    
             if pwd_valid:    
 
+
+                pwd_valid = check_password(password, user.password)    
+            if pwd_valid:   
+
                 return user
         except UserProfile.DoesNotExist:
             return None
-
 
     def get_user(self, user_id):
         try:
@@ -556,10 +615,8 @@ def edit_name(request):
     post_activity_content = "you edited your name to " + unicode(user.name) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
-    print post_log_type
-    print post_activity_url
     # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
 # Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
@@ -581,10 +638,8 @@ def edit_date_of_birth(request):
     post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
-    print post_activity_url
-    print post_log_type
     # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
 # Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
@@ -607,7 +662,7 @@ def edit_work(request):
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
     # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
 @login_required
@@ -635,6 +690,8 @@ def editing_pic(request):
         
     ctx = {'editing_form': editing_form}
     return render_to_response('editing_pic.html', ctx, context_instance=RequestContext(request))
+
+
 
 def return_account_type(request):
      return render_to_response ('account.html',context_instance=RequestContext(request))
@@ -730,42 +787,44 @@ def change_paccounttype(request):
     user.save()
     return HttpResponse (" ")
 
-def get_channels (request):
-    channels = Channel.objects.all()
-    channels_list = [] 
-    for channel in channels:
-        subchannels = SubChannel.objects.filter(channel_id=channel.id)
-        subchannels_list = []
-        for subchannel in subchannels:
-            # attributes =  Attribute.objects.filter(subchannel_id_id=subchannel.id)
-            subchannels_list.append({'subchannel': subchannel, 'attributes': attributes})
-        channels_list.append({'channel': channel, 'subchannels_list': subchannels_list})
-    post_list = Post.objects.all()   
-    return render(request, 'homepage.html', {'all_channels': channels_list ,'post_list': post_list} )
 
 
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# - this method creats variable channels , to store all channels available in the database, 
-# variable subchannels , to store all subchannels available in the database,
-#  channels_list is a list that holds dictionaries of channels and its subchannels.
-# subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
-# the method then return the channels_list only , as it holds , every attribute of subchannel
-# and every subchannel of a channel 
-
+# the method GETS  a list of subchannel ID's , list of post states and a min price and a maximum price 
+#  list of ID's is used to get subchannels ( results_of_subchannels ) and hence it retrives posts in post_list
+# contributing in post lists , the list_of_states is matched with the post states and filtered 
+# also the mnimum and maximum price are considered in order to filter prices within them .
 def view_checked_subchannel_posts(request):
     list_of_subchannelsID = request.GET.getlist('list[]')
+    list_of_states = request.GET.getlist('status[]')
     results_of_subchannels = []
     for li in list_of_subchannelsID:
-        results_of_subchannels.append(SubChannel.objects.filter(id = li))
-    post_list =[]
+        if li is not None:
+            results_of_subchannels.append(SubChannel.objects.get(id = li))
+   
+    post_list_refined =[]
+    
     for sub in results_of_subchannels:
-        post_list.append(Post.objects.filter(subchannel = sub))
+        for state in list_of_states:
+            post_list_refined.append(Post.objects.filter(subchannel = sub , state=state ))
+    post_list = [val for sub1 in post_list_refined for val in sub1]
+    print post_list
     return render(request, "filterPosts.html", {'post_list': post_list})
     
-# Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
-# subchannel_id is the id retrieved from the webpage 
-# its is matched with with the subchannel id in the post model , 
-# the method returns the dictionairy of posts related to specific subchannels.
+
+#Reem- As c3 I should prvide a vertical refinement bar ( Menu) , wlong with reviweing posts
+# subchannel_id is the subchannel checked  
+#the subchannel object (results_of_subchannels) related to the ID are retrieved and then the posts related are returned(post_list) 
+def menuForSubchannels(request):
+    subchannel_id = request.GET["sub_ch_id"]
+    print subchannel_id
+    current_subchannel = SubChannel.objects.get(id =subchannel_id)
+    posts_of_subchannels = Post.objects.filter(subchannel_id= current_subchannel)
+    print posts_of_subchannels
+    return render(request, "filterPosts.html", {'post_list': posts_of_subchannels})
+
+
+
 
 #C1-Tharwat) This method directs the user to the report page to select a reason for reporting a post
 def goToTheReportPage(request):
@@ -827,7 +886,7 @@ def twitterImport(request):
     request.user.save()
     no_of_imports=[]
     id_list = api.followers_ids()
-    print 'friends old:'
+    #print 'friends old:'
     print request.user.friends.all()
     for id in id_list:
         username = api.get_user(id).name
@@ -852,14 +911,49 @@ def twitterImport(request):
 def view_profile(request):
     try: 
         user = request.user
-        #c1-abdelrahman this line retrieves the wished posts by the user.
-        list_of_wished_posts = WishList.objects.filter(user = user)
-        verfied = user.is_verfied
-        link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
-        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
-        interacting_list = user_profile.get_interacting_people()
-        # print interacting_list
-        d = {'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list}
+        if user.is_anonymous():
+            title = "welcome guest"
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            annynmous_verfied = True
+            link = "http://127.0.0.1:8000/register"
+
+            d = {"title":title , "user":user_profile,"interacting_list": interacting_list,"check_ann_verified" : annynmous_verfied, "link" : link}
+                    
+
+        if user.is_authenticated():
+            #c1-abdelrahman this line retrieves the wished posts by the user.
+            list_of_wished_posts = WishList.objects.filter(user = user)
+            verfied = user.is_verfied
+            link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+            user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+            interacting_list = user_profile.get_interacting_people()
+            title = user_profile.name +"'s profile"
+            if user.id == user_profile.id:
+                can_manage_wish_list = True
+        
+            #c2-mohamed
+            #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
+            activity_logs_to_render_array = []
+            activity_logs_to_render_list = ActivityLog.objects.filter(user = user)
+            activity_log_counter = 0
+            for activity in activity_logs_to_render_list:
+                activity_log_counter = activity_log_counter + 1
+                activity_logs_to_render_array.append(activity)
+                if activity_log_counter is 2:
+                    break
+
+            d = {'caneditwishlist': can_manage_wish_list
+            ,'list_of_wished_posts': list_of_wished_posts
+            , "title":title
+            , 'user':user_profile
+            , "check_verified" : verfied 
+            , "link" : link
+            , "interacting_list": interacting_list
+            , 'activity_logs_to_render_array': activity_logs_to_render_array
+            , 'my_posts': Post.objects.filter(seller=user_profile) 
+            , 'my_intrested_in':InterestedIn.objects.filter(user_id_buyer=user_profile)}
+
     except: 
         err_msg = 'This user doesn\'t exist'
         return HttpResponse(err_msg) 
@@ -1165,11 +1259,6 @@ def facebook_login(request):
         if 'HTTP_REFERER' in request.META:
             request.session['next'] = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
-        
-
-
-
-
 
 
 # def send_sms(request):
@@ -1253,6 +1342,29 @@ def SavingComment(request, post_id):
     post.comments_count +=1
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
+    #c2-mohamed
+    #the next lines is to send notification to the post owner
+    post_seller = post.seller
+    all_commentors_array = []
+    all_commentors_lists = Comment.objects.filter(post_id=post).exclude(user_id=request.user)
+    sent_to_owner = False
+    for commentor in all_commentors_lists:
+        if commentor.user_id in all_commentors_array:
+            continue
+        else:
+            all_commentors_array.append(commentor.user_id)
+    for commentor_to_send in all_commentors_array:
+        if request.user is not commentor_to_send:
+            if post.seller is commentor_to_send:
+                sent_to_owner = True
+                not_content = unicode(userobject.name) + " commented on your post"
+                post_seller.comment_notification(post, not_content)
+            else:
+                not_content = unicode(userobject.name) + " commented on a post you commented on"
+                commentor_to_send.comment_notification(post, not_content)
+    if sent_to_owner is False:
+        not_content = unicode(userobject.name) + " commented on your post"
+        post_seller.comment_notification(post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #Beshoy intrested method Takes a request 
@@ -1262,6 +1374,7 @@ def SavingComment(request, post_id):
 def intrested(request):
     print "intrested views"
     post_in=request.POST["post_in"]
+    post=Post.objects.get(pk=post_in)
     user=request.user
     if  InterestedIn.objects.filter(user_id_buyer = user, post = post_in).exists():
         intrest1=InterestedIn(user_id_buyer =user,user_id_seller =post_in.seller,post=post_in)
@@ -1278,7 +1391,7 @@ def intrested(request):
         post_activity_url = "showpost?post=" + unicode(post_in.id)
         post_log_type = "profile"
         # post_log_date = datetime.datetime.now()
-        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
 
     return HttpResponse()
 #c2-mohamed
@@ -1286,10 +1399,7 @@ def intrested(request):
 #it renders all activity log that belongs to that user
 def all_log(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(user = author)
-    print "all_log"
-    print activities_log
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1297,10 +1407,7 @@ def all_log(request):
 #it renders all activity log of type post that belongs to that user
 def all_log_post(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="post", user = author)
-    print "all_log_post"
-    print activities_log
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="post", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1308,10 +1415,7 @@ def all_log_post(request):
 #it renders all activity log of type interested that belongs to that user
 def all_log_interested(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="interested", user = author)
-    print "all_log_interested"
-    print activities_log
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="interested", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1319,10 +1423,7 @@ def all_log_interested(request):
 #it renders all activity log of type wish that belongs to that user
 def all_log_wish(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="wish", user = author)
-    print "all_log_wish"
-    print activities_log
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="wish", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #c2-mohamed
@@ -1330,10 +1431,7 @@ def all_log_wish(request):
 #it renders all activity log of type profile that belongs to that user
 def all_log_profile(request):
     author = request.user
-    activities_log = ActivityLog.objects.filter(log_type="profile", user = author)
-    print "all_log_profile"
-    print activities_log
-    sorted(activities_log, key=lambda ActivityLog: ActivityLog.activity_date, reverse=True)
+    activities_log = ActivityLog.objects.filter(log_type="profile", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
 #mai c2 : sms verfication 
@@ -1393,7 +1491,8 @@ def sms_verify(request):
             try:
                 user = UserProfile.objects.get(sms_code=smscode)
                 if user.id == request.user.id:
-                   
+                    user.phone_is_verified=True
+                    user.save()
                     return HttpResponse('true')
                 else:
                     return HttpResponse('false')
@@ -1420,10 +1519,11 @@ def remove_post_from_wishlist(request):
     #post_activity_content is to save the activity log content that will be shown to user
     #post_activity_url is to save the url the user will be directed to upon clicking the activity log
     #post_log_type is the type of the log type the user will choose in the activity log page
+    post_in = Post.objects.get(id=post)
     post_activity_content = "you removed " + unicode(post_in.title) + " from your wish list."
     post_activity_url = "showpost?post=" + unicode(post_in.id)
     post_log_type = "wish"
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user)
+    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
     return HttpResponse()
 
 #c1_abdelrahman this method takes request as an input from the user. 
@@ -1511,6 +1611,32 @@ def edit_post_title(request):
 
 def view_posts_wished(request):
     user = request.user
-    list_of_wished_posts = WishList.objects.filter(user_id = "3")
+    list_of_wished_posts = WishList.objects.filter(user_id = user)
     return render_to_response('profile.html', {'list_of_wished_posts': list_of_wished_posts})
+
+#c2-mohamed awad
+#this def returns unread notifications to base.html
+def unread_notifications(request):
+    user_in = request.user
+    all_unread_notifications = Notification.objects.filter(user = user_in, read = False).order_by('not_date').reverse()
+    if all_unread_notifications:
+        print "after if"
+        for notification in all_unread_notifications:
+            print "after for"
+            notification.read = True
+            notification.save()
+        all_unread_notifications.order_by('not_date')
+        all_unread_notifications.reverse()
+        return render (request, 'base.html', {'all_unread_notifications': all_unread_notifications})
+    else:
+        all_notifications = Notification.objects.filter(user = user_in).order_by('not_date').order_by('not_date').reverse()
+        all_notifications.reverse()
+        all_unread_notifications = []
+        not_counter = 0
+        for notification in all_notifications:
+            all_unread_notifications.append(notification)
+            not_counter = not_counter + 1
+            if not_counter == 5:
+                break
+        return render (request, 'base.html',{'all_unread_notifications': all_unread_notifications})
 
