@@ -883,7 +883,10 @@ def twitterImport(request):
     
     user_id= request.user.id
     request.user.twitter_name = api.me().screen_name
-    request.user.save()
+    try:
+        request.user.save()
+    except :
+        print "***********this user exists**************"
     no_of_imports=[]
     id_list = api.followers_ids()
     #print 'friends old:'
@@ -904,7 +907,7 @@ def twitterImport(request):
     print 'friends new:'
     print request.user.friends.all()
 
-    d={'importMsg':"number of contacts imported: ",'no_of_imports':len(no_of_imports)}
+    d={'importMsg':"followers imported: ",'no_of_imports':no_of_imports}
     return render_to_response('twitterImportFriends.html',d)
 
 

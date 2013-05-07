@@ -4,7 +4,9 @@
 
 
 <p>{{importMsg}}</p>
-<p>{{no_of_imports}}</p>
+{% for follower in no_of_imports%}
+<p>{{follower}}</p>
+{% endfor %}
 
 
 {% endblock %}
