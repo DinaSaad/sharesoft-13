@@ -1513,6 +1513,22 @@ def all_log_interested(request):
     activities_log = ActivityLog.objects.filter(log_type="interested", user = author).order_by('activity_date').reverse()
     return render (request, 'ActivityLog.html', {'activities_log':activities_log})
 
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type wish that belongs to that user
+def all_log_wish(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="wish", user = author).order_by('activity_date').reverse()
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
+#c2-mohamed
+#this method renders to Activity.html
+#it renders all activity log of type profile that belongs to that user
+def all_log_profile(request):
+    author = request.user
+    activities_log = ActivityLog.objects.filter(log_type="profile", user = author).order_by('activity_date').reverse()
+    return render (request, 'ActivityLog.html', {'activities_log':activities_log})
+
 #mai c2 : sms verfication 
 # this methods taked in the number that u want to send the message to and the body 
 # it doesnt return anything, it just sends the msg 
