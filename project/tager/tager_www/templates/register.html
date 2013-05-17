@@ -5,16 +5,19 @@
                 
 
             {% endblock %} -->
+{% block headers %}
+{% load staticfiles %}
 
-
+{% endblock %}
 {% block content %}
+<div class = "regpage"
 <form action="" method="post">
 {% csrf_token %}
-
 <div class = "header" >
-<h2> Create your account </h2> 
+  <img src="{% static "img/tager.png" %}">
+  <h2> Create your account </h2> 
 
-<style type="text/css">
+  <style type="text/css">
       .header {
         color: #333;
         font-family: 'Georgia';
@@ -25,6 +28,7 @@
     </style>
 </div>
 <center>
+  
 <div class = "registerationForm">
 {% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
 <div class="register_div">
@@ -73,8 +77,8 @@ function passwordStrength(password)
 
         //if password bigger than 6 give 1 point
 
-        if (password.length > 6) score++;
-
+        if (password.length >= 6) score++;
+            $("#pass").popover('disable');
 
 
         //if password has both lower and uppercase characters give 1 point      
@@ -99,7 +103,7 @@ function passwordStrength(password)
 
         if (password.length > 12) score++;
         
-        
+          
          
 
          document.getElementById("passwordDescription").innerHTML = desc[score];
@@ -114,17 +118,16 @@ function passwordStrength(password)
 <script>
   $('#pass').popover({
     title: 'password!',
-    content: 'password must be at least 6 characters long, with at least one lower case and at least one uppercase !'
+    content: 'password must be at least 6 characters long'
   })
 
 </script>
- 
 
 
         {% if form.password1.errors %}<p class="error">{{ form.password1.errors }}</p>{% endif %}
          <!-- <input type="password" name="pass" id="pass" onkeyup="passwordStrength(this.value)" /></p> -->
         <p>{{ form.password1 }}</p>
-       
+     </div>  
          <label class ="hide " for="passwordStrength">Password strength </label>
 
                         <div class = "hide" id="passwordDescription">Password not entered</div>
@@ -138,8 +141,8 @@ function passwordStrength(password)
         <p>{{ form.password2 }}</p> 
 <p>
   </div >
-                       
-
+                 
+                     
                         <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6LdSucISAAAAADc_huFvVv0fCCEfcVJNvbqeY-TN">
                          
 
@@ -152,15 +155,15 @@ function passwordStrength(password)
 
 
                         <p><button class = "btn btn-warning " type="submit" alt="register" />Create Account </button></p>
-                        </div>
-
+                        
+                             </div>
                 </p>
-            </div>
+       
 
 
 
-</div>
+
 </form>
-
+</div>
 </center>
 {% endblock %}
