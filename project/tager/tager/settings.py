@@ -136,6 +136,8 @@ TEMPLATE_DIRS = (
 
 )
 
+JANRAIN_RPX_API_KEY = "ec60bc19fb1d05f098f91fda0a5c8ae963bc6dff"
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -152,6 +154,7 @@ INSTALLED_APPS = (
     'fbregister',
     'captcha',
     'django_twilio',
+    'janrain',
      
     
     
@@ -193,12 +196,12 @@ LOGGING = {
     }
 }
 AUTHENTICATION_BACKENDS = ( 
+    'janrain.backends.JanrainBackend',
     'fbregister.facebook.FacebookBackend',
 
     'tager_www.views.CustomAuthentication',
     
     'django.contrib.auth.backends.ModelBackend'
-
 
 
 )

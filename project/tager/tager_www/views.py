@@ -26,9 +26,6 @@ from django.template.response import TemplateResponse
 from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
-
-
-
 from django.shortcuts import render_to_response
 from django.shortcuts import RequestContext
 import re
@@ -40,6 +37,9 @@ import datetime
 from datetime import datetime, timedelta
 from django.conf import settings
 from twilio.rest import TwilioRestClient
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as django_login
+
 
 
 APP_ID = '461240817281750'   # From facebook app's settings
@@ -50,6 +50,259 @@ FACEBOOK_PERMISSIONS = ['email', 'user_about_me','user_photos']  # facebook perm
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
 
+import urllib
+import urllib2
+import json
+from django.contrib import auth
+
+def social_login(request):
+    try:
+        token = request.POST['token']
+    except KeyError:
+        # TODO: set ERROR to something
+        return HttpResponseRedirect('/')
+
+    api_params = {
+        'token': token,
+        'apiKey': settings.JANRAIN_RPX_API_KEY,
+        'format': 'json',
+    }
+
+    janrain_response = urllib2.urlopen(
+            "https://rpxnow.com/api/v2/auth_info",
+            urllib.urlencode(api_params))
+    resp_json = janrain_response.read()
+    auth_info = json.loads(resp_json)
+    print auth_info['stat']
+    u = None
+    profile = None
+    print auth_info['profile']
+
+    if auth_info['stat'] == 'ok':
+        profile = auth_info['profile']
+        print profile.get('providerName')
+
+        if profile.get('providerName') =="Facebook":
+            print "Facebook Provider"
+            print UserProfile.objects.filter(email=profile.get('email')).exists()
+            if UserProfile.objects.filter(email=profile.get('email')).exists():
+                juser = UserProfile.objects.get(email=profile.get('email'))
+                authenticated_user = authenticate(mail=juser.email, password=juser.password)
+                if authenticated_user is not None:
+                    if authenticated_user.is_active:
+                        django_login(request, authenticated_user)
+                        print "auth success logged"
+                        return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                    else:
+                       return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+                else:
+                    print "auth failed"
+                    return render_to_response ('home.html',context_instance=RequestContext(request))
+            else :
+               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                    facebook_uid=profile.get('identifier'),
+                    email=profile.get('email'))
+               juser.is_verfied=True
+               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+               title = "Auto Genrated Password"
+               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+               juser.save()
+
+        if profile.get('providerName') =="Google":
+            print "Google Provider"
+            print UserProfile.objects.filter(email=profile.get('email')).exists()
+            if UserProfile.objects.filter(email=profile.get('email')).exists():
+                juser = UserProfile.objects.get(email=profile.get('email'))
+                authenticated_user = authenticate(mail=juser.email, password=juser.password)
+                if authenticated_user is not None:
+                    if authenticated_user.is_active:
+                        django_login(request, authenticated_user)
+                        print "auth success logged"
+                        return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                    else:
+                       return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+                else:
+                    print "auth failed"
+                    return render_to_response ('home.html',context_instance=RequestContext(request))
+            else :
+               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                    facebook_uid=profile.get('identifier'),
+                    email=profile.get('email'))
+               juser.is_verfied=True
+               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+               title = "Auto Genrated Password"
+               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+               juser.save()
+
+        if profile.get('providerName') =="Yahoo!":
+            print "Yahoo Provider"
+            print UserProfile.objects.filter(email=profile.get('email')).exists()
+            if UserProfile.objects.filter(email=profile.get('email')).exists():
+                juser = UserProfile.objects.get(email=profile.get('email'))
+                authenticated_user = authenticate(mail=juser.email, password=juser.password)
+                if authenticated_user is not None:
+                    if authenticated_user.is_active:
+                        django_login(request, authenticated_user)
+                        print "auth success logged"
+                        return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                    else:
+                       return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+                else:
+                    print "auth failed"
+                    return render_to_response ('home.html',context_instance=RequestContext(request))
+            else :
+               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                    facebook_uid=profile.get('identifier'),
+                    email=profile.get('email'))
+               juser.is_verfied=True
+               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+               title = "Auto Genrated Password"
+               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+               juser.save()
+
+        if profile.get('providerName') =="Twitter":
+            print "Twitter Provider"
+            print UserProfile.objects.filter(email=profile.get('email')).exists()
+            if UserProfile.objects.filter(email=profile.get('email')).exists():
+                juser = UserProfile.objects.get(email=profile.get('email'))
+                authenticated_user = authenticate(mail=juser.email, password=juser.password)
+                if authenticated_user is not None:
+                    if authenticated_user.is_active:
+                        django_login(request, authenticated_user)
+                        print "auth success logged"
+                        return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                    else:
+                       return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+                else:
+                    print "auth failed"
+                    return render_to_response ('home.html',context_instance=RequestContext(request))
+            else :
+               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                    facebook_uid=profile.get('identifier'),
+                    email=profile.get('email'))
+               juser.is_verfied=True
+               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+               title = "Auto Genrated Password"
+               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+               juser.save()
+
+        if profile.get('providerName') =="Foursquare":
+            print "Foursquare Provider"
+            print UserProfile.objects.filter(email=profile.get('email')).exists()
+            if UserProfile.objects.filter(email=profile.get('email')).exists():
+                juser = UserProfile.objects.get(email=profile.get('email'))
+                authenticated_user = authenticate(mail=juser.email, password=juser.password)
+                if authenticated_user is not None:
+                    if authenticated_user.is_active:
+                        django_login(request, authenticated_user)
+                        print "auth success logged"
+                        return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                    else:
+                       return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+                else:
+                    print "auth failed"
+                    return render_to_response ('home.html',context_instance=RequestContext(request))
+            else :
+               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                    facebook_uid=profile.get('identifier'),
+                    email=profile.get('email'))
+               juser.is_verfied=True
+               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+               title = "Auto Genrated Password"
+               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+               juser.save()
+
+        if profile.get('providerName') =="Windows Live":
+            print "Windows Live Provider"
+            print UserProfile.objects.filter(email=profile.get('email')).exists()
+            if UserProfile.objects.filter(email=profile.get('email')).exists():
+                juser = UserProfile.objects.get(email=profile.get('email'))
+                authenticated_user = authenticate(mail=juser.email, password=juser.password)
+                if authenticated_user is not None:
+                    if authenticated_user.is_active:
+                        django_login(request, authenticated_user)
+                        print "auth success logged"
+                        return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                    else:
+                       return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+                else:
+                    print "auth failed"
+                    return render_to_response ('home.html',context_instance=RequestContext(request))
+            else :
+               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                    facebook_uid=profile.get('identifier'),
+                    email=profile.get('email'))
+               juser.is_verfied=True
+               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+               title = "Auto Genrated Password"
+               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+               juser.save()
+
+        return None
+
+class CustomAuthentication:
+  def authenticate(self, mail, password):
+      try:
+          user = UserProfile.objects.get(email=mail)
+          pwd_valid = check_password(password, user.password)
+          if pwd_valid:    
+              return user
+      except UserProfile.DoesNotExist:
+          return None
+
+      try:
+          user = UserProfile.objects.get(email=mail)
+          if user.password == password:
+              return user              
+      except UserProfile.DoesNotExist:
+          return None
+
+
+  # def authenticate(self, mail, password):
+  #     try:
+  #         user = UserProfile.objects.get(email=mail)
+  #         if user.password == password:
+  #             return user
+  #     except UserProfile.DoesNotExist:
+  #         return None
+          
+
+
+  def get_user(self, user_id):
+      try:
+          return UserProfile.objects.get(pk=user_id)
+      except User.DoesNotExist:
+          return None  
+
+def social_auth(request,mail, password):
+  authenticated_user = authenticate(mail=mail, password=password)
+  if authenticated_user is not None:
+      if authenticated_user.is_active:
+          django_login(request, authenticated_user)
+          print "auth success logged"
+          return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+      else:
+         return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+  else:
+      print "auth failed"
+      return render_to_response ('home.html',context_instance=RequestContext(request))
+
+
+
+
+    # if u is not None:
+    #     request.user = u
+    #     auth.login(request, u)
+    # try:
+    #     return HttpResponseRedirect(request.GET['redirect_to'])
+    # except KeyError:
+    #     return HttpResponseRedirect('/')
 
 
 
@@ -447,23 +700,7 @@ def filter_posts(post_list):
 
 
 
-class CustomAuthentication:
-    def authenticate(self, mail, password):
-        try:
-            user = UserProfile.objects.get(email=mail)
-            pwd_valid = check_password(password, user.password)
-            if pwd_valid:    
-                return user
-        except UserProfile.DoesNotExist:
-            return None
 
-       
-
-    def get_user(self, user_id):
-        try:
-            return UserProfile.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
 
 def  get_user(self):    
     User = get_user_model()

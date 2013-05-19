@@ -10,7 +10,8 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
-    
+
+    url(r'^social_login/$','tager_www.views.social_login'),  
     url(r'^logout/$', logout, {'next_page':'/main'}),  
     url(r'^logout/$', logout, {'next_page':'/login'}),  
     url(r'^profile/$', 'tager_www.views.view_profile'),
