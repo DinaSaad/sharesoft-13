@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),  
     url(r'^intrested/$', 'tager_www.views.intrested'),   
-    url(r'^intrested/$', 'tager_www.views.intrested'),  
+    # url(r'^intrested/$', 'tager_www.views.intrested'),  
 
     url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
@@ -55,9 +55,16 @@ urlpatterns = patterns('',
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
-    url(r'^homepage/$', 'tager_www.views.get_channels'),
+ 
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
+
     url(r'^updatestatus/$', 'tager_www.views.update_status'),
+
+    url(r'^menu_posts/$', 'tager_www.views.menuForSubchannels'),
+    url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
+    
+
+
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
     url(r'^subscribe/$', 'tager_www.views.return_channels'),

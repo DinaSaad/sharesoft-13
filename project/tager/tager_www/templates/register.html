@@ -24,6 +24,7 @@
       }
     </style>
 </div>
+<center>
 <div class = "registerationForm">
 {% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
 <div class="register_div">
@@ -136,7 +137,7 @@ function passwordStrength(password)
        
         <p>{{ form.password2 }}</p> 
 <p>
-
+  </div >
                        
 
                         <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6LdSucISAAAAADc_huFvVv0fCCEfcVJNvbqeY-TN">
@@ -144,7 +145,7 @@ function passwordStrength(password)
 
                         </script> 
 
-                        </div >
+                      
 
                            {% if form.captcha.errors %}<p class="error">{{ form.captcha.errors }}</p>{% endif %}
                             <p>{{ form.captcha }}</p>
@@ -157,15 +158,9 @@ function passwordStrength(password)
             </div>
 
 
-<style type="text/css">
-      .registerationForm {
-        margin-left: 450px;
-        padding: 0 14px 20px;
-}
-      }
-    </style>
 
 </div>
 </form>
 
+</center>
 {% endblock %}
