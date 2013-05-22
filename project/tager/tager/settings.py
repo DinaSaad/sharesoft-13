@@ -1,6 +1,10 @@
 import os
 # Django settings for tager project.
 
+PUSHER_APP_ID = '40854'
+PUSHER_KEY = '31a755253bd0a874a5e6'
+PUSHER_SECRET = 'c5adf9a2a29813d12675'
+
 def relative_project_path(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 

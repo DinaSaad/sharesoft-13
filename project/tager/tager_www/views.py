@@ -42,6 +42,13 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from twilio.rest import TwilioRestClient
 
+import pusher
+from django.core import serializers
+
+pusher.app_id = settings.PUSHER_APP_ID
+pusher.key = settings.PUSHER_KEY
+pusher.secret = settings.PUSHER_SECRET
+push = pusher.Pusher()
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
@@ -213,24 +220,24 @@ def add_post(request):
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
                 #c2-mohamed
-                #the next line calls post_Notification() to send notification to all subscribed users
-                #to that post
-                p.post_Notification()
-                #c2-mohamed
                 #the next try statement is to insert the value if new in AttributeChoice table
-                try:
-                    attribute_needed = Attribute.objects.get(pk=k[7:])
-                    AttributeChoice.objects.create(attribute_id = attribute_needed, value = request.POST[k])
-                except:
-                    pass
-                #c2-mohamed
-                #the next five lines are written to save a tuple in ActivityLog table
-                #to save it to make the user retrieve it when he logs into his activity log
-                post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
-                post_activity_url = "showpost?post=" + unicode(p.id)
-                post_log_type = "post"
-                # post_log_date = datetime.datetime.now()
-                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author, activity_date = datetime.now())
+                # try:
+                #     attribute_needed = Attribute.objects.get(pk=k[7:])
+                #     AttributeChoice.objects.create(attribute_id = attribute_needed, value = request.POST[k])
+                # except:
+                #     pass
+        #c2-mohamed
+        #the next line calls post_Notification() to send notification to all subscribed users
+        #to that post
+        post_Notification(p)
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity log
+        post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
+        post_activity_url = "showpost?post=" + unicode(p.id)
+        post_log_type = "post"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author, activity_date = datetime.now())
         return HttpResponseRedirect('/main')
     else:
 
@@ -239,6 +246,117 @@ def add_post(request):
     
 
     return render(request,'addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+
+
+#c2-mohamed awad
+#this method saves notification in Notification table using content and user id
+#first i find all users interested and subscribed to this post whether by channel, subchannel or parameter subscription
+#this is done by finding all users subscribed to channel of the post and we add them to users_subscribed_to_channel_array
+#then we find all users subscribed to subchannel of the post then we add it to users_subscribed_to_subchannel_array
+#then we find all users subscribed to all attributes and values of the post and we add it to all_users_subscribed to attributes
+#then we record all notifications in Notification table
+def post_Notification(self):
+    print self
+    print "xxxxxxxxxxxxxxxxxxxxxx"
+    post_owner = self.seller
+    all_values_array=[]
+    values_array=[]
+    all_values = Value.objects.filter(post = self.id)
+    for value in all_values:
+        all_values_array.append(value)
+        values_array.append(value.value)
+    attributes_array = []
+    for value in all_values_array:
+        attribute  = value.attribute
+        attributes_array.append(attribute.name)
+    subchannel_of_post = self.subchannel
+    channel_of_post = subchannel_of_post.channel
+    users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
+    users_subscribed_to_channel_array = []
+    for i in users_subscribed_to_channel:
+        users_subscribed_to_channel_array.append(i.user)
+    users_subscribed_to_subchannel = UserSubchannelSubscription.objects.filter(sub_channel=subchannel_of_post)
+    users_subscribed_to_subchannel_array = []
+    for x in users_subscribed_to_subchannel:
+        users_subscribed_to_subchannel_array.append(x.user)
+    all_users_subscribed_to_attributes = []
+    i = 0
+    r = 0
+    for z in attributes_array:
+        value_in_array = values_array[i]
+        attribute = Attribute.objects.get(name = attributes_array[r], subchannel = subchannel_of_post)
+        r = r + 1
+        try:
+            value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
+        except:
+            pass
+        users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
+        i = i + 1
+        for h in users_subscribed_to_attribute:
+            all_users_subscribed_to_attributes.append(h.user)
+    for q in users_subscribed_to_channel_array:
+        not_content = "You have new posts to see in " + unicode(channel_of_post.name)
+        not_url = "showpost?post="+unicode(self.id)
+        try:
+            not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+            not1.save()
+            print "yyyyyyyyyyyyy"
+            print not1.content
+            # Pusher code begin
+            serialized_notification = serializers.serialize('json', [ not1 ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'user_notification': serialized_notification})
+            # Pusher code end
+        except:
+            not1 = Notification(user = q, content = not_content, url=not_url)
+            not1.save()
+            print "yyyyyyyyyyyyy"
+            print not1.content
+            # Pusher code begin
+            serialized_notification = serializers.serialize('json', [ not1 ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'user_notification': serialized_notification})
+            # Pusher code end
+    for a in users_subscribed_to_subchannel_array:
+        not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
+        not_url = "showpost?post="+unicode(self.id)
+        try:
+            not1 = Notification(user = a, content = not_content, url=not_url, image_url = self.profile_picture.url)
+            not1.save()
+            # Pusher code begin
+            serialized_notification = serializers.serialize('json', [ not1 ])
+            push['notification'].trigger('interested_notification', {'user_id': a.id,
+            'user_notification': serialized_notification})
+            # Pusher code end
+        except:
+            not1 = Notification(user = a, content = not_content, url=not_url)
+            not1.save()
+            # Pusher code begin
+            serialized_notification = serializers.serialize('json', [ not1 ])
+            push['notification'].trigger('interested_notification', {'user_id': a.id,
+            'user_notification': serialized_notification})
+            # Pusher code end
+    for b in all_users_subscribed_to_attributes:
+        if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
+            if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
+                not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
+                not_url = "showpost?post="+unicode(self.id)
+                try:
+                    not1 = Notification(user = b, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                    not1.save()
+                    # Pusher code begin
+                    serialized_notification = serializers.serialize('json', [ not1 ])
+                    push['notification'].trigger('interested_notification', {'user_id': b.id,
+                    'user_notification': serialized_notification})
+                    # Pusher code end
+                except:
+                    not1 = Notification(user = b, content = not_content, url=not_url)
+                    not1.save()
+                    # Pusher code begin
+                    serialized_notification = serializers.serialize('json', [ not1 ])
+                    push['notification'].trigger('interested_notification', {'user_id': b.id,
+                    'user_notification': serialized_notification})
+                    # Pusher code end
 
 
 
@@ -1282,14 +1400,39 @@ def SavingComment(request, post_id):
             if post.seller is commentor_to_send:
                 sent_to_owner = True
                 not_content = unicode(userobject.name) + " commented on your post"
-                post_seller.comment_notification(post, not_content)
+                comment_notification(post_seller, post, not_content)
             else:
                 not_content = unicode(userobject.name) + " commented on a post you commented on"
-                commentor_to_send.comment_notification(post, not_content)
-    if sent_to_owner is False:
+                comment_notification(commentor_to_send, post, not_content)
+    if sent_to_owner == False:
         not_content = unicode(userobject.name) + " commented on your post"
         post_seller.comment_notification(post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
+
+#c2-mohamed
+#this def sends notification
+#to the user who owns the post that the other user has commented on it
+def comment_notification(user, post_in, content):
+    user_in = user
+    post_owner = post_in.seller
+    not_content = content
+    not_url = "showpost?post=" + unicode(post_in.id)
+    try:
+        not1 = Notification(user = self, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.datetime.now)
+        not1.save()
+        # Pusher code begin
+        serialized_notification = serializers.serialize('json', [ not1 ])
+        push['notification'].trigger('interested_notification', {'user_id': post_owner.id,
+        'user_notification': serialized_notification})
+        # Pusher code end
+    except:
+        not1 = Notification(user = self, content = not_content, url=not_url, not_date=datetime.datetime.now())
+        not1.save()
+        # Pusher code begin
+        serialized_notification = serializers.serialize('json', [ not1 ])
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'user_notification': serialized_notification})
+        # Pusher code end
 
 #Beshoy intrested method Takes a request 
 #then then check if the user is verified ,
@@ -1316,6 +1459,34 @@ def intrested(request):
         post_log_type = "profile"
         # post_log_date = datetime.datetime.now()
         log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
+        post_owner = post.seller
+        interested_Notification(post)
+    return HttpResponse()
+
+#c2-mohamed
+#this def sends notification
+#to the user who owns the post that the other user has pushed interested on it
+def interested_Notification(post_in):
+    user_in = self
+    post_owner = post_in.seller
+    not_content = unicode(self.name) + " is interested in your post"
+    not_url = "showpost?post=" + unicode(post_in.id)
+    try:
+        not1 = Notification(user = post_owner, content = not_content, url=not_url, image_url = post_in.photo.url, not_date=datetime.datetime.now())
+        not1.save()
+        # Pusher code begin
+        serialized_notification = serializers.serialize('json', [ not1 ])
+        push['notification'].trigger('interested_notification', {'user_id': post_owner.id,
+        'user_notification': serialized_notification})
+        # Pusher code end
+    except:
+        not1 = Notification(user = post_owner, content = not_content, url=not_url, not_date=datetime.datetime.now())
+        not1.save()
+        # Pusher code begin
+        serialized_notification = serializers.serialize('json', [ not1 ])
+        push['notification'].trigger('interested_notification', {'user_id': post_owner.id,
+        'user_notification': serialized_notification})
+        # Pusher code end
 
     return HttpResponse()
 #c2-mohamed
