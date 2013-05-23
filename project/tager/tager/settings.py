@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'captcha',
     'django_twilio',
     'janrain',
+    'pusher',
      
     
     
