@@ -1,0 +1,3 @@
+{% extends "MainBase.html" %}
+
+<iframe src="http://tager.rpxnow.com/openid/embed?token_url=http{% if request.is_secure()%}s{%endif%}{{("://" + request.get_host() + "/janrain/login/?next=" + next)|urlencode}}" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>
