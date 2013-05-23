@@ -901,6 +901,7 @@ def main(request):
             states.append(post.state) 
         list_of_prices.append(post.price)
     print states
+    #to handel no posts
     if list_of_prices:
       price_min=min(list_of_prices)
       price_max =max(list_of_prices)
