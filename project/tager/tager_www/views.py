@@ -42,6 +42,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from twilio.rest import TwilioRestClient
 
+import json
 import pusher
 from django.core import serializers
 
@@ -303,9 +304,10 @@ def post_Notification(self):
             print "yyyyyyyyyyyyy"
             print not1.content
             # Pusher code begin
-            serialized_notification = serializers.serialize('json', [ not1 ])
+            # serialized_content = serializers.serialize('json', [ not1.content ])
+            # serialized_url = serializers.serialize('json', [ not1.url ])
             push['notification'].trigger('interested_notification', {'user_id': q.id,
-            'user_notification': serialized_notification})
+            'not_content': serialized_content, 'not_url': serialized_url})
             # Pusher code end
         except:
             not1 = Notification(user = q, content = not_content, url=not_url)
@@ -313,9 +315,10 @@ def post_Notification(self):
             print "yyyyyyyyyyyyy"
             print not1.content
             # Pusher code begin
-            serialized_notification = serializers.serialize('json', [ not1 ])
+            # serialized_content = serializers.serialize('json', [ not_content ])
+            # serialized_url = serializers.serialize('json', [ not_url ])
             push['notification'].trigger('interested_notification', {'user_id': q.id,
-            'user_notification': serialized_notification})
+            'not_content': not_content, 'not_url': not_url})
             # Pusher code end
     for a in users_subscribed_to_subchannel_array:
         not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
@@ -324,17 +327,19 @@ def post_Notification(self):
             not1 = Notification(user = a, content = not_content, url=not_url, image_url = self.profile_picture.url)
             not1.save()
             # Pusher code begin
-            serialized_notification = serializers.serialize('json', [ not1 ])
-            push['notification'].trigger('interested_notification', {'user_id': a.id,
-            'user_notification': serialized_notification})
+            # serialized_content = serializers.serialize('json', [ not_content ])
+            # serialized_url = serializers.serialize('json', [ not_url ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'not_content': not_content, 'not_url': not_url})
             # Pusher code end
         except:
             not1 = Notification(user = a, content = not_content, url=not_url)
             not1.save()
             # Pusher code begin
-            serialized_notification = serializers.serialize('json', [ not1 ])
-            push['notification'].trigger('interested_notification', {'user_id': a.id,
-            'user_notification': serialized_notification})
+            # serialized_content = serializers.serialize('json', [ not_content ])
+            # serialized_url = serializers.serialize('json', [ not_url ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'not_content': not_content, 'not_url': not_url})
             # Pusher code end
     for b in all_users_subscribed_to_attributes:
         if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
@@ -345,17 +350,19 @@ def post_Notification(self):
                     not1 = Notification(user = b, content = not_content, url=not_url, image_url = self.profile_picture.url)
                     not1.save()
                     # Pusher code begin
-                    serialized_notification = serializers.serialize('json', [ not1 ])
-                    push['notification'].trigger('interested_notification', {'user_id': b.id,
-                    'user_notification': serialized_notification})
+                    # serialized_content = serializers.serialize('json', [ not_content ])
+                    # serialized_url = serializers.serialize('json', [ not_url ])
+                    push['notification'].trigger('interested_notification', {'user_id': q.id,
+                    'not_content': not_content, 'not_url': not_url})
                     # Pusher code end
                 except:
                     not1 = Notification(user = b, content = not_content, url=not_url)
                     not1.save()
                     # Pusher code begin
-                    serialized_notification = serializers.serialize('json', [ not1 ])
-                    push['notification'].trigger('interested_notification', {'user_id': b.id,
-                    'user_notification': serialized_notification})
+                    # serialized_content = serializers.serialize('json', [ not_content ])
+                    # serialized_url = serializers.serialize('json', [ not_url ])
+                    push['notification'].trigger('interested_notification', {'user_id': q.id,
+                    'not_content': not_content, 'not_url': not_url})
                     # Pusher code end
 
 
@@ -410,6 +417,7 @@ def add_to_wish_list(request):
     user = request.user
     post = request.POST['post']
     can_wish = user.add_to_wish_list(post)
+    post_obj = Post.objects.get(id = post)
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
         #c2-mohamed
@@ -421,7 +429,31 @@ def add_to_wish_list(request):
         post_log_type = "wish"
         # post_log_date = datetime.datetime.now()
         log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
+        not_content = unicode(user.name) + " has added your post to his wish list."
+        wish_notification(post_obj, not_content)
     return HttpResponse()
+
+#c2-mohamed
+#this def sends notification
+#to the user who owns the post that the other user has added to his wish list
+def wish_notification(post_in, content):
+    post_owner = post_in.seller
+    not_content = content
+    not_url = "showpost?post=" + unicode(post_in.id)
+    try:
+        not1 = Notification(user = post_owner, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
+    except:
+        not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
@@ -482,7 +514,8 @@ def view_post(request):
     , 'list_of_interested_buyers': list_of_interested_buyers
     , 'comments': Comment.objects.filter(post_id=post_id)
     , 'user_is_intrested': is_intrested_inpost 
-    , 'title':title }
+    , 'title':title
+    , 'post_id': post_id }
 
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -1406,7 +1439,7 @@ def SavingComment(request, post_id):
                 comment_notification(commentor_to_send, post, not_content)
     if sent_to_owner == False:
         not_content = unicode(userobject.name) + " commented on your post"
-        post_seller.comment_notification(post, not_content)
+        comment_notification(post_seller, post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
 
 #c2-mohamed
@@ -1418,20 +1451,18 @@ def comment_notification(user, post_in, content):
     not_content = content
     not_url = "showpost?post=" + unicode(post_in.id)
     try:
-        not1 = Notification(user = self, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.datetime.now)
+        not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.now())
         not1.save()
         # Pusher code begin
-        serialized_notification = serializers.serialize('json', [ not1 ])
-        push['notification'].trigger('interested_notification', {'user_id': post_owner.id,
-        'user_notification': serialized_notification})
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
         # Pusher code end
     except:
-        not1 = Notification(user = self, content = not_content, url=not_url, not_date=datetime.datetime.now())
+        not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.now())
         not1.save()
         # Pusher code begin
-        serialized_notification = serializers.serialize('json', [ not1 ])
         push['notification'].trigger('interested_notification', {'user_id': user_in.id,
-        'user_notification': serialized_notification})
+        'not_content': not_content, 'not_url': not_url})
         # Pusher code end
 
 #Beshoy intrested method Takes a request 
@@ -1454,7 +1485,7 @@ def intrested(request):
         #post_activity_content is to save the activity log content that will be shown to user
         #post_activity_url is to save the url the user will be directed to upon clicking the activity log
         #post_log_type is the type of the log type the user will choose in the activity log page
-        post_activity_content = "you added " + unicode(post_in.title) + " to your wish list."
+        post_activity_content = "you were interested in " + unicode(post_in.title)
         post_activity_url = "showpost?post=" + unicode(post_in.id)
         post_log_type = "profile"
         # post_log_date = datetime.datetime.now()
@@ -1475,20 +1506,18 @@ def interested_Notification(post_in):
         not1 = Notification(user = post_owner, content = not_content, url=not_url, image_url = post_in.photo.url, not_date=datetime.datetime.now())
         not1.save()
         # Pusher code begin
-        serialized_notification = serializers.serialize('json', [ not1 ])
-        push['notification'].trigger('interested_notification', {'user_id': post_owner.id,
-        'user_notification': serialized_notification})
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
         # Pusher code end
     except:
         not1 = Notification(user = post_owner, content = not_content, url=not_url, not_date=datetime.datetime.now())
         not1.save()
         # Pusher code begin
-        serialized_notification = serializers.serialize('json', [ not1 ])
-        push['notification'].trigger('interested_notification', {'user_id': post_owner.id,
-        'user_notification': serialized_notification})
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
         # Pusher code end
 
-    return HttpResponse()
 #c2-mohamed
 #thismethod renders to Activity.html
 #it renders all activity log that belongs to that user
@@ -1734,4 +1763,3 @@ def unread_notifications(request):
             if not_counter == 5:
                 break
         return render (request, 'base.html',{'all_unread_notifications': all_unread_notifications})
-
