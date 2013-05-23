@@ -10,6 +10,12 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+
+    url(r'^social_login/$','tager_www.views.social_login'),  
+    url(r'^logout/$', logout, {'next_page':'/main'}),  
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+
               
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
     url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
@@ -108,23 +114,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
-
-	# url(r'^tager_www/', include('tager_www.urls')),
-
-
-	# url(r'^tager_www/', include('tager_www.urls')),
-
+	
 )
 
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
 
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
-)
 urlpatterns += patterns('django.views.static',
         (r'media/(?P<path>.*)', 'serve', {'document_root': settings.MEDIA_ROOT}),
     )
