@@ -901,8 +901,9 @@ def main(request):
             states.append(post.state) 
         list_of_prices.append(post.price)
     print states
-    price_min=min(list_of_prices)
-    price_max =max(list_of_prices)
+    if list_of_prices:
+      price_min=min(list_of_prices)
+      price_max =max(list_of_prices)
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # - this method creats variable channels , to store all channels available in the database, 
 # variable subchannels , to store all subchannels available in the database,
