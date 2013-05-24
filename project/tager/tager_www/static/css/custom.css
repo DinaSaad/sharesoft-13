@@ -120,6 +120,7 @@ body {
 
 background: #e3e3e3 url(../../static/img/back.gif) repeat;
 
+
 }
 
 
@@ -426,3 +427,90 @@ text-shadow: 0 0 0.5em #444;
 .regpage{
     margin : -60px;
 }
+a{
+/*font-family: 'Lobster', Georgia, Times, serif;
+    font-size: 20px;*/
+    
+}
+.tager{
+    font-family: 'Lobster', Georgia, Times, serif;
+    font-size: 70px;
+  margin-top: -60px;
+ margin-left: 300px
+}
+.welcome{
+      font-size: 30px;
+    } 
+.yo{
+position: fixed;
+}
+     
+
+.shadow{
+
+    box-shadow: 0px -2px 20px 0px rgba(0, 0, 0, 0.0998);
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 20px;
+    margin-top: 230px;
+    text-align: center;
+
+}
+.wrapper {
+   
+    
+    z-index: 99;
+
+}
+
+.content {
+
+    padding-top: 35px;
+    position: relative;
+    overflow: hidden;
+    min-height: 100px;
+    background-color: white;
+    height: 450px;
+    margin-top: 200px;
+
+   
+  
+}
+
+.intermission {
+  
+    color: rgb(136, 136, 136);
+    font-family: 'Georgia';
+
+    font-size: 18px;
+    text-align: center;
+    margin: 0px 0px 30px;
+}
+.all {
+    background-color: white;
+    padding-top: 50px;
+    height:600px;
+    box-shadow: -5px -2px 30px -2px rgba(0, 0, 0, 0.0998);
+    width:800px;
+    margin: -130px
+ 
+}
+.signup{
+    padding-top: 20px;
+}
+
+.fb{
+    float: left;
+    margin-left: 130px;
+}
+.twitter_button{
+    float: right;
+     margin-top: -20px;
+     margin-right:130px;
+}
+.text{
+    font-size: 24px;
+}
+

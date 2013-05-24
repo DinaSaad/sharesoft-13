@@ -2,23 +2,59 @@
 {% load staticfiles%}
 
 {% block content %}
+   <center>
+  
+ <div class = "all">
+    <div class = "yo">
+   <div class = "welcome">  <p> Welcome to </p> 
+   </div>
+    <div class = "tager"> <p> Tager</p> </div>
+</div>
 
-<center>
-    <div id = "site_logo">
-        <a href=""><img src="{% static "img/tager-logo.png" %}" style = "width:800"/></a>
-    </div>
+    <center>
     <br>
-    <div>
-        <div id = "fb_button">
-            <a href="#" class="zocial facebook">Sign in with Facebook</a>
-        </div>
+  
+    <center>
+    <div class = "wrapper">
+         <div class = "shadow"></div>
+           <div class = "content">
+
+            
+        
+        <div class = "intermission" class = "soical">
+        <h2 class="text" >Connect with</h2>
+      
+
+        <div id = "fb_button" class = "fb">
+            <a href="#" class="zocial facebook">Sign in with Facebook</a></div>
         <br>
-        <div id = "user_buttons_sign" >
-            <p class="h4" style="display:inline">Already have an account ? <a href="#signIn" data-toggle="modal" class="btn btn-info">Sign In </a></p>
+         
+          <div class = "twitter_button">
+            <a href="#" class="zocial twitter">Sign in with twitter</a></div>
+        <br>
+      
+        <div class = "rest" >
+            <div class = "windows">
+                            <a href="#" class="zocial windows">Sign in with windows live ID</a></div>
+            <div class = "4sqaure">
+            <a href="#" class="zocial foursquare">Sign in with foursquare</a></div>
+             <div class = "yahoo">
+                            <a href="#" class="zocial yahoo">Sign in with yahoo</a></div>
+            
+            <div class = "google">
+                            <a href="#" class="zocial google">Sign in with google</a></div>
+           
+
+         </div>
+        <hr class= "1"></hr>
+
+  
+        <div id = "user_buttons_sign" class ="signup">
+            <p class="h4" style="display:inline">Already have an account ? <a href="#signIn" data-toggle="modal" >Sign In </a></p>
             or 
-            <p class="h4" style="display:inline"><a href="../register/" data-toggle="modal" class="btn btn-info">Sign Up </a></p>
-        </div>
-    </div>
+            <p class="h4" style="display:inline"><a href="../register/" data-toggle="modal" >Sign Up </a></p> </div>
+    
+
     <div  id="signIn" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header" width ="1000">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -45,15 +81,25 @@
                 </div>
                 <div class="right">
                     <a href="//app.gathercontent.com/forgotten" class="link-option">Forgot your password?</a>
-                    <!-- </div> -->
+                    <!-- </div>
                 </div>
+            </div>
+        </div>
         </form>
         <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
         </div>
         </div>
+
     </div>
+</div>
+</div>
+</div>
 </center>
+</div>
+
+ -->
 <br>
 
 {% endblock %}
+
