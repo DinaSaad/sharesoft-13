@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<style type="text/css">
+.notification {
+display: none;
+left: 0;
+position: fixed;
+cursor: pointer;
+width: 100%;
+height: 50px;
+background: #3DD02A;
+font-size: 16px;
+text-align: center;
+border-top: 2px solid #3DD02A;
+z-index: 9999;
+color: #3C3C3C;
+
+box-shadow: rgba(0,0,0,0.3) 0 0em 0.5em;
+}
+.resetdiv{
+border-radius: 5px;
+border: 1px solid rgb(1, 1, 2);
+width: 200px;
+padding: 10px 15px;
+}
+.notification1 {
+left: 0;
+position: fixed;
+cursor: pointer;
+width: 100%;
+height: 50px;
+background: #3DD02A;
+font-size: 16px;
+text-align: center;
+border-top: 2px solid #3DD02A;
+z-index: 9999;
+color: #3C3C3C;
+
+box-shadow: rgba(0,0,0,0.3) 0 0em 0.5em;
+}
+
+.notifications_text{
+  /*font-size: large;*/
+  font-family: sans-serif; 
+}
+
+</style>
+<div>
+
+<div id="adminadd" class="notification1" style="display:in-line;top: 0px; opacity: 0.95;"> <p class="notifications_text">Subchannel successfully added Successfully added </p> </div>
+{% if channel_added %}
+
+
+<div id="channeladd" class="notification1" style="display:in-line;top: 0px; opacity: 0.95;"> <p class="notifications_text">Subchannel successfully added Successfully added </p> </div>
+{% endif %}
+
+<input id="subchannelid" style="display:none">
+{% if subchannel_added %}
+<div id="subadd" class="notification1" style="display:in-line;top: 0px; opacity: 0.95;"> <p class="notifications_text">Subchannel successfully added Successfully added </p> </div>
+{% endif %}
+
+<div id="attadd" class="notification" style="display:none;top: 0px; opacity: 0.95;"> <p class="notifications_text">Attribute Successfully added </p> </div>
+<button onClick="adminpreparation();"class="btn btn-info">Add new admin</button>
+
+
+<button class="btn btn-info" onClick="channel();">Add new Channel</button>
+
+<button class="btn btn-info" onClick="subchannel()">Add new Sub channel</button>
+<button class="btn btn-info" onClick="attribute_view_channel()">Add new attribute</button>
+
+{% if channel_form %}
+{% csrf_token %}
+<form form action="addchannel" method="POST" id="form" enctype="multipart/form-data">
+        
+        <div class="page-header">
+            <h1>Add new channel</h1>
+        </div> 
+	<table>
+	{{ channel_form.as_p}}
+	</table>
+	<button id="upload" class="btn btn-small btn-success">Add</button>
+</form>
+
+{% endif %}
+
+{% if channelslist %}
+<h4>Please select the channel: </h4>
+<select id="channel">
+    <option>------------</option>    
+    {% for c in channelslist %}
+    
+    <option value="{{c.id}}" onClick="test2()">{{ c.name }}</option>
+    {% endfor %} 
+   </select>
+{% endif %}
+{% if attributechannelslist %}
+<h4>Please select the channel: </h4>
+<select id="attribute_channel">
+    <option>------------</option>    
+    {% for c in attributechannelslist %}
+    
+    <option value="{{c.id}}" onClick="test2()">{{ c.name }}</option>
+    {% endfor %} 
+   </select>
+{% endif %}
+{% if subchannelslist %}
+<h4>Please select the subchannel: </h4>
+<select id="attribute_subchannel">
+    <option>------------</option>    
+    {% for c in subchannelslist %}
+    
+    <option value="{{c.id}}" onClick="test2()">{{ c.name }}</option>
+    {% endfor %} 
+   </select>
+{% endif %}
+
+<div id="attributediv" style="display:none">
+
+<label class="control-label">Name:
+  <div class="controls">
+  <input id="attributename">
+</div>
+
+<label class="control-label">Weight:
+  <div class="controls">
+  <input id="attributeweight">
+</div>
+
+<button onClick="addattribute(1)">Save and another one</button>
+<button onClick="addattribute(2)">Save and quit</button>
+
+</div>
+{% if subchannel_form %}
+<form form action="" method="POST" id="form" enctype="multipart/form-data">
+        
+        <div class="page-header">
+            <h1>Add new subchannel</h1>
+        </div> 
+	<table>
+	{{ subchannel_form.as_p}}
+	</table>
+	<button id="upload" class="btn btn-small btn-success">Add</button>
+</form>
+{% endif %}
+
+
+<div id="adminform" align="center" style="padding-top:15px;">
+<div class="resetdiv">  
+<div class="control-group">
+<label class="control-label">Name:</label>
+  <div class="controls">
+  <input type="text" id="adminname">
+</div>
+
+
+</div>
+
+<div class="control-group">
+<label class="control-label">Email:
+  <div class="controls">
+  <input type="text" id="adminemail">
+</div>
+
+</label>
+</div>
+
+<button onClick="addadmin();">Add admin</button>
+
+
+<script type="text/javascript">
+$(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+});    
+
+
+$(document).ready(function(){
+$('#channel').change(function(){
+  window.location.replace("../addsubchannel?channel="+$(this).val());
+});
+$(document).ready(function(){
+  $('#adminform').hide();
+ setTimeout('$("#channeladd").hide()',5000);
+  setTimeout('$("#subadd").hide()',5000);
+  setTimeout('$("#adminadd").hide()',5000);
+});
+$('#attribute_subchannel').change(function(){
+  $('#attributediv').show();
+  $('#subchannelid').val($(this).val());
+});
+
+$('#attribute_channel').change(function(){
+  window.location.replace("../attributesubchannel?channel="+$(this).val());
+});
+});
+function adminpreparation(){
+$('#adminform').show();
+}
+
+
+function channel(){
+  window.location.replace('../addchannel');
+}
+function subchannel(){
+  window.location.replace('../allchannel')
+}
+function attribute_view_channel(){
+  window.location.replace('../attributechannels');
+}
+
+
+
+
+</script>
+
+{% endblock  %}

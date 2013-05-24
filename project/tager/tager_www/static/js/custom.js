@@ -1,20 +1,22 @@
 
 $(document).ready(function(){
 
-	$("#post").click(function(){
-		window.location.replace("/post?post="+$(this).val());
-	})
+  $("#post").click(function(){
+    window.location.replace("/post?post="+$(this).val());
+  })
 })
 
 $(document).ready(function(){
 $('#Channel_dropdown').change(function(){
-	window.location.replace("viewsubchannels?ch_id="+$(this).val())
+  window.location.replace("viewsubchannels?ch_id="+$(this).val())
 });
 
 
 
 
 });
+
+
 
  // $(document).ready(function(){
  // $('#location_dropdown').change(function(){
@@ -25,10 +27,60 @@ $('#Channel_dropdown').change(function(){
 
 $(document).ready(function(){
 $('#subChannel_dropdown').change(function(){
-	window.location.replace("addpost?sub_ch_id="+$(this).val())
+  window.location.replace("addpost?sub_ch_id="+$(this).val())
 });
 });
 
+
+
+
+function addattribute(id){
+  var name = $('#attributename').val();
+  var weight = $('#attributeweight').val();
+  var subchannel_id = $('#subchannelid').val();
+
+
+  $.ajax({
+    url: "/addattributetosubchannel/",
+    type: 'POST',
+    data: {
+        "name" : name,
+        "weight": weight,
+        "subchannel": subchannel_id,
+    }, 
+    success: function(result) {
+    if(id=="1"){
+      $('#attributename').val("");
+      $('#attributeweight').val("");
+      $('#attadd').show();
+      setTimeout('$("#attadd").hide()',5000);
+    }
+    else{
+      alert('added successfully');
+      location.reload();
+    }
+    },
+    });
+
+}
+
+function addadmin(){
+  var name = $('#adminname').val();
+  var email = $('#adminemail').val();
+  $.ajax({
+    url: "/addadmin/",
+    type: 'GET',
+    data: {
+        "name" : name,
+        "email": email,
+    }, 
+    success: function(result) {
+    $('#adminform').hide();
+    $('#adminadd').show();
+    },
+    });
+
+}
 
 $(document).ready(function(){
       $('#picture1').hide();
@@ -125,7 +177,7 @@ $(function(){
   $('#id_price').keyup(function(){
 
     var data = $(this).val();
-    var pattern = /^[0-9]+$/;
+    var pattern = /^[1-9][0-9]*$/;
     if (data.length > 1 && data.match(pattern)) {
               $('#SubmitAction').removeAttr("disabled");    
               $('#priceoutput').text("");
@@ -134,7 +186,7 @@ $(function(){
             }
           else {
               $('#SubmitAction').attr("disabled", true);    
-              $('#priceoutput').text("Price must be 2 digits number");  
+              $('#priceoutput').text("Invalid price, must be at least 2 digits number and can not start with a zero");  
               return false;
             }   
 });
@@ -159,7 +211,7 @@ $(function(){
 
           else {
               $('#SubmitAction').attr("disabled", true);    
-              $('#descriptionoutput').text("Invalid description");  
+              $('#descriptionoutput').text("Invalid description, must be at least 25 characters.");  
               return false;
             }   
 });
@@ -169,10 +221,10 @@ $(function(){
 
 $(document).ready(function(){
 
-	$("#addBuyer").click(function(){
-		window.location.replace("/addBuyer?post_id="+$(this).val());
-	})
-	
+  $("#addBuyer").click(function(){
+    window.location.replace("/addBuyer?post_id="+$(this).val());
+  })
+  
 })
 
 
@@ -280,6 +332,23 @@ function get_interested(ids) {
     }
 });
 }
+
+
+function forget () {
+  var email = $('#resetemail').val();
+    $.ajax({
+    url: "/resetpw/",
+    type: "POST",
+    data: {
+        "email" : email,
+    }, 
+    success: function(result) {
+        alert('you will receive an email shortly with all the instructions to restore your password')
+        window.location.replace('../main')
+    }
+});
+}
+
 function report(id) {
   $('.reportDIV' + id).css('display', 'block');
   $('#report_button' + id).css('display', 'none');

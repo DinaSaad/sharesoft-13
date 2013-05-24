@@ -1,4 +1,5 @@
-<form action="create_post" method="post">
+{%extends 'base.html'%}
+<!-- <form action="create_post" method="post">
 {% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />
@@ -8,4 +9,138 @@
 {% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />
-</form>
+</form> -->
+
+
+{% load staticfiles %}
+
+
+{% block content %}
+<style type="text/css">
+.resetdiv{
+border-radius: 5px;
+border: 1px solid rgb(1, 1, 2);
+position: relative;
+width: 200px;
+padding: 10px 15px;
+}
+.message{
+color: #000;
+font-size: 12px;
+border: 1px #0071B5 solid;
+background: #ffd;
+width: auto;
+margin: 10px 0;
+padding: 10px;
+}
+.error{
+  border: 1px solid #A31919;
+  color: #A31919;
+}
+</style>
+
+<div align="center" style="">
+<div class="resetdiv">
+ 
+  <div style="display:none" id="error" class="error message">
+  <label id="testlbl"> Password does not match </label></div>
+ <div>
+
+  <div style="display:none" id="error3" class="error message">
+  <label id="testlbl"> Password does not match </label></div>
+ <div>
+  <div style="display:none" id="error2" class="error message">
+  <label id="testlbl"> Password must be at least 6 characters with numbers and letters </label></div>
+ <div>
+  
+
+<div class="control-group">
+<label class="control-label">New Password:</label>
+  <div class="controls">
+  <input type="password" id="newpassword">
+</div>
+
+
+</div>
+
+<div class="control-group">
+<label class="control-label">Confirm Password:
+  <div class="controls">
+  <input type="password" id="confirmpassword">
+</div>
+
+</label>
+</div>
+
+<div>
+<label id="passwordoutput"></label>
+</div>
+
+
+<button class="btn btn-warning" onClick="forget_password({{user.id}})">test</button>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+
+function forget_password(id){
+var oldpassword = $('#newpassword').val();
+var newpassword = $('#confirmpassword').val();
+if(oldpassword == newpassword){
+$.ajax({
+    url: "/changepasswordaction/",
+    type: "POST",
+    data: {
+        "newpassword" : oldpassword,
+        "user_id": id,
+    }, 
+    success: function(result) {
+    window.location.replace('../pwredirect')
+    },
+    });
+}
+else{
+  $('#error').css('display','block');
+  $('#newpassword').val("");
+  $('#confirmpassword').val("");
+}
+}
+
+$('#newpassword').keyup(function(){
+    var data = $(this).val();
+    var pattern=/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
+  
+      if(data.match(pattern) && data.length > 5){
+        $('#error2').hide();
+         $("#passwordoutput").show();
+        $("#passwordoutput").css('color','Green'); 
+        $("#passwordoutput").text("Valid");
+       
+      }
+      else{
+         $("#passwordoutput").hide();
+       $('#error2').css('display','block');
+      }
+             
+});
+
+
+$('#confirmpassword').keyup(function(){
+    var data = $(this).val();
+    var password = $('#newpassword').val();
+         if(data == password){
+        $('#error3').hide();
+         $("#passwordoutput").show();
+        $("#passwordoutput").css('color','Green'); 
+        $("#passwordoutput").text("Password Matches");
+       
+      }
+      else{
+         $("#passwordoutput").hide();
+       $('#error3').css('display','block');
+      }
+             
+});
+</script>
+</div>
+{% endblock %}
