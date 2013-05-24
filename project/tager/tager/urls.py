@@ -10,6 +10,10 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+    url(r'^attributechannels/$', 'tager_www.views.attribute_allchannels'),
+    url(r'allchannel/$', 'tager_www.views.view_allchannels'),
+    url(r'^addchannel$', 'tager_www.views.add_channel'),
+    url(r'^addsubchannel$', 'tager_www.views.add_subchannel'),
     url(r'^pwredirect/$', 'tager_www.views.password_redirected'),
     url(r'^resetpw/$', 'tager_www.views.reset_password'),
     url(r'^change$', 'tager_www.views.view_change_password'),

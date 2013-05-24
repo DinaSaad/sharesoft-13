@@ -212,6 +212,7 @@ $('#channel').change(function(){
   window.location.replace("../addsubchannel?channel="+$(this).val());
 });
 $(document).ready(function(){
+  $('#subadd').hide();
   $('#adminform').hide();
  setTimeout('$("#channeladd").hide()',5000);
   setTimeout('$("#subadd").hide()',5000);

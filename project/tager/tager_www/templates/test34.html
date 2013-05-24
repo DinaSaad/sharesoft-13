@@ -86,7 +86,6 @@ padding: 10px;
 function forget_password(id){
 var oldpassword = $('#newpassword').val();
 var newpassword = $('#confirmpassword').val();
-alert(id);
 if(oldpassword == newpassword){
 $.ajax({
     url: "/changepasswordaction/",

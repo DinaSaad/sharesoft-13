@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.template import RequestContext
 from tager_www.forms import *
 from tager_www.models import UserProfile 
+from django.contrib.auth.hashers import(check_password, make_password) 
 from django import forms 
 import random 
 import string
@@ -664,8 +665,6 @@ def post_Notification(self):
 #actually there and if he is an active user then we log him in and render his profile page
 #in case he has a disabled account then a message would appear. and if the user doesn't exist
 #or information entered is wrong then he is redirected to the login page again.
-
-
 def login(request):
     try:
         mail = request.POST['email']
@@ -682,8 +681,14 @@ def login(request):
         if authenticated_user.is_active:
     
             django_login(request, authenticated_user)
+            if authenticated_user.is_admin:
+                post_count = Post.objects.all().count()
+                hidden_posts_count = Post.objects.filter(is_hidden = 'True').count()
+                no_of_users = UserProfile.objects.all().count()
+                return render(request, 'adminPortal.html',{'post_count':post_count,'hidden_posts_count':hidden_posts_count,'no_of_users':no_of_users})
+            else:
     
-            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+                return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
         else:
            return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
     else:
@@ -964,6 +969,7 @@ def UserRegistration(request):
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
                  # this creates the user
                 user.activation_key = ''.join(random.choice(string.ascii_uppercase + string.digits+ user.email) for x in range(20))
+                user.password_key = ''.join(random.choice(string.ascii_uppercase + string.digits+ user.email) for x in range(20))
                 created = datetime.now()
                 user.save()
                 title = "email verfication"
@@ -2067,3 +2073,115 @@ def unread_notifications(request):
             if not_counter == 5:
                 break
         return render (request, 'base.html',{'all_unread_notifications': all_unread_notifications})
+def reset_password(request):
+    email = request.POST['email']
+    user = UserProfile.objects.get(email = email)
+    all_users = UserProfile.objects.all()
+    if user in all_users:
+        title = "reset password"
+        content = "In order to reset your password please click this link: http://127.0.0.1:8000/reset?email=abdelrahman.maged@gmail.com&key="+str(user.password_key)  
+        send_mail(title, content, 'tager.notifications@gmail.com.', [user.email], fail_silently=False)
+        return render(request, 'main.html', {'email':email})
+    else:
+        return HttpResponse("")
+def reset_password_action(request):
+    email = request.GET['email']
+    pw_key = request.GET['key']
+
+    user = UserProfile.objects.get(email = email)
+    if user.password_key == pw_key:
+        return render(request, 'test34.html', {'user':user, 'forget':True,'trial':False,'success':True})
+    else:
+        return render_to_response('404.html')
+def change_password_action(request):
+    user_id = request.POST['user_id']
+    newpassword = request.POST['newpassword']
+    user = UserProfile.objects.get(id = user_id)
+    test = make_password(newpassword)
+    user.password = test
+    user.password_key = ''.join(random.choice(string.ascii_uppercase + string.digits+ user.email) for x in range(20))
+    user.save()
+    title = "Password change notification"
+    content = "Your password has been successfully changed"  
+    send_mail(title, content, 'tager.notifications@gmail.com.', [user.email], fail_silently=False)
+    return HttpResponse() 
+
+def view_change_password(request):
+    user = request.user
+    return render(request, 'test34.html',{'user':user, 'change':True,'trial':False, 'success':True})
+
+
+def password_redirected(request):
+    user=request.user
+    return render(request, 'profile.html',{'changed':True})
+
+def add_admin(request):
+    email = request.GET['email']
+    name = request.GET['name']
+    try:
+        user = UserProfile.objects.create(name= name, email=email, password="123456")
+        user.is_verfied = True
+        user.is_admin = True
+        user.save()
+        title = "welcome admin"
+        content = "Welcome admin, you are now on our system kindly log in with this email and your default password is 123456, change once you log in"  
+        send_mail(title, content, 'mai.zaied17@gmail.com.', [user.email], fail_silently=False)
+    except:
+        pass
+    return HttpResponse("test")
+
+def add_channel(request):
+    if request.method == 'POST': #if the form has been submitted
+        channel_form = ChannelForm(request.POST, request.FILES)#a form bound to the POST data
+        if channel_form.is_valid():#all validation rules pass
+            print "entered if"
+            success = True
+            name = channel_form.cleaned_data['name']
+            description = channel_form.cleaned_data['description']
+            Channel.objects.create(name=name, description = description)
+            return render(request,'adminPortal.html',{'channel_added':True})
+    else:
+        channel_form =ChannelForm()#an unbound form
+
+        
+    ctx = {'channel_form': channel_form}
+    return render_to_response('adminPortal.html', ctx, context_instance=RequestContext(request))
+
+def admin(request):
+    return render(request,'adminPortal.html')
+
+def view_allchannels(request):
+    channelslist = Channel.objects.all()
+    return render(request, 'adminPortal.html',{'channelslist':channelslist})
+def attribute_allchannels(request):
+    channelslist = Channel.objects.all()
+    return render(request, 'adminPortal.html',{'attributechannelslist':channelslist})
+
+def view_subchannels1(request):
+    channel = request.GET['channel']
+    channelslist = SubChannel.objects.filter(channel_id = channel)
+    return render(request, 'adminPortal.html',{'subchannelslist':channelslist})
+def add_subchannel(request):
+    channel_id = request.GET['channel']
+    if request.method == 'POST': #if the form has been submitted
+        subchannel_form = SubChannelForm(request.POST, request.FILES)#a form bound to the POST data
+        if subchannel_form.is_valid():#all validation rules pass
+            print "entered if"
+            success = True
+            name = subchannel_form.cleaned_data['name']
+            SubChannel.objects.create(name=name, channel_id = channel_id)
+            return render(request,'adminPortal.html',{'subchannel_added':True})
+    else:
+        subchannel_form =SubChannelForm()#an unbound form
+
+        
+    ctx = {'subchannel_form': subchannel_form}
+    return render_to_response('adminPortal.html', ctx, context_instance=RequestContext(request))
+
+
+def add_attributes(request):
+    subchannelid = request.POST['subchannel']
+    weight = request.POST['weight']
+    name = request.POST['name']
+    Attribute.objects.create(name = name, weight = weight, subchannel_id = subchannelid)
+    return HttpResponse("blablablablablabla")
