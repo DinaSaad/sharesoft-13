@@ -120,15 +120,13 @@
     <div class="thumbnail" >
 
       <a href="/showpost?post={{post.id}}">
-   {% if post.picture %} 
-      <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
+   {% if post.picture1 %} 
+     <img style="width:300px;" src="{{post.picture1.url}}" alt="profile pic" />
     {% else %}
        <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% endif %}
         </a>
-<!--       <div class="repinLikeWrapper">
 
-      </div> -->
       
 
     <span class="priceValue">{{post.price }} EGP</span>
