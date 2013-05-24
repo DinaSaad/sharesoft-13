@@ -1,41 +1,40 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout, login
 from tager_www.views import *
-# from django.conf.urls import handler404, handler500
 
-from django.conf.urls.defaults import *
+
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
+
 urlpatterns = patterns('',
+    url(r'^pwredirect/$', 'tager_www.views.password_redirected'),
+    url(r'^resetpw/$', 'tager_www.views.reset_password'),
+    url(r'^change$', 'tager_www.views.view_change_password'),
+    url(r'^changep/$', 'tager_www.views.change_password'),
+    url(r'^reset/$', 'tager_www.views.reset_password_action'),
+    url(r'^changepasswordaction/$', 'tager_www.views.change_password_action'),
     url(r'^attributesubchannel/$', 'tager_www.views.view_subchannels1'),
     url(r'^addattributetosubchannel/$', 'tager_www.views.add_attributes'),
+    url(r'^admin/$', 'tager_www.views.admin'),
+    url(r'^social_login/$','tager_www.views.social_login'),  
+    url(r'^logout/$', logout, {'next_page':'/main'}),  
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
+    url(r'^profile/$', 'tager_www.views.view_profile'),
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
-    url(r'^subchannelspost/$', 'tager_www.views.view_subchannels_related_to_channels'),
     url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
     url(r'^editpostdescription/$', 'tager_www.views.edit_post_description'),
     url(r'^editpostlocation/$', 'tager_www.views.edit_post_location'),
     url(r'^editpost/$', 'tager_www.views.edit_post'),
     url(r'^editpostattribute/$', 'tager_www.views.edit_post_attribute'),
-    url(r'^viewMyFeed/$', 'tager_www.views.viewMyFeed'),
-    url(r'^attributechannels/$', 'tager_www.views.attribute_allchannels'),
-    url(r'^admin/$', 'tager_www.views.admin'),
-    url(r'allchannel/$', 'tager_www.views.view_allchannels'),
-    url(r'^subchannelposts/$', 'tager_www.views.view_posts_related_to_channel'),
     url(r'^removepostfromwishlist$', 'tager_www.views.remove_post_from_wishlist'),
     url(r'^logout/$', logout, {'next_page':'/'}),  
     url(r'^$', 'tager_www.views.home'),
-    url(r'^change$', 'tager_www.views.view_change_password'),
-    url(r'^changep/$', 'tager_www.views.change_password'),
-    url(r'^addsubchannel$', 'tager_www.views.add_subchannel'),
     url(r'^main$', 'tager_www.views.main'),
     url(r'^addtomylist$', 'tager_www.views.add_to_wish_list'),  
     url(r'^intrested/$', 'tager_www.views.intrested'),   
-    url(r'^addadmin/$', 'tager_www.views.add_admin'),  
-    url(r'^addchannel$', 'tager_www.views.add_channel'),
-    url(r'^addsubchannel$', 'tager_www.views.add_subchannel'),
     url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
     url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
@@ -49,25 +48,18 @@ urlpatterns = patterns('',
     url(r'^public_number/$', 'tager_www.views.public_number'),
     url(r'^public_work/$', 'tager_www.views.public_work'),
     url(r'^edit_work/$', 'tager_www.views.edit_work'), 
-
     url(r'^account/$', 'tager_www.views.return_account_type'),
     url(r'^change_faccount/$', 'tager_www.views.change_faccounttype'),
     url(r'^change_paccount/$', 'tager_www.views.change_paccounttype'),
-
     url(r'^report/$', 'tager_www.views.report_the_post', name='reportThePost'),
     url(r'^login/$', 'tager_www.views.view_login'),
     url(r'^logged/$', 'tager_www.views.login'),
     url(r'^addBuyer/$', 'tager_www.views.Buyer_identification'),
     url(r'^register/$', 'tager_www.views.UserRegistration'),
- 
     url(r'^viewingPosts/$', 'tager_www.views.view_checked_subchannel_posts'),
-    url(r'^resetpw/$', 'tager_www.views.reset_password'),
     url(r'^updatestatus/$', 'tager_www.views.update_status'),
     url(r'^menu_posts/$', 'tager_www.views.menuForSubchannels'),
     url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
-    url(r'^reset/$', 'tager_www.views.reset_password_action'),
-    url(r'^changepasswordaction/$', 'tager_www.views.change_password_action'),
-    url(r'^pwredirect/$', 'tager_www.views.password_redirected'),
     url(r'^facebook/login/$', 'tager_www.views.facebook_login', name="facebook_login"),
     url(r'^facebook/login/done/$', 'tager_www.views.facebook_login_done', name="facebook_login_done"),
     url(r'^subscribe/$', 'tager_www.views.return_channels'),
@@ -107,7 +99,6 @@ urlpatterns = patterns('',
     url(r'^send_sms/$', 'tager_www.views.sms_verify'),
     url(r'^refresh_notifications/$', 'tager_www.views.unread_notifications'),
     url(r'^deletepost/$', 'tager_www.views.hide_post'),
-
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -117,24 +108,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
-
-    # url(r'^tager_www/', include('tager_www.urls')),
-
-
-    # url(r'^tager_www/', include('tager_www.urls')),
 
 )
 
-urlpatterns += patterns('fbregister.facebook',
-    url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
 
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
-)
 urlpatterns += patterns('django.views.static',
         (r'media/(?P<path>.*)', 'serve', {'document_root': settings.MEDIA_ROOT}),
     )
-        # handler404 = 'tager_www.views.server_error'
