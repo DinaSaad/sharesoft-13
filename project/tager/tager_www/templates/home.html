@@ -1,7 +1,5 @@
 {% extends "base2.html" %}
 {% load staticfiles%}
-        <link href="{% static "css/tager.css" %}" rel="stylesheet">
-
 
 {% block content %}
 
@@ -33,7 +31,17 @@
     s.parentNode.insertBefore(e, s);
 })();
 </script>
-
+<style type="text/css">
+.cs-text span:last-child{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -50px;
+    z-index: 100;
+    background: url({% static "img/Tlogo.png" %}) no-repeat center center;
+    background-size:78px 78px;
+}
+</style>
 
 <center>
 

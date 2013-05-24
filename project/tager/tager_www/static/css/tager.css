@@ -1,3 +1,5 @@
+{% load staticfiles%}
+
 body{ background-image: url(../images/strange_bullseyes.jpg); }
 
 .cs-text {
@@ -104,15 +106,7 @@ body{ background-image: url(../images/strange_bullseyes.jpg); }
     pointer-events: none;
 }
 
-.cs-text span:last-child{
-    position: absolute;
-    top: 0;
-    left: 50%;
-    margin-left: -50px;
-    z-index: 100;
-    background: url({% static "img/post.png" %}) no-repeat center center;
-    background-size:90px 90px;
-}
+
 
 .cs-text:hover span:not(:last-child){
     -webkit-transform: translate(0%);
