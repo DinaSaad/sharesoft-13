@@ -385,20 +385,28 @@ padding-left:1080px;
  
 <!-- Modal -->
 <div id="smsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">sms verifcation</h3>
   </div>
   <div class="modal-body">
+    <img id="loadingsms" src="{% static "img/ajax-loader.gif" %}" style="display:none;">
+    <div id="smsnoti"  style="display:none;">
+      <div class="alert alert-success" >
+         The SMS has been sent,It might take a few mins.
+      </div>
+    </div>
 
 <div class="sms" id = "phonediv">
         <p><input type="text" id ="phone" name="phone" placeholder = " enter your phone number"></p>
-        <p><button onClick="send_phone_num();" id = "phone_submit">Send</button></p>
+        <p><button onClick="send_phone_num();" class"btn" id = "phone_submit">Send</button></p>
     </div>
 
 <div class="sms" id = "codediv">     
     <p><input type="text" id ="sms" name="sms" placeholder = "enter sms verification code"></p>
-    <p><button onClick="send_sms_num();" id = "sms_submit">Send</button></p>
+    <p><button onClick="send_sms_num();" class"btn" id = "sms_submit">Send</button></p>
     <div id="message"></div>
 </div>
 
@@ -422,6 +430,8 @@ padding-left:1080px;
 
 <script type="text/javascript">
     function send_phone_num(){
+      $("#phonediv").fadeOut();
+      $("#loadingsms").fadeIn();
       $.ajax({
         url: '/send_phone/',
         type: "POST",
@@ -429,7 +439,8 @@ padding-left:1080px;
           "phone_number" : $("#phone").val()
         }, 
         success: function(result) {
-          alert("An sms verfication has been sent . This might take a few mins");
+        $("#loadingsms").fadeOut(); 
+        $("#smsnoti").fadeIn();
         },
 
     });
@@ -445,10 +456,14 @@ padding-left:1080px;
         }, 
         success: function(data) {
           if(data == "true") {
+            setTimeout(function(){
+               window.location.reload(1);
+            }, 2000);
             $("#message").html("correct code")
              $(function()
               { $('#sms').css('border-color', '#CCC');
             });
+
           }
           else {
             $("#message").html("please enter the right code ")
