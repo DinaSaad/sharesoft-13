@@ -32,6 +32,10 @@
 })();
 </script>
 <style type="text/css">
+.cs-text span{
+font-family: 'Lobster', Georgia, Times, serif;
+font-size: 70px;
+}
 .cs-text span:last-child{
     position: absolute;
     top: 0;
@@ -41,15 +45,8 @@
     background: url({% static "img/Tlogo.png" %}) no-repeat center center;
     background-size:78px 78px;
 }
-#janrainEngageEmbed{
-
-}
 </style>
-
-<center>
-
-
-
+<center >
 <h2 class="cs-text">
     <span>></span>
     <span>T</span>
@@ -60,18 +57,14 @@
     <span><</span>
     <span></span>
 </h2>
+</center>
 
-<!-- <div class="item" style="width:20%;padding:20px;margin 0 auto;">
-
-{{S}}-- Users
-And -- Comments
-And More to go
-</div>
- -->
+<center>
     <div id = "site_logo">
         <a href=""><img src="{% static "img/tager-logo.png" %}" style = "width:800"/></a>
     </div>
     <br>
+    <div class="shadow"></div>
     <div>
         {% if user.is_authenticated == False %}
         <div id="janrainEngageEmbed"></div>
