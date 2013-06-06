@@ -31,12 +31,40 @@
     s.parentNode.insertBefore(e, s);
 })();
 </script>
+<style type="text/css">
+.cs-text span{
+font-family: 'Lobster', Georgia, Times, serif;
+font-size: 70px;
+}
+.cs-text span:last-child{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -50px;
+    z-index: 100;
+    background: url({% static "img/Tlogo.png" %}) no-repeat center center;
+    background-size:78px 78px;
+}
+</style>
+<center >
+<h2 class="cs-text">
+    <span>></span>
+    <span>T</span>
+    <span>a</span>
+    <span>G</span>
+    <span>e</span>
+    <span>R</span>
+    <span><</span>
+    <span></span>
+</h2>
+</center>
 
 <center>
     <div id = "site_logo">
         <a href=""><img src="{% static "img/tager-logo.png" %}" style = "width:800"/></a>
     </div>
     <br>
+    <div class="shadow"></div>
     <div>
         {% if user.is_authenticated == False %}
         <div id="janrainEngageEmbed"></div>

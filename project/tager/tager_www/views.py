@@ -224,16 +224,13 @@ def social_login(request):
                     print "auth failed"
                     return render_to_response ('home.html',context_instance=RequestContext(request))
             else :
-               return render_to_response ('home.html',context_instance=RequestContext(request))
-               juser=UserProfile.objects.create_user(name=profile.get('displayName'),
-                    facebook_uid=profile.get('identifier'),
-                    email=profile.get('email'))
-               juser.is_verfied=True
-               juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
-               title = "Auto Genrated Password"
-               content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
-               send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
-               juser.save()
+              fbidtmp=facebook_uid=profile.get('identifier')
+              jmail=fbidtmp+"tmp@tager.com"
+              juser=UserProfile(name=profile.get('displayName'),
+                   facebook_uid=profile.get('identifier'),email=jmail)
+              print "will render"
+              return render (request, 'twitter.html', {'title':'Add your Twitter Email','user':juser})
+
 
         if profile.get('providerName') =="Foursquare":
             print "Foursquare Provider"
@@ -288,8 +285,25 @@ def social_login(request):
                content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
                send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
                juser.save()
-
         return None
+
+def twitter_reg(request):
+  identifier = request.POST['twitterlink']
+  jemail= request.POST['email']
+  jname= request.POST['name']
+  juser=UserProfile(name=jname,
+       facebook_uid=identifier,email=jemail)
+  juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+  title = "Auto Genrated Password"
+  content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+  send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+  juser.save()
+  return None
+
+
+
+
+
 
 class CustomAuthentication:
   def authenticate(self, mail, password):
@@ -352,7 +366,7 @@ def social_auth(request,mail, password):
 
 
 def home(request):
-    return render_to_response ('home.html',context_instance=RequestContext(request))
+    return render_to_response ('home.html',{'title':'Welcome to Tager'},context_instance=RequestContext(request))
 
 
 def return_channels(request):

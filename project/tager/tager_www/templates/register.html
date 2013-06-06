@@ -12,7 +12,7 @@
 {% csrf_token %}
 
 <div class = "header" >
-<h2> Create your account </h2> 
+
 
 <style type="text/css">
       .header {
@@ -21,10 +21,17 @@
         font-size: 35px;
         text-align: center;
 }
-      }
+      
     </style>
 </div>
 <center>
+<div class="item" style="width:50%;padding:20px;border-style:solid;
+border-width:5px;border-color:rgb(201, 201, 201);margin 0 auto;float:none;height: 100%;overflow:auto;" >
+<div class="profileHeader" class="active" wotsearchprocessed="true">
+<center><h2 >Create your account </h2> </center>
+</div>
+
+
 <div class = "registerationForm">
 {% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
 <div class="register_div">
@@ -161,6 +168,6 @@ function passwordStrength(password)
 
 </div>
 </form>
-
+</div>
 </center>
 {% endblock %}
