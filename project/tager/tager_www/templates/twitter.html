@@ -1,0 +1,38 @@
+{% extends "base2.html" %}
+{% load staticfiles%}
+{% block content %}
+<center>
+<h4>Twitter Don't Provide us with emails , Pleass add your's</h4>
+<span>You will onle be Reqired to do this once</span>
+        <div class="padding20px form">
+            <form form action="/twitter_reg/" method="POST" id="form" class="kissmetrics-login">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label class="control-label" for="inputName">Name:</label>
+                    <div class="controls">
+                        <input type="text"  id="name" name="name" autofocus ="" value="{{user.name}}" />
+                    </div>
+                </div>
+                <div class="control-group" style="display:none;">
+                    <label class="control-label" for="inputEmail">Twitter Link:</label>
+                    <div class="controls">
+                        <input type="text" id="twitterlink" name="twitterlink"   autofocus ="" value="{{user.facebook_uid}}"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="inputEmail">Email:</label>
+                    <div class="controls">
+                        <input type="email" name="email" id="email" placeholder="Please Add Your Email" autofocus ="" />
+                    </div>
+                </div>
+
+                <div class="cf">
+                    <div class="left">
+                        <input type="submit" class="btn" value="Register">
+                    </div>
+    		    </div>                
+            </form>
+        </div>
+</center>
+{% endblock %}

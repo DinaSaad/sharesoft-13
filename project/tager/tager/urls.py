@@ -104,7 +104,7 @@ urlpatterns = patterns('',
     url(r'^send_sms/$', 'tager_www.views.sms_verify'),
     url(r'^refresh_notifications/$', 'tager_www.views.unread_notifications'),
     url(r'^deletepost/$', 'tager_www.views.hide_post'),
-
+    url(r'^twitter_reg/$', 'tager_www.views.twitter_reg'), 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
