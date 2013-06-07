@@ -881,77 +881,30 @@ def update_status(request):
 # saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
 #name and will be redirected to the login page. output of the method saves the new name in database 
 @login_required
-def edit_name(request):
+def edit_info(request):
     user = request.user
+    print request.POST
+    print request.POST['user_name']
     user.name = request.POST['user_name']
-    print"fffffffffffff"
+    if request.POST['dateofbirth']:
+        user.date_Of_birth = request.POST['dateofbirth']
+    user.works_at = request.POST['userwork']
+    user.phone_number = request.POST['userphone']
     user.save()
     #c2-mohamed
     #the next lines are written to save a tuple in ActivityLog table
     #to save it to make the user retrieve it when he logs into his activity log
     #post_activity_content is to save the activity log content that will be shown to user
     #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-    #post_log_type is the type of the log type the user will choose in the activity log page
-    
-    post_activity_content = "you edited your name to " + unicode(user.name) + "."
+    #post_log_type is the type of the log type the user will choose in the activity log page   
+    post_activity_content = "you edited your info ." 
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
     # post_log_date = datetime.datetime.now()
     log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
-# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
-# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
-# The user can write the date of birth they want in the text field which will be
-# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
-# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
-@login_required
-def edit_date_of_birth(request):
-    user = request.user
-    user.date_Of_birth = request.POST['dateofbirth']
-    user.save()
-    #c2-mohamed
-    #the next five lines are written to save a tuple in ActivityLog table
-    #to save it to make the user retrieve it when he logs into his activity log
-    #post_activity_content is to save the activity log content that will be shown to user
-    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-    #post_log_type is the type of the log type the user will choose in the activity log page
-    post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
-    post_activity_url = "profile/?user_id=" + unicode(user.id)
-    post_log_type = "profile"
-    # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
-    return HttpResponse (" ")
 
-# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
-# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
-# The user can write a the name they want in the text field which will be
-# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
-# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
-@login_required
-def edit_work(request):
-    user = request.user
-    user.works_at = request.POST['userwork']
-    user.save()
-    #c2-mohamed
-    #the next five lines are written to save a tuple in ActivityLog table
-    #to save it to make the user retrieve it when he logs into his activity log
-    #post_activity_content is to save the activity log content that will be shown to user
-    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-    #post_log_type is the type of the log type the user will choose in the activity log page
-    post_activity_content = "you edited your place of work to " + unicode(user.works_at) + "."
-    post_activity_url = "profile/?user_id=" + unicode(user.id)
-    post_log_type = "profile"
-    # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
-    return HttpResponse (" ")
-
-@login_required
-def edit_phone(request):
-    user = request.user
-    user.phone_number = request.POST['userphone']
-    user.save()
-    return HttpResponse (" ")  
 
 @login_required
 def view_private(request):

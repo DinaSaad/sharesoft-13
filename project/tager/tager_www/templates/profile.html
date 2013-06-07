@@ -195,6 +195,7 @@
       </div>
 
       <div class="span7">
+
         <div class="ProfileInfo">
         <div class="status" id="box3" >
 
@@ -212,51 +213,86 @@
         </div>
         </div>
         </div>
-  <div>
+       <div id="info_box">
         <div class="information" id="box3">
-          <div class="thumbnail" >
+          <div class="thumbnail" style="padding-left: 15px;" >
+              <div class="alert alert-success" id="smsnoti"  style="display:none;">
+                Your Info has been Updated Successfully.
+              </div>
+              <div class="alert alert-error" id="smsnoti"  style="display:none;">
+                Their  has been an error Please try again.
+              </div>
+
           <h3>Information:</h3>
-          <h5>Name: <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> <input value="{{user.name}}" type="text" id="namevalue" class="span8" style="display:none" maxlength="40"> 
-            <label id = "nameoutput" style="color:red"></label>
-            {% ifequal request.user user %}
-            <button id="editname" class="btn btn-success btn-small" onClick="edit_name_preparation()" >Edit</button>
-            {% endifequal %}
-            <button id="savename" style="display:none" class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
+          <h5>Name: 
+            <label id="nameLabel" value="{{user.name}}">  {{user.name}} </label> 
           </h5> 
           <h5>Email: {{ user.email}}</h5>
-          <h5>Birth date: <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> <input  type="text" id="datepicker" class="span8" style="display:none" placeholder="Please chose the ISO 8601 formate">
-          <p style="display:none" id="formate">Format options:<br/>
+          <h5>Birth date: 
+            <label id="dateofbirthlabel" value="{{user.date_of_birth}}">{{user.date_of_birth}}</label> 
+          </h5>
+          <h5>Phone number: 
+            <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> 
+
+          </h5> 
+          <h5>Works at: 
+            <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> 
+            {% ifequal request.user user %}
+            <div style="padding:5px">
+            <button id="editworksat" class="btn btn-info" style="float:right;" onClick="edit_preparation()" >Edit</button>
+          </div>
+            {% endifequal %}
+
+          </h5>
+          <br>
+          </div>
+          </div>  
+          </div>  
+
+
+          <div >
+
+            <div id="edit_box" style="display:none;">
+          <div class="information" id="box3">
+          <div class="thumbnail" style="padding-left: 15px;" >
+          <h3>Information:</h3>
+          <h5>Name:  <input value="{{user.name}}" type="text" id="namevalue" class="span8"   maxlength="40"> 
+            <label id = "nameoutput" style="color:red"></label>
+
+            <button id="savename"   class="btn btn-success btn-small" onClick="edit_name_save()" >Save</button>
+          </h5> 
+          <h5>Email: {{ user.email}}</h5>
+          <h5>Birth date: 
+            <input  type="text" id="datepicker" class="span8"   placeholder="Please chose the ISO 8601 formate">
+            <label id = "birthoutput" style="color:red"></label>
+
+          <p id="format" style="display:none;">Format options:
             <select id="format">
-              <option >Chose formate</option>
+              <!-- <option >Chose formate</option> -->
               <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
             </select>
           </p>
-            <label id = "birthoutput" style="color:red"></label>
-            {% ifequal request.user user %}
-            <button id="editdob" class="btn btn-success btn-small" onClick="edit_dob_preparation()" >Edit</button>
-            {% endifequal %}
-            <button id="savedob" style="display:none" class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
+            <button id="savedob"   class="btn btn-success btn-small" onClick="edit_dob_save()" >Save</button>
           </h5>
-          <h5>Phone number: <label id="phonelabel" value="{{user.phone_number}}">{{user.phone_number}}</label> <input type="text" id="phonevalue" class="span8" style="display:none" maxlength="150">
+          <h5>Phone number: 
+            <input type="text" id="phonevalue" class="span8"   maxlength="150">
             <label id = "phoneoutput" style="color:red"></label>
-            {% ifequal request.user user %}
-            <button id="editphone" class="btn btn-success btn-small" onClick="edit_phone_preparation()" >Edit</button>
-            {% endifequal %}
-            <button id="savephone" style="display:none" class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
+            <button id="savephone"   class="btn btn-success btn-small" onClick="edit_phone_save()" >Save</button>
           </h5> 
-          <h5>Works at: <label id="worksatlabel" value="{{user.worksat}}">{{user.works_at}}</label> <input type="text" id="worksatvalue" class="span8" style="display:none" maxlength="150">
+          <h5>Works at: 
+            <input type="text" id="worksatvalue" class="span8"   maxlength="150">
             <label id = "worksoutput" style="color:red"></label>
-            {% ifequal request.user user %}
-            <button id="editworksat" class="btn btn-success btn-small" onClick="edit_worksat_preparation()" >Edit</button>
-            {% endifequal %}
-            <button id="saveworksat" style="display:none" class="btn btn-success btn-small" onClick="edit_worksat_save()" >Save</button>
-
+            <div id="saving_div" style="padding:5px">
+             <img id="loadingsms" style="float:right;" src="{% static "img/ajax-loader.gif" %}" style="display:none;">
+            <button id="save_all"  style="float:right;" class="btn btn-success btn-small" onClick="edit_info()" >Save</button>
+            </div>
           </h5>
                  
      
 
           <br>
 
+          </div>
           </div>
           </div>
         </div>
@@ -431,33 +467,52 @@ $(document).ready(function(){
     });
   });
 });
-function edit_phone_preparation(){
-  $('#editphone').hide();
-  $('#phonelabel').hide();  
-  var phone = $('#phonelabel').text();
-  $("#phonevalue").val (phone);
-  $('#phonevalue').show();
-  $('#savephone').show();
-  $('#hidephone').show();
+
+// Fixinggggg 
+// <fix> ia m fixing thisssss </fix>
+function edit_preparation(){
+  $('#info_box').fadeOut();
+  $('#edit_box').fadeIn();
+  $("#loadingsms").fadeOut();
 }
-function edit_phone_save(){
-  var phone1 = $("#phonevalue").val()
+
+function edit_info(){
+  var phone1 = $("#phonevalue").val();
+  var name1 = $("#namevalue").val();
+  var dateofbirthsubmitted = $("#datepicker").val()
+  var work1 = $("#worksatvalue").val()
+
+  $("#loadingsms").fadeIn();
   $.ajax({
-    url: "/edit_phone/",
+    url: "/edit_info/",
     type: "POST",
     data:{
-    'userphone' : phone1,
+    'user_name' : name1,
+    'userphone' :   phone1,
+    'dateofbirth' : dateofbirthsubmitted,
+    'userwork' : work1,
+
     },
       success:function(result){
+        $('#nameLabel').text($('#namevalue').val());
         $('#phonelabel').text($('#phonevalue').val());
-        $('#phonelabel').show();
-        $('#phonevalue').hide();
-        $('#savephone').hide();
-        $('#editphone').show();
-        alert("Field updated successfully"); 
-      },
+        $('#dateofbirthlabel').text($('#datepicker').val());
+        $('#worksatlabel').text($('#worksatvalue').val());
+
+
+        $("#succnoti").fadeIn();
+        alert("Field updated successfully"); },
+
+        error:function(result){
+          $("#failnoti").fadeIn();
+          alert("Failed please Try Again!!")
+        }
   });
 }
+// Fixinggggg 
+// <fix> ia m fixing thisssss </fix>
+
+
 function hide_phone(){
   var phone2 = "tlndf"
   $.ajax({
@@ -477,43 +532,9 @@ function hide_phone(){
       },
   });
 }
-function edit_name_preparation(){
-  $('#editname').fadeOut();
-  $('#nameLabel').fadeOut();
-  var name = $('#nameLabel').text();
-  edit_dob_preparation()
-  edit_worksat_preparation()
-  $('#namevalue').fadeIn();
-  $('#savename').fadeIn();
-  }
-function edit_name_save(){
-  var name1 = $("#namevalue").val()
-  $.ajax({
-    url: "/edit_name/",
-    type: "POST",
-    data:{
-    'user_name' : name1,
-    },
-      success:function(result){
-        $('#nameLabel').text($('#namevalue').val());
-        $('#nameLabel').fadeIn();
-        $('#namevalue').fadeOut();
-        $('#savename').fadeOut();
-        $('#editname').fadeIn();
-        alert("Field updated successfully"); 
-      },
-  });
-}
-function edit_dob_preparation(){
-  $('#editdob').fadeOut();
-  $('#dateofbirthlabel').fadeOut();
-  var dob = $('#dateofbirthlabel').text();
-    $("#datepicker").val (dob);
-    $('#datepicker').fadeIn();
-    $('#formate').fadeIn();
-    $('#savedob').fadeIn();
 
-}
+
+
 
 function delete_item_from_wishlist(post_id){
 $.ajax({
@@ -543,60 +564,16 @@ success:function(result){
 
 });
 }
-function edit_dob_save(){
-  var dateofbirthsubmitted = $("#datepicker").val()
-  $.ajax({
-    url: "/edit_dob/",
-    type: "POST",
-    data:{
-    'dateofbirth' : dateofbirthsubmitted,
-    },
-      success:function(result){
-        $('#dateofbirthlabel').text($('#datepicker').val());
-        $('#dateofbirthlabel').fadeIn();
-        $('#datepicker').fadeOut();
-        $('#savedob').fadeOut();
-        $('#formate').fadeOut();
-        $('#editdob').fadeIn();
-        alert("Field updated successfully"); 
-      },
-      error:function(result){
-        alert("Failed please check the formate!!")
-      }
-  });
-}
 
-function edit_worksat_preparation(){
-  $('#editworksat').hide();
-  $('#worksatlabel').hide();  
-}function edit_worksat_preparation(){
-  $('#editworksat').fadeOut();
-  $('#worksatlabel').fadeOut();  
-  var work = $('#worksatlabel').text();
-    $("#worksatvalue").val (work);
-    $('#worksatvalue').fadeIn();
-    $('#saveworksat').fadeIn();
-}
-function edit_worksat_save(){
-  var work1 = $("#worksatvalue").val()
-  $.ajax({
-    url: "/edit_work/",
-    type: "POST",
-    data:{
-    'userwork' : work1,
-    },
-      success:function(result){
-        $('#worksatlabel').text($('#worksatvalue').val());
-        $('#worksatlabel').fadeIn();
-        $('#worksatvalue').fadeOut();
-        $('#saveworksat').fadeOut();
-        $('#editworksat').fadeIn();
-        alert("Field updated successfully"); 
-      },
-  });
-}
+
+
+
 $(function() {
-    $( "#datepicker" ).datepicker({ minDate: -20000, maxDate: "+0M +0D" });
+    $( "#datepicker" ).datepicker({ 
+      dateFormat: 'yy-mm-dd',
+      changeMonth: true,
+      changeYear: true,
+      minDate: "-100Y", maxDate: "-10Y" });
     $( "#format" ).change(function() {
       $( "#datepicker" ).datepicker( "option", "dateFormat", $( this ).val() );
     });
