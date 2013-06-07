@@ -1735,6 +1735,11 @@ def SavingComment(request, post_id):
     post.comments_count +=1
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
+    datetime2 = json.dumps(datetime.now(), default=date_handler)
+    # Pusher code begin
+    push['real_time_interaction'].trigger('real_time_comments', {'post_id': post_id,'content': content,
+    'datetime': datetime2, 'commentor_id': userobject.id, 'commentor_name': userobject.name, 'post_owner': post.seller.id})
+    # Pusher code end
     #c2-mohamed
     #the next lines is to send notification to the post owner
     post_seller = post.seller
@@ -1749,9 +1754,7 @@ def SavingComment(request, post_id):
     for commentor_to_send in all_commentors_array:
         if request.user is not commentor_to_send:
             if post.seller is commentor_to_send:
-                sent_to_owner = True
-                not_content = unicode(userobject.name) + " commented on your post"
-                comment_notification(post_seller, post, not_content)
+                continue
             else:
                 not_content = unicode(userobject.name) + " commented on a post you commented on"
                 comment_notification(commentor_to_send, post, not_content)
@@ -1759,6 +1762,9 @@ def SavingComment(request, post_id):
         not_content = unicode(userobject.name) + " commented on your post"
         comment_notification(post_seller, post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
+
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
 #c2-mohamed
 #this def sends notification
