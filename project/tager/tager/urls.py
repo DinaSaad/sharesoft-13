@@ -61,7 +61,7 @@ urlpatterns = patterns('',
     url(r'^updatestatus/$', 'tager_www.views.update_status'),
 
     url(r'^menu_posts/$', 'tager_www.views.menuForSubchannels'),
-    url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
+    # url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
     
 
 

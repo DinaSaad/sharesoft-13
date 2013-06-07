@@ -84,7 +84,7 @@ class UserProfile(AbstractBaseUser):
     private_work = models.BooleanField(default=False)
     works_at = models.CharField(max_length=100, null=True)
     works_at2 = models.CharField(max_length=100, null=True)
-    photo = models.ImageField(upload_to='img',blank=True)
+    # photo = models.ImageField(upload_to='img',blank=True)
     photo = models.ImageField(upload_to='img',blank=True,default="mpf.png")
     activation_key = models.CharField(max_length=40 , null=True)
     sms_code = models.CharField(max_length=5 , null=True)
@@ -143,6 +143,15 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
+
+    def cache(user,url):
+        """Store image locally if we have a URL"""
+        result = urllib.urlretrieve(url)
+        self.photo.save(
+                os.path.basename(url),
+                File(open(result[0], 'rb'))
+                )
+        self.save()
 
 
    
@@ -699,4 +708,12 @@ class ActivityLog(models.Model):
     # activity_date = models.DateField()
     def __unicode__(self):
         return unicode(self.activity_date) + unicode(self.content)
+
+class social_identifier(models.Model):
+    user = models.ForeignKey(UserProfile)
+    provider_name=models.CharField(max_length = 200)
+    provider_uid=models.CharField(max_length = 200)
+
+    class Meta: #to make sure a user doesn't have the same indentifier twice
+        unique_together = ("user", "provider_name", "provider_uid")
 
