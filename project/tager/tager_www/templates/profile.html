@@ -40,7 +40,13 @@
                   <a href="/edit_pic/">Change Profile Picture?</a>
 
                      <div class="thumbnail" >  
-                  <img src="{% static "img/mpf.png" %}" alt="picture">
+                      {% if not user.photo == mpf.png %} 
+                        <img style="width:300px;" src="{{user.photo.url}}" alt="profile pic" />
+                       {% else %}
+                        <img src="{% static "img/mpf.png" %}" alt="picture">
+                       {% endif %}
+
+
                     <h4>{{user.name}}</h4>
                   <div class="profileHeader" class="active" wotsearchprocessed="true">
                    <center> <div id="star"></div></center>

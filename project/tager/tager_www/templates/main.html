@@ -120,8 +120,8 @@
     <div class="thumbnail" >
 
       <a href="/showpost?post={{post.id}}">
-   {% if post.picture1 %} 
-     <img style="width:300px;" src="{{post.picture1.url}}" alt="profile pic" />
+   {% if post.profile_picture %} 
+     <img style="width:300px;" src="{{post.profile_picture.url}}" alt="profile pic" />
     {% else %}
        <img style="width: 300px;" src="{% static "img/post.png" %}" alt="{{post.id}}" />
     {% endif %}
