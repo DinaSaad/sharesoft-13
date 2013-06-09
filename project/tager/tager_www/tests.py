@@ -591,4 +591,27 @@ class intrested_in(unittest.TestCase):
         response = self.client.post('/intrested/',{'post_id': post.id})
         self.assertEqual(InterestedIn.objects.filter(user_id_buyer = user, post = post).exists(),True)
 
+class  AccountsType(unittest.TestCase):
 
+
+    def setUp(self):
+
+        self.user1 = UserProfile.objects.create_user(email="riham@gmail.com", name="riham", password="123", is_premium = False)
+        self.user1.save()
+        self.user2 = UserProfile.objects.create_user(email="ahmad@gmail.com", name="ayia", password="123",is_premium = True)
+        self.user2.save()
+
+    def test_changingAccountType(self):
+        self.assertEqual(self.user1.email , "riham@gmail.com")
+        self.assertEqual(self.user2.email , "ahmad@gmail.com")
+
+        heba = UserProfile.objects.get(pk=1)
+        ahmad = UserProfile.objects.get(pk=2)
+        heba.is_premium = True
+        ahmad.is_premium = False
+        heba.save()
+        ahmad.save()
+        UserProfile.objects.get(pk=1)
+        UserProfile.objects.get(pk=2)
+        self.assertEqual(heba.is_premium, True)
+        self.assertEqual(ahmad.is_premium, False)

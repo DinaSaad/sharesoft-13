@@ -56,7 +56,7 @@ style="
       {% elif post.state == "Sold" %}
       <span class="label label-success StateLabel">Sold</span> 
       {% endif %}
-<a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4></a>
+<a href="/showpost?post={{post.id}}"><h4>{{post.title}}</h4><h1> {{post.subchannel.channel}} </h1></a>
 
 <p class="stats colorless sysPinOnlyFriendsNeedRemove" style="padding-right:5px;padding-left:5px;">
   <span class="IntrestedCount" title="Likes"><em><i class="icon-bullhorn"></i></em>&nbsp;&nbsp;{{post.intersed_count}}</span> &nbsp;

@@ -27,12 +27,11 @@ from django.core.mail import send_mail
 from django.template import loader, Context
 from django.template.loader import get_template
 from django.contrib.auth.models import AnonymousUser
-
-
-
 from django.shortcuts import render_to_response
 from django.shortcuts import RequestContext
 import re
+import os
+
 from tager_www.models import Post , UserProfile , Channel
 from django.db.models import Q
 import urllib
@@ -41,20 +40,192 @@ import datetime
 from datetime import datetime, timedelta
 from django.conf import settings
 from twilio.rest import TwilioRestClient
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as django_login
+# from django.core.files import File 
+import urllib2, urlparse
+from django.core.files.base import ContentFile
+import json
+import pusher
+from django.core import serializers
 
+pusher.app_id = settings.PUSHER_APP_ID
+pusher.key = settings.PUSHER_KEY
+pusher.secret = settings.PUSHER_SECRET
+push = pusher.Pusher()
 
 APP_ID = '461240817281750'   # From facebook app's settings
 APP_SECRET = 'f75f952c0b3a704beae940d38c14abb5'  # From facebook app's settings
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000'  # The url that the user will be redirected to after logging in with facebook 
-FACEBOOK_PERMISSIONS = ['email', 'user_about_me']  # facebook permissions
+REDIRECT_URL = 'http://127.0.0.1:8000/main'
+FACEBOOK_PERMISSIONS = ['email', 'user_about_me','user_photos']  # facebook permissions
 FACEBOOK_FRIENDS_PERMISSIONS = ['friendlists'] 
 SCOPE_SEPARATOR = ' '
+
+LOGIN_URL="/login/"
+login_url="/login/"
+
+import urllib
+import urllib2
+import json
+from django.contrib import auth
+
+def social_login(request):
+    try:
+        token = request.POST['token']
+    except KeyError:
+        # TODO: set ERROR to something
+        return HttpResponseRedirect('/')
+
+    api_params = {
+        'token': token,
+        'apiKey': settings.JANRAIN_RPX_API_KEY,
+        'format': 'json',
+    }
+
+    janrain_response = urllib2.urlopen(
+            "https://rpxnow.com/api/v2/auth_info",
+            urllib.urlencode(api_params))
+    resp_json = janrain_response.read()
+    auth_info = json.loads(resp_json)
+    print auth_info['stat']
+    u = None
+    profile = None
+    print auth_info['profile']
+    form = PostForm(request.POST,request.FILES)
+
+
+    if auth_info['stat'] == 'ok':
+        profile = auth_info['profile']
+        print profile.get('providerName')
+        if UserProfile.objects.filter(email=profile.get('email')).exists():
+            tmp=UserProfile.objects.get(email=profile.get('email'))
+            if social_identifier.objects.filter(user=tmp,provider_name=profile.get('providerName'),provider_uid=profile.get('identifier')).exists():
+                #User exist and identifier for that provider exists >> Now authorizee
+                authenticate_social_login(request,tmp)
+                return HttpResponseRedirect("/profile?user_id="+str(tmp.id))# Redirect to a success page.
+            else : 
+            #incase the user didt use that provider befour
+                social_obj= social_identifier(user=tmp,provider_name=profile.get('providerName'),provider_uid=profile.get('identifier'))
+                social_obj.save()
+                #User and provider identifier added >> Now authorizee
+                authenticate_social_login(request,tmp)
+                return HttpResponseRedirect("/profile?user_id="+str(tmp.id))# Redirect to a success page.
+
+        else: #incase of new user
+
+            if profile.get('providerName') =="Twitter": 
+            #if provider is twitter , get teh info then redirect to twiiter page to get the email
+              fbidtmp=facebook_uid=profile.get('identifier')
+              jmail=fbidtmp+"tmp@tager.com"
+              juser=UserProfile(name=profile.get('displayName'),
+                   facebook_uid=profile.get('identifier'),email=jmail)
+              print "will render"
+              return render (request, 'twitter.html', {'title':'Add your Twitter Email','user':juser})
+
+            else : 
+            #incase of other provider and a new user
+                juser=UserProfile.objects.create_user(name=profile.get('displayName'),
+                     email=profile.get('email'),is_verfied=True)
+
+                """Store image locally  if facebook"""
+                if profile.get('providerName') =="Facebook": 
+                    image_url = profile.get("photo") # get this url from somewhere
+                    image_data = urllib2.urlopen(image_url, timeout=5)
+                    filename = urlparse.urlparse(image_data.geturl()).path.split('/')[-1]
+                    print filename
+                    juser.photo = filename
+                    juser.photo.save(
+                        filename,
+                        ContentFile(image_data.read()),
+                        save=False
+                    )
+
+                #genrate 14 char password then send it to the user
+                juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(14))
+                title = "Auto Genrated Password"
+                content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is: " + str(juser.password) 
+                send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+                juser.save()
+                #added the social login info to social_ident table
+                social_obj= social_identifier(user=juser,provider_name=profile.get('providerName'),provider_uid=profile.get('identifier'))
+                social_obj.save()
+                #User and provider identifier added >> Now authorizee
+                authenticate_social_login(request,juser)
+                return HttpResponseRedirect("/profile?user_id="+str(juser.id))# Redirect to a success page.
+
+    return None
+
+def authenticate_social_login(request,juser):
+    authenticated_user = authenticate(mail=juser.email, password=juser.password)
+    if authenticated_user is not None:
+        if authenticated_user.is_active:
+            django_login(request, authenticated_user)
+            print "auth success logged"
+            return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
+        else:
+           return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
+    else:
+        print "auth failed"
+        return render_to_response ('home.html',context_instance=RequestContext(request))
+
+
+def twitter_reg(request):
+  identifier = request.POST['twitterlink']
+  jemail= request.POST['email']
+  jname= request.POST['name']
+  juser=UserProfile(name=jname,
+       facebook_uid=identifier,email=jemail)
+  juser.password = ''.join(random.choice(string.ascii_uppercase + string.digits+ juser.email) for x in range(20))
+  title = "Auto Genrated Password"
+  content = "You recived this email for using our social login ,Please Change your password , your auto genrated password is " + str(juser.password) 
+  send_mail(title, content, 'mai.zaied17@gmail.com.', [juser.email], fail_silently=False)
+  juser.save()
+  social_obj= social_identifier(user=juser,provider_name="Twitter",provider_uid=identifier)
+  social_obj.save()
+  authenticate_social_login(request,juser)
+  return HttpResponseRedirect("/profile?user_id="+str(juser.id))# Redirect to a success page.
+
+
+
+
+
+
+class CustomAuthentication:
+  def authenticate(self, mail, password):
+      try:
+          user = UserProfile.objects.get(email=mail)
+          pwd_valid = check_password(password, user.password)
+          if pwd_valid:    
+              return user
+      except UserProfile.DoesNotExist:
+          return None
+
+      try:
+          user = UserProfile.objects.get(email=mail)
+          if user.password == password:
+              return user              
+      except UserProfile.DoesNotExist:
+          return None
+
+
+          
+
+
+  def get_user(self, user_id):
+      try:
+          return UserProfile.objects.get(pk=user_id)
+      except User.DoesNotExist:
+          return None  
+
+
+
 
 
 
 
 def home(request):
-    return render_to_response ('home.html',context_instance=RequestContext(request))
+    return render_to_response ('home.html',{'title':'Welcome to Tager'},context_instance=RequestContext(request))
 
 
 def return_channels(request):
@@ -213,24 +384,24 @@ def add_post(request):
             if k.startswith('option_'):
                 Value.objects.create(attribute_id=k[7:], value= request.POST[k], post_id = p.id)
                 #c2-mohamed
-                #the next line calls post_Notification() to send notification to all subscribed users
-                #to that post
-                p.post_Notification()
-                #c2-mohamed
                 #the next try statement is to insert the value if new in AttributeChoice table
-                try:
-                    attribute_needed = Attribute.objects.get(pk=k[7:])
-                    AttributeChoice.objects.create(attribute_id = attribute_needed, value = request.POST[k])
-                except:
-                    pass
-                #c2-mohamed
-                #the next five lines are written to save a tuple in ActivityLog table
-                #to save it to make the user retrieve it when he logs into his activity log
-                post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
-                post_activity_url = "showpost?post=" + unicode(p.id)
-                post_log_type = "post"
-                # post_log_date = datetime.datetime.now()
-                log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author, activity_date = datetime.now())
+                # try:
+                #     attribute_needed = Attribute.objects.get(pk=k[7:])
+                #     AttributeChoice.objects.create(attribute_id = attribute_needed, value = request.POST[k])
+                # except:
+                #     pass
+        #c2-mohamed
+        #the next line calls post_Notification() to send notification to all subscribed users
+        #to that post
+        post_Notification(p)
+        #c2-mohamed
+        #the next five lines are written to save a tuple in ActivityLog table
+        #to save it to make the user retrieve it when he logs into his activity log
+        post_activity_content = "you posted in " + unicode(current_sub_channel.name) + "."
+        post_activity_url = "showpost?post=" + unicode(p.id)
+        post_log_type = "post"
+        # post_log_date = datetime.datetime.now()
+        log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = author, activity_date = datetime.now())
         return HttpResponseRedirect('/main')
     else:
 
@@ -239,6 +410,123 @@ def add_post(request):
     
 
     return render(request,'addPost.html', {'form': form, 'add_post': True, 'list_of_attributes': list_of_attributes})
+
+
+#c2-mohamed awad
+#this method saves notification in Notification table using content and user id
+#first i find all users interested and subscribed to this post whether by channel, subchannel or parameter subscription
+#this is done by finding all users subscribed to channel of the post and we add them to users_subscribed_to_channel_array
+#then we find all users subscribed to subchannel of the post then we add it to users_subscribed_to_subchannel_array
+#then we find all users subscribed to all attributes and values of the post and we add it to all_users_subscribed to attributes
+#then we record all notifications in Notification table
+def post_Notification(self):
+    print self
+    print "xxxxxxxxxxxxxxxxxxxxxx"
+    post_owner = self.seller
+    all_values_array=[]
+    values_array=[]
+    all_values = Value.objects.filter(post = self.id)
+    for value in all_values:
+        all_values_array.append(value)
+        values_array.append(value.value)
+    attributes_array = []
+    for value in all_values_array:
+        attribute  = value.attribute
+        attributes_array.append(attribute.name)
+    subchannel_of_post = self.subchannel
+    channel_of_post = subchannel_of_post.channel
+    users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
+    users_subscribed_to_channel_array = []
+    for i in users_subscribed_to_channel:
+        users_subscribed_to_channel_array.append(i.user)
+    users_subscribed_to_subchannel = UserSubchannelSubscription.objects.filter(sub_channel=subchannel_of_post)
+    users_subscribed_to_subchannel_array = []
+    for x in users_subscribed_to_subchannel:
+        users_subscribed_to_subchannel_array.append(x.user)
+    all_users_subscribed_to_attributes = []
+    i = 0
+    r = 0
+    for z in attributes_array:
+        value_in_array = values_array[i]
+        attribute = Attribute.objects.get(name = attributes_array[r], subchannel = subchannel_of_post)
+        r = r + 1
+        try:
+            value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
+        except:
+            pass
+        users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
+        i = i + 1
+        for h in users_subscribed_to_attribute:
+            all_users_subscribed_to_attributes.append(h.user)
+    for q in users_subscribed_to_channel_array:
+        not_content = "You have new posts to see in " + unicode(channel_of_post.name)
+        not_url = "showpost?post="+unicode(self.id)
+        try:
+            not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
+            not1.save()
+            print "yyyyyyyyyyyyy"
+            print not1.content
+            # Pusher code begin
+            # serialized_content = serializers.serialize('json', [ not1.content ])
+            # serialized_url = serializers.serialize('json', [ not1.url ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'not_content': serialized_content, 'not_url': serialized_url})
+            # Pusher code end
+        except:
+            not1 = Notification(user = q, content = not_content, url=not_url)
+            not1.save()
+            print "yyyyyyyyyyyyy"
+            print not1.content
+            # Pusher code begin
+            # serialized_content = serializers.serialize('json', [ not_content ])
+            # serialized_url = serializers.serialize('json', [ not_url ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'not_content': not_content, 'not_url': not_url})
+            # Pusher code end
+    for a in users_subscribed_to_subchannel_array:
+        not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
+        not_url = "showpost?post="+unicode(self.id)
+        try:
+            not1 = Notification(user = a, content = not_content, url=not_url, image_url = self.profile_picture.url)
+            not1.save()
+            # Pusher code begin
+            # serialized_content = serializers.serialize('json', [ not_content ])
+            # serialized_url = serializers.serialize('json', [ not_url ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'not_content': not_content, 'not_url': not_url})
+            # Pusher code end
+        except:
+            not1 = Notification(user = a, content = not_content, url=not_url)
+            not1.save()
+            # Pusher code begin
+            # serialized_content = serializers.serialize('json', [ not_content ])
+            # serialized_url = serializers.serialize('json', [ not_url ])
+            push['notification'].trigger('interested_notification', {'user_id': q.id,
+            'not_content': not_content, 'not_url': not_url})
+            # Pusher code end
+    for b in all_users_subscribed_to_attributes:
+        if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
+            if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
+                not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
+                not_url = "showpost?post="+unicode(self.id)
+                try:
+                    not1 = Notification(user = b, content = not_content, url=not_url, image_url = self.profile_picture.url)
+                    not1.save()
+                    # Pusher code begin
+                    # serialized_content = serializers.serialize('json', [ not_content ])
+                    # serialized_url = serializers.serialize('json', [ not_url ])
+                    push['notification'].trigger('interested_notification', {'user_id': q.id,
+                    'not_content': not_content, 'not_url': not_url})
+                    # Pusher code end
+                except:
+                    not1 = Notification(user = b, content = not_content, url=not_url)
+                    not1.save()
+                    # Pusher code begin
+                    # serialized_content = serializers.serialize('json', [ not_content ])
+                    # serialized_url = serializers.serialize('json', [ not_url ])
+                    push['notification'].trigger('interested_notification', {'user_id': q.id,
+                    'not_content': not_content, 'not_url': not_url})
+                    # Pusher code end
 
 
 
@@ -292,6 +580,7 @@ def add_to_wish_list(request):
     user = request.user
     post = request.POST['post']
     can_wish = user.add_to_wish_list(post)
+    post_obj = Post.objects.get(id = post)
     if can_wish:
         WishList.objects.create(user = user, post_id = post)
         #c2-mohamed
@@ -303,7 +592,31 @@ def add_to_wish_list(request):
         post_log_type = "wish"
         # post_log_date = datetime.datetime.now()
         log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
+        not_content = unicode(user.name) + " has added your post to his wish list."
+        wish_notification(post_obj, not_content)
     return HttpResponse()
+
+#c2-mohamed
+#this def sends notification
+#to the user who owns the post that the other user has added to his wish list
+def wish_notification(post_in, content):
+    post_owner = post_in.seller
+    not_content = content
+    not_url = "showpost?post=" + unicode(post_in.id)
+    try:
+        not1 = Notification(user = post_owner, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
+    except:
+        not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
 #c1_abdelrahman this method takes the user as an input and it gets the post.
 #from the the main page the post object object is extracted from the post table.
 #list of attributes are extracted and also list_of_values of the attributes are given.
@@ -364,7 +677,8 @@ def view_post(request):
     , 'list_of_interested_buyers': list_of_interested_buyers
     , 'comments': Comment.objects.filter(post_id=post_id)
     , 'user_is_intrested': is_intrested_inpost 
-    , 'title':title }
+    , 'title':title
+    , 'post_id': post_id }
 
     if user.id is not None:
         d = check_Rate_Identify_buyer(request)
@@ -522,8 +836,6 @@ def main(request):
     #C1-Tharwat --- this will loop on all the posts that will be in the list and call the post_state method in order to check their states
     for i in post_list:
         i.post_state()
-
-
     channels = Channel.objects.all()
     channels_list = [] 
     for channel in channels:
@@ -542,8 +854,9 @@ def main(request):
             states.append(post.state) 
         list_of_prices.append(post.price)
     print states
-    price_min=min(list_of_prices)
-    price_max =max(list_of_prices)
+    if list_of_prices:
+      price_min=min(list_of_prices)
+      price_max =max(list_of_prices)
 # Reem- As  c3 , (a system) I should be able to provide  a refinement bar along while previwing the posts  
 # - this method creats variable channels , to store all channels available in the database, 
 # variable subchannels , to store all subchannels available in the database,
@@ -551,6 +864,8 @@ def main(request):
 # subchannels_list is a list that holds dictionaries os subchannels and its attributes, 
 # the method then return the channels_list , as it holds every subchannel of a channel and the posts related to it 
 # it also returns the mnimum and maximum price available 
+
+    post_list=filter_posts(post_list) # to filter out (hidden and expired and sold posts) and sort by q-index
     return render_to_response('main.html',{'post_list': post_list , 'all_channels': channels_list ,'title':title, 'canpost': user_can_post , 'states': states},context_instance=RequestContext(request))  
 
 
@@ -568,7 +883,7 @@ def filter_home_posts():
 
 def filter_posts(post_list):
     print post_list
-    post_filtered = (post_list.objects.exclude(is_hidden=True)
+    post_filtered = (post_list.exclude(is_hidden=True)
         .exclude(expired=True)
         .exclude(is_sold=True)
         .order_by('-quality_index'))
@@ -577,32 +892,11 @@ def filter_posts(post_list):
 
 
 
-class CustomAuthentication:
-    def authenticate(self, mail, password):
-        try:
-            user = UserProfile.objects.get(email=mail)
-            pwd_valid = check_password(password, user.password)    
-            if pwd_valid:   
-                return user
-        except UserProfile.DoesNotExist:
-            return None
-
-    def get_user(self, user_id):
-        try:
-            return UserProfile.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
-
-
-
 
 
 def  get_user(self):    
     User = get_user_model()
     return User
-
-
-
 
 #mai c2: registration
 #this method takes in a post request  
@@ -621,8 +915,9 @@ def UserRegistration(request):
        
         form = RegistrationForm(request.POST) 
         if form.is_valid(): 
+                print form.cleaned_data['password1']
                 user = UserProfile.objects.create_user(name=form.cleaned_data['name'], email = form.cleaned_data['email'], password = form.cleaned_data['password1'])
-                 # this creates the user 
+                 # this creates the user
                 user.activation_key = ''.join(random.choice(string.ascii_uppercase + string.digits+ user.email) for x in range(20))
                 created = datetime.now()
                 user.save()
@@ -668,77 +963,30 @@ def update_status(request):
 # saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
 #name and will be redirected to the login page. output of the method saves the new name in database 
 @login_required
-def edit_name(request):
+def edit_info(request):
     user = request.user
+    print request.POST
+    print request.POST['user_name']
     user.name = request.POST['user_name']
-    print"fffffffffffff"
+    if request.POST['dateofbirth']:
+        user.date_Of_birth = request.POST['dateofbirth']
+    user.works_at = request.POST['userwork']
+    user.phone_number = request.POST['userphone']
     user.save()
     #c2-mohamed
     #the next lines are written to save a tuple in ActivityLog table
     #to save it to make the user retrieve it when he logs into his activity log
     #post_activity_content is to save the activity log content that will be shown to user
     #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-    #post_log_type is the type of the log type the user will choose in the activity log page
-    
-    post_activity_content = "you edited your name to " + unicode(user.name) + "."
+    #post_log_type is the type of the log type the user will choose in the activity log page   
+    post_activity_content = "you edited your info ." 
     post_activity_url = "profile/?user_id=" + unicode(user.id)
     post_log_type = "profile"
     # post_log_date = datetime.datetime.now()
     log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type,user = user, activity_date = datetime.now())
     return HttpResponse (" ")
 
-# Heba - C2 edit_date_of_birth method - the edit_date_of_birth method  allows logged in users to edit their 
-# date of birth. It takes in a request of type post holding date of birth as a varibale in which the user can edit.
-# The user can write the date of birth they want in the text field which will be
-# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
-# date of birth and will be redirected to the login page. output of the method saves the new date of birth in database 
-@login_required
-def edit_date_of_birth(request):
-    user = request.user
-    user.date_Of_birth = request.POST['dateofbirth']
-    user.save()
-    #c2-mohamed
-    #the next five lines are written to save a tuple in ActivityLog table
-    #to save it to make the user retrieve it when he logs into his activity log
-    #post_activity_content is to save the activity log content that will be shown to user
-    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-    #post_log_type is the type of the log type the user will choose in the activity log page
-    post_activity_content = "you edited your date of birth to " + unicode(user.date_Of_birth) + "."
-    post_activity_url = "profile/?user_id=" + unicode(user.id)
-    post_log_type = "profile"
-    # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
-    return HttpResponse (" ")
 
-# Heba - C2 edit_work method - the edit_work method  allows logged in users to edit their 
-# works_at. It takes in a request of type post holding a value for works_at as a varibale in which the user can edit.
-# The user can write a the name they want in the text field which will be
-# saved on his profile. For user or guests who are not logged in or just viewing the profile will not be able to edit
-# works_at and will be redirected to the login page. output of the method saves the new works_at in database 
-@login_required
-def edit_work(request):
-    user = request.user
-    user.works_at = request.POST['userwork']
-    user.save()
-    #c2-mohamed
-    #the next five lines are written to save a tuple in ActivityLog table
-    #to save it to make the user retrieve it when he logs into his activity log
-    #post_activity_content is to save the activity log content that will be shown to user
-    #post_activity_url is to save the url the user will be directed to upon clicking the activity log
-    #post_log_type is the type of the log type the user will choose in the activity log page
-    post_activity_content = "you edited your place of work to " + unicode(user.works_at) + "."
-    post_activity_url = "profile/?user_id=" + unicode(user.id)
-    post_log_type = "profile"
-    # post_log_date = datetime.datetime.now()
-    log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
-    return HttpResponse (" ")
-
-@login_required
-def edit_phone(request):
-    user = request.user
-    user.phone_number = request.POST['userphone']
-    user.save()
-    return HttpResponse (" ")  
 
 @login_required
 def view_private(request):
@@ -1263,97 +1511,8 @@ def search(request):
     else:
         return render(request,'main.html', {'post_list' : post_list, 'sorry': sorry})
 
-def fb_login(request, result):
-        mail = result.email
-        password = result.password
-        authenticated_user = authenticate(mail=mail, password=password)
-        if authenticated_user is not None:
-            print authenticated_user.is_active
-            if authenticated_user.is_active:
-                django_login(request, authenticated_user)
-                return HttpResponseRedirect("/profile?user_id="+str(authenticated_user.id))# Redirect to a success page.
-            else:
-               return HttpResponse ("sorry your account is disabled") # Return a 'disabled account' error message
-        else:
-            return render_to_response ('home.html',context_instance=RequestContext(request))
-
-def facebook_login(request):
-    if request.REQUEST.get("device"):
-        device = request.REQUEST.get("device")
-    else:
-        device = "user-agent"
-        params = {}
-        params["client_id"] = APP_ID
-        params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
-        params['scope'] = SCOPE_SEPARATOR.join(FACEBOOK_PERMISSIONS)
-        params["device"] = device
-        url = "https://graph.facebook.com/oauth/authorize?" + urllib.urlencode(params)
-        if 'HTTP_REFERER' in request.META:
-            request.session['next'] = request.META['HTTP_REFERER']
-        return HttpResponseRedirect(url)
 
 
-# def send_sms(request):
-#     client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-
-#     message = client.sms.messages.create(to="+201112285944",
-#                                          from_="+15555555555",
-
-def fb_authenticate(request):
-    access_token = None
-    fb_user = None
-    uid = None
-    # assume logging in normal way
-    params = {}
-    params["client_id"] = APP_ID
-    params["client_secret"] = APP_SECRET
-    params["redirect_uri"] = request.build_absolute_uri(reverse("facebook_login_done"))
-    params["code"] = request.GET.get('code', '')
-    url = ("https://graph.facebook.com/oauth/access_token?" + urllib.urlencode(params))
-    from cgi import parse_qs
-    userdata = urllib.urlopen(url).read()
-    res_parse_qs = parse_qs(userdata)
-    # Could be a bot query
-    if not ('access_token') in res_parse_qs:
-        return None
-    access_token = res_parse_qs['access_token'][-1]
-    url = "https://graph.facebook.com/me?access_token=" + access_token
-    import simplejson as json
-    fb_data = json.loads(urllib.urlopen(url).read())
-    uid = fb_data['id']
-    mail = fb_data['email']
-    if not fb_data:
-        return None
-    try:
-        userprofile = UserProfile.objects.get(facebook_uid=int(uid))
-        userprofile.accesstoken = access_token
-        mail = userprofile.email
-        userprofile.save()
-        return userprofile
-
-    except UserProfile.DoesNotExist:
-        uid = fb_data.get('id')
-        name= fb_data['name']
-        email = fb_data.get('email',None)
-        userprofile = UserProfile.objects.create(name=name,facebook_uid=uid,email=email)
-        userprofile.name = fb_data['name']
-        userprofile.email = fb_data.get('email',None)
-        userprofile.accesstoken = access_token
-        userprofile.facebook_uid = fb_data['id']
-        print userprofile
-        userprofile.save()
-        return userprofile
-
-def facebook_login_done(request):
-    result=fb_authenticate(request)
-    if isinstance(result, UserProfile):
-        fb_login(request, result)
-    if 'next' in request.session:
-        next = request.session['next']
-        del request.session['next']
-        return HttpResponseRedirect(next)
-    else:
-        return HttpResponseRedirect(LOGIN_REDIRECT_URL)
 
 
 #c1_hala this method called savingComment that takes two parameters request and post_id, the 
@@ -1374,6 +1533,11 @@ def SavingComment(request, post_id):
     post.comments_count +=1
     comment = Comment(content=content, date=datetime.now(), user_id=userobject, post_id=post)
     comment.save()
+    datetime2 = json.dumps(datetime.now(), default=date_handler)
+    # Pusher code begin
+    push['real_time_interaction'].trigger('real_time_comments', {'post_id': post_id,'content': content,
+    'datetime': datetime2, 'commentor_id': userobject.id, 'commentor_name': userobject.name, 'post_owner': post.seller.id})
+    # Pusher code end
     #c2-mohamed
     #the next lines is to send notification to the post owner
     post_seller = post.seller
@@ -1388,16 +1552,40 @@ def SavingComment(request, post_id):
     for commentor_to_send in all_commentors_array:
         if request.user is not commentor_to_send:
             if post.seller is commentor_to_send:
-                sent_to_owner = True
-                not_content = unicode(userobject.name) + " commented on your post"
-                post_seller.comment_notification(post, not_content)
+                continue
             else:
                 not_content = unicode(userobject.name) + " commented on a post you commented on"
-                commentor_to_send.comment_notification(post, not_content)
-    if sent_to_owner is False:
+                comment_notification(commentor_to_send, post, not_content)
+    if sent_to_owner == False:
         not_content = unicode(userobject.name) + " commented on your post"
-        post_seller.comment_notification(post, not_content)
+        comment_notification(post_seller, post, not_content)
     return HttpResponseRedirect("/showpost?post="+str(post_id))
+
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
+#c2-mohamed
+#this def sends notification
+#to the user who owns the post that the other user has commented on it
+def comment_notification(user, post_in, content):
+    user_in = user
+    post_owner = post_in.seller
+    not_content = content
+    not_url = "showpost?post=" + unicode(post_in.id)
+    try:
+        not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
+    except:
+        not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
 
 #Beshoy intrested method Takes a request 
 #then then check if the user is verified ,
@@ -1419,13 +1607,39 @@ def intrested(request):
         #post_activity_content is to save the activity log content that will be shown to user
         #post_activity_url is to save the url the user will be directed to upon clicking the activity log
         #post_log_type is the type of the log type the user will choose in the activity log page
-        post_activity_content = "you added " + unicode(post_in.title) + " to your wish list."
+        post_activity_content = "you were interested in " + unicode(post_in.title)
         post_activity_url = "showpost?post=" + unicode(post_in.id)
         post_log_type = "profile"
         # post_log_date = datetime.datetime.now()
         log = ActivityLog.objects.create(content = post_activity_content, url = post_activity_url, log_type = post_log_type, user = user, activity_date = datetime.now())
-
+        post_owner = post.seller
+        interested_Notification(post)
     return HttpResponse()
+
+#c2-mohamed
+#this def sends notification
+#to the user who owns the post that the other user has pushed interested on it
+def interested_Notification(post_in):
+    user_in = self
+    post_owner = post_in.seller
+    not_content = unicode(self.name) + " is interested in your post"
+    not_url = "showpost?post=" + unicode(post_in.id)
+    try:
+        not1 = Notification(user = post_owner, content = not_content, url=not_url, image_url = post_in.photo.url, not_date=datetime.datetime.now())
+        not1.save()
+        # Pusher code begin
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
+    except:
+        not1 = Notification(user = post_owner, content = not_content, url=not_url, not_date=datetime.datetime.now())
+        not1.save()
+        # Pusher code begin
+        push['notification'].trigger('interested_notification', {'user_id': user_in.id,
+        'not_content': not_content, 'not_url': not_url})
+        # Pusher code end
+
 #c2-mohamed
 #thismethod renders to Activity.html
 #it renders all activity log that belongs to that user
@@ -1671,4 +1885,3 @@ def unread_notifications(request):
             if not_counter == 5:
                 break
         return render (request, 'base.html',{'all_unread_notifications': all_unread_notifications})
-

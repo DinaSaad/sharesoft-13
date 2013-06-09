@@ -36,13 +36,11 @@
 						{% if activities_log %}
 							{% for log in activities_log %}
 								<a href="../{{log.url}}">
-									<div id="activity_item_2" value="{{log.url}}" onclick="redirecting(value)" class="shadow" style="width:100%; height:auto;">
-										<span style="margin-left: 10px;">{{log.content}}</span>
-										<span style="float:right; margin-left:50px;">{{log.activity_date}}</span>
-										<br>
-										<hr>
-									</div>
+									<span>{{log.content}}</span>
 								</a>
+								<span style="float:right;">{{log.activity_date}}</span>
+								<hr>
+								<br>
 							{% endfor %}
 						{% endif %}
 					</div>
@@ -82,7 +80,7 @@
 		}
 		#activity_content_area{
 			position: relative;
-			width: 851px !important;
+			width: 1000px !important;
 			float: left;
 			margin-right: 0px;
 			height: auto;
@@ -95,6 +93,7 @@
 			position: fixed !important;
 			display: block;
 			height: auto;
+			border-right: 1px solid;
 			/*background-color: #BCD2EE;*/
 		}
 		#activity_selections{
@@ -124,11 +123,11 @@
 			list-style: none;
 		}
 		#activities_area{
-			min-height: 682px;
-			width: 687px;
-			float: right;
-			display: block;
-			margin-top: 45px;
+			min-height: 682px !important;
+			width: 750px !important;
+			float: right !important;
+			display: block !important;
+			margin-top: 45px !important;
 		}
 		#all{
 			margin-bottom: 100px;

@@ -71,7 +71,7 @@ class MyUserManager(BaseUserManager):
 class UserProfile(AbstractBaseUser):
     name = models.CharField(max_length=40)     
     email = models.EmailField(max_length=254, unique=True)
-    facebook_uid = models.IntegerField(unique=True, null=True)
+    facebook_uid = models.CharField(max_length=200, null=True)
     accesstoken = models.CharField(max_length=50 , null=True , unique=True)
     date_Of_birth = models.DateField(null=True, blank=True)
     phone_number = models.CharField(max_length=20 , null=True)
@@ -84,7 +84,7 @@ class UserProfile(AbstractBaseUser):
     private_work = models.BooleanField(default=False)
     works_at = models.CharField(max_length=100, null=True)
     works_at2 = models.CharField(max_length=100, null=True)
-    photo = models.ImageField(upload_to='img',blank=True)
+    # photo = models.ImageField(upload_to='img',blank=True)
     photo = models.ImageField(upload_to='img',blank=True,default="mpf.png")
     activation_key = models.CharField(max_length=40 , null=True)
     sms_code = models.CharField(max_length=5 , null=True)
@@ -143,6 +143,15 @@ class UserProfile(AbstractBaseUser):
     def is_staff(self):
         
         return self.is_admin
+
+    def cache(user,url):
+        """Store image locally if we have a URL"""
+        result = urllib.urlretrieve(url)
+        self.photo.save(
+                os.path.basename(url),
+                File(open(result[0], 'rb'))
+                )
+        self.save()
 
 
    
@@ -254,36 +263,6 @@ class UserProfile(AbstractBaseUser):
                 user1.save()
                 post_in.intersed_count=post_in.intersed_count+1
                 post_in.save()
-
-    #c2-mohamed
-    #this def sends notification
-    #to the user who owns the post that the other user has pushed interested on it
-    def interested_Notification(self, post_in):
-        user_in = self
-        post_owner = post_in.seller
-        not_content = unicode(user_in.name) + " is interested in your post"
-        not_url = "showpost?post=" + unicode(post_in.id)
-        try:
-            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url)
-            not1.save()
-        except:
-            not1 = Notification(user = user_in, content = not_content, url=not_url)
-            not1.save()
-
-    #c2-mohamed
-    #this def sends notification
-    #to the user who owns the post that the other user has commented on it
-    def comment_notification(self, post_in, content):
-        user_in = self
-        post_owner = post_in.seller
-        not_content = content
-        not_url = "showpost?post=" + unicode(post_in.id)
-        try:
-            not1 = Notification(user = user_in, content = not_content, url=not_url, image_url = self.photo.url, not_date=datetime.datetime.now)
-            not1.save()
-        except:
-            not1 = Notification(user = user_in, content = not_content, url=not_url, not_date=datetime.datetime.now())
-            not1.save()
 
 #C2-mahmoud ahmed- as a user i can rate sellers whom i bought from. the method takes the rate and the post
 #and the buyer as inputs and then it inserts these inputs into the rating table and save the record after
@@ -456,82 +435,6 @@ class Post(models.Model):
             if total_diff > 60:
                 p.state = 'Archived'
                 p.save()
-
-
-    #c2-mohamed awad
-    #this method saves notification in Notification table using content and user id
-    #first i find all users interested and subscribed to this post whether by channel, subchannel or parameter subscription
-    #this is done by finding all users subscribed to channel of the post and we add them to users_subscribed_to_channel_array
-    #then we find all users subscribed to subchannel of the post then we add it to users_subscribed_to_subchannel_array
-    #then we find all users subscribed to all attributes and values of the post and we add it to all_users_subscribed to attributes
-    #then we record all notifications in Notification table
-    def post_Notification(self):
-        print self
-        all_values_array=[]
-        values_array=[]
-        all_values = Value.objects.filter(post = self.id)
-        for value in all_values:
-            all_values_array.append(value)
-            values_array.append(value.value)
-        attributes_array = []
-        for value in all_values_array:
-            attribute  = value.attribute
-            attributes_array.append(attribute.name)
-        subchannel_of_post = self.subchannel
-        channel_of_post = subchannel_of_post.channel
-        users_subscribed_to_channel = UserChannelSubscription.objects.filter(channel=channel_of_post)
-        users_subscribed_to_channel_array = []
-        for i in users_subscribed_to_channel:
-            users_subscribed_to_channel_array.append(i.user)
-        users_subscribed_to_subchannel = UserSubchannelSubscription.objects.filter(sub_channel=subchannel_of_post)
-        users_subscribed_to_subchannel_array = []
-        for x in users_subscribed_to_subchannel:
-            users_subscribed_to_subchannel_array.append(x.user)
-        all_users_subscribed_to_attributes = []
-        i = 0
-        r = 0
-        for z in attributes_array:
-            value_in_array = values_array[i]
-            attribute = Attribute.objects.get(name = attributes_array[r], subchannel = subchannel_of_post)
-            r = r + 1
-            try:
-                value = AttributeChoice.objects.get(attribute_id = attribute, value = value_in_array)
-            except:
-                pass
-            users_subscribed_to_attribute = UserParameterSubscription.objects.filter(sub_channel=subchannel_of_post, parameter = attribute, choice = value)
-            i = i + 1
-            for h in users_subscribed_to_attribute:
-                all_users_subscribed_to_attributes.append(h.user)
-        for q in users_subscribed_to_channel_array:
-            not_content = "You have new posts to see in " + unicode(channel_of_post.name)
-            not_url = "showpost?post="+unicode(self.id)
-            try:
-                not1 = Notification(user = q, content = not_content, url=not_url, image_url = self.profile_picture.url)
-                not1.save()
-            except:
-                not1 = Notification(user = q, content = not_content, url=not_url)
-                not1.save()
-        for a in users_subscribed_to_subchannel_array:
-            not_content = "You have new posts to see in " + unicode(subchannel_of_post.name)
-            not_url = "showpost?post="+unicode(self.id)
-            try:
-                not1 = Notification(user = a, content = not_content, url=not_url, image_url = self.profile_picture.url)
-                not1.save()
-            except:
-                not1 = Notification(user = a, content = not_content, url=not_url)
-                not1.save()
-        for b in all_users_subscribed_to_attributes:
-            if not UserChannelSubscription.objects.filter(user = b, channel = channel_of_post).exists():
-                if not UserSubchannelSubscription.objects.filter(user = b, parent_channel = channel_of_post, sub_channel = subchannel_of_post).exists():
-                    not_content = "You have new posts to see in " + unicode(subchannel_of_post.name) + " from " + unicode(self.seller.name)
-                    not_url = "showpost?post="+unicode(self.id)
-                    try:
-                        not1 = Notification(user = b, content = not_content, url=not_url, image_url = self.profile_picture.url)
-                        not1.save()
-                    except:
-                        not1 = Notification(user = b, content = not_content, url=not_url)
-                        not1.save()
-
 
     def get_buyer():
         return self.buyer.id
@@ -811,4 +714,12 @@ class ActivityLog(models.Model):
     # activity_date = models.DateField()
     def __unicode__(self):
         return unicode(self.activity_date) + unicode(self.content)
+
+class social_identifier(models.Model):
+    user = models.ForeignKey(UserProfile)
+    provider_name=models.CharField(max_length = 200)
+    provider_uid=models.CharField(max_length = 200)
+
+    class Meta: #to make sure a user doesn't have the same indentifier twice
+        unique_together = ("user", "provider_name", "provider_uid")
 

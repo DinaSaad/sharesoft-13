@@ -1,6 +1,12 @@
 import os
 # Django settings for tager project.
 
+PUSHER_APP_ID = '40854'
+PUSHER_KEY = '31a755253bd0a874a5e6'
+PUSHER_SECRET = 'c5adf9a2a29813d12675'
+LOGIN_URL="/login/"
+login_url="/login/"
+
 def relative_project_path(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
@@ -136,6 +142,8 @@ TEMPLATE_DIRS = (
 
 )
 
+JANRAIN_RPX_API_KEY = "ec60bc19fb1d05f098f91fda0a5c8ae963bc6dff"
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -152,6 +160,8 @@ INSTALLED_APPS = (
     'fbregister',
     'captcha',
     'django_twilio',
+    'janrain',
+    'pusher',
      
     
     
@@ -193,12 +203,12 @@ LOGGING = {
     }
 }
 AUTHENTICATION_BACKENDS = ( 
+    'janrain.backends.JanrainBackend',
     'fbregister.facebook.FacebookBackend',
 
     'tager_www.views.CustomAuthentication',
     
     'django.contrib.auth.backends.ModelBackend'
-
 
 
 )

@@ -62,7 +62,7 @@
               <li>
                 <div>
                   <form class="navbar-search pull-left" style="margin-left:180px; margin-top:13px;" action="/search/" method="get">
-                    <input type="text" class="search-query" placeholder="Search">
+                    <input type="text" class="search-query" name='q' placeholder="Search">
                   </form>
                 </div>
               </li>
@@ -90,6 +90,9 @@
               </ul>
             </ul>
           </div>
+        </div>
+      </div>
+
         {% else %}
 
         <div class="nav-collapse collapse">
@@ -100,7 +103,7 @@
               <li>
                 <div>
                   <form class="navbar-search pull-left" style="margin-top:13px; margin-left:260px; " action="/search/" method="get">
-                    <input type="text" class="search-query" placeholder="Search">
+                    <input type="text" class="search-query" name='q' placeholder="Search">
                   </form>
                 </div>
               </li>
@@ -114,7 +117,68 @@
             </ul>
           </div>
 
+
         {% endif %}
+          
+            <ul id="hidden_notification">
+              
+            </ul>
+          
+      <style type="text/css">
+        #hidden_notification{
+          opacity: 0.96;
+          -webkit-border-radius: 4px;
+          list-style: none;
+          margin: 0px;
+          bottom: 30px;
+          left: 30px;
+          margin: 0px;
+          position: fixed;
+          z-index: 401;
+          display: none;
+          width: 200px;
+          background-color: #c9dbf1;
+        }
+
+      </style>
+       <script type="text/javascript">
+        $(document).ready(function(){
+          
+          // Create pusher instance
+          var pusher = new Pusher('31a755253bd0a874a5e6'); // This is PUSHER_KEY
+
+          // Subscribe to the channels you want to follow (Note: you can subscribe to as many channels as you want)
+          /*var notifier = new PusherNotifier(channel1);*/
+
+          var Notifications = pusher.subscribe('notification');
+          /*var notifier = new PusherNotifier(channel2);*/
+
+          Notifications.bind('interested_notification', function(data) {          
+              if ({{request.user.id}} == data.user_id) {
+                $('#hidden_notification:hover').css('cursor', 'pointer');
+                var output="<li>";
+                output += "<a href=\"../" + data.not_url + "\">"
+                output += data.not_content;
+                output += "</a>";
+                output+="</li>";
+                document.getElementById("hidden_notification").innerHTML = output;
+                $("#hidden_notification").fadeIn(3000);
+                $("#hidden_notification").fadeOut(12000);
+
+              };
+          });
+          
+
+          /*channel2.bind('event_name', function(data) {
+              // The code you write here will be executed when an event called 'event_name' is triggered on the channel
+              // 'another_channel_name' which is channel2
+
+              // You can use here the variables you sent from the views (example : 'variable_you_want_to_send' and 
+              // another_variable_you_want_to_send)
+          });*/
+      });
+
+       </script> 
 
 {% endblock %}
 

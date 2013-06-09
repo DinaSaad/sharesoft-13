@@ -3,22 +3,81 @@
 
 {% block content %}
 
+<script type="text/javascript">
+(function() {
+    if (typeof window.janrain !== 'object') window.janrain = {};
+    if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+    
+    janrain.settings.tokenUrl = 'http://localhost:8000/social_login/';
+
+    function isReady() { janrain.ready = true; };
+    if (document.addEventListener) {
+      document.addEventListener("DOMContentLoaded", isReady, false);
+    } else {
+      window.attachEvent('onload', isReady);
+    }
+
+    var e = document.createElement('script');
+    e.type = 'text/javascript';
+    e.id = 'janrainAuthWidget';
+
+    if (document.location.protocol === 'https:') {
+      e.src = 'https://rpxnow.com/js/lib/tager/engage.js';
+    } else {
+      e.src = 'http://widget-cdn.rpxnow.com/js/lib/tager/engage.js';
+    }
+
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(e, s);
+})();
+</script>
+<style type="text/css">
+.cs-text span{
+font-family: 'Lobster', Georgia, Times, serif;
+font-size: 70px;
+}
+.cs-text span:last-child{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -50px;
+    z-index: 100;
+    background: url({% static "img/Tlogo.png" %}) no-repeat center center;
+    background-size:78px 78px;
+}
+</style>
+<center >
+<h2 class="cs-text">
+    <span>></span>
+    <span>T</span>
+    <span>a</span>
+    <span>G</span>
+    <span>e</span>
+    <span>R</span>
+    <span><</span>
+    <span></span>
+</h2>
+</center>
+
 <center>
     <div id = "site_logo">
         <a href=""><img src="{% static "img/tager-logo.png" %}" style = "width:800"/></a>
     </div>
     <br>
+    <div class="shadow"></div>
     <div>
-        <div id = "fb_button">
-            <a href="#" class="zocial facebook">Sign in with Facebook</a>
-        </div>
+        {% if user.is_authenticated == False %}
+        <div id="janrainEngageEmbed"></div>
+        {% endif %}
         <br>
-        <div id = "user_buttons_sign" >
-            <p class="h4" style="display:inline">Already have an account ? <a href="#signIn" data-toggle="modal" class="btn btn-info">Sign In </a></p>
+        <div class="intermission">
+        <div id = "user_buttons_sign" class ="signup">
+            <p class="h4" style="display:inline">Already have an account ? <a href="#signIn" id="clicktest" data-toggle="modal" >Sign In </a></p>
             or 
-            <p class="h4" style="display:inline"><a href="../register/" data-toggle="modal" class="btn btn-info">Sign Up </a></p>
-        </div>
+            <p class="h4" style="display:inline"><a href="../register/" data-toggle="modal" >Sign Up </a></p> </div>
     </div>
+    </div>
+    
     <div  id="signIn" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header" width ="1000">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

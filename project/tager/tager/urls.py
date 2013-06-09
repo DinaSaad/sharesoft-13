@@ -10,6 +10,12 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+
+    url(r'^social_login/$','tager_www.views.social_login'),  
+    url(r'^logout/$', logout, {'next_page':'/main'}),  
+    url(r'^logout/$', logout, {'next_page':'/login'}),  
+    url(r'^profile/$', 'tager_www.views.view_profile'),
+
               
     url(r'^editposttitle/$', 'tager_www.views.edit_post_title'),
     url(r'^editpostprice/$', 'tager_www.views.edit_post_price'),
@@ -30,10 +36,10 @@ urlpatterns = patterns('',
     url(r'^editing_pic/$', 'tager_www.views.editing_pic'),
     url(r'^emptywishlist/$', 'tager_www.views.empty_wish_list'),
     url(r'^edit_pic/$', 'tager_www.views.editing_pic'),
-    url(r'^edit_name/$', 'tager_www.views.edit_name'),
-    url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
-    url(r'^edit_work/$', 'tager_www.views.edit_work'),
-    url(r'^edit_phone/$', 'tager_www.views.edit_phone'),  
+    url(r'^edit_info/$', 'tager_www.views.edit_info'),
+    # url(r'^edit_dob/$', 'tager_www.views.edit_date_of_birth'),
+    # url(r'^edit_work/$', 'tager_www.views.edit_work'),
+    # url(r'^edit_phone/$', 'tager_www.views.edit_phone'),  
     url(r'^private/$', 'tager_www.views.view_private'), 
     url(r'^private_number/$', 'tager_www.views.private_number'),
     url(r'^private_work/$', 'tager_www.views.private_work'),
@@ -56,7 +62,7 @@ urlpatterns = patterns('',
     url(r'^updatestatus/$', 'tager_www.views.update_status'),
 
     url(r'^menu_posts/$', 'tager_www.views.menuForSubchannels'),
-    url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
+    # url(r'^channel_posts/$', 'tager_www.views.postsToChannels'),
     
 
 
@@ -99,7 +105,7 @@ urlpatterns = patterns('',
     url(r'^send_sms/$', 'tager_www.views.sms_verify'),
     url(r'^refresh_notifications/$', 'tager_www.views.unread_notifications'),
     url(r'^deletepost/$', 'tager_www.views.hide_post'),
-
+    url(r'^twitter_reg/$', 'tager_www.views.twitter_reg'), 
     # Examples:
     # url(r'^$', 'tager.views.home', name='home'),
     # url(r'^tager/', include('tager.foo.urls')),
@@ -109,23 +115,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fbregister/$', 'fbregister.views.index'),
-
-	# url(r'^tager_www/', include('tager_www.urls')),
-
-
-	# url(r'^tager_www/', include('tager_www.urls')),
-
+	
 )
 
-urlpatterns += patterns('fbregister.facebook',
-	url(r'^facebook/login/$', 'facebook_login', name="facebook_login"),
-    url(r'^facebook/login/done/$', 'facebook_login_done', name="facebook_login_done"),
-)
 
-urlpatterns += patterns('fbregister.views',
-    url(r'^$', 'index', name="index"),
-)
 urlpatterns += patterns('django.views.static',
         (r'media/(?P<path>.*)', 'serve', {'document_root': settings.MEDIA_ROOT}),
     )
