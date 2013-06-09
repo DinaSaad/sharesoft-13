@@ -740,6 +740,67 @@ def Buyer_identification(request):
         d = {'form':form}
     return render_to_response( "add_buyer.html", d,context_instance = RequestContext( request ))
 
+# C1_Tharwat - this method will takes in a request as a parameter and acceses the user id from it. it then filters the posts
+# according to whether the user is subscribed to them through the channel, subchannel, or a certain parameters(s).
+# it then returns to the myfeed.html the list of posts to the user
+def viewMyFeed(request):
+    user_id = request.user.id
+    subscribed_posts = filter_subscribed_to_posts(user_id)
+    return render(request, 'myfeed.html', {'subscribed_posts' : subscribed_posts})
+
+# C1_Tharwat - A helper method that will be used viewMyFeed method 
+# this method will do the filtering process for the user depending on his subscriptions and will return a list of posts
+def filter_subscribed_to_posts(user_id):
+    all_channels_subscribed = UserChannelSubscription.objects.filter(user = user_id)
+    sub_channels_subscribed = UserSubchannelSubscription.objects.filter(user = user_id)
+    parameters_subscribed = UserParameterSubscription.objects.filter(user = user_id)
+    all_channels_subscribed_posts = []
+    all_subchannels_subscribed_posts = []
+    all_parameter_subscribed_posts = []
+    all_posts = Post.objects.all()
+    for channel in all_channels_subscribed:
+        for post2 in all_posts:
+            if post2.subchannel.channel == channel.channel:
+                all_channels_subscribed_posts.append(post2)
+    # for postsubchannel in all_posts:
+    for subchannel in sub_channels_subscribed:
+        for postsubchannel2 in all_posts:
+            if postsubchannel2.subchannel == subchannel.sub_channel:
+                all_subchannels_subscribed_posts.append(postsubchannel2)
+    # for postparameter in all_posts:
+    for parameter in parameters_subscribed:
+        for post3 in all_posts:
+            all_attributes_in_subchannel = Value.objects.filter(value = parameter.choice.value)
+            for chh in all_attributes_in_subchannel:
+                if chh.attribute.subchannel == post3.subchannel:
+                    continue
+                else:
+                    chh.delete()
+            for attribute_in_subchannel in all_attributes_in_subchannel:
+                post_to_add = attribute_in_subchannel.post
+                all_parameter_subscribed_posts.append(post_to_add)
+                for post in all_subchannels_subscribed_posts:
+                    all_values_with_same_post = Value.objects.filter(post = post)
+                    for value in all_values_with_same_post:
+                        if attribute_in_subchannel.attribute is value.attribute:
+                            all_subchannels_subscribed_posts.remove(post)
+                for post4 in all_channels_subscribed_posts:
+                    all_values_with_same_post = Value.objects.filter(post = post4)
+                    for value in all_values_with_same_post:
+                        if attribute_in_subchannel.attribute is value.attribute:
+                            all_subchannels_subscribed_posts.remove(post4)
+    
+    final_list = []
+    
+    for post5 in all_channels_subscribed_posts:
+        final_list.append(post5)
+    for post6 in all_subchannels_subscribed_posts:
+        if post6 not in final_list:
+            final_list.append(post6)
+    for post7 in all_parameter_subscribed_posts:
+        if post7 not in final_list:
+            final_list.append(post7)
+    return final_list
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
 filtes to the posts then sort them according to quality index AND  render the list to index.html'''
@@ -1083,6 +1144,32 @@ def report_the_post(request):
 def view_profile(request):
     try: 
         user = request.user
+        user_owner = request.GET['user_id']
+        #c1-abdelrahman this line retrieves the wished posts by the user.
+        list_of_wished_posts = WishList.objects.filter(user_id = user_owner)
+        verfied = user.is_verfied
+        link = "http://127.0.0.1:8000/confirm_email/?vc=" + str(user.activation_key)
+        user_profile = UserProfile.objects.get(id=request.GET['user_id'])
+        interacting_list = user_profile.get_interacting_people()
+        can_manage_wish_list = False
+        # print user.id
+        # print user_profile.id
+        if user.id == user_profile.id:
+            can_manage_wish_list = True
+        print can_manage_wish_list
+        # print interacting_list
+        #c2-mohamed
+        #the next 8 lines is to render maximum of two activities to put them in activity log div in profile.html
+        activity_logs_to_render_array = []
+        activity_logs_to_render_list = ActivityLog.objects.filter(user = user_owner)
+        activity_log_counter = 0
+        for activity in activity_logs_to_render_list:
+            activity_log_counter = activity_log_counter + 1
+            activity_logs_to_render_array.append(activity)
+            if activity_log_counter is 2:
+                break
+        d = {'caneditwishlist': can_manage_wish_list,'list_of_wished_posts': list_of_wished_posts,'user':user_profile, "check_verified" : verfied , "link" : link,"interacting_list": interacting_list, 'activity_logs_to_render_array': activity_logs_to_render_array}
+
         if user.is_anonymous():
             title = "welcome guest"
             user_profile = UserProfile.objects.get(id=request.GET['user_id'])

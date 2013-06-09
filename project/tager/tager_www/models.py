@@ -616,6 +616,12 @@ class Subscription(models.Model):
         sub_channel_to_subscribe = self.sub_channel
         self_parent_channel = self.channel
         subscription = UserParameterSubscription(user = user_in, parent_channel = self_parent_channel, sub_channel = sub_channel_to_subscribe, parameter = self.parameter, choice = self.choice)
+        #C1-Tharwat --- This will remove a subscription by a subchannel if a user is subscribed to a specfic paramter in it
+        try:
+            UserSubchannelSubscription.objects.filter(user = user_in, sub_channel = sub_channel_to_subscribe).delete()
+        except:
+            pass
+            
         try:
             subscription.save()
         except:
