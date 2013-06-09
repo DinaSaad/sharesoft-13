@@ -25,9 +25,10 @@
     </style>
 </div>
 <center>
+<div class = "myform">
 
 <div class="profileHeader" class="active" wotsearchprocessed="true">
-<center><h2 >Create your account </h2> </center>
+<h2 >Create your account </h2> 
 </div>
 
 
@@ -78,6 +79,11 @@ function passwordStrength(password)
             $(".hide").show();
 
         //if password bigger than 6 give 1 point
+         
+
+
+        if (password.length >= 6) score++;
+            $("#pass").popover('disable');
 
         if (password.length > 6) score++;
 
@@ -120,7 +126,7 @@ function passwordStrength(password)
 <script>
   $('#pass').popover({
     title: 'password!',
-    content: 'password must be at least 6 characters long, with at least one lower case and at least one uppercase !'
+    content: 'password must be at least 6 characters long'
   })
 
 </script>
@@ -167,6 +173,7 @@ function passwordStrength(password)
 
 </div>
 </form>
+</div>
 </div>
 </center>
 {% endblock %}

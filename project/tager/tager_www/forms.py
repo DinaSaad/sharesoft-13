@@ -46,7 +46,7 @@ class BuyerIdentificationForm(forms.Form):
 
 class RegistrationForm(forms.ModelForm):
     
-    password1 = forms.RegexField(label=("Password"),widget=forms.PasswordInput(attrs={'placeholder': 'password ','onkeyup': 'passwordStrength(this.value)'}),regex=r'^.*(?=.{6,})(?=.*[a-z])(?=.*[A-Z]).*$')
+    password1 = forms.RegexField(label=("Password"),widget=forms.PasswordInput(attrs={'placeholder': 'password ','onkeyup': 'passwordStrength(this.value)'}),regex=r'^.*(?=.{6,})(?=.*[a-z]).*$')
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput(attrs={'placeholder': 'confirm password '}))
     captcha = ReCaptchaField(attrs={'theme' : 'white'})
 
