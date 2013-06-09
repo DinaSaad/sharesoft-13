@@ -752,39 +752,21 @@ def viewMyFeed(request):
 # this method will do the filtering process for the user depending on his subscriptions and will return a list of posts
 def filter_subscribed_to_posts(user_id):
     all_channels_subscribed = UserChannelSubscription.objects.filter(user = user_id)
-    print "all channels subscribed"
-    print all_channels_subscribed
     sub_channels_subscribed = UserSubchannelSubscription.objects.filter(user = user_id)
-    print "subchannels subscribed"
-    print sub_channels_subscribed
     parameters_subscribed = UserParameterSubscription.objects.filter(user = user_id)
-    print "parameters subscribed"
-    print parameters_subscribed
     all_channels_subscribed_posts = []
     all_subchannels_subscribed_posts = []
     all_parameter_subscribed_posts = []
     all_posts = Post.objects.all()
     for channel in all_channels_subscribed:
-        print "in first for"
         for post2 in all_posts:
-            print "in second for"
-            print post2
-            print "here i am"
-            print post2.subchannel.channel
-            print "xxxxxxxxxxxxxxxxxx"
-            print channel.channel
-            print post2.subchannel.channel is channel.channel
             if post2.subchannel.channel == channel.channel:
                 all_channels_subscribed_posts.append(post2)
-                print "in third for"
-                print all_channels_subscribed_posts
     # for postsubchannel in all_posts:
     for subchannel in sub_channels_subscribed:
         for postsubchannel2 in all_posts:
             if postsubchannel2.subchannel == subchannel.sub_channel:
                 all_subchannels_subscribed_posts.append(postsubchannel2)
-                print "in fourth for"
-                print all_subchannels_subscribed_posts
     # for postparameter in all_posts:
     for parameter in parameters_subscribed:
         for post3 in all_posts:
@@ -818,9 +800,6 @@ def filter_subscribed_to_posts(user_id):
     for post7 in all_parameter_subscribed_posts:
         if post7 not in final_list:
             final_list.append(post7)
-    print 'aaa'
-    print final_list
-    print 'bbbb'
     return final_list
     
 '''Beshoy - C1 Calculate Quality Index this method takes a Request , and then calles a Sort post Function,which makes some 
